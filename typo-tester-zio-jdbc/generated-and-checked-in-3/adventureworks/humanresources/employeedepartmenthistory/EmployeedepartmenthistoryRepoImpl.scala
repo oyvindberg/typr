@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeedepartmenthistory
+package adventureworks.humanresources.employeedepartmenthistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDate
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -41,7 +40,7 @@ class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
     sql"""delete
           from "humanresources"."employeedepartmenthistory"
           where ("businessentityid", "startdate", "departmentid", "shiftid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${departmentid}), unnest(${shiftid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(using TypoLocalDate.arraySetter)}), unnest(${Segment.paramSegment(departmentid)(using DepartmentId.arraySetter)}), unnest(${Segment.paramSegment(shiftid)(using ShiftId.arraySetter)}))
        """.delete
     
   }
@@ -100,7 +99,7 @@ class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
     sql"""select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
           from "humanresources"."employeedepartmenthistory"
           where ("businessentityid", "startdate", "departmentid", "shiftid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${departmentid}), unnest(${shiftid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(using TypoLocalDate.arraySetter)}), unnest(${Segment.paramSegment(departmentid)(using DepartmentId.arraySetter)}), unnest(${Segment.paramSegment(shiftid)(using ShiftId.arraySetter)}))
        """.query(using EmployeedepartmenthistoryRow.jdbcDecoder).selectStream()
     
   }

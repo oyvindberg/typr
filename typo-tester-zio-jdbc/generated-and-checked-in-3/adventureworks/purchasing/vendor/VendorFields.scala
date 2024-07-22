@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package vendor
+package adventureworks.purchasing.vendor
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -40,7 +38,7 @@ trait VendorFields {
 object VendorFields {
   lazy val structure: Relation[VendorFields, VendorRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VendorFields, VendorRow] {
   

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package stateprovince
+package adventureworks.person.stateprovince
 
 import doobie.postgres.Text
 import doobie.util.Get

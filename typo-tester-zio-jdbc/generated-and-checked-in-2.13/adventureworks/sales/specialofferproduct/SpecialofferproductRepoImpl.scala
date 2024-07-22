@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialofferproduct
+package adventureworks.sales.specialofferproduct
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.specialoffer.SpecialofferId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -37,7 +36,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     sql"""delete
           from "sales"."specialofferproduct"
           where ("specialofferid", "productid")
-          in (select unnest(${specialofferid}), unnest(${productid}))
+          in (select unnest(${Segment.paramSegment(specialofferid)(SpecialofferId.arraySetter)}), unnest(${Segment.paramSegment(productid)(ProductId.arraySetter)}))
        """.delete
     
   }
@@ -95,7 +94,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     sql"""select "specialofferid", "productid", "rowguid", "modifieddate"::text
           from "sales"."specialofferproduct"
           where ("specialofferid", "productid")
-          in (select unnest(${specialofferid}), unnest(${productid}))
+          in (select unnest(${Segment.paramSegment(specialofferid)(SpecialofferId.arraySetter)}), unnest(${Segment.paramSegment(productid)(ProductId.arraySetter)}))
        """.query(SpecialofferproductRow.jdbcDecoder).selectStream()
     
   }

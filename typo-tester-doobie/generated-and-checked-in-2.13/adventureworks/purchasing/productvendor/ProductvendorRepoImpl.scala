@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package productvendor
+package adventureworks.purchasing.productvendor
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -40,7 +38,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     sql"""delete
           from "purchasing"."productvendor"
           where ("productid", "businessentityid")
-          in (select unnest(${productid}), unnest(${businessentityid}))
+          in (select unnest(${fromWrite(productid)(new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}))
        """.update.run
     
   }
@@ -104,7 +102,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     sql"""select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
           from "purchasing"."productvendor"
           where ("productid", "businessentityid")
-          in (select unnest(${productid}), unnest(${businessentityid}))
+          in (select unnest(${fromWrite(productid)(new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}))
        """.query(ProductvendorRow.read).stream
     
   }

@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productreview
+package adventureworks.production.productreview
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -32,7 +31,7 @@ class ProductreviewRepoImpl extends ProductreviewRepo {
     sql"""delete from "production"."productreview" where "productreviewid" = ${Segment.paramSegment(productreviewid)(ProductreviewId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(productreviewids: Array[ProductreviewId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."productreview" where "productreviewid" = ANY(${productreviewids})""".delete
+    sql"""delete from "production"."productreview" where "productreviewid" = ANY(${Segment.paramSegment(productreviewids)(ProductreviewId.arraySetter)})""".delete
   }
   override def insert(unsaved: ProductreviewRow): ZIO[ZConnection, Throwable, ProductreviewRow] = {
     sql"""insert into "production"."productreview"("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")

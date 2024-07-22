@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vsalespersonsalesbyfiscalyears
+package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import anorm.SqlStringInterpolation
 import java.sql.Connection

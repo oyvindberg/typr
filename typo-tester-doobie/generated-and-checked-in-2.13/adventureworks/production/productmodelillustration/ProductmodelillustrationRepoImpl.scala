@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelillustration
+package adventureworks.production.productmodelillustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -38,7 +36,7 @@ class ProductmodelillustrationRepoImpl extends ProductmodelillustrationRepo {
     sql"""delete
           from "production"."productmodelillustration"
           where ("productmodelid", "illustrationid")
-          in (select unnest(${productmodelid}), unnest(${illustrationid}))
+          in (select unnest(${fromWrite(productmodelid)(new Write.Single(ProductmodelId.arrayPut))}), unnest(${fromWrite(illustrationid)(new Write.Single(IllustrationId.arrayPut))}))
        """.update.run
     
   }
@@ -94,7 +92,7 @@ class ProductmodelillustrationRepoImpl extends ProductmodelillustrationRepo {
     sql"""select "productmodelid", "illustrationid", "modifieddate"::text
           from "production"."productmodelillustration"
           where ("productmodelid", "illustrationid")
-          in (select unnest(${productmodelid}), unnest(${illustrationid}))
+          in (select unnest(${fromWrite(productmodelid)(new Write.Single(ProductmodelId.arrayPut))}), unnest(${fromWrite(illustrationid)(new Write.Single(IllustrationId.arrayPut))}))
        """.query(ProductmodelillustrationRow.read).stream
     
   }

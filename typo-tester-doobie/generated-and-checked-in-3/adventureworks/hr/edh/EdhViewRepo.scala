@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package edh
+package adventureworks.hr.edh
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream

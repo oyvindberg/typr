@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package marital_status
+package testdb.hardcoded.myschema.marital_status
 
 import anorm.BatchSql
 import anorm.NamedParameter
@@ -17,6 +14,7 @@ import anorm.SimpleSql
 import anorm.SqlStringInterpolation
 import java.sql.Connection
 import scala.annotation.nowarn
+import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -32,7 +30,7 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
   override def deleteByIds(ids: Array[MaritalStatusId])(implicit c: Connection): Int = {
     SQL"""delete
           from "myschema"."marital_status"
-          where "id" = ANY(${ids})
+          where "id" = ANY(${ParameterValue(ids, null, MaritalStatusId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -81,7 +79,7 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
   override def selectByIds(ids: Array[MaritalStatusId])(implicit c: Connection): List[MaritalStatusRow] = {
     SQL"""select "id"
           from "myschema"."marital_status"
-          where "id" = ANY(${ids})
+          where "id" = ANY(${ParameterValue(ids, null, MaritalStatusId.arrayToStatement)})
        """.as(MaritalStatusRow.rowParser(1).*)
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package w
+package adventureworks.pr.w
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -21,25 +19,25 @@ import zio.json.internal.Write
 
 /** View: pr.w */
 case class WViewRow(
-  /** Points to [[production.workorder.WorkorderRow.workorderid]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.workorderid]] */
   id: WorkorderId,
-  /** Points to [[production.workorder.WorkorderRow.workorderid]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.workorderid]] */
   workorderid: WorkorderId,
-  /** Points to [[production.workorder.WorkorderRow.productid]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.workorder.WorkorderRow.orderqty]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.orderqty]] */
   orderqty: Int,
-  /** Points to [[production.workorder.WorkorderRow.scrappedqty]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.scrappedqty]] */
   scrappedqty: TypoShort,
-  /** Points to [[production.workorder.WorkorderRow.startdate]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.startdate]] */
   startdate: TypoLocalDateTime,
-  /** Points to [[production.workorder.WorkorderRow.enddate]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.enddate]] */
   enddate: Option[TypoLocalDateTime],
-  /** Points to [[production.workorder.WorkorderRow.duedate]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.duedate]] */
   duedate: TypoLocalDateTime,
-  /** Points to [[production.workorder.WorkorderRow.scrapreasonid]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.scrapreasonid]] */
   scrapreasonid: Option[ScrapreasonId],
-  /** Points to [[production.workorder.WorkorderRow.modifieddate]] */
+  /** Points to [[adventureworks.production.workorder.WorkorderRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

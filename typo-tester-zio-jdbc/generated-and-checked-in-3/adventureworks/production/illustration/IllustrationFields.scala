@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package illustration
+package adventureworks.production.illustration
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
@@ -25,7 +23,7 @@ trait IllustrationFields {
 object IllustrationFields {
   lazy val structure: Relation[IllustrationFields, IllustrationRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[IllustrationFields, IllustrationRow] {
   

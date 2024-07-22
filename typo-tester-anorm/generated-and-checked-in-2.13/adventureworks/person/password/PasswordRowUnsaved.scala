@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package password
+package adventureworks.person.password
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -22,7 +21,7 @@ import scala.util.Try
 
 /** This class corresponds to a row in table `person.password` which has not been persisted yet */
 case class PasswordRowUnsaved(
-  /** Points to [[person.PersonRow.businessentityid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Password for the e-mail account. */
   passwordhash: /* max 128 chars */ String,

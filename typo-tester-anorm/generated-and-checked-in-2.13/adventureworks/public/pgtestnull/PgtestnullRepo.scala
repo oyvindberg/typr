@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package pgtestnull
+package adventureworks.public.pgtestnull
 
 import java.sql.Connection
 import typo.dsl.DeleteBuilder

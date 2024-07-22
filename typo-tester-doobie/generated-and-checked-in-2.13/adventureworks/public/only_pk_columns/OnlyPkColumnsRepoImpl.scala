@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package only_pk_columns
+package adventureworks.public.only_pk_columns
 
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
@@ -34,7 +32,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     sql"""delete
           from "public"."only_pk_columns"
           where ("key_column_1", "key_column_2")
-          in (select unnest(${keyColumn1}), unnest(${keyColumn2}))
+          in (select unnest(${fromWrite(keyColumn1)(new Write.Single(adventureworks.StringArrayMeta.put))}), unnest(${fromWrite(keyColumn2)(new Write.Single(adventureworks.IntegerArrayMeta.put))}))
        """.update.run
     
   }
@@ -62,7 +60,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     sql"""select "key_column_1", "key_column_2"
           from "public"."only_pk_columns"
           where ("key_column_1", "key_column_2")
-          in (select unnest(${keyColumn1}), unnest(${keyColumn2}))
+          in (select unnest(${fromWrite(keyColumn1)(new Write.Single(adventureworks.StringArrayMeta.put))}), unnest(${fromWrite(keyColumn2)(new Write.Single(adventureworks.IntegerArrayMeta.put))}))
        """.query(OnlyPkColumnsRow.read).stream
     
   }

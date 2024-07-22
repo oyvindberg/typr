@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package pnt
+package adventureworks.pe.pnt
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
@@ -25,7 +23,7 @@ trait PntViewFields {
 object PntViewFields {
   lazy val structure: Relation[PntViewFields, PntViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PntViewFields, PntViewRow] {
   

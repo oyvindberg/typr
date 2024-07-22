@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142_2
+package adventureworks.public.issue142_2
 
 import adventureworks.public.issue142.Issue142Id
 import cats.instances.list.catsStdInstancesForList
@@ -29,7 +27,7 @@ class Issue1422RepoImpl extends Issue1422Repo {
     sql"""delete from "public"."issue142_2" where "tabellkode" = ${fromWrite(tabellkode)(new Write.Single(Issue142Id.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(tabellkodes: Array[Issue142Id]): ConnectionIO[Int] = {
-    sql"""delete from "public"."issue142_2" where "tabellkode" = ANY(${tabellkodes})""".update.run
+    sql"""delete from "public"."issue142_2" where "tabellkode" = ANY(${fromWrite(tabellkodes)(new Write.Single(Issue142Id.arrayPut))})""".update.run
   }
   override def insert(unsaved: Issue1422Row): ConnectionIO[Issue1422Row] = {
     sql"""insert into "public"."issue142_2"("tabellkode")
@@ -50,7 +48,7 @@ class Issue1422RepoImpl extends Issue1422Repo {
     sql"""select "tabellkode" from "public"."issue142_2" where "tabellkode" = ${fromWrite(tabellkode)(new Write.Single(Issue142Id.put))}""".query(Issue1422Row.read).option
   }
   override def selectByIds(tabellkodes: Array[Issue142Id]): Stream[ConnectionIO, Issue1422Row] = {
-    sql"""select "tabellkode" from "public"."issue142_2" where "tabellkode" = ANY(${tabellkodes})""".query(Issue1422Row.read).stream
+    sql"""select "tabellkode" from "public"."issue142_2" where "tabellkode" = ANY(${fromWrite(tabellkodes)(new Write.Single(Issue142Id.arrayPut))})""".query(Issue1422Row.read).stream
   }
   override def selectByIdsTracked(tabellkodes: Array[Issue142Id]): ConnectionIO[Map[Issue142Id, Issue1422Row]] = {
     selectByIds(tabellkodes).compile.toList.map { rows =>

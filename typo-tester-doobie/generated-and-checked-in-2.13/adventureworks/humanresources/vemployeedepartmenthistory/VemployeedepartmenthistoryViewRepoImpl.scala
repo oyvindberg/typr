@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vemployeedepartmenthistory
+package adventureworks.humanresources.vemployeedepartmenthistory
 
 import doobie.free.connection.ConnectionIO
 import doobie.syntax.string.toSqlInterpolator

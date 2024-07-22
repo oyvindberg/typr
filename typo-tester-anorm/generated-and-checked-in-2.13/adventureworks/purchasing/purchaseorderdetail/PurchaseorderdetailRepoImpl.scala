@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderdetail
+package adventureworks.purchasing.purchaseorderdetail
 
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import anorm.ParameterValue
@@ -36,7 +34,7 @@ class PurchaseorderdetailRepoImpl extends PurchaseorderdetailRepo {
     SQL"""select "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text
           from "purchasing"."purchaseorderdetail"
           where ("purchaseorderid", "purchaseorderdetailid")
-          in (select unnest(${purchaseorderid}), unnest(${purchaseorderdetailid}))
+          in (select unnest(${ParameterValue(purchaseorderid, null, PurchaseorderheaderId.arrayToStatement)}), unnest(${ParameterValue(purchaseorderdetailid, null, adventureworks.IntArrayToStatement)}))
        """.as(PurchaseorderdetailRow.rowParser(1).*)
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package spqh
+package adventureworks.sa.spqh
 
 import anorm.SqlStringInterpolation
 import java.sql.Connection

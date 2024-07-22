@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package be
+package adventureworks.pe.be
 
 import doobie.free.connection.ConnectionIO
 import doobie.syntax.string.toSqlInterpolator

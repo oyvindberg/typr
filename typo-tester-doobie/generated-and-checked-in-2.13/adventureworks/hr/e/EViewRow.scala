@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package e
+package adventureworks.hr.e
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.customtypes.TypoLocalDateTime
@@ -20,37 +18,37 @@ import io.circe.Encoder
 
 /** View: hr.e */
 case class EViewRow(
-  /** Points to [[humanresources.employee.EmployeeRow.businessentityid]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[humanresources.employee.EmployeeRow.businessentityid]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[humanresources.employee.EmployeeRow.nationalidnumber]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.nationalidnumber]] */
   nationalidnumber: /* max 15 chars */ String,
-  /** Points to [[humanresources.employee.EmployeeRow.loginid]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.loginid]] */
   loginid: /* max 256 chars */ String,
-  /** Points to [[humanresources.employee.EmployeeRow.jobtitle]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
-  /** Points to [[humanresources.employee.EmployeeRow.birthdate]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.birthdate]] */
   birthdate: TypoLocalDate,
-  /** Points to [[humanresources.employee.EmployeeRow.maritalstatus]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.maritalstatus]] */
   maritalstatus: /* bpchar, max 1 chars */ String,
-  /** Points to [[humanresources.employee.EmployeeRow.gender]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.gender]] */
   gender: /* bpchar, max 1 chars */ String,
-  /** Points to [[humanresources.employee.EmployeeRow.hiredate]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.hiredate]] */
   hiredate: TypoLocalDate,
-  /** Points to [[humanresources.employee.EmployeeRow.salariedflag]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.salariedflag]] */
   salariedflag: Flag,
-  /** Points to [[humanresources.employee.EmployeeRow.vacationhours]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.vacationhours]] */
   vacationhours: TypoShort,
-  /** Points to [[humanresources.employee.EmployeeRow.sickleavehours]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.sickleavehours]] */
   sickleavehours: TypoShort,
-  /** Points to [[humanresources.employee.EmployeeRow.currentflag]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.currentflag]] */
   currentflag: Flag,
-  /** Points to [[humanresources.employee.EmployeeRow.rowguid]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[humanresources.employee.EmployeeRow.modifieddate]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.modifieddate]] */
   modifieddate: TypoLocalDateTime,
-  /** Points to [[humanresources.employee.EmployeeRow.organizationnode]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.organizationnode]] */
   organizationnode: Option[String]
 )
 

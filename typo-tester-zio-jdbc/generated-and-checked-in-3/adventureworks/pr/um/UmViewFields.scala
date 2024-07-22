@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package um
+package adventureworks.pr.um
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.unitmeasure.UnitmeasureId
@@ -25,7 +23,7 @@ trait UmViewFields {
 object UmViewFields {
   lazy val structure: Relation[UmViewFields, UmViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[UmViewFields, UmViewRow] {
   

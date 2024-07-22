@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritory
+package adventureworks.sales.salesterritory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -35,7 +33,7 @@ class SalesterritoryRepoImpl extends SalesterritoryRepo {
     sql"""delete from "sales"."salesterritory" where "territoryid" = ${fromWrite(territoryid)(new Write.Single(SalesterritoryId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(territoryids: Array[SalesterritoryId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."salesterritory" where "territoryid" = ANY(${territoryids})""".update.run
+    sql"""delete from "sales"."salesterritory" where "territoryid" = ANY(${fromWrite(territoryids)(new Write.Single(SalesterritoryId.arrayPut))})""".update.run
   }
   override def insert(unsaved: SalesterritoryRow): ConnectionIO[SalesterritoryRow] = {
     sql"""insert into "sales"."salesterritory"("territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")
@@ -109,7 +107,7 @@ class SalesterritoryRepoImpl extends SalesterritoryRepo {
     sql"""select "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate"::text from "sales"."salesterritory" where "territoryid" = ${fromWrite(territoryid)(new Write.Single(SalesterritoryId.put))}""".query(SalesterritoryRow.read).option
   }
   override def selectByIds(territoryids: Array[SalesterritoryId]): Stream[ConnectionIO, SalesterritoryRow] = {
-    sql"""select "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate"::text from "sales"."salesterritory" where "territoryid" = ANY(${territoryids})""".query(SalesterritoryRow.read).stream
+    sql"""select "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate"::text from "sales"."salesterritory" where "territoryid" = ANY(${fromWrite(territoryids)(new Write.Single(SalesterritoryId.arrayPut))})""".query(SalesterritoryRow.read).stream
   }
   override def selectByIdsTracked(territoryids: Array[SalesterritoryId]): ConnectionIO[Map[SalesterritoryId, SalesterritoryRow]] = {
     selectByIds(territoryids).compile.toList.map { rows =>

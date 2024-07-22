@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package creditcard
+package adventureworks.sales.creditcard
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
+import adventureworks.streamingInsert
 import adventureworks.userdefined.CustomCreditcardId
 import anorm.BatchSql
 import anorm.NamedParameter
@@ -33,10 +32,10 @@ class CreditcardRepoImpl extends CreditcardRepo {
   override def deleteById(creditcardid: /* user-picked */ CustomCreditcardId)(implicit c: Connection): Boolean = {
     SQL"""delete from "sales"."creditcard" where "creditcardid" = ${ParameterValue(creditcardid, null, /* user-picked */ CustomCreditcardId.toStatement)}""".executeUpdate() > 0
   }
-  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(implicit c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Int = {
+  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(implicit c: Connection): Int = {
     SQL"""delete
           from "sales"."creditcard"
-          where "creditcardid" = ANY(${creditcardids})
+          where "creditcardid" = ANY(${ParameterValue(creditcardids, null, CustomCreditcardId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -100,14 +99,14 @@ class CreditcardRepoImpl extends CreditcardRepo {
           where "creditcardid" = ${ParameterValue(creditcardid, null, /* user-picked */ CustomCreditcardId.toStatement)}
        """.as(CreditcardRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(implicit c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): List[CreditcardRow] = {
+  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(implicit c: Connection): List[CreditcardRow] = {
     SQL"""select "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text
           from "sales"."creditcard"
-          where "creditcardid" = ANY(${creditcardids})
+          where "creditcardid" = ANY(${ParameterValue(creditcardids, null, CustomCreditcardId.arrayToStatement)})
        """.as(CreditcardRow.rowParser(1).*)
     
   }
-  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(implicit c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Map[/* user-picked */ CustomCreditcardId, CreditcardRow] = {
+  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(implicit c: Connection): Map[/* user-picked */ CustomCreditcardId, CreditcardRow] = {
     val byId = selectByIds(creditcardids).view.map(x => (x.creditcardid, x)).toMap
     creditcardids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }

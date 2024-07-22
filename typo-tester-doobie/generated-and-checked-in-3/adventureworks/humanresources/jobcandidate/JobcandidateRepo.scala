@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package jobcandidate
+package adventureworks.humanresources.jobcandidate
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream

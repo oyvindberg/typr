@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pu
-package pv
+package adventureworks.pu.pv
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -18,29 +16,29 @@ import io.circe.Encoder
 
 /** View: pu.pv */
 case class PvViewRow(
-  /** Points to [[purchasing.productvendor.ProductvendorRow.productid]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.productid]] */
   id: ProductId,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.productid]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.productid]] */
   productid: ProductId,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.businessentityid]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.averageleadtime]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.averageleadtime]] */
   averageleadtime: Int,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.standardprice]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.standardprice]] */
   standardprice: BigDecimal,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.lastreceiptcost]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.lastreceiptcost]] */
   lastreceiptcost: Option[BigDecimal],
-  /** Points to [[purchasing.productvendor.ProductvendorRow.lastreceiptdate]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.lastreceiptdate]] */
   lastreceiptdate: Option[TypoLocalDateTime],
-  /** Points to [[purchasing.productvendor.ProductvendorRow.minorderqty]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.minorderqty]] */
   minorderqty: Int,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.maxorderqty]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.maxorderqty]] */
   maxorderqty: Int,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.onorderqty]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.onorderqty]] */
   onorderqty: Option[Int],
-  /** Points to [[purchasing.productvendor.ProductvendorRow.unitmeasurecode]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.unitmeasurecode]] */
   unitmeasurecode: UnitmeasureId,
-  /** Points to [[purchasing.productvendor.ProductvendorRow.modifieddate]] */
+  /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

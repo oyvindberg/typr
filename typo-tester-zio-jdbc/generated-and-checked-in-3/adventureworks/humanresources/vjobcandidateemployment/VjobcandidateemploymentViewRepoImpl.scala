@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vjobcandidateemployment
+package adventureworks.humanresources.vjobcandidateemployment
 
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql

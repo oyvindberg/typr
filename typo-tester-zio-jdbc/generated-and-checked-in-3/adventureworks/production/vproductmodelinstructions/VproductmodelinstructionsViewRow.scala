@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package vproductmodelinstructions
+package adventureworks.production.vproductmodelinstructions
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -20,9 +18,9 @@ import zio.json.internal.Write
 
 /** View: production.vproductmodelinstructions */
 case class VproductmodelinstructionsViewRow(
-  /** Points to [[productmodel.ProductmodelRow.productmodelid]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
   productmodelid: ProductmodelId,
-  /** Points to [[productmodel.ProductmodelRow.name]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
   instructions: /* nullability unknown */ Option[String],
   locationID: /* nullability unknown */ Option[Int],
@@ -31,9 +29,9 @@ case class VproductmodelinstructionsViewRow(
   laborHours: /* nullability unknown */ Option[BigDecimal],
   lotSize: /* nullability unknown */ Option[Int],
   step: /* nullability unknown */ Option[/* max 1024 chars */ String],
-  /** Points to [[productmodel.ProductmodelRow.rowguid]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[productmodel.ProductmodelRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

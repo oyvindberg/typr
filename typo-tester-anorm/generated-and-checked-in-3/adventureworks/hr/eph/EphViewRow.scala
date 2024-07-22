@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package eph
+package adventureworks.hr.eph
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -24,17 +22,17 @@ import scala.util.Try
 
 /** View: hr.eph */
 case class EphViewRow(
-  /** Points to [[humanresources.employeepayhistory.EmployeepayhistoryRow.businessentityid]] */
+  /** Points to [[adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[humanresources.employeepayhistory.EmployeepayhistoryRow.businessentityid]] */
+  /** Points to [[adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[humanresources.employeepayhistory.EmployeepayhistoryRow.ratechangedate]] */
+  /** Points to [[adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.ratechangedate]] */
   ratechangedate: TypoLocalDateTime,
-  /** Points to [[humanresources.employeepayhistory.EmployeepayhistoryRow.rate]] */
+  /** Points to [[adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.rate]] */
   rate: BigDecimal,
-  /** Points to [[humanresources.employeepayhistory.EmployeepayhistoryRow.payfrequency]] */
+  /** Points to [[adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.payfrequency]] */
   payfrequency: TypoShort,
-  /** Points to [[humanresources.employeepayhistory.EmployeepayhistoryRow.modifieddate]] */
+  /** Points to [[adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

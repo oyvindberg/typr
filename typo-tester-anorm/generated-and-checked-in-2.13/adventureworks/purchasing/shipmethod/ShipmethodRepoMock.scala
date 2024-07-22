@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package shipmethod
+package adventureworks.purchasing.shipmethod
 
 import java.sql.Connection
 import scala.annotation.nowarn

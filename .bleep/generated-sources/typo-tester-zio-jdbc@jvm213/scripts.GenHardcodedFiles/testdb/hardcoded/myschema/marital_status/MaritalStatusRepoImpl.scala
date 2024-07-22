@@ -3,11 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package marital_status
+package testdb.hardcoded.myschema.marital_status
 
+import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -28,7 +26,7 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
     sql"""delete from "myschema"."marital_status" where "id" = ${Segment.paramSegment(id)(MaritalStatusId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(ids: Array[MaritalStatusId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "myschema"."marital_status" where "id" = ANY(${ids})""".delete
+    sql"""delete from "myschema"."marital_status" where "id" = ANY(${Segment.paramSegment(ids)(MaritalStatusId.arraySetter)})""".delete
   }
   override def insert(unsaved: MaritalStatusRow): ZIO[ZConnection, Throwable, MaritalStatusRow] = {
     sql"""insert into "myschema"."marital_status"("id")

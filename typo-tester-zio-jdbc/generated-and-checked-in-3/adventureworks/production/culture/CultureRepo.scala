@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package culture
+package adventureworks.production.culture
 
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder

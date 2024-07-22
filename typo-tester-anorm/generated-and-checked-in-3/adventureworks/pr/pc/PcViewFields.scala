@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pc
+package adventureworks.pr.pc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -27,7 +25,7 @@ trait PcViewFields {
 object PcViewFields {
   lazy val structure: Relation[PcViewFields, PcViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PcViewFields, PcViewRow] {
   

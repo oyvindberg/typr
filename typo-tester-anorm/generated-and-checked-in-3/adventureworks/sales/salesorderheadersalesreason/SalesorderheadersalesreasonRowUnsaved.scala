@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheadersalesreason
+package adventureworks.sales.salesorderheadersalesreason
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
@@ -22,10 +21,10 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.salesorderheadersalesreason` which has not been persisted yet */
 case class SalesorderheadersalesreasonRowUnsaved(
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
-      Points to [[salesorderheader.SalesorderheaderRow.salesorderid]] */
+      Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
   salesorderid: SalesorderheaderId,
   /** Primary key. Foreign key to SalesReason.SalesReasonID.
-      Points to [[salesreason.SalesreasonRow.salesreasonid]] */
+      Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]] */
   salesreasonid: SalesreasonId,
   /** Default: now() */
   modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault

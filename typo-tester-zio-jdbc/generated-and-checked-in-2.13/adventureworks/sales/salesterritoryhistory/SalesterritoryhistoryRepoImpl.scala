@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritoryhistory
+package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -39,7 +38,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     sql"""delete
           from "sales"."salesterritoryhistory"
           where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${territoryid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDateTime.arraySetter)}), unnest(${Segment.paramSegment(territoryid)(SalesterritoryId.arraySetter)}))
        """.delete
     
   }
@@ -100,7 +99,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     sql"""select "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
           from "sales"."salesterritoryhistory"
           where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${territoryid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDateTime.arraySetter)}), unnest(${Segment.paramSegment(territoryid)(SalesterritoryId.arraySetter)}))
        """.query(SalesterritoryhistoryRow.jdbcDecoder).selectStream()
     
   }

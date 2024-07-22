@@ -3,9 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package customtypes
+package adventureworks.customtypes
 
+import adventureworks.Text
 import scala.util.Success
 import scala.util.Try
 import zio.json.JsonDecoder

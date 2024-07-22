@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialofferproduct
+package adventureworks.sales.specialofferproduct
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -23,10 +22,10 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.specialofferproduct` which has not been persisted yet */
 case class SpecialofferproductRowUnsaved(
   /** Primary key for SpecialOfferProduct records.
-      Points to [[specialoffer.SpecialofferRow.specialofferid]] */
+      Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
   specialofferid: SpecialofferId,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[production.product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Default: uuid_generate_v1() */
   rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,

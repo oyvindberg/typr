@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package department
+package adventureworks.humanresources.department
 
 import java.sql.Connection
 import scala.annotation.nowarn

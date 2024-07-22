@@ -3,12 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package compositepk
-package person
+package testdb.hardcoded.compositepk.person
 
 import java.sql.ResultSet
+import testdb.hardcoded.Text
 import testdb.hardcoded.customtypes.Defaulted
 import zio.jdbc.JdbcDecoder
 import zio.json.JsonDecoder

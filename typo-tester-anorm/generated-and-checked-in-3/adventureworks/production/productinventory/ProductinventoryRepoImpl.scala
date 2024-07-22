@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productinventory
+package adventureworks.production.productinventory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.location.LocationId
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -41,7 +40,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     SQL"""delete
           from "production"."productinventory"
           where ("productid", "locationid")
-          in (select unnest(${productid}), unnest(${locationid}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(locationid, null, LocationId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -115,7 +114,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     SQL"""select "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
           from "production"."productinventory"
           where ("productid", "locationid")
-          in (select unnest(${productid}), unnest(${locationid}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(locationid, null, LocationId.arrayToStatement)}))
        """.as(ProductinventoryRow.rowParser(1).*)
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package shift
+package adventureworks.humanresources.shift
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
@@ -27,7 +25,7 @@ trait ShiftFields {
 object ShiftFields {
   lazy val structure: Relation[ShiftFields, ShiftRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ShiftFields, ShiftRow] {
   

@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package shoppingcartitem
+package adventureworks.sales.shoppingcartitem
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -35,7 +34,7 @@ class ShoppingcartitemRepoImpl extends ShoppingcartitemRepo {
   override def deleteByIds(shoppingcartitemids: Array[ShoppingcartitemId])(using c: Connection): Int = {
     SQL"""delete
           from "sales"."shoppingcartitem"
-          where "shoppingcartitemid" = ANY(${shoppingcartitemids})
+          where "shoppingcartitemid" = ANY(${ParameterValue(shoppingcartitemids, null, ShoppingcartitemId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -108,7 +107,7 @@ class ShoppingcartitemRepoImpl extends ShoppingcartitemRepo {
   override def selectByIds(shoppingcartitemids: Array[ShoppingcartitemId])(using c: Connection): List[ShoppingcartitemRow] = {
     SQL"""select "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text
           from "sales"."shoppingcartitem"
-          where "shoppingcartitemid" = ANY(${shoppingcartitemids})
+          where "shoppingcartitemid" = ANY(${ParameterValue(shoppingcartitemids, null, ShoppingcartitemId.arrayToStatement)})
        """.as(ShoppingcartitemRow.rowParser(1).*)
     
   }

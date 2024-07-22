@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package countryregion
+package adventureworks.person.countryregion
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class CountryregionRepoImpl extends CountryregionRepo {
     sql"""delete from "person"."countryregion" where "countryregioncode" = ${fromWrite(countryregioncode)(using new Write.Single(CountryregionId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(countryregioncodes: Array[CountryregionId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."countryregion" where "countryregioncode" = ANY(${countryregioncodes})""".update.run
+    sql"""delete from "person"."countryregion" where "countryregioncode" = ANY(${fromWrite(countryregioncodes)(using new Write.Single(CountryregionId.arrayPut))})""".update.run
   }
   override def insert(unsaved: CountryregionRow): ConnectionIO[CountryregionRow] = {
     sql"""insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
@@ -81,7 +79,7 @@ class CountryregionRepoImpl extends CountryregionRepo {
     sql"""select "countryregioncode", "name", "modifieddate"::text from "person"."countryregion" where "countryregioncode" = ${fromWrite(countryregioncode)(using new Write.Single(CountryregionId.put))}""".query(using CountryregionRow.read).option
   }
   override def selectByIds(countryregioncodes: Array[CountryregionId]): Stream[ConnectionIO, CountryregionRow] = {
-    sql"""select "countryregioncode", "name", "modifieddate"::text from "person"."countryregion" where "countryregioncode" = ANY(${countryregioncodes})""".query(using CountryregionRow.read).stream
+    sql"""select "countryregioncode", "name", "modifieddate"::text from "person"."countryregion" where "countryregioncode" = ANY(${fromWrite(countryregioncodes)(using new Write.Single(CountryregionId.arrayPut))})""".query(using CountryregionRow.read).stream
   }
   override def selectByIdsTracked(countryregioncodes: Array[CountryregionId]): ConnectionIO[Map[CountryregionId, CountryregionRow]] = {
     selectByIds(countryregioncodes).compile.toList.map { rows =>

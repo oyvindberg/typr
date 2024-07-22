@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package address
+package adventureworks.person.address
 
 import java.sql.Connection
 import scala.annotation.nowarn

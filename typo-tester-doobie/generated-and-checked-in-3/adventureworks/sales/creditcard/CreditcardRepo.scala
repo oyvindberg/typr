@@ -3,13 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package creditcard
+package adventureworks.sales.creditcard
 
 import adventureworks.userdefined.CustomCreditcardId
 import doobie.free.connection.ConnectionIO
-import doobie.util.Put
 import fs2.Stream
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
@@ -18,7 +15,7 @@ import typo.dsl.UpdateBuilder
 trait CreditcardRepo {
   def delete: DeleteBuilder[CreditcardFields, CreditcardRow]
   def deleteById(creditcardid: /* user-picked */ CustomCreditcardId): ConnectionIO[Boolean]
-  def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using put0: Put[Array[/* user-picked */ CustomCreditcardId]]): ConnectionIO[Int]
+  def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ConnectionIO[Int]
   def insert(unsaved: CreditcardRow): ConnectionIO[CreditcardRow]
   def insert(unsaved: CreditcardRowUnsaved): ConnectionIO[CreditcardRow]
   def insertStreaming(unsaved: Stream[ConnectionIO, CreditcardRow], batchSize: Int = 10000): ConnectionIO[Long]
@@ -27,8 +24,8 @@ trait CreditcardRepo {
   def select: SelectBuilder[CreditcardFields, CreditcardRow]
   def selectAll: Stream[ConnectionIO, CreditcardRow]
   def selectById(creditcardid: /* user-picked */ CustomCreditcardId): ConnectionIO[Option[CreditcardRow]]
-  def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using puts0: Put[Array[/* user-picked */ CustomCreditcardId]]): Stream[ConnectionIO, CreditcardRow]
-  def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using puts0: Put[Array[/* user-picked */ CustomCreditcardId]]): ConnectionIO[Map[/* user-picked */ CustomCreditcardId, CreditcardRow]]
+  def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): Stream[ConnectionIO, CreditcardRow]
+  def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ConnectionIO[Map[/* user-picked */ CustomCreditcardId, CreditcardRow]]
   def update: UpdateBuilder[CreditcardFields, CreditcardRow]
   def update(row: CreditcardRow): ConnectionIO[Option[CreditcardRow]]
   def upsert(unsaved: CreditcardRow): ConnectionIO[CreditcardRow]

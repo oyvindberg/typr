@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title
+package adventureworks.public.title
 
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -28,7 +27,7 @@ class TitleRepoImpl extends TitleRepo {
   override def deleteByIds(codes: Array[TitleId])(implicit c: Connection): Int = {
     SQL"""delete
           from "public"."title"
-          where "code" = ANY(${codes})
+          where "code" = ANY(${ParameterValue(codes, null, TitleId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -60,7 +59,7 @@ class TitleRepoImpl extends TitleRepo {
   override def selectByIds(codes: Array[TitleId])(implicit c: Connection): List[TitleRow] = {
     SQL"""select "code"
           from "public"."title"
-          where "code" = ANY(${codes})
+          where "code" = ANY(${ParameterValue(codes, null, TitleId.arrayToStatement)})
        """.as(TitleRow.rowParser(1).*)
     
   }

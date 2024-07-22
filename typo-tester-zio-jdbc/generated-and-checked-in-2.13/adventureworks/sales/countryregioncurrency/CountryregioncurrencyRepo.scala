@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder

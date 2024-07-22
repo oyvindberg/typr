@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesreason
+package adventureworks.sales.salesreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class SalesreasonRepoImpl extends SalesreasonRepo {
     sql"""delete from "sales"."salesreason" where "salesreasonid" = ${fromWrite(salesreasonid)(new Write.Single(SalesreasonId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(salesreasonids: Array[SalesreasonId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."salesreason" where "salesreasonid" = ANY(${salesreasonids})""".update.run
+    sql"""delete from "sales"."salesreason" where "salesreasonid" = ANY(${fromWrite(salesreasonids)(new Write.Single(SalesreasonId.arrayPut))})""".update.run
   }
   override def insert(unsaved: SalesreasonRow): ConnectionIO[SalesreasonRow] = {
     sql"""insert into "sales"."salesreason"("salesreasonid", "name", "reasontype", "modifieddate")
@@ -85,7 +83,7 @@ class SalesreasonRepoImpl extends SalesreasonRepo {
     sql"""select "salesreasonid", "name", "reasontype", "modifieddate"::text from "sales"."salesreason" where "salesreasonid" = ${fromWrite(salesreasonid)(new Write.Single(SalesreasonId.put))}""".query(SalesreasonRow.read).option
   }
   override def selectByIds(salesreasonids: Array[SalesreasonId]): Stream[ConnectionIO, SalesreasonRow] = {
-    sql"""select "salesreasonid", "name", "reasontype", "modifieddate"::text from "sales"."salesreason" where "salesreasonid" = ANY(${salesreasonids})""".query(SalesreasonRow.read).stream
+    sql"""select "salesreasonid", "name", "reasontype", "modifieddate"::text from "sales"."salesreason" where "salesreasonid" = ANY(${fromWrite(salesreasonids)(new Write.Single(SalesreasonId.arrayPut))})""".query(SalesreasonRow.read).stream
   }
   override def selectByIdsTracked(salesreasonids: Array[SalesreasonId]): ConnectionIO[Map[SalesreasonId, SalesreasonRow]] = {
     selectByIds(salesreasonids).compile.toList.map { rows =>

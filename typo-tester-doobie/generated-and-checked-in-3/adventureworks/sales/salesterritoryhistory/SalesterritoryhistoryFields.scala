@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritoryhistory
+package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -15,12 +13,14 @@ import adventureworks.sales.salesperson.SalespersonRow
 import adventureworks.sales.salesterritory.SalesterritoryFields
 import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.sales.salesterritory.SalesterritoryRow
+import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -43,14 +43,14 @@ trait SalesterritoryhistoryFields {
   def compositeIdIs(compositeId: SalesterritoryhistoryId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(startdate.isEqual(compositeId.startdate)).and(territoryid.isEqual(compositeId.territoryid))
   def compositeIdIn(compositeIds: Array[SalesterritoryhistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(startdate)(_.startdate), TuplePart(territoryid)(_.territoryid))
+    new CompositeIn(compositeIds)(TuplePart[SalesterritoryhistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](using BusinessentityId.arrayPut, Write.fromPut(using BusinessentityId.arrayPut)), implicitly), TuplePart[SalesterritoryhistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDateTime], Required](using TypoLocalDateTime.arrayPut, Write.fromPut(using TypoLocalDateTime.arrayPut)), implicitly), TuplePart[SalesterritoryhistoryId](territoryid)(_.territoryid)(using as[Array[SalesterritoryId], Required](using SalesterritoryId.arrayPut, Write.fromPut(using SalesterritoryId.arrayPut)), implicitly))
   
 }
 
 object SalesterritoryhistoryFields {
   lazy val structure: Relation[SalesterritoryhistoryFields, SalesterritoryhistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SalesterritoryhistoryFields, SalesterritoryhistoryRow] {
   

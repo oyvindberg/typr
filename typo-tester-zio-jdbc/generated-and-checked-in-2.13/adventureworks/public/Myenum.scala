@@ -3,9 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
+package adventureworks.public
 
+import adventureworks.Text
 import java.sql.ResultSet
 import java.sql.Types
 import typo.dsl.PGType

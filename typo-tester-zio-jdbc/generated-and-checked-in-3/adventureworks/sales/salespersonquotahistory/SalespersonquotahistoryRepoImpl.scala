@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salespersonquotahistory
+package adventureworks.sales.salespersonquotahistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -37,7 +36,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     sql"""delete
           from "sales"."salespersonquotahistory"
           where ("businessentityid", "quotadate")
-          in (select unnest(${businessentityid}), unnest(${quotadate}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(quotadate)(using TypoLocalDateTime.arraySetter)}))
        """.delete
     
   }
@@ -96,7 +95,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     sql"""select "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
           from "sales"."salespersonquotahistory"
           where ("businessentityid", "quotadate")
-          in (select unnest(${businessentityid}), unnest(${quotadate}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(quotadate)(using TypoLocalDateTime.arraySetter)}))
        """.query(using SalespersonquotahistoryRow.jdbcDecoder).selectStream()
     
   }

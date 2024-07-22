@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productdescription
+package adventureworks.production.productdescription
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class ProductdescriptionRepoImpl extends ProductdescriptionRepo {
     sql"""delete from "production"."productdescription" where "productdescriptionid" = ${fromWrite(productdescriptionid)(using new Write.Single(ProductdescriptionId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(productdescriptionids: Array[ProductdescriptionId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."productdescription" where "productdescriptionid" = ANY(${productdescriptionids})""".update.run
+    sql"""delete from "production"."productdescription" where "productdescriptionid" = ANY(${fromWrite(productdescriptionids)(using new Write.Single(ProductdescriptionId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ProductdescriptionRow): ConnectionIO[ProductdescriptionRow] = {
     sql"""insert into "production"."productdescription"("productdescriptionid", "description", "rowguid", "modifieddate")
@@ -89,7 +87,7 @@ class ProductdescriptionRepoImpl extends ProductdescriptionRepo {
     sql"""select "productdescriptionid", "description", "rowguid", "modifieddate"::text from "production"."productdescription" where "productdescriptionid" = ${fromWrite(productdescriptionid)(using new Write.Single(ProductdescriptionId.put))}""".query(using ProductdescriptionRow.read).option
   }
   override def selectByIds(productdescriptionids: Array[ProductdescriptionId]): Stream[ConnectionIO, ProductdescriptionRow] = {
-    sql"""select "productdescriptionid", "description", "rowguid", "modifieddate"::text from "production"."productdescription" where "productdescriptionid" = ANY(${productdescriptionids})""".query(using ProductdescriptionRow.read).stream
+    sql"""select "productdescriptionid", "description", "rowguid", "modifieddate"::text from "production"."productdescription" where "productdescriptionid" = ANY(${fromWrite(productdescriptionids)(using new Write.Single(ProductdescriptionId.arrayPut))})""".query(using ProductdescriptionRow.read).stream
   }
   override def selectByIdsTracked(productdescriptionids: Array[ProductdescriptionId]): ConnectionIO[Map[ProductdescriptionId, ProductdescriptionRow]] = {
     selectByIds(productdescriptionids).compile.toList.map { rows =>

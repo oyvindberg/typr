@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeedepartmenthistory
+package adventureworks.humanresources.employeedepartmenthistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDate
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -43,7 +42,7 @@ class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
     SQL"""delete
           from "humanresources"."employeedepartmenthistory"
           where ("businessentityid", "startdate", "departmentid", "shiftid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${departmentid}), unnest(${shiftid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDate.arrayToStatement)}), unnest(${ParameterValue(departmentid, null, DepartmentId.arrayToStatement)}), unnest(${ParameterValue(shiftid, null, ShiftId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -112,7 +111,7 @@ class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
     SQL"""select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
           from "humanresources"."employeedepartmenthistory"
           where ("businessentityid", "startdate", "departmentid", "shiftid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${departmentid}), unnest(${shiftid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDate.arrayToStatement)}), unnest(${ParameterValue(departmentid, null, DepartmentId.arrayToStatement)}), unnest(${ParameterValue(shiftid, null, ShiftId.arrayToStatement)}))
        """.as(EmployeedepartmenthistoryRow.rowParser(1).*)
     
   }

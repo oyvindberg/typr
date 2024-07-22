@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package creditcard
+package adventureworks.sales.creditcard
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -28,7 +26,7 @@ trait CreditcardFields {
 object CreditcardFields {
   lazy val structure: Relation[CreditcardFields, CreditcardRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[CreditcardFields, CreditcardRow] {
   

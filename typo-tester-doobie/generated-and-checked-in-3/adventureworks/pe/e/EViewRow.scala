@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package e
+package adventureworks.pe.e
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -17,17 +15,17 @@ import io.circe.Encoder
 
 /** View: pe.e */
 case class EViewRow(
-  /** Points to [[person.emailaddress.EmailaddressRow.emailaddressid]] */
+  /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddressid]] */
   id: Int,
-  /** Points to [[person.emailaddress.EmailaddressRow.businessentityid]] */
+  /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.emailaddress.EmailaddressRow.emailaddressid]] */
+  /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddressid]] */
   emailaddressid: Int,
-  /** Points to [[person.emailaddress.EmailaddressRow.emailaddress]] */
+  /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
-  /** Points to [[person.emailaddress.EmailaddressRow.rowguid]] */
+  /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.emailaddress.EmailaddressRow.modifieddate]] */
+  /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

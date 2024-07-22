@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package pa
+package adventureworks.pe.pa
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -24,17 +22,17 @@ import scala.util.Try
 
 /** View: pe.pa */
 case class PaViewRow(
-  /** Points to [[person.password.PasswordRow.businessentityid]] */
+  /** Points to [[adventureworks.person.password.PasswordRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[person.password.PasswordRow.businessentityid]] */
+  /** Points to [[adventureworks.person.password.PasswordRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.password.PasswordRow.passwordhash]] */
+  /** Points to [[adventureworks.person.password.PasswordRow.passwordhash]] */
   passwordhash: /* max 128 chars */ String,
-  /** Points to [[person.password.PasswordRow.passwordsalt]] */
+  /** Points to [[adventureworks.person.password.PasswordRow.passwordsalt]] */
   passwordsalt: /* max 10 chars */ String,
-  /** Points to [[person.password.PasswordRow.rowguid]] */
+  /** Points to [[adventureworks.person.password.PasswordRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.password.PasswordRow.modifieddate]] */
+  /** Points to [[adventureworks.person.password.PasswordRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

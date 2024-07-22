@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package transactionhistory
+package adventureworks.production.transactionhistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
@@ -36,7 +34,7 @@ trait TransactionhistoryFields {
 object TransactionhistoryFields {
   lazy val structure: Relation[TransactionhistoryFields, TransactionhistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TransactionhistoryFields, TransactionhistoryRow] {
   

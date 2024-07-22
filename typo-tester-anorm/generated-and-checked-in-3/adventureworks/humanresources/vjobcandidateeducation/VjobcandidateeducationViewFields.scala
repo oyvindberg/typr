@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vjobcandidateeducation
+package adventureworks.humanresources.vjobcandidateeducation
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
@@ -34,7 +32,7 @@ trait VjobcandidateeducationViewFields {
 object VjobcandidateeducationViewFields {
   lazy val structure: Relation[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] {
   

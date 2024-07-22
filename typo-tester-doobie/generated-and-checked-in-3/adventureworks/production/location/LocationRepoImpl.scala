@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package location
+package adventureworks.production.location
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class LocationRepoImpl extends LocationRepo {
     sql"""delete from "production"."location" where "locationid" = ${fromWrite(locationid)(using new Write.Single(LocationId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(locationids: Array[LocationId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."location" where "locationid" = ANY(${locationids})""".update.run
+    sql"""delete from "production"."location" where "locationid" = ANY(${fromWrite(locationids)(using new Write.Single(LocationId.arrayPut))})""".update.run
   }
   override def insert(unsaved: LocationRow): ConnectionIO[LocationRow] = {
     sql"""insert into "production"."location"("locationid", "name", "costrate", "availability", "modifieddate")
@@ -93,7 +91,7 @@ class LocationRepoImpl extends LocationRepo {
     sql"""select "locationid", "name", "costrate", "availability", "modifieddate"::text from "production"."location" where "locationid" = ${fromWrite(locationid)(using new Write.Single(LocationId.put))}""".query(using LocationRow.read).option
   }
   override def selectByIds(locationids: Array[LocationId]): Stream[ConnectionIO, LocationRow] = {
-    sql"""select "locationid", "name", "costrate", "availability", "modifieddate"::text from "production"."location" where "locationid" = ANY(${locationids})""".query(using LocationRow.read).stream
+    sql"""select "locationid", "name", "costrate", "availability", "modifieddate"::text from "production"."location" where "locationid" = ANY(${fromWrite(locationids)(using new Write.Single(LocationId.arrayPut))})""".query(using LocationRow.read).stream
   }
   override def selectByIdsTracked(locationids: Array[LocationId]): ConnectionIO[Map[LocationId, LocationRow]] = {
     selectByIds(locationids).compile.toList.map { rows =>

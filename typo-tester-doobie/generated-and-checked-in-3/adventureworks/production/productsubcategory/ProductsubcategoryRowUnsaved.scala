@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productsubcategory
+package adventureworks.production.productsubcategory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -19,7 +17,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.productsubcategory` which has not been persisted yet */
 case class ProductsubcategoryRowUnsaved(
   /** Product category identification number. Foreign key to ProductCategory.ProductCategoryID.
-      Points to [[productcategory.ProductcategoryRow.productcategoryid]] */
+      Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]] */
   productcategoryid: ProductcategoryId,
   /** Subcategory description. */
   name: Name,

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employee
+package adventureworks.humanresources.employee
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDate
@@ -14,6 +12,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -35,7 +34,7 @@ class EmployeeRepoImpl extends EmployeeRepo {
     sql"""delete from "humanresources"."employee" where "businessentityid" = ${Segment.paramSegment(businessentityid)(using BusinessentityId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "humanresources"."employee" where "businessentityid" = ANY(${businessentityids})""".delete
+    sql"""delete from "humanresources"."employee" where "businessentityid" = ANY(${Segment.paramSegment(businessentityids)(using BusinessentityId.arraySetter)})""".delete
   }
   override def insert(unsaved: EmployeeRow): ZIO[ZConnection, Throwable, EmployeeRow] = {
     sql"""insert into "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")

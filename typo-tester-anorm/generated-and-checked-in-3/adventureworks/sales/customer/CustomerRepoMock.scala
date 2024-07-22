@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package customer
+package adventureworks.sales.customer
 
 import java.sql.Connection
 import scala.annotation.nowarn

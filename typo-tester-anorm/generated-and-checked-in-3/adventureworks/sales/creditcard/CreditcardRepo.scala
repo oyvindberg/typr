@@ -3,12 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package creditcard
+package adventureworks.sales.creditcard
 
 import adventureworks.userdefined.CustomCreditcardId
-import anorm.ToStatement
 import java.sql.Connection
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
@@ -17,7 +14,7 @@ import typo.dsl.UpdateBuilder
 trait CreditcardRepo {
   def delete: DeleteBuilder[CreditcardFields, CreditcardRow]
   def deleteById(creditcardid: /* user-picked */ CustomCreditcardId)(using c: Connection): Boolean
-  def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Int
+  def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection): Int
   def insert(unsaved: CreditcardRow)(using c: Connection): CreditcardRow
   def insert(unsaved: CreditcardRowUnsaved)(using c: Connection): CreditcardRow
   def insertStreaming(unsaved: Iterator[CreditcardRow], batchSize: Int = 10000)(using c: Connection): Long
@@ -26,8 +23,8 @@ trait CreditcardRepo {
   def select: SelectBuilder[CreditcardFields, CreditcardRow]
   def selectAll(using c: Connection): List[CreditcardRow]
   def selectById(creditcardid: /* user-picked */ CustomCreditcardId)(using c: Connection): Option[CreditcardRow]
-  def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): List[CreditcardRow]
-  def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Map[/* user-picked */ CustomCreditcardId, CreditcardRow]
+  def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection): List[CreditcardRow]
+  def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection): Map[/* user-picked */ CustomCreditcardId, CreditcardRow]
   def update: UpdateBuilder[CreditcardFields, CreditcardRow]
   def update(row: CreditcardRow)(using c: Connection): Option[CreditcardRow]
   def upsert(unsaved: CreditcardRow)(using c: Connection): CreditcardRow

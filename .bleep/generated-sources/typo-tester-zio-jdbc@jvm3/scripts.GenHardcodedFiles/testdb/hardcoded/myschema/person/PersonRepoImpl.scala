@@ -3,14 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package person
+package testdb.hardcoded.myschema.person
 
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.myschema.Number
+import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
 import testdb.hardcoded.myschema.marital_status.MaritalStatusId
+import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +33,7 @@ class PersonRepoImpl extends PersonRepo {
     sql"""delete from "myschema"."person" where "id" = ${Segment.paramSegment(id)(using PersonId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(ids: Array[PersonId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "myschema"."person" where "id" = ANY(${ids})""".delete
+    sql"""delete from "myschema"."person" where "id" = ANY(${Segment.paramSegment(ids)(using PersonId.arraySetter)})""".delete
   }
   override def insert(unsaved: PersonRow): ZIO[ZConnection, Throwable, PersonRow] = {
     sql"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")

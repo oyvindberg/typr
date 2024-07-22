@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package phonenumbertype
+package adventureworks.person.phonenumbertype
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -24,7 +22,7 @@ trait PhonenumbertypeFields {
 object PhonenumbertypeFields {
   lazy val structure: Relation[PhonenumbertypeFields, PhonenumbertypeRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PhonenumbertypeFields, PhonenumbertypeRow] {
   

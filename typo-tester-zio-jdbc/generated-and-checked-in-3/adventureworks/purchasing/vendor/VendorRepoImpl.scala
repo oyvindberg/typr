@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package vendor
+package adventureworks.purchasing.vendor
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -14,6 +12,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.AccountNumber
 import adventureworks.public.Flag
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -35,7 +34,7 @@ class VendorRepoImpl extends VendorRepo {
     sql"""delete from "purchasing"."vendor" where "businessentityid" = ${Segment.paramSegment(businessentityid)(using BusinessentityId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "purchasing"."vendor" where "businessentityid" = ANY(${businessentityids})""".delete
+    sql"""delete from "purchasing"."vendor" where "businessentityid" = ANY(${Segment.paramSegment(businessentityids)(using BusinessentityId.arraySetter)})""".delete
   }
   override def insert(unsaved: VendorRow): ZIO[ZConnection, Throwable, VendorRow] = {
     sql"""insert into "purchasing"."vendor"("businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")

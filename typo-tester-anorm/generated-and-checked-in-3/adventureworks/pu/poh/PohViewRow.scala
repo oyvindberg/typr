@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pu
-package poh
+package adventureworks.pu.poh
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -26,31 +24,31 @@ import scala.util.Try
 
 /** View: pu.poh */
 case class PohViewRow(
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
   id: PurchaseorderheaderId,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
   purchaseorderid: PurchaseorderheaderId,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.revisionnumber]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.revisionnumber]] */
   revisionnumber: TypoShort,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.status]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.status]] */
   status: TypoShort,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.employeeid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.employeeid]] */
   employeeid: BusinessentityId,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.vendorid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.vendorid]] */
   vendorid: BusinessentityId,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.shipmethodid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.shipmethodid]] */
   shipmethodid: ShipmethodId,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.orderdate]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.orderdate]] */
   orderdate: TypoLocalDateTime,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.shipdate]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.shipdate]] */
   shipdate: Option[TypoLocalDateTime],
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.subtotal]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.subtotal]] */
   subtotal: BigDecimal,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.taxamt]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.taxamt]] */
   taxamt: BigDecimal,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.freight]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.freight]] */
   freight: BigDecimal,
-  /** Points to [[purchasing.purchaseorderheader.PurchaseorderheaderRow.modifieddate]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

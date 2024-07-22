@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productreview
+package adventureworks.production.productreview
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -19,7 +18,7 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `production.productreview` which has not been persisted yet */
 case class ProductreviewRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Name of the reviewer. */
   reviewername: Name,

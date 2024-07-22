@@ -8,7 +8,6 @@ import typo.internal.sqlfiles.readSqlFileDirectories
 import typo.internal.{FileSync, generate}
 
 import java.nio.file.Path
-import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
@@ -40,7 +39,6 @@ object GeneratedAdventureWorks {
           ),
           Duration.Inf
         )
-        val oldFilesRef = new AtomicReference(Map.empty[RelPath, sc.Code])
         val variants = List(
           (DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "2.13", Dialect.Scala2XSource3),
           (DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "3", Dialect.Scala3),
@@ -75,14 +73,8 @@ object GeneratedAdventureWorks {
             val newFiles: Generated =
               generate(options, metadb, ProjectGraph(name = "", targetSources, None, selector, newSqlScripts, Nil), relationNameToOpenEnum).head
 
-            val knownUnchanged: Set[RelPath] = {
-              val oldFiles = oldFilesRef.get()
-              newFiles.files.iterator.collect { case (relPath, contents) if oldFiles.get(relPath).contains(contents) => relPath }.toSet
-            }
-            oldFilesRef.set(newFiles.files)
-
             newFiles
-              .overwriteFolder(dialect, softWrite = FileSync.SoftWrite.Yes(knownUnchanged))
+              .overwriteFolder(dialect, softWrite = FileSync.SoftWrite.Yes(Set.empty))
               .filter { case (_, synced) => synced != FileSync.Synced.Unchanged }
               .foreach { case (path, synced) => logger.withContext("path", path).warn(synced.toString) }
 

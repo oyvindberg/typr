@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderheader
+package adventureworks.purchasing.purchaseorderheader
 
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder

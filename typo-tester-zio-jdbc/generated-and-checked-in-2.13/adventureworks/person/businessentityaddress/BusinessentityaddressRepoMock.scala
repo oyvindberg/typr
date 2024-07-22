@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentityaddress
+package adventureworks.person.businessentityaddress
 
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder

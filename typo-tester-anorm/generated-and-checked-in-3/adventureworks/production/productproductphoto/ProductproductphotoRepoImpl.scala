@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productproductphoto
+package adventureworks.production.productproductphoto
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productphoto.ProductphotoId
 import adventureworks.public.Flag
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -39,7 +38,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     SQL"""delete
           from "production"."productproductphoto"
           where ("productid", "productphotoid")
-          in (select unnest(${productid}), unnest(${productphotoid}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(productphotoid, null, ProductphotoId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -107,7 +106,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     SQL"""select "productid", "productphotoid", "primary", "modifieddate"::text
           from "production"."productproductphoto"
           where ("productid", "productphotoid")
-          in (select unnest(${productid}), unnest(${productphotoid}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(productphotoid, null, ProductphotoId.arrayToStatement)}))
        """.as(ProductproductphotoRow.rowParser(1).*)
     
   }

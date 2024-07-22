@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentity
+package adventureworks.person.businessentity
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class BusinessentityRepoImpl extends BusinessentityRepo {
     sql"""delete from "person"."businessentity" where "businessentityid" = ${Segment.paramSegment(businessentityid)(BusinessentityId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "person"."businessentity" where "businessentityid" = ANY(${businessentityids})""".delete
+    sql"""delete from "person"."businessentity" where "businessentityid" = ANY(${Segment.paramSegment(businessentityids)(BusinessentityId.arraySetter)})""".delete
   }
   override def insert(unsaved: BusinessentityRow): ZIO[ZConnection, Throwable, BusinessentityRow] = {
     sql"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")

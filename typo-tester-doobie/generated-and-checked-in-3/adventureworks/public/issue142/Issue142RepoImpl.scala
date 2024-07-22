@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142
+package adventureworks.public.issue142
 
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
@@ -28,7 +26,7 @@ class Issue142RepoImpl extends Issue142Repo {
     sql"""delete from "public"."issue142" where "tabellkode" = ${fromWrite(tabellkode)(using new Write.Single(Issue142Id.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(tabellkodes: Array[Issue142Id]): ConnectionIO[Int] = {
-    sql"""delete from "public"."issue142" where "tabellkode" = ANY(${tabellkodes})""".update.run
+    sql"""delete from "public"."issue142" where "tabellkode" = ANY(${fromWrite(tabellkodes)(using new Write.Single(Issue142Id.arrayPut))})""".update.run
   }
   override def insert(unsaved: Issue142Row): ConnectionIO[Issue142Row] = {
     sql"""insert into "public"."issue142"("tabellkode")
@@ -49,7 +47,7 @@ class Issue142RepoImpl extends Issue142Repo {
     sql"""select "tabellkode" from "public"."issue142" where "tabellkode" = ${fromWrite(tabellkode)(using new Write.Single(Issue142Id.put))}""".query(using Issue142Row.read).option
   }
   override def selectByIds(tabellkodes: Array[Issue142Id]): Stream[ConnectionIO, Issue142Row] = {
-    sql"""select "tabellkode" from "public"."issue142" where "tabellkode" = ANY(${tabellkodes})""".query(using Issue142Row.read).stream
+    sql"""select "tabellkode" from "public"."issue142" where "tabellkode" = ANY(${fromWrite(tabellkodes)(using new Write.Single(Issue142Id.arrayPut))})""".query(using Issue142Row.read).stream
   }
   override def selectByIdsTracked(tabellkodes: Array[Issue142Id]): ConnectionIO[Map[Issue142Id, Issue142Row]] = {
     selectByIds(tabellkodes).compile.toList.map { rows =>

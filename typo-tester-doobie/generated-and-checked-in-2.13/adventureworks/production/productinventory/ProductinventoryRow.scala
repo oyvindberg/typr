@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productinventory
+package adventureworks.production.productinventory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -25,10 +23,10 @@ import io.circe.Encoder
     Composite primary key: productid, locationid */
 case class ProductinventoryRow(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Inventory location identification number. Foreign key to Location.LocationID.
-      Points to [[location.LocationRow.locationid]] */
+      Points to [[adventureworks.production.location.LocationRow.locationid]] */
   locationid: LocationId,
   /** Storage compartment within an inventory location. */
   shelf: /* max 10 chars */ String,

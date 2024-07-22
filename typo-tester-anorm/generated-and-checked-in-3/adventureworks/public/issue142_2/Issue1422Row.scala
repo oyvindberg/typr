@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142_2
+package adventureworks.public.issue142_2
 
+import adventureworks.Text
 import adventureworks.public.issue142.Issue142Id
 import anorm.RowParser
 import anorm.Success
@@ -21,7 +20,7 @@ import scala.util.Try
 /** Table: public.issue142_2
     Primary key: tabellkode */
 case class Issue1422Row(
-  /** Points to [[issue142.Issue142Row.tabellkode]] */
+  /** Points to [[adventureworks.public.issue142.Issue142Row.tabellkode]] */
   tabellkode: Issue142Id
 ){
    val id = tabellkode

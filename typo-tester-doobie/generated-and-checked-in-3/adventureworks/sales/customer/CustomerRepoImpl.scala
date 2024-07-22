@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package customer
+package adventureworks.sales.customer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -34,7 +32,7 @@ class CustomerRepoImpl extends CustomerRepo {
     sql"""delete from "sales"."customer" where "customerid" = ${fromWrite(customerid)(using new Write.Single(CustomerId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(customerids: Array[CustomerId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."customer" where "customerid" = ANY(${customerids})""".update.run
+    sql"""delete from "sales"."customer" where "customerid" = ANY(${fromWrite(customerids)(using new Write.Single(CustomerId.arrayPut))})""".update.run
   }
   override def insert(unsaved: CustomerRow): ConnectionIO[CustomerRow] = {
     sql"""insert into "sales"."customer"("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")
@@ -92,7 +90,7 @@ class CustomerRepoImpl extends CustomerRepo {
     sql"""select "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text from "sales"."customer" where "customerid" = ${fromWrite(customerid)(using new Write.Single(CustomerId.put))}""".query(using CustomerRow.read).option
   }
   override def selectByIds(customerids: Array[CustomerId]): Stream[ConnectionIO, CustomerRow] = {
-    sql"""select "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text from "sales"."customer" where "customerid" = ANY(${customerids})""".query(using CustomerRow.read).stream
+    sql"""select "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text from "sales"."customer" where "customerid" = ANY(${fromWrite(customerids)(using new Write.Single(CustomerId.arrayPut))})""".query(using CustomerRow.read).stream
   }
   override def selectByIdsTracked(customerids: Array[CustomerId]): ConnectionIO[Map[CustomerId, CustomerRow]] = {
     selectByIds(customerids).compile.toList.map { rows =>

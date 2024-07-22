@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package edh
+package adventureworks.hr.edh
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.customtypes.TypoLocalDateTime
@@ -31,7 +29,7 @@ trait EdhViewFields {
 object EdhViewFields {
   lazy val structure: Relation[EdhViewFields, EdhViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[EdhViewFields, EdhViewRow] {
   

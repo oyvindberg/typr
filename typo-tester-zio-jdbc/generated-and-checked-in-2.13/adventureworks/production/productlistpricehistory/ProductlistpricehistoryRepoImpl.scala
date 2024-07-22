@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productlistpricehistory
+package adventureworks.production.productlistpricehistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -36,7 +35,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     sql"""delete
           from "production"."productlistpricehistory"
           where ("productid", "startdate")
-          in (select unnest(${productid}), unnest(${startdate}))
+          in (select unnest(${Segment.paramSegment(productid)(ProductId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDateTime.arraySetter)}))
        """.delete
     
   }
@@ -92,7 +91,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     sql"""select "productid", "startdate"::text, "enddate"::text, "listprice", "modifieddate"::text
           from "production"."productlistpricehistory"
           where ("productid", "startdate")
-          in (select unnest(${productid}), unnest(${startdate}))
+          in (select unnest(${Segment.paramSegment(productid)(ProductId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDateTime.arraySetter)}))
        """.query(ProductlistpricehistoryRow.jdbcDecoder).selectStream()
     
   }

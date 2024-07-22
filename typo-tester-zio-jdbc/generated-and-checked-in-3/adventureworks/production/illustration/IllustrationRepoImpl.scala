@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package illustration
+package adventureworks.production.illustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class IllustrationRepoImpl extends IllustrationRepo {
     sql"""delete from "production"."illustration" where "illustrationid" = ${Segment.paramSegment(illustrationid)(using IllustrationId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(illustrationids: Array[IllustrationId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."illustration" where "illustrationid" = ANY(${illustrationids})""".delete
+    sql"""delete from "production"."illustration" where "illustrationid" = ANY(${Segment.paramSegment(illustrationids)(using IllustrationId.arraySetter)})""".delete
   }
   override def insert(unsaved: IllustrationRow): ZIO[ZConnection, Throwable, IllustrationRow] = {
     sql"""insert into "production"."illustration"("illustrationid", "diagram", "modifieddate")

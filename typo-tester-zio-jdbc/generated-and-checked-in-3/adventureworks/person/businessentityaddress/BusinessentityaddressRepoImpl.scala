@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentityaddress
+package adventureworks.person.businessentityaddress
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -39,7 +38,7 @@ class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
     sql"""delete
           from "person"."businessentityaddress"
           where ("businessentityid", "addressid", "addresstypeid")
-          in (select unnest(${businessentityid}), unnest(${addressid}), unnest(${addresstypeid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(addressid)(using AddressId.arraySetter)}), unnest(${Segment.paramSegment(addresstypeid)(using AddresstypeId.arraySetter)}))
        """.delete
     
   }
@@ -99,7 +98,7 @@ class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
     sql"""select "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
           from "person"."businessentityaddress"
           where ("businessentityid", "addressid", "addresstypeid")
-          in (select unnest(${businessentityid}), unnest(${addressid}), unnest(${addresstypeid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(addressid)(using AddressId.arraySetter)}), unnest(${Segment.paramSegment(addresstypeid)(using AddresstypeId.arraySetter)}))
        """.query(using BusinessentityaddressRow.jdbcDecoder).selectStream()
     
   }

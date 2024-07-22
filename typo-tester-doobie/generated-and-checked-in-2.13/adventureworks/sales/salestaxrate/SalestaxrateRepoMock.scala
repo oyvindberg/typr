@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salestaxrate
+package adventureworks.sales.salestaxrate
 
 import doobie.free.connection.ConnectionIO
 import doobie.free.connection.delay

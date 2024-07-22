@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vsalespersonsalesbyfiscalyearsdata
+package adventureworks.sales.vsalespersonsalesbyfiscalyearsdata
 
 import typo.dsl.SelectBuilder
 import zio.jdbc.ZConnection

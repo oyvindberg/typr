@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentity
+package adventureworks.person.businessentity
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class BusinessentityRepoImpl extends BusinessentityRepo {
   override def deleteByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): Int = {
     SQL"""delete
           from "person"."businessentity"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -101,7 +100,7 @@ class BusinessentityRepoImpl extends BusinessentityRepo {
   override def selectByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): List[BusinessentityRow] = {
     SQL"""select "businessentityid", "rowguid", "modifieddate"::text
           from "person"."businessentity"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.as(BusinessentityRow.rowParser(1).*)
     
   }

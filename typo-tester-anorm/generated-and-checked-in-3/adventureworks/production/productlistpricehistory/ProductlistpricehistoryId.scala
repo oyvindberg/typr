@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productlistpricehistory
+package adventureworks.production.productlistpricehistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -14,7 +12,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,16 +25,16 @@ object ProductlistpricehistoryId {
   given reads: Reads[ProductlistpricehistoryId] = Reads[ProductlistpricehistoryId](json => JsResult.fromTry(
       Try(
         ProductlistpricehistoryId(
-          productid = json.\("productid").as(summon[Reads[ProductId]]),
-          startdate = json.\("startdate").as(summon[Reads[TypoLocalDateTime]])
+          productid = json.\("productid").as(ProductId.reads),
+          startdate = json.\("startdate").as(TypoLocalDateTime.reads)
         )
       )
     ),
   )
   given writes: OWrites[ProductlistpricehistoryId] = OWrites[ProductlistpricehistoryId](o =>
     new JsObject(ListMap[String, JsValue](
-      "productid" -> summon[Writes[ProductId]].writes(o.productid),
-      "startdate" -> summon[Writes[TypoLocalDateTime]].writes(o.startdate)
+      "productid" -> ProductId.writes.writes(o.productid),
+      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate)
     ))
   )
 }

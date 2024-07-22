@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package users
+package adventureworks.public.users
 
 import adventureworks.customtypes.TypoInstant
 import adventureworks.customtypes.TypoUnknownCitext
@@ -29,7 +27,7 @@ trait UsersFields {
 object UsersFields {
   lazy val structure: Relation[UsersFields, UsersRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[UsersFields, UsersRow] {
   

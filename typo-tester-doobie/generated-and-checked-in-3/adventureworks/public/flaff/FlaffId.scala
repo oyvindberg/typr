@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package flaff
+package adventureworks.public.flaff
 
+import adventureworks.public.ShortText
 import io.circe.Decoder
 import io.circe.Encoder
 

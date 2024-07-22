@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeepayhistory
+package adventureworks.humanresources.employeepayhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -39,7 +38,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     SQL"""delete
           from "humanresources"."employeepayhistory"
           where ("businessentityid", "ratechangedate")
-          in (select unnest(${businessentityid}), unnest(${ratechangedate}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(ratechangedate, null, TypoLocalDateTime.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -105,7 +104,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     SQL"""select "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
           from "humanresources"."employeepayhistory"
           where ("businessentityid", "ratechangedate")
-          in (select unnest(${businessentityid}), unnest(${ratechangedate}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(ratechangedate, null, TypoLocalDateTime.arrayToStatement)}))
        """.as(EmployeepayhistoryRow.rowParser(1).*)
     
   }

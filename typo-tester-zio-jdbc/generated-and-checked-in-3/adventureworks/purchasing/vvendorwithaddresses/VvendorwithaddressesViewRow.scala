@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package vvendorwithaddresses
+package adventureworks.purchasing.vvendorwithaddresses
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
@@ -18,23 +16,23 @@ import zio.json.internal.Write
 
 /** View: purchasing.vvendorwithaddresses */
 case class VvendorwithaddressesViewRow(
-  /** Points to [[vendor.VendorRow.businessentityid]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[vendor.VendorRow.name]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.name]] */
   name: Name,
-  /** Points to [[person.addresstype.AddresstypeRow.name]] */
+  /** Points to [[adventureworks.person.addresstype.AddresstypeRow.name]] */
   addresstype: Name,
-  /** Points to [[person.address.AddressRow.addressline1]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
   addressline1: /* max 60 chars */ String,
-  /** Points to [[person.address.AddressRow.addressline2]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
   addressline2: Option[/* max 60 chars */ String],
-  /** Points to [[person.address.AddressRow.city]] */
+  /** Points to [[adventureworks.person.address.AddressRow.city]] */
   city: /* max 30 chars */ String,
-  /** Points to [[person.stateprovince.StateprovinceRow.name]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   stateprovincename: Name,
-  /** Points to [[person.address.AddressRow.postalcode]] */
+  /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
   postalcode: /* max 15 chars */ String,
-  /** Points to [[person.countryregion.CountryregionRow.name]] */
+  /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name
 )
 

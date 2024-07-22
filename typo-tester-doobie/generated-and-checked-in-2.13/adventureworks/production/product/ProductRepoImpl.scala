@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package product
+package adventureworks.production.product
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -39,7 +37,7 @@ class ProductRepoImpl extends ProductRepo {
     sql"""delete from "production"."product" where "productid" = ${fromWrite(productid)(new Write.Single(ProductId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(productids: Array[ProductId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."product" where "productid" = ANY(${productids})""".update.run
+    sql"""delete from "production"."product" where "productid" = ANY(${fromWrite(productids)(new Write.Single(ProductId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ProductRow): ConnectionIO[ProductRow] = {
     sql"""insert into "production"."product"("productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "rowguid", "modifieddate")
@@ -122,7 +120,7 @@ class ProductRepoImpl extends ProductRepo {
     sql"""select "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text from "production"."product" where "productid" = ${fromWrite(productid)(new Write.Single(ProductId.put))}""".query(ProductRow.read).option
   }
   override def selectByIds(productids: Array[ProductId]): Stream[ConnectionIO, ProductRow] = {
-    sql"""select "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text from "production"."product" where "productid" = ANY(${productids})""".query(ProductRow.read).stream
+    sql"""select "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text from "production"."product" where "productid" = ANY(${fromWrite(productids)(new Write.Single(ProductId.arrayPut))})""".query(ProductRow.read).stream
   }
   override def selectByIdsTracked(productids: Array[ProductId]): ConnectionIO[Map[ProductId, ProductRow]] = {
     selectByIds(productids).compile.toList.map { rows =>

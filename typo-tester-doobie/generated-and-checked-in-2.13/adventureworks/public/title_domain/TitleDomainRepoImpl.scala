@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title_domain
+package adventureworks.public.title_domain
 
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
@@ -28,7 +26,7 @@ class TitleDomainRepoImpl extends TitleDomainRepo {
     sql"""delete from "public"."title_domain" where "code" = ${fromWrite(code)(new Write.Single(TitleDomainId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(codes: Array[TitleDomainId]): ConnectionIO[Int] = {
-    sql"""delete from "public"."title_domain" where "code" = ANY(${codes})""".update.run
+    sql"""delete from "public"."title_domain" where "code" = ANY(${fromWrite(codes)(new Write.Single(TitleDomainId.arrayPut))})""".update.run
   }
   override def insert(unsaved: TitleDomainRow): ConnectionIO[TitleDomainRow] = {
     sql"""insert into "public"."title_domain"("code")
@@ -49,7 +47,7 @@ class TitleDomainRepoImpl extends TitleDomainRepo {
     sql"""select "code" from "public"."title_domain" where "code" = ${fromWrite(code)(new Write.Single(TitleDomainId.put))}""".query(TitleDomainRow.read).option
   }
   override def selectByIds(codes: Array[TitleDomainId]): Stream[ConnectionIO, TitleDomainRow] = {
-    sql"""select "code" from "public"."title_domain" where "code" = ANY(${codes})""".query(TitleDomainRow.read).stream
+    sql"""select "code" from "public"."title_domain" where "code" = ANY(${fromWrite(codes)(new Write.Single(TitleDomainId.arrayPut))})""".query(TitleDomainRow.read).stream
   }
   override def selectByIdsTracked(codes: Array[TitleDomainId]): ConnectionIO[Map[TitleDomainId, TitleDomainRow]] = {
     selectByIds(codes).compile.toList.map { rows =>

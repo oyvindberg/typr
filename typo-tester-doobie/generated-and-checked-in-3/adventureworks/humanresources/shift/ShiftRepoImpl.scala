@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package shift
+package adventureworks.humanresources.shift
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class ShiftRepoImpl extends ShiftRepo {
     sql"""delete from "humanresources"."shift" where "shiftid" = ${fromWrite(shiftid)(using new Write.Single(ShiftId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(shiftids: Array[ShiftId]): ConnectionIO[Int] = {
-    sql"""delete from "humanresources"."shift" where "shiftid" = ANY(${shiftids})""".update.run
+    sql"""delete from "humanresources"."shift" where "shiftid" = ANY(${fromWrite(shiftids)(using new Write.Single(ShiftId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ShiftRow): ConnectionIO[ShiftRow] = {
     sql"""insert into "humanresources"."shift"("shiftid", "name", "starttime", "endtime", "modifieddate")
@@ -87,7 +85,7 @@ class ShiftRepoImpl extends ShiftRepo {
     sql"""select "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text from "humanresources"."shift" where "shiftid" = ${fromWrite(shiftid)(using new Write.Single(ShiftId.put))}""".query(using ShiftRow.read).option
   }
   override def selectByIds(shiftids: Array[ShiftId]): Stream[ConnectionIO, ShiftRow] = {
-    sql"""select "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text from "humanresources"."shift" where "shiftid" = ANY(${shiftids})""".query(using ShiftRow.read).stream
+    sql"""select "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text from "humanresources"."shift" where "shiftid" = ANY(${fromWrite(shiftids)(using new Write.Single(ShiftId.arrayPut))})""".query(using ShiftRow.read).stream
   }
   override def selectByIdsTracked(shiftids: Array[ShiftId]): ConnectionIO[Map[ShiftId, ShiftRow]] = {
     selectByIds(shiftids).compile.toList.map { rows =>

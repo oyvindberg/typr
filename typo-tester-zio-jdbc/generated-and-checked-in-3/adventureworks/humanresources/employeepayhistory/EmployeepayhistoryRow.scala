@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeepayhistory
+package adventureworks.humanresources.employeepayhistory
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -23,7 +22,7 @@ import zio.json.internal.Write
     Composite primary key: businessentityid, ratechangedate */
 case class EmployeepayhistoryRow(
   /** Employee identification number. Foreign key to Employee.BusinessEntityID.
-      Points to [[employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Date the change in pay is effective */
   ratechangedate: TypoLocalDateTime,

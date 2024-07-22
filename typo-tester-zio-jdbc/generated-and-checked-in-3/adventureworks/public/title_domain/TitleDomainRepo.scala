@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title_domain
+package adventureworks.public.title_domain
 
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package st
+package adventureworks.sa.st
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -26,27 +24,27 @@ import scala.util.Try
 
 /** View: sa.st */
 case class StViewRow(
-  /** Points to [[sales.salesterritory.SalesterritoryRow.territoryid]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   id: SalesterritoryId,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.territoryid]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   territoryid: SalesterritoryId,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.name]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   name: Name,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.countryregioncode]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.countryregioncode]] */
   countryregioncode: CountryregionId,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.group]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.group]] */
   group: /* max 50 chars */ String,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.salesytd]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.salesytd]] */
   salesytd: BigDecimal,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.saleslastyear]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.saleslastyear]] */
   saleslastyear: BigDecimal,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.costytd]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.costytd]] */
   costytd: BigDecimal,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.costlastyear]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.costlastyear]] */
   costlastyear: BigDecimal,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.rowguid]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.salesterritory.SalesterritoryRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

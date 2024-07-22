@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package phonenumbertype
+package adventureworks.person.phonenumbertype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class PhonenumbertypeRepoImpl extends PhonenumbertypeRepo {
   override def deleteByIds(phonenumbertypeids: Array[PhonenumbertypeId])(implicit c: Connection): Int = {
     SQL"""delete
           from "person"."phonenumbertype"
-          where "phonenumbertypeid" = ANY(${phonenumbertypeids})
+          where "phonenumbertypeid" = ANY(${ParameterValue(phonenumbertypeids, null, PhonenumbertypeId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -98,7 +97,7 @@ class PhonenumbertypeRepoImpl extends PhonenumbertypeRepo {
   override def selectByIds(phonenumbertypeids: Array[PhonenumbertypeId])(implicit c: Connection): List[PhonenumbertypeRow] = {
     SQL"""select "phonenumbertypeid", "name", "modifieddate"::text
           from "person"."phonenumbertype"
-          where "phonenumbertypeid" = ANY(${phonenumbertypeids})
+          where "phonenumbertypeid" = ANY(${ParameterValue(phonenumbertypeids, null, PhonenumbertypeId.arrayToStatement)})
        """.as(PhonenumbertypeRow.rowParser(1).*)
     
   }

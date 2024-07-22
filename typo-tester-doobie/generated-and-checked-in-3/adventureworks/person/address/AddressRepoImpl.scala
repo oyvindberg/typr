@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package address
+package adventureworks.person.address
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
@@ -35,7 +33,7 @@ class AddressRepoImpl extends AddressRepo {
     sql"""delete from "person"."address" where "addressid" = ${fromWrite(addressid)(using new Write.Single(AddressId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(addressids: Array[AddressId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."address" where "addressid" = ANY(${addressids})""".update.run
+    sql"""delete from "person"."address" where "addressid" = ANY(${fromWrite(addressids)(using new Write.Single(AddressId.arrayPut))})""".update.run
   }
   override def insert(unsaved: AddressRow): ConnectionIO[AddressRow] = {
     sql"""insert into "person"."address"("addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")
@@ -96,7 +94,7 @@ class AddressRepoImpl extends AddressRepo {
     sql"""select "addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate"::text from "person"."address" where "addressid" = ${fromWrite(addressid)(using new Write.Single(AddressId.put))}""".query(using AddressRow.read).option
   }
   override def selectByIds(addressids: Array[AddressId]): Stream[ConnectionIO, AddressRow] = {
-    sql"""select "addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate"::text from "person"."address" where "addressid" = ANY(${addressids})""".query(using AddressRow.read).stream
+    sql"""select "addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate"::text from "person"."address" where "addressid" = ANY(${fromWrite(addressids)(using new Write.Single(AddressId.arrayPut))})""".query(using AddressRow.read).stream
   }
   override def selectByIdsTracked(addressids: Array[AddressId]): ConnectionIO[Map[AddressId, AddressRow]] = {
     selectByIds(addressids).compile.toList.map { rows =>

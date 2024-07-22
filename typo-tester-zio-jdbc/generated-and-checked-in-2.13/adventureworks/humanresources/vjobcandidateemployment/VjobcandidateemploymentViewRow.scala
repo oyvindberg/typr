@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vjobcandidateemployment
+package adventureworks.humanresources.vjobcandidateemployment
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
@@ -18,7 +16,7 @@ import zio.json.internal.Write
 
 /** View: humanresources.vjobcandidateemployment */
 case class VjobcandidateemploymentViewRow(
-  /** Points to [[jobcandidate.JobcandidateRow.jobcandidateid]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
   empStartDate: /* nullability unknown */ Option[TypoLocalDate],
   empEndDate: /* nullability unknown */ Option[TypoLocalDate],

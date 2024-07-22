@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -38,7 +36,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     sql"""delete
           from "sales"."countryregioncurrency"
           where ("countryregioncode", "currencycode")
-          in (select unnest(${countryregioncode}), unnest(${currencycode}))
+          in (select unnest(${fromWrite(countryregioncode)(using new Write.Single(CountryregionId.arrayPut))}), unnest(${fromWrite(currencycode)(using new Write.Single(CurrencyId.arrayPut))}))
        """.update.run
     
   }
@@ -94,7 +92,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     sql"""select "countryregioncode", "currencycode", "modifieddate"::text
           from "sales"."countryregioncurrency"
           where ("countryregioncode", "currencycode")
-          in (select unnest(${countryregioncode}), unnest(${currencycode}))
+          in (select unnest(${fromWrite(countryregioncode)(using new Write.Single(CountryregionId.arrayPut))}), unnest(${fromWrite(currencycode)(using new Write.Single(CurrencyId.arrayPut))}))
        """.query(using CountryregioncurrencyRow.read).stream
     
   }

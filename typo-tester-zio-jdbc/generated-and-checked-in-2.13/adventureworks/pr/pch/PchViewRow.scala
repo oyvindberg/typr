@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pch
+package adventureworks.pr.pch
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -18,17 +16,17 @@ import zio.json.internal.Write
 
 /** View: pr.pch */
 case class PchViewRow(
-  /** Points to [[production.productcosthistory.ProductcosthistoryRow.productid]] */
+  /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.productid]] */
   id: ProductId,
-  /** Points to [[production.productcosthistory.ProductcosthistoryRow.productid]] */
+  /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.productcosthistory.ProductcosthistoryRow.startdate]] */
+  /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
-  /** Points to [[production.productcosthistory.ProductcosthistoryRow.enddate]] */
+  /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.enddate]] */
   enddate: Option[TypoLocalDateTime],
-  /** Points to [[production.productcosthistory.ProductcosthistoryRow.standardcost]] */
+  /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.standardcost]] */
   standardcost: BigDecimal,
-  /** Points to [[production.productcosthistory.ProductcosthistoryRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

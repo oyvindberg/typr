@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package shoppingcartitem
+package adventureworks.sales.shoppingcartitem
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
@@ -33,7 +31,7 @@ trait ShoppingcartitemFields {
 object ShoppingcartitemFields {
   lazy val structure: Relation[ShoppingcartitemFields, ShoppingcartitemRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ShoppingcartitemFields, ShoppingcartitemRow] {
   

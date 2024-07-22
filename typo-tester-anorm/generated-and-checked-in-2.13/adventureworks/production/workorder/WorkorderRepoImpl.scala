@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorder
+package adventureworks.production.workorder
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.scrapreason.ScrapreasonId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -37,7 +36,7 @@ class WorkorderRepoImpl extends WorkorderRepo {
   override def deleteByIds(workorderids: Array[WorkorderId])(implicit c: Connection): Int = {
     SQL"""delete
           from "production"."workorder"
-          where "workorderid" = ANY(${workorderids})
+          where "workorderid" = ANY(${ParameterValue(workorderids, null, WorkorderId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -107,7 +106,7 @@ class WorkorderRepoImpl extends WorkorderRepo {
   override def selectByIds(workorderids: Array[WorkorderId])(implicit c: Connection): List[WorkorderRow] = {
     SQL"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
           from "production"."workorder"
-          where "workorderid" = ANY(${workorderids})
+          where "workorderid" = ANY(${ParameterValue(workorderids, null, WorkorderId.arrayToStatement)})
        """.as(WorkorderRow.rowParser(1).*)
     
   }

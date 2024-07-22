@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productinventory
+package adventureworks.production.productinventory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -16,12 +14,14 @@ import adventureworks.production.location.LocationRow
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
+import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -44,14 +44,14 @@ trait ProductinventoryFields {
   def compositeIdIs(compositeId: ProductinventoryId): SqlExpr[Boolean, Required] =
     productid.isEqual(compositeId.productid).and(locationid.isEqual(compositeId.locationid))
   def compositeIdIn(compositeIds: Array[ProductinventoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(productid)(_.productid), TuplePart(locationid)(_.locationid))
+    new CompositeIn(compositeIds)(TuplePart[ProductinventoryId](productid)(_.productid)(using as[Array[ProductId], Required](ProductId.arrayPut, Write.fromPut(ProductId.arrayPut)), implicitly), TuplePart[ProductinventoryId](locationid)(_.locationid)(using as[Array[LocationId], Required](LocationId.arrayPut, Write.fromPut(LocationId.arrayPut)), implicitly))
   
 }
 
 object ProductinventoryFields {
   lazy val structure: Relation[ProductinventoryFields, ProductinventoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductinventoryFields, ProductinventoryRow] {
   

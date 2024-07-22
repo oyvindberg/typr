@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package billofmaterials
+package adventureworks.production.billofmaterials
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -32,12 +31,12 @@ case class BillofmaterialsRow(
       Default: nextval('production.billofmaterials_billofmaterialsid_seq'::regclass) */
   billofmaterialsid: Int,
   /** Parent product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]]
+      Points to [[adventureworks.production.product.ProductRow.productid]]
       Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid: ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
       Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid: ((productassemblyid <> componentid)) */
   productassemblyid: Option[ProductId],
   /** Component identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]]
+      Points to [[adventureworks.production.product.ProductRow.productid]]
       Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid: ((productassemblyid <> componentid)) */
   componentid: ProductId,
   /** Date the component started being used in the assembly item.
@@ -48,7 +47,7 @@ case class BillofmaterialsRow(
       Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate: (((enddate > startdate) OR (enddate IS NULL))) */
   enddate: Option[TypoLocalDateTime],
   /** Standard code identifying the unit of measure for the quantity.
-      Points to [[unitmeasure.UnitmeasureRow.unitmeasurecode]] */
+      Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
   unitmeasurecode: UnitmeasureId,
   /** Indicates the depth the component is from its parent (AssemblyID).
       Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid: ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1)))) */

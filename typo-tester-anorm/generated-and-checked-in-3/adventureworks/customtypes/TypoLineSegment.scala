@@ -3,9 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package customtypes
+package adventureworks.customtypes
 
+import adventureworks.Text
 import anorm.Column
 import anorm.ParameterMetaData
 import anorm.ToStatement
@@ -19,7 +19,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -53,8 +52,8 @@ object TypoLineSegment {
   given reads: Reads[TypoLineSegment] = Reads[TypoLineSegment](json => JsResult.fromTry(
       Try(
         TypoLineSegment(
-          p1 = json.\("p1").as(summon[Reads[TypoPoint]]),
-          p2 = json.\("p2").as(summon[Reads[TypoPoint]])
+          p1 = json.\("p1").as(TypoPoint.reads),
+          p2 = json.\("p2").as(TypoPoint.reads)
         )
       )
     ),
@@ -66,8 +65,8 @@ object TypoLineSegment {
   given toStatement: ToStatement[TypoLineSegment] = ToStatement[TypoLineSegment]((s, index, v) => s.setObject(index, new PGlseg(new PGpoint(v.p1.x, v.p1.y), new PGpoint(v.p2.x, v.p2.y))))
   given writes: OWrites[TypoLineSegment] = OWrites[TypoLineSegment](o =>
     new JsObject(ListMap[String, JsValue](
-      "p1" -> summon[Writes[TypoPoint]].writes(o.p1),
-      "p2" -> summon[Writes[TypoPoint]].writes(o.p2)
+      "p1" -> TypoPoint.writes.writes(o.p1),
+      "p2" -> TypoPoint.writes.writes(o.p2)
     ))
   )
 }

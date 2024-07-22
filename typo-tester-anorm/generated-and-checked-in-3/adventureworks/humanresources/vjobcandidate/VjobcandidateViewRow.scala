@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vjobcandidate
+package adventureworks.humanresources.vjobcandidate
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.jobcandidate.JobcandidateId
@@ -24,9 +22,9 @@ import scala.util.Try
 
 /** View: humanresources.vjobcandidate */
 case class VjobcandidateViewRow(
-  /** Points to [[jobcandidate.JobcandidateRow.jobcandidateid]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  /** Points to [[jobcandidate.JobcandidateRow.businessentityid]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
   businessentityid: Option[BusinessentityId],
   namePrefix: /* nullability unknown */ Option[/* max 30 chars */ String],
   nameFirst: /* nullability unknown */ Option[/* max 30 chars */ String],
@@ -41,7 +39,7 @@ case class VjobcandidateViewRow(
   addrPostalCode: /* nullability unknown */ Option[/* max 20 chars */ String],
   eMail: /* nullability unknown */ Option[String],
   webSite: /* nullability unknown */ Option[String],
-  /** Points to [[jobcandidate.JobcandidateRow.modifieddate]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package cu
+package adventureworks.sa.cu
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -22,13 +20,13 @@ import scala.util.Try
 
 /** View: sa.cu */
 case class CuViewRow(
-  /** Points to [[sales.currency.CurrencyRow.currencycode]] */
+  /** Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
   id: CurrencyId,
-  /** Points to [[sales.currency.CurrencyRow.currencycode]] */
+  /** Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
   currencycode: CurrencyId,
-  /** Points to [[sales.currency.CurrencyRow.name]] */
+  /** Points to [[adventureworks.sales.currency.CurrencyRow.name]] */
   name: Name,
-  /** Points to [[sales.currency.CurrencyRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.currency.CurrencyRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

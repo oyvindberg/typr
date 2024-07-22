@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package stateprovince
+package adventureworks.person.stateprovince
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -44,7 +42,7 @@ trait StateprovinceFields {
 object StateprovinceFields {
   lazy val structure: Relation[StateprovinceFields, StateprovinceRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[StateprovinceFields, StateprovinceRow] {
   

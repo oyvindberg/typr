@@ -3,12 +3,8 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package personcreditcard
+package adventureworks.sales.personcreditcard
 
-import adventureworks.userdefined.CustomCreditcardId
-import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
@@ -29,7 +25,7 @@ class PersoncreditcardRepoMock(toRow: Function1[PersoncreditcardRowUnsaved, Pers
   override def deleteById(compositeId: PersoncreditcardId)(using c: Connection): Boolean = {
     map.remove(compositeId).isDefined
   }
-  override def deleteByIds(compositeIds: Array[PersoncreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Int = {
+  override def deleteByIds(compositeIds: Array[PersoncreditcardId])(using c: Connection): Int = {
     compositeIds.map(id => map.remove(id)).count(_.isDefined)
   }
   override def insert(unsaved: PersoncreditcardRow)(using c: Connection): PersoncreditcardRow = {
@@ -66,10 +62,10 @@ class PersoncreditcardRepoMock(toRow: Function1[PersoncreditcardRowUnsaved, Pers
   override def selectById(compositeId: PersoncreditcardId)(using c: Connection): Option[PersoncreditcardRow] = {
     map.get(compositeId)
   }
-  override def selectByIds(compositeIds: Array[PersoncreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): List[PersoncreditcardRow] = {
+  override def selectByIds(compositeIds: Array[PersoncreditcardId])(using c: Connection): List[PersoncreditcardRow] = {
     compositeIds.flatMap(map.get).toList
   }
-  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Map[PersoncreditcardId, PersoncreditcardRow] = {
+  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId])(using c: Connection): Map[PersoncreditcardId, PersoncreditcardRow] = {
     val byId = selectByIds(compositeIds).view.map(x => (x.compositeId, x)).toMap
     compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }

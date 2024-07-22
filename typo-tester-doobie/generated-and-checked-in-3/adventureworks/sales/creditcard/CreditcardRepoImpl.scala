@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package creditcard
+package adventureworks.sales.creditcard
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -16,7 +14,6 @@ import doobie.free.connection.ConnectionIO
 import doobie.postgres.syntax.FragmentOps
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
 import doobie.syntax.string.toSqlInterpolator
-import doobie.util.Put
 import doobie.util.Write
 import doobie.util.fragment.Fragment
 import doobie.util.meta.Meta
@@ -34,8 +31,8 @@ class CreditcardRepoImpl extends CreditcardRepo {
   override def deleteById(creditcardid: /* user-picked */ CustomCreditcardId): ConnectionIO[Boolean] = {
     sql"""delete from "sales"."creditcard" where "creditcardid" = ${fromWrite(creditcardid)(using new Write.Single(/* user-picked */ CustomCreditcardId.put))}""".update.run.map(_ > 0)
   }
-  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using put0: Put[Array[/* user-picked */ CustomCreditcardId]]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."creditcard" where "creditcardid" = ANY(${creditcardids})""".update.run
+  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ConnectionIO[Int] = {
+    sql"""delete from "sales"."creditcard" where "creditcardid" = ANY(${fromWrite(creditcardids)(using new Write.Single(CustomCreditcardId.arrayPut))})""".update.run
   }
   override def insert(unsaved: CreditcardRow): ConnectionIO[CreditcardRow] = {
     sql"""insert into "sales"."creditcard"("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")
@@ -89,10 +86,10 @@ class CreditcardRepoImpl extends CreditcardRepo {
   override def selectById(creditcardid: /* user-picked */ CustomCreditcardId): ConnectionIO[Option[CreditcardRow]] = {
     sql"""select "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text from "sales"."creditcard" where "creditcardid" = ${fromWrite(creditcardid)(using new Write.Single(/* user-picked */ CustomCreditcardId.put))}""".query(using CreditcardRow.read).option
   }
-  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using puts0: Put[Array[/* user-picked */ CustomCreditcardId]]): Stream[ConnectionIO, CreditcardRow] = {
-    sql"""select "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text from "sales"."creditcard" where "creditcardid" = ANY(${creditcardids})""".query(using CreditcardRow.read).stream
+  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): Stream[ConnectionIO, CreditcardRow] = {
+    sql"""select "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text from "sales"."creditcard" where "creditcardid" = ANY(${fromWrite(creditcardids)(using new Write.Single(CustomCreditcardId.arrayPut))})""".query(using CreditcardRow.read).stream
   }
-  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using puts0: Put[Array[/* user-picked */ CustomCreditcardId]]): ConnectionIO[Map[/* user-picked */ CustomCreditcardId, CreditcardRow]] = {
+  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ConnectionIO[Map[/* user-picked */ CustomCreditcardId, CreditcardRow]] = {
     selectByIds(creditcardids).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.creditcardid, x)).toMap
       creditcardids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap

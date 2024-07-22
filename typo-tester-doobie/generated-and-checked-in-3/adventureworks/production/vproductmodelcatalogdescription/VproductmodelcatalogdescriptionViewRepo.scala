@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package vproductmodelcatalogdescription
+package adventureworks.production.vproductmodelcatalogdescription
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream

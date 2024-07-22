@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package culture
+package adventureworks.production.culture
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class CultureRepoImpl extends CultureRepo {
   override def deleteByIds(cultureids: Array[CultureId])(implicit c: Connection): Int = {
     SQL"""delete
           from "production"."culture"
-          where "cultureid" = ANY(${cultureids})
+          where "cultureid" = ANY(${ParameterValue(cultureids, null, CultureId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -95,7 +94,7 @@ class CultureRepoImpl extends CultureRepo {
   override def selectByIds(cultureids: Array[CultureId])(implicit c: Connection): List[CultureRow] = {
     SQL"""select "cultureid", "name", "modifieddate"::text
           from "production"."culture"
-          where "cultureid" = ANY(${cultureids})
+          where "cultureid" = ANY(${ParameterValue(cultureids, null, CultureId.arrayToStatement)})
        """.as(CultureRow.rowParser(1).*)
     
   }

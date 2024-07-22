@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vjobcandidateeducation
+package adventureworks.humanresources.vjobcandidateeducation
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
@@ -16,7 +14,7 @@ import io.circe.Encoder
 
 /** View: humanresources.vjobcandidateeducation */
 case class VjobcandidateeducationViewRow(
-  /** Points to [[jobcandidate.JobcandidateRow.jobcandidateid]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
   eduLevel: /* nullability unknown */ Option[/* max 50 chars */ String],
   eduStartDate: /* nullability unknown */ Option[TypoLocalDate],

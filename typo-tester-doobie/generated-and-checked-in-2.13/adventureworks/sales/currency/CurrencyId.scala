@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currency
+package adventureworks.sales.currency
 
 import doobie.postgres.Text
 import doobie.util.Get

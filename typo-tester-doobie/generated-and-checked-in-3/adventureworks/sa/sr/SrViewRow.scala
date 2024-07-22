@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sr
+package adventureworks.sa.sr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -16,15 +14,15 @@ import io.circe.Encoder
 
 /** View: sa.sr */
 case class SrViewRow(
-  /** Points to [[sales.salesreason.SalesreasonRow.salesreasonid]] */
+  /** Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]] */
   id: SalesreasonId,
-  /** Points to [[sales.salesreason.SalesreasonRow.salesreasonid]] */
+  /** Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]] */
   salesreasonid: SalesreasonId,
-  /** Points to [[sales.salesreason.SalesreasonRow.name]] */
+  /** Points to [[adventureworks.sales.salesreason.SalesreasonRow.name]] */
   name: Name,
-  /** Points to [[sales.salesreason.SalesreasonRow.reasontype]] */
+  /** Points to [[adventureworks.sales.salesreason.SalesreasonRow.reasontype]] */
   reasontype: Name,
-  /** Points to [[sales.salesreason.SalesreasonRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salesreason.SalesreasonRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

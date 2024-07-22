@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pch
+package adventureworks.pr.pch
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -27,7 +25,7 @@ trait PchViewFields {
 object PchViewFields {
   lazy val structure: Relation[PchViewFields, PchViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PchViewFields, PchViewRow] {
   

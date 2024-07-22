@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheadersalesreason
+package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -38,7 +37,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     SQL"""delete
           from "sales"."salesorderheadersalesreason"
           where ("salesorderid", "salesreasonid")
-          in (select unnest(${salesorderid}), unnest(${salesreasonid}))
+          in (select unnest(${ParameterValue(salesorderid, null, SalesorderheaderId.arrayToStatement)}), unnest(${ParameterValue(salesreasonid, null, SalesreasonId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -102,7 +101,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     SQL"""select "salesorderid", "salesreasonid", "modifieddate"::text
           from "sales"."salesorderheadersalesreason"
           where ("salesorderid", "salesreasonid")
-          in (select unnest(${salesorderid}), unnest(${salesreasonid}))
+          in (select unnest(${ParameterValue(salesorderid, null, SalesorderheaderId.arrayToStatement)}), unnest(${ParameterValue(salesreasonid, null, SalesreasonId.arrayToStatement)}))
        """.as(SalesorderheadersalesreasonRow.rowParser(1).*)
     
   }

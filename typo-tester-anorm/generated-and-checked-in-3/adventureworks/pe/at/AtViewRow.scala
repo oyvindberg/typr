@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package at
+package adventureworks.pe.at
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -23,15 +21,15 @@ import scala.util.Try
 
 /** View: pe.at */
 case class AtViewRow(
-  /** Points to [[person.addresstype.AddresstypeRow.addresstypeid]] */
+  /** Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]] */
   id: AddresstypeId,
-  /** Points to [[person.addresstype.AddresstypeRow.addresstypeid]] */
+  /** Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]] */
   addresstypeid: AddresstypeId,
-  /** Points to [[person.addresstype.AddresstypeRow.name]] */
+  /** Points to [[adventureworks.person.addresstype.AddresstypeRow.name]] */
   name: Name,
-  /** Points to [[person.addresstype.AddresstypeRow.rowguid]] */
+  /** Points to [[adventureworks.person.addresstype.AddresstypeRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.addresstype.AddresstypeRow.modifieddate]] */
+  /** Points to [[adventureworks.person.addresstype.AddresstypeRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

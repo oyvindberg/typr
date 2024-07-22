@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package only_pk_columns
+package adventureworks.public.only_pk_columns
 
+import adventureworks.Text
 import anorm.Column
 import anorm.RowParser
 import anorm.Success

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package document
+package adventureworks.production.document
 
 import adventureworks.customtypes.TypoUUID
 import scala.annotation.nowarn

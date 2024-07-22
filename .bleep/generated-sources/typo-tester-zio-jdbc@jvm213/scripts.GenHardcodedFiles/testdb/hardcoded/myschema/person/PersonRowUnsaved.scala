@@ -3,12 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package person
+package testdb.hardcoded.myschema.person
 
+import testdb.hardcoded.Text
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.myschema.Number
+import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
 import testdb.hardcoded.myschema.marital_status.MaritalStatusId
 import zio.json.JsonDecoder
@@ -18,7 +18,7 @@ import zio.json.internal.Write
 
 /** This class corresponds to a row in table `myschema.person` which has not been persisted yet */
 case class PersonRowUnsaved(
-  /** Points to [[football_club.FootballClubRow.id]] */
+  /** Points to [[testdb.hardcoded.myschema.football_club.FootballClubRow.id]] */
   favouriteFootballClubId: FootballClubId,
   name: /* max 100 chars */ String,
   nickName: Option[/* max 30 chars */ String],
@@ -30,7 +30,7 @@ case class PersonRowUnsaved(
   /** Default: auto-increment */
   id: Defaulted[PersonId] = Defaulted.UseDefault,
   /** Default: some-value
-      Points to [[marital_status.MaritalStatusRow.id]] */
+      Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]] */
   maritalStatusId: Defaulted[MaritalStatusId] = Defaulted.UseDefault,
   /** Default: one */
   favoriteNumber: Defaulted[Number] = Defaulted.UseDefault

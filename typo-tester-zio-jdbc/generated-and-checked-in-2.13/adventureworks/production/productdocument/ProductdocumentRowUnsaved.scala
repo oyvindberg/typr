@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productdocument
+package adventureworks.production.productdocument
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
@@ -19,13 +18,13 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `production.productdocument` which has not been persisted yet */
 case class ProductdocumentRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Default: now() */
   modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
   /** Default: '/'::character varying
       Document identification number. Foreign key to Document.DocumentNode.
-      Points to [[document.DocumentRow.documentnode]] */
+      Points to [[adventureworks.production.document.DocumentRow.documentnode]] */
   documentnode: Defaulted[DocumentId] = Defaulted.UseDefault
 ) {
   def toRow(modifieddateDefault: => TypoLocalDateTime, documentnodeDefault: => DocumentId): ProductdocumentRow =

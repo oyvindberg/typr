@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package shift
+package adventureworks.humanresources.shift
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -35,7 +34,7 @@ class ShiftRepoImpl extends ShiftRepo {
   override def deleteByIds(shiftids: Array[ShiftId])(using c: Connection): Int = {
     SQL"""delete
           from "humanresources"."shift"
-          where "shiftid" = ANY(${shiftids})
+          where "shiftid" = ANY(${ParameterValue(shiftids, null, ShiftId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -101,7 +100,7 @@ class ShiftRepoImpl extends ShiftRepo {
   override def selectByIds(shiftids: Array[ShiftId])(using c: Connection): List[ShiftRow] = {
     SQL"""select "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text
           from "humanresources"."shift"
-          where "shiftid" = ANY(${shiftids})
+          where "shiftid" = ANY(${ParameterValue(shiftids, null, ShiftId.arrayToStatement)})
        """.as(ShiftRow.rowParser(1).*)
     
   }

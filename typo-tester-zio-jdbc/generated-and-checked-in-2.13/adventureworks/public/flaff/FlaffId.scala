@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package flaff
+package adventureworks.public.flaff
 
+import adventureworks.public.ShortText
 import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 import zio.json.ast.Json

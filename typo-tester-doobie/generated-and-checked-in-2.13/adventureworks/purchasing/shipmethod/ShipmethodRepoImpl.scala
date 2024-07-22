@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package shipmethod
+package adventureworks.purchasing.shipmethod
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -34,7 +32,7 @@ class ShipmethodRepoImpl extends ShipmethodRepo {
     sql"""delete from "purchasing"."shipmethod" where "shipmethodid" = ${fromWrite(shipmethodid)(new Write.Single(ShipmethodId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(shipmethodids: Array[ShipmethodId]): ConnectionIO[Int] = {
-    sql"""delete from "purchasing"."shipmethod" where "shipmethodid" = ANY(${shipmethodids})""".update.run
+    sql"""delete from "purchasing"."shipmethod" where "shipmethodid" = ANY(${fromWrite(shipmethodids)(new Write.Single(ShipmethodId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ShipmethodRow): ConnectionIO[ShipmethodRow] = {
     sql"""insert into "purchasing"."shipmethod"("shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate")
@@ -98,7 +96,7 @@ class ShipmethodRepoImpl extends ShipmethodRepo {
     sql"""select "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate"::text from "purchasing"."shipmethod" where "shipmethodid" = ${fromWrite(shipmethodid)(new Write.Single(ShipmethodId.put))}""".query(ShipmethodRow.read).option
   }
   override def selectByIds(shipmethodids: Array[ShipmethodId]): Stream[ConnectionIO, ShipmethodRow] = {
-    sql"""select "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate"::text from "purchasing"."shipmethod" where "shipmethodid" = ANY(${shipmethodids})""".query(ShipmethodRow.read).stream
+    sql"""select "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate"::text from "purchasing"."shipmethod" where "shipmethodid" = ANY(${fromWrite(shipmethodids)(new Write.Single(ShipmethodId.arrayPut))})""".query(ShipmethodRow.read).stream
   }
   override def selectByIdsTracked(shipmethodids: Array[ShipmethodId]): ConnectionIO[Map[ShipmethodId, ShipmethodRow]] = {
     selectByIds(shipmethodids).compile.toList.map { rows =>

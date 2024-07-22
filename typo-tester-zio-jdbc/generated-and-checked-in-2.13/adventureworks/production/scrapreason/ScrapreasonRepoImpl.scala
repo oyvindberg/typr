@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package scrapreason
+package adventureworks.production.scrapreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class ScrapreasonRepoImpl extends ScrapreasonRepo {
     sql"""delete from "production"."scrapreason" where "scrapreasonid" = ${Segment.paramSegment(scrapreasonid)(ScrapreasonId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(scrapreasonids: Array[ScrapreasonId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."scrapreason" where "scrapreasonid" = ANY(${scrapreasonids})""".delete
+    sql"""delete from "production"."scrapreason" where "scrapreasonid" = ANY(${Segment.paramSegment(scrapreasonids)(ScrapreasonId.arraySetter)})""".delete
   }
   override def insert(unsaved: ScrapreasonRow): ZIO[ZConnection, Throwable, ScrapreasonRow] = {
     sql"""insert into "production"."scrapreason"("scrapreasonid", "name", "modifieddate")

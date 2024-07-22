@@ -3,8 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person_detail
+package adventureworks.person_detail
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
@@ -18,25 +17,25 @@ import zio.json.internal.Write
 
 /** SQL file: person_detail.sql */
 case class PersonDetailSqlRow(
-  /** Points to [[sales.salesperson.SalespersonRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.person.PersonRow.title]] */
+  /** Points to [[adventureworks.person.person.PersonRow.title]] */
   title: Option[/* max 8 chars */ String],
-  /** Points to [[person.person.PersonRow.firstname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
-  /** Points to [[person.person.PersonRow.middlename]] */
+  /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
   middlename: Option[Name],
-  /** Points to [[person.person.PersonRow.lastname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
-  /** Points to [[humanresources.employee.EmployeeRow.jobtitle]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
-  /** Points to [[person.address.AddressRow.addressline1]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
   addressline1: Option[/* max 60 chars */ String],
-  /** Points to [[person.address.AddressRow.city]] */
+  /** Points to [[adventureworks.person.address.AddressRow.city]] */
   city: Option[/* max 30 chars */ String],
-  /** Points to [[person.address.AddressRow.postalcode]] */
+  /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
   postalcode: Option[/* max 15 chars */ String],
-  /** Points to [[person.address.AddressRow.rowguid]] */
+  /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: /* user-picked */ String
 )
 

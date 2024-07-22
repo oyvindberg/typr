@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package identity_test
+package adventureworks.public.identity_test
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import java.sql.ResultSet
 import zio.jdbc.JdbcDecoder

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pdoc
+package adventureworks.pr.pdoc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
@@ -22,13 +20,13 @@ import scala.util.Try
 
 /** View: pr.pdoc */
 case class PdocViewRow(
-  /** Points to [[production.productdocument.ProductdocumentRow.productid]] */
+  /** Points to [[adventureworks.production.productdocument.ProductdocumentRow.productid]] */
   id: ProductId,
-  /** Points to [[production.productdocument.ProductdocumentRow.productid]] */
+  /** Points to [[adventureworks.production.productdocument.ProductdocumentRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.productdocument.ProductdocumentRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productdocument.ProductdocumentRow.modifieddate]] */
   modifieddate: TypoLocalDateTime,
-  /** Points to [[production.productdocument.ProductdocumentRow.documentnode]] */
+  /** Points to [[adventureworks.production.productdocument.ProductdocumentRow.documentnode]] */
   documentnode: DocumentId
 )
 

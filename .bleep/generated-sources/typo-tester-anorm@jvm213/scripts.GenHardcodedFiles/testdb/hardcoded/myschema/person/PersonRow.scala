@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package person
+package testdb.hardcoded.myschema.person
 
 import anorm.Column
 import anorm.RowParser
@@ -19,7 +16,10 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
+import testdb.hardcoded.Text
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.myschema.Number
+import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
 import testdb.hardcoded.myschema.marital_status.MaritalStatusId
 
@@ -29,7 +29,7 @@ import testdb.hardcoded.myschema.marital_status.MaritalStatusId
 case class PersonRow(
   /** Default: auto-increment */
   id: PersonId,
-  /** Points to [[football_club.FootballClubRow.id]] */
+  /** Points to [[testdb.hardcoded.myschema.football_club.FootballClubRow.id]] */
   favouriteFootballClubId: FootballClubId,
   name: /* max 100 chars */ String,
   nickName: Option[/* max 30 chars */ String],
@@ -38,7 +38,7 @@ case class PersonRow(
   phone: /* max 8 chars */ String,
   likesPizza: Boolean,
   /** Default: some-value
-      Points to [[marital_status.MaritalStatusRow.id]] */
+      Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]] */
   maritalStatusId: MaritalStatusId,
   workEmail: Option[/* max 254 chars */ String],
   /** Default: PUBLIC

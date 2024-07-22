@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package pgtestnull
+package adventureworks.public.pgtestnull
 
+import adventureworks.Text
 import adventureworks.customtypes.TypoBox
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoCircle
@@ -31,6 +30,8 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoVector
 import adventureworks.customtypes.TypoXml
+import adventureworks.public.Mydomain
+import adventureworks.public.Myenum
 import java.sql.ResultSet
 import zio.jdbc.JdbcDecoder
 import zio.json.JsonDecoder
@@ -154,39 +155,39 @@ object PgtestnullRow {
           varchar = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 34, rs)._2,
           vector = JdbcDecoder.optionDecoder(using TypoVector.jdbcDecoder).unsafeDecode(columIndex + 35, rs)._2,
           xml = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 36, rs)._2,
-          boxes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoBox]]).unsafeDecode(columIndex + 37, rs)._2,
+          boxes = JdbcDecoder.optionDecoder(using TypoBox.arrayJdbcDecoder).unsafeDecode(columIndex + 37, rs)._2,
           bpchares = JdbcDecoder.optionDecoder(using adventureworks.StringArrayDecoder).unsafeDecode(columIndex + 38, rs)._2,
           chares = JdbcDecoder.optionDecoder(using adventureworks.StringArrayDecoder).unsafeDecode(columIndex + 39, rs)._2,
-          circlees = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoCircle]]).unsafeDecode(columIndex + 40, rs)._2,
-          datees = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoLocalDate]]).unsafeDecode(columIndex + 41, rs)._2,
+          circlees = JdbcDecoder.optionDecoder(using TypoCircle.arrayJdbcDecoder).unsafeDecode(columIndex + 40, rs)._2,
+          datees = JdbcDecoder.optionDecoder(using TypoLocalDate.arrayJdbcDecoder).unsafeDecode(columIndex + 41, rs)._2,
           float4es = JdbcDecoder.optionDecoder(using adventureworks.FloatArrayDecoder).unsafeDecode(columIndex + 42, rs)._2,
           float8es = JdbcDecoder.optionDecoder(using adventureworks.DoubleArrayDecoder).unsafeDecode(columIndex + 43, rs)._2,
-          inetes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoInet]]).unsafeDecode(columIndex + 44, rs)._2,
-          int2es = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoShort]]).unsafeDecode(columIndex + 45, rs)._2,
-          int2vectores = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoInt2Vector]]).unsafeDecode(columIndex + 46, rs)._2,
+          inetes = JdbcDecoder.optionDecoder(using TypoInet.arrayJdbcDecoder).unsafeDecode(columIndex + 44, rs)._2,
+          int2es = JdbcDecoder.optionDecoder(using TypoShort.arrayJdbcDecoder).unsafeDecode(columIndex + 45, rs)._2,
+          int2vectores = JdbcDecoder.optionDecoder(using TypoInt2Vector.arrayJdbcDecoder).unsafeDecode(columIndex + 46, rs)._2,
           int4es = JdbcDecoder.optionDecoder(using adventureworks.IntArrayDecoder).unsafeDecode(columIndex + 47, rs)._2,
           int8es = JdbcDecoder.optionDecoder(using adventureworks.LongArrayDecoder).unsafeDecode(columIndex + 48, rs)._2,
-          intervales = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoInterval]]).unsafeDecode(columIndex + 49, rs)._2,
-          jsones = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoJson]]).unsafeDecode(columIndex + 50, rs)._2,
-          jsonbes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoJsonb]]).unsafeDecode(columIndex + 51, rs)._2,
-          linees = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoLine]]).unsafeDecode(columIndex + 52, rs)._2,
-          lseges = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoLineSegment]]).unsafeDecode(columIndex + 53, rs)._2,
-          moneyes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoMoney]]).unsafeDecode(columIndex + 54, rs)._2,
-          mydomaines = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[Mydomain]]).unsafeDecode(columIndex + 55, rs)._2,
-          myenumes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[Myenum]]).unsafeDecode(columIndex + 56, rs)._2,
+          intervales = JdbcDecoder.optionDecoder(using TypoInterval.arrayJdbcDecoder).unsafeDecode(columIndex + 49, rs)._2,
+          jsones = JdbcDecoder.optionDecoder(using TypoJson.arrayJdbcDecoder).unsafeDecode(columIndex + 50, rs)._2,
+          jsonbes = JdbcDecoder.optionDecoder(using TypoJsonb.arrayJdbcDecoder).unsafeDecode(columIndex + 51, rs)._2,
+          linees = JdbcDecoder.optionDecoder(using TypoLine.arrayJdbcDecoder).unsafeDecode(columIndex + 52, rs)._2,
+          lseges = JdbcDecoder.optionDecoder(using TypoLineSegment.arrayJdbcDecoder).unsafeDecode(columIndex + 53, rs)._2,
+          moneyes = JdbcDecoder.optionDecoder(using TypoMoney.arrayJdbcDecoder).unsafeDecode(columIndex + 54, rs)._2,
+          mydomaines = JdbcDecoder.optionDecoder(using Mydomain.arrayJdbcDecoder).unsafeDecode(columIndex + 55, rs)._2,
+          myenumes = JdbcDecoder.optionDecoder(using Myenum.arrayJdbcDecoder).unsafeDecode(columIndex + 56, rs)._2,
           namees = JdbcDecoder.optionDecoder(using adventureworks.StringArrayDecoder).unsafeDecode(columIndex + 57, rs)._2,
           numerices = JdbcDecoder.optionDecoder(using adventureworks.ScalaBigDecimalArrayDecoder).unsafeDecode(columIndex + 58, rs)._2,
-          pathes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoPath]]).unsafeDecode(columIndex + 59, rs)._2,
-          pointes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoPoint]]).unsafeDecode(columIndex + 60, rs)._2,
-          polygones = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoPolygon]]).unsafeDecode(columIndex + 61, rs)._2,
+          pathes = JdbcDecoder.optionDecoder(using TypoPath.arrayJdbcDecoder).unsafeDecode(columIndex + 59, rs)._2,
+          pointes = JdbcDecoder.optionDecoder(using TypoPoint.arrayJdbcDecoder).unsafeDecode(columIndex + 60, rs)._2,
+          polygones = JdbcDecoder.optionDecoder(using TypoPolygon.arrayJdbcDecoder).unsafeDecode(columIndex + 61, rs)._2,
           textes = JdbcDecoder.optionDecoder(using adventureworks.StringArrayDecoder).unsafeDecode(columIndex + 62, rs)._2,
-          timees = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoLocalTime]]).unsafeDecode(columIndex + 63, rs)._2,
-          timestampes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoLocalDateTime]]).unsafeDecode(columIndex + 64, rs)._2,
-          timestampzes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoInstant]]).unsafeDecode(columIndex + 65, rs)._2,
-          timezes = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoOffsetTime]]).unsafeDecode(columIndex + 66, rs)._2,
-          uuides = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoUUID]]).unsafeDecode(columIndex + 67, rs)._2,
+          timees = JdbcDecoder.optionDecoder(using TypoLocalTime.arrayJdbcDecoder).unsafeDecode(columIndex + 63, rs)._2,
+          timestampes = JdbcDecoder.optionDecoder(using TypoLocalDateTime.arrayJdbcDecoder).unsafeDecode(columIndex + 64, rs)._2,
+          timestampzes = JdbcDecoder.optionDecoder(using TypoInstant.arrayJdbcDecoder).unsafeDecode(columIndex + 65, rs)._2,
+          timezes = JdbcDecoder.optionDecoder(using TypoOffsetTime.arrayJdbcDecoder).unsafeDecode(columIndex + 66, rs)._2,
+          uuides = JdbcDecoder.optionDecoder(using TypoUUID.arrayJdbcDecoder).unsafeDecode(columIndex + 67, rs)._2,
           varchares = JdbcDecoder.optionDecoder(using adventureworks.StringArrayDecoder).unsafeDecode(columIndex + 68, rs)._2,
-          xmles = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoXml]]).unsafeDecode(columIndex + 69, rs)._2
+          xmles = JdbcDecoder.optionDecoder(using TypoXml.arrayJdbcDecoder).unsafeDecode(columIndex + 69, rs)._2
         )
   }
   given jsonDecoder: JsonDecoder[PgtestnullRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>

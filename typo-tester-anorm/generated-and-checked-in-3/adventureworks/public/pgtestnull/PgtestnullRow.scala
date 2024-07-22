@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package pgtestnull
+package adventureworks.public.pgtestnull
 
+import adventureworks.Text
 import adventureworks.customtypes.TypoBox
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoCircle
@@ -31,6 +30,8 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoVector
 import adventureworks.customtypes.TypoXml
+import adventureworks.public.Mydomain
+import adventureworks.public.Myenum
 import anorm.Column
 import anorm.RowParser
 import anorm.Success

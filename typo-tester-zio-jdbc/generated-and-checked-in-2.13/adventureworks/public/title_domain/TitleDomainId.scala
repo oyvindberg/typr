@@ -3,10 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title_domain
+package adventureworks.public.title_domain
 
+import adventureworks.Text
+import adventureworks.public.ShortText
 import java.sql.Types
 import typo.dsl.PGType
 import zio.jdbc.JdbcDecoder
@@ -35,7 +35,7 @@ object TitleDomainId {
   val All: List[TitleDomainId] = List(dr, mr, ms, phd)
   val ByName: Map[ShortText, TitleDomainId] = All.map(x => (x.value, x)).toMap
               
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TitleDomainId]] = JdbcDecoder[Array[ShortText]].map(a => if (a == null) null else a.map(apply))
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TitleDomainId]] = ShortText.arrayJdbcDecoder.map(a => if (a == null) null else a.map(apply))
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TitleDomainId]] = JdbcEncoder.singleParamEncoder(arraySetter)
   implicit lazy val arraySetter: Setter[Array[TitleDomainId]] = ShortText.arraySetter.contramap(_.map(_.value))
   implicit lazy val jdbcDecoder: JdbcDecoder[TitleDomainId] = ShortText.jdbcDecoder.map(TitleDomainId.apply)

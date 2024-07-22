@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vstorewithdemographics
+package adventureworks.sales.vstorewithdemographics
 
 import anorm.SqlStringInterpolation
 import java.sql.Connection

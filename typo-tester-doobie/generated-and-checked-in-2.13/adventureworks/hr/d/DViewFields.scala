@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package d
+package adventureworks.hr.d
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
@@ -26,7 +24,7 @@ trait DViewFields {
 object DViewFields {
   lazy val structure: Relation[DViewFields, DViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[DViewFields, DViewRow] {
   

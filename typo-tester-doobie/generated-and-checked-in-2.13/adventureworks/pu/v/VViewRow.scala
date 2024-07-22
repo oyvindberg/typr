@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pu
-package v
+package adventureworks.pu.v
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -20,23 +18,23 @@ import io.circe.Encoder
 
 /** View: pu.v */
 case class VViewRow(
-  /** Points to [[purchasing.vendor.VendorRow.businessentityid]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[purchasing.vendor.VendorRow.businessentityid]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[purchasing.vendor.VendorRow.accountnumber]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.accountnumber]] */
   accountnumber: AccountNumber,
-  /** Points to [[purchasing.vendor.VendorRow.name]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.name]] */
   name: Name,
-  /** Points to [[purchasing.vendor.VendorRow.creditrating]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.creditrating]] */
   creditrating: TypoShort,
-  /** Points to [[purchasing.vendor.VendorRow.preferredvendorstatus]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.preferredvendorstatus]] */
   preferredvendorstatus: Flag,
-  /** Points to [[purchasing.vendor.VendorRow.activeflag]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.activeflag]] */
   activeflag: Flag,
-  /** Points to [[purchasing.vendor.VendorRow.purchasingwebserviceurl]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.purchasingwebserviceurl]] */
   purchasingwebserviceurl: Option[/* max 1024 chars */ String],
-  /** Points to [[purchasing.vendor.VendorRow.modifieddate]] */
+  /** Points to [[adventureworks.purchasing.vendor.VendorRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

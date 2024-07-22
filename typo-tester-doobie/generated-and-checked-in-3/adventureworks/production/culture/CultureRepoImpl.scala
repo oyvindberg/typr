@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package culture
+package adventureworks.production.culture
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class CultureRepoImpl extends CultureRepo {
     sql"""delete from "production"."culture" where "cultureid" = ${fromWrite(cultureid)(using new Write.Single(CultureId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(cultureids: Array[CultureId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."culture" where "cultureid" = ANY(${cultureids})""".update.run
+    sql"""delete from "production"."culture" where "cultureid" = ANY(${fromWrite(cultureids)(using new Write.Single(CultureId.arrayPut))})""".update.run
   }
   override def insert(unsaved: CultureRow): ConnectionIO[CultureRow] = {
     sql"""insert into "production"."culture"("cultureid", "name", "modifieddate")
@@ -81,7 +79,7 @@ class CultureRepoImpl extends CultureRepo {
     sql"""select "cultureid", "name", "modifieddate"::text from "production"."culture" where "cultureid" = ${fromWrite(cultureid)(using new Write.Single(CultureId.put))}""".query(using CultureRow.read).option
   }
   override def selectByIds(cultureids: Array[CultureId]): Stream[ConnectionIO, CultureRow] = {
-    sql"""select "cultureid", "name", "modifieddate"::text from "production"."culture" where "cultureid" = ANY(${cultureids})""".query(using CultureRow.read).stream
+    sql"""select "cultureid", "name", "modifieddate"::text from "production"."culture" where "cultureid" = ANY(${fromWrite(cultureids)(using new Write.Single(CultureId.arrayPut))})""".query(using CultureRow.read).stream
   }
   override def selectByIdsTracked(cultureids: Array[CultureId]): ConnectionIO[Map[CultureId, CultureRow]] = {
     selectByIds(cultureids).compile.toList.map { rows =>

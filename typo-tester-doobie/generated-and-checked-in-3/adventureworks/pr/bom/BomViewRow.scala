@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package bom
+package adventureworks.pr.bom
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -18,25 +16,25 @@ import io.circe.Encoder
 
 /** View: pr.bom */
 case class BomViewRow(
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.billofmaterialsid]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.billofmaterialsid]] */
   id: Int,
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.billofmaterialsid]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.billofmaterialsid]] */
   billofmaterialsid: Int,
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.productassemblyid]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.productassemblyid]] */
   productassemblyid: Option[ProductId],
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.componentid]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.componentid]] */
   componentid: ProductId,
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.startdate]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.startdate]] */
   startdate: TypoLocalDateTime,
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.enddate]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.enddate]] */
   enddate: Option[TypoLocalDateTime],
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.unitmeasurecode]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.unitmeasurecode]] */
   unitmeasurecode: UnitmeasureId,
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.bomlevel]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.bomlevel]] */
   bomlevel: TypoShort,
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.perassemblyqty]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.perassemblyqty]] */
   perassemblyqty: BigDecimal,
-  /** Points to [[production.billofmaterials.BillofmaterialsRow.modifieddate]] */
+  /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

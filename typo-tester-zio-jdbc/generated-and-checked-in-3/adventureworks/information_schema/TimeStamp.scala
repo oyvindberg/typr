@@ -3,9 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package information_schema
+package adventureworks.information_schema
 
+import adventureworks.Text
 import adventureworks.customtypes.TypoInstant
 import java.sql.Types
 import typo.dsl.Bijection
@@ -21,14 +21,14 @@ import zio.json.JsonEncoder
   */
 case class TimeStamp(value: TypoInstant)
 object TimeStamp {
-  given arrayJdbcDecoder: JdbcDecoder[Array[TimeStamp]] = JdbcDecoder[Array[TypoInstant]].map(_.map(TimeStamp.apply))
-  given arrayJdbcEncoder: JdbcEncoder[Array[TimeStamp]] = JdbcEncoder[Array[TypoInstant]].contramap(_.map(_.value))
+  given arrayJdbcDecoder: JdbcDecoder[Array[TimeStamp]] = TypoInstant.arrayJdbcDecoder.map(_.map(TimeStamp.apply))
+  given arrayJdbcEncoder: JdbcEncoder[Array[TimeStamp]] = TypoInstant.arrayJdbcEncoder.contramap(_.map(_.value))
   given arraySetter: Setter[Array[TimeStamp]] = TypoInstant.arraySetter.contramap(_.map(_.value))
   given bijection: Bijection[TimeStamp, TypoInstant] = Bijection[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
   given jdbcDecoder: JdbcDecoder[TimeStamp] = TypoInstant.jdbcDecoder.map(TimeStamp.apply)
   given jdbcEncoder: JdbcEncoder[TimeStamp] = TypoInstant.jdbcEncoder.contramap(_.value)
-  given jsonDecoder: JsonDecoder[TimeStamp] = summon[JsonDecoder[TypoInstant]].map(TimeStamp.apply)
-  given jsonEncoder: JsonEncoder[TimeStamp] = summon[JsonEncoder[TypoInstant]].contramap(_.value)
+  given jsonDecoder: JsonDecoder[TimeStamp] = TypoInstant.jsonDecoder.map(TimeStamp.apply)
+  given jsonEncoder: JsonEncoder[TimeStamp] = TypoInstant.jsonEncoder.contramap(_.value)
   given ordering(using O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   given pgType: PGType[TimeStamp] = PGType.instance(""""information_schema"."time_stamp"""", Types.OTHER)
   given setter: Setter[TimeStamp] = TypoInstant.setter.contramap(_.value)

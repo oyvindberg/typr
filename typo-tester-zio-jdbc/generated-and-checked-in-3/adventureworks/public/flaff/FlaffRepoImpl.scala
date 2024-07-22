@@ -3,10 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package flaff
+package adventureworks.public.flaff
 
+import adventureworks.public.ShortText
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -34,7 +34,7 @@ class FlaffRepoImpl extends FlaffRepo {
     sql"""delete
           from "public"."flaff"
           where ("code", "another_code", "some_number", "specifier")
-          in (select unnest(${code}), unnest(${anotherCode}), unnest(${someNumber}), unnest(${specifier}))
+          in (select unnest(${Segment.paramSegment(code)(using ShortText.arraySetter)}), unnest(${Segment.paramSegment(anotherCode)(using adventureworks.StringArraySetter)}), unnest(${Segment.paramSegment(someNumber)(using adventureworks.IntArraySetter)}), unnest(${Segment.paramSegment(specifier)(using ShortText.arraySetter)}))
        """.delete
     
   }
@@ -64,7 +64,7 @@ class FlaffRepoImpl extends FlaffRepo {
     sql"""select "code", "another_code", "some_number", "specifier", "parentspecifier"
           from "public"."flaff"
           where ("code", "another_code", "some_number", "specifier")
-          in (select unnest(${code}), unnest(${anotherCode}), unnest(${someNumber}), unnest(${specifier}))
+          in (select unnest(${Segment.paramSegment(code)(using ShortText.arraySetter)}), unnest(${Segment.paramSegment(anotherCode)(using adventureworks.StringArraySetter)}), unnest(${Segment.paramSegment(someNumber)(using adventureworks.IntArraySetter)}), unnest(${Segment.paramSegment(specifier)(using ShortText.arraySetter)}))
        """.query(using FlaffRow.jdbcDecoder).selectStream()
     
   }

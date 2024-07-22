@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package th
+package adventureworks.pr.th
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -19,25 +17,25 @@ import zio.json.internal.Write
 
 /** View: pr.th */
 case class ThViewRow(
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.transactionid]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactionid]] */
   id: TransactionhistoryId,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.transactionid]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactionid]] */
   transactionid: TransactionhistoryId,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.productid]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.referenceorderid]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.referenceorderid]] */
   referenceorderid: Int,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.referenceorderlineid]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.referenceorderlineid]] */
   referenceorderlineid: Int,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.transactiondate]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactiondate]] */
   transactiondate: TypoLocalDateTime,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.transactiontype]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactiontype]] */
   transactiontype: /* bpchar, max 1 chars */ String,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.quantity]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.quantity]] */
   quantity: Int,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.actualcost]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.actualcost]] */
   actualcost: BigDecimal,
-  /** Points to [[production.transactionhistory.TransactionhistoryRow.modifieddate]] */
+  /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,15 +3,17 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package only_pk_columns
+package adventureworks.public.only_pk_columns
 
+import anorm.ParameterMetaData
+import anorm.ToParameterValue
+import anorm.ToStatement
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
@@ -22,14 +24,14 @@ trait OnlyPkColumnsFields {
   def compositeIdIs(compositeId: OnlyPkColumnsId): SqlExpr[Boolean, Required] =
     keyColumn1.isEqual(compositeId.keyColumn1).and(keyColumn2.isEqual(compositeId.keyColumn2))
   def compositeIdIn(compositeIds: Array[OnlyPkColumnsId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(keyColumn1)(_.keyColumn1), TuplePart(keyColumn2)(_.keyColumn2))
+    new CompositeIn(compositeIds)(TuplePart[OnlyPkColumnsId](keyColumn1)(_.keyColumn1)(using as[Array[String], Required](ToParameterValue(null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(ParameterMetaData.StringParameterMetaData)), implicitly), TuplePart[OnlyPkColumnsId](keyColumn2)(_.keyColumn2)(using as[Array[Int], Required](ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(ParameterMetaData.IntParameterMetaData)), implicitly))
   
 }
 
 object OnlyPkColumnsFields {
   lazy val structure: Relation[OnlyPkColumnsFields, OnlyPkColumnsRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[OnlyPkColumnsFields, OnlyPkColumnsRow] {
   

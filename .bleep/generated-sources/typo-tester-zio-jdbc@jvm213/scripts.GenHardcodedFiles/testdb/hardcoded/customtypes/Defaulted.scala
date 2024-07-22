@@ -3,12 +3,11 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package customtypes
+package testdb.hardcoded.customtypes
 
 import scala.util.Success
 import scala.util.Try
+import testdb.hardcoded.Text
 import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 import zio.json.JsonError

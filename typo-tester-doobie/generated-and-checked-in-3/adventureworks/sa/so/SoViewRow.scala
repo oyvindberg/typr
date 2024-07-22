@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package so
+package adventureworks.sa.so
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -17,29 +15,29 @@ import io.circe.Encoder
 
 /** View: sa.so */
 case class SoViewRow(
-  /** Points to [[sales.specialoffer.SpecialofferRow.specialofferid]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
   id: SpecialofferId,
-  /** Points to [[sales.specialoffer.SpecialofferRow.specialofferid]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
   specialofferid: SpecialofferId,
-  /** Points to [[sales.specialoffer.SpecialofferRow.description]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.description]] */
   description: /* max 255 chars */ String,
-  /** Points to [[sales.specialoffer.SpecialofferRow.discountpct]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.discountpct]] */
   discountpct: BigDecimal,
-  /** Points to [[sales.specialoffer.SpecialofferRow.type]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.type]] */
   `type`: /* max 50 chars */ String,
-  /** Points to [[sales.specialoffer.SpecialofferRow.category]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.category]] */
   category: /* max 50 chars */ String,
-  /** Points to [[sales.specialoffer.SpecialofferRow.startdate]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.startdate]] */
   startdate: TypoLocalDateTime,
-  /** Points to [[sales.specialoffer.SpecialofferRow.enddate]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.enddate]] */
   enddate: TypoLocalDateTime,
-  /** Points to [[sales.specialoffer.SpecialofferRow.minqty]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.minqty]] */
   minqty: Int,
-  /** Points to [[sales.specialoffer.SpecialofferRow.maxqty]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.maxqty]] */
   maxqty: Option[Int],
-  /** Points to [[sales.specialoffer.SpecialofferRow.rowguid]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.specialoffer.SpecialofferRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

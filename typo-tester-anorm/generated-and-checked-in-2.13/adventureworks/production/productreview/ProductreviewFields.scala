@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productreview
+package adventureworks.production.productreview
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
@@ -37,7 +35,7 @@ trait ProductreviewFields {
 object ProductreviewFields {
   lazy val structure: Relation[ProductreviewFields, ProductreviewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductreviewFields, ProductreviewRow] {
   

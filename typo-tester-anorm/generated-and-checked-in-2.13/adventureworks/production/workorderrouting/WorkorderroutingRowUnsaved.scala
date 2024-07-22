@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorderrouting
+package adventureworks.production.workorderrouting
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -24,14 +23,14 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.workorderrouting` which has not been persisted yet */
 case class WorkorderroutingRowUnsaved(
   /** Primary key. Foreign key to WorkOrder.WorkOrderID.
-      Points to [[workorder.WorkorderRow.workorderid]] */
+      Points to [[adventureworks.production.workorder.WorkorderRow.workorderid]] */
   workorderid: WorkorderId,
   /** Primary key. Foreign key to Product.ProductID. */
   productid: Int,
   /** Primary key. Indicates the manufacturing process sequence. */
   operationsequence: TypoShort,
   /** Manufacturing location where the part is processed. Foreign key to Location.LocationID.
-      Points to [[location.LocationRow.locationid]] */
+      Points to [[adventureworks.production.location.LocationRow.locationid]] */
   locationid: LocationId,
   /** Planned manufacturing start date.
       Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate:  ((scheduledenddate >= scheduledstartdate)) */

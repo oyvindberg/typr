@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productproductphoto
+package adventureworks.production.productproductphoto
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productphoto.ProductphotoId
 import adventureworks.public.Flag
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -37,7 +36,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     sql"""delete
           from "production"."productproductphoto"
           where ("productid", "productphotoid")
-          in (select unnest(${productid}), unnest(${productphotoid}))
+          in (select unnest(${Segment.paramSegment(productid)(using ProductId.arraySetter)}), unnest(${Segment.paramSegment(productphotoid)(using ProductphotoId.arraySetter)}))
        """.delete
     
   }
@@ -95,7 +94,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     sql"""select "productid", "productphotoid", "primary", "modifieddate"::text
           from "production"."productproductphoto"
           where ("productid", "productphotoid")
-          in (select unnest(${productid}), unnest(${productphotoid}))
+          in (select unnest(${Segment.paramSegment(productid)(using ProductId.arraySetter)}), unnest(${Segment.paramSegment(productphotoid)(using ProductphotoId.arraySetter)}))
        """.query(using ProductproductphotoRow.jdbcDecoder).selectStream()
     
   }

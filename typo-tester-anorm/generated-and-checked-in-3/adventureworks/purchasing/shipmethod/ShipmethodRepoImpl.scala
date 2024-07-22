@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package shipmethod
+package adventureworks.purchasing.shipmethod
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -36,7 +35,7 @@ class ShipmethodRepoImpl extends ShipmethodRepo {
   override def deleteByIds(shipmethodids: Array[ShipmethodId])(using c: Connection): Int = {
     SQL"""delete
           from "purchasing"."shipmethod"
-          where "shipmethodid" = ANY(${shipmethodids})
+          where "shipmethodid" = ANY(${ParameterValue(shipmethodids, null, ShipmethodId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -112,7 +111,7 @@ class ShipmethodRepoImpl extends ShipmethodRepo {
   override def selectByIds(shipmethodids: Array[ShipmethodId])(using c: Connection): List[ShipmethodRow] = {
     SQL"""select "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate"::text
           from "purchasing"."shipmethod"
-          where "shipmethodid" = ANY(${shipmethodids})
+          where "shipmethodid" = ANY(${ParameterValue(shipmethodids, null, ShipmethodId.arrayToStatement)})
        """.as(ShipmethodRow.rowParser(1).*)
     
   }

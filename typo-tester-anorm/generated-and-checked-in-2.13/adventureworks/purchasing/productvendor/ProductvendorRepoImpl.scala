@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package productvendor
+package adventureworks.purchasing.productvendor
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -41,7 +40,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     SQL"""delete
           from "purchasing"."productvendor"
           where ("productid", "businessentityid")
-          in (select unnest(${productid}), unnest(${businessentityid}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -113,7 +112,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     SQL"""select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
           from "purchasing"."productvendor"
           where ("productid", "businessentityid")
-          in (select unnest(${productid}), unnest(${businessentityid}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}))
        """.as(ProductvendorRow.rowParser(1).*)
     
   }

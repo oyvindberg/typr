@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package transactionhistoryarchive
+package adventureworks.production.transactionhistoryarchive
 
 import java.sql.Connection
 import scala.annotation.nowarn

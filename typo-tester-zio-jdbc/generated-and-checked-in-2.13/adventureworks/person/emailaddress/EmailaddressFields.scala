@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package emailaddress
+package adventureworks.person.emailaddress
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -13,11 +11,13 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -36,14 +36,14 @@ trait EmailaddressFields {
   def compositeIdIs(compositeId: EmailaddressId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(emailaddressid.isEqual(compositeId.emailaddressid))
   def compositeIdIn(compositeIds: Array[EmailaddressId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(emailaddressid)(_.emailaddressid))
+    new CompositeIn(compositeIds)(TuplePart[EmailaddressId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly), TuplePart[EmailaddressId](emailaddressid)(_.emailaddressid)(using as[Array[Int], Required](adventureworks.IntArrayEncoder, PGType.forArray(PGType.PGTypeInt)), implicitly))
   
 }
 
 object EmailaddressFields {
   lazy val structure: Relation[EmailaddressFields, EmailaddressRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[EmailaddressFields, EmailaddressRow] {
   

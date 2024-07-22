@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package pgtest
+package adventureworks.public.pgtest
 
 import adventureworks.customtypes.TypoBox
 import adventureworks.customtypes.TypoBytea
@@ -31,6 +29,9 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoVector
 import adventureworks.customtypes.TypoXml
+import adventureworks.public.Mydomain
+import adventureworks.public.Myenum
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql

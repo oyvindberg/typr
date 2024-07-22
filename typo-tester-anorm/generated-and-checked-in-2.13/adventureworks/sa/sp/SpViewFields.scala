@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sp
+package adventureworks.sa.sp
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -33,7 +31,7 @@ trait SpViewFields {
 object SpViewFields {
   lazy val structure: Relation[SpViewFields, SpViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SpViewFields, SpViewRow] {
   

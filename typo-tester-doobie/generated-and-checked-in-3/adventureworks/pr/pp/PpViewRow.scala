@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pp
+package adventureworks.pr.pp
 
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
@@ -17,19 +15,19 @@ import io.circe.Encoder
 
 /** View: pr.pp */
 case class PpViewRow(
-  /** Points to [[production.productphoto.ProductphotoRow.productphotoid]] */
+  /** Points to [[adventureworks.production.productphoto.ProductphotoRow.productphotoid]] */
   id: ProductphotoId,
-  /** Points to [[production.productphoto.ProductphotoRow.productphotoid]] */
+  /** Points to [[adventureworks.production.productphoto.ProductphotoRow.productphotoid]] */
   productphotoid: ProductphotoId,
-  /** Points to [[production.productphoto.ProductphotoRow.thumbnailphoto]] */
+  /** Points to [[adventureworks.production.productphoto.ProductphotoRow.thumbnailphoto]] */
   thumbnailphoto: Option[TypoBytea],
-  /** Points to [[production.productphoto.ProductphotoRow.thumbnailphotofilename]] */
+  /** Points to [[adventureworks.production.productphoto.ProductphotoRow.thumbnailphotofilename]] */
   thumbnailphotofilename: Option[/* max 50 chars */ String],
-  /** Points to [[production.productphoto.ProductphotoRow.largephoto]] */
+  /** Points to [[adventureworks.production.productphoto.ProductphotoRow.largephoto]] */
   largephoto: Option[TypoBytea],
-  /** Points to [[production.productphoto.ProductphotoRow.largephotofilename]] */
+  /** Points to [[adventureworks.production.productphoto.ProductphotoRow.largephotofilename]] */
   largephotofilename: Option[/* max 50 chars */ String],
-  /** Points to [[production.productphoto.ProductphotoRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productphoto.ProductphotoRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

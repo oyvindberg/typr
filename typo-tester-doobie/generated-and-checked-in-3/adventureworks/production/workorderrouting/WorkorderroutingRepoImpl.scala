@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorderrouting
+package adventureworks.production.workorderrouting
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -41,7 +39,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     sql"""delete
           from "production"."workorderrouting"
           where ("workorderid", "productid", "operationsequence")
-          in (select unnest(${workorderid}), unnest(${productid}), unnest(${operationsequence}))
+          in (select unnest(${fromWrite(workorderid)(using new Write.Single(WorkorderId.arrayPut))}), unnest(${fromWrite(productid)(using new Write.Single(adventureworks.IntegerArrayMeta.put))}), unnest(${fromWrite(operationsequence)(using new Write.Single(TypoShort.arrayPut))}))
        """.update.run
     
   }
@@ -107,7 +105,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     sql"""select "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
           from "production"."workorderrouting"
           where ("workorderid", "productid", "operationsequence")
-          in (select unnest(${workorderid}), unnest(${productid}), unnest(${operationsequence}))
+          in (select unnest(${fromWrite(workorderid)(using new Write.Single(WorkorderId.arrayPut))}), unnest(${fromWrite(productid)(using new Write.Single(adventureworks.IntegerArrayMeta.put))}), unnest(${fromWrite(operationsequence)(using new Write.Single(TypoShort.arrayPut))}))
        """.query(using WorkorderroutingRow.read).stream
     
   }

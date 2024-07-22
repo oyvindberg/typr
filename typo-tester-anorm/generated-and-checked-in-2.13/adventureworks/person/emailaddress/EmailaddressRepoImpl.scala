@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package emailaddress
+package adventureworks.person.emailaddress
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -40,7 +39,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     SQL"""delete
           from "person"."emailaddress"
           where ("businessentityid", "emailaddressid")
-          in (select unnest(${businessentityid}), unnest(${emailaddressid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(emailaddressid, null, adventureworks.IntArrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -112,7 +111,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     SQL"""select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
           from "person"."emailaddress"
           where ("businessentityid", "emailaddressid")
-          in (select unnest(${businessentityid}), unnest(${emailaddressid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(emailaddressid, null, adventureworks.IntArrayToStatement)}))
        """.as(EmailaddressRow.rowParser(1).*)
     
   }

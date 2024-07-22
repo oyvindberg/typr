@@ -3,11 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142_2
+package adventureworks.public.issue142_2
 
 import adventureworks.public.issue142.Issue142Id
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -27,7 +26,7 @@ class Issue1422RepoImpl extends Issue1422Repo {
     sql"""delete from "public"."issue142_2" where "tabellkode" = ${Segment.paramSegment(tabellkode)(using Issue142Id.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(tabellkodes: Array[Issue142Id]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "public"."issue142_2" where "tabellkode" = ANY(${tabellkodes})""".delete
+    sql"""delete from "public"."issue142_2" where "tabellkode" = ANY(${Segment.paramSegment(tabellkodes)(using Issue142Id.arraySetter)})""".delete
   }
   override def insert(unsaved: Issue1422Row): ZIO[ZConnection, Throwable, Issue1422Row] = {
     sql"""insert into "public"."issue142_2"("tabellkode")

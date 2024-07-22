@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package culture
+package adventureworks.production.culture
 
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder

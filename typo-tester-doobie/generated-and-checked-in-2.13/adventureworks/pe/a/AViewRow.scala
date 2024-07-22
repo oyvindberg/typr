@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package a
+package adventureworks.pe.a
 
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
@@ -19,25 +17,25 @@ import io.circe.Encoder
 
 /** View: pe.a */
 case class AViewRow(
-  /** Points to [[person.address.AddressRow.addressid]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressid]] */
   id: AddressId,
-  /** Points to [[person.address.AddressRow.addressid]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressid]] */
   addressid: AddressId,
-  /** Points to [[person.address.AddressRow.addressline1]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
   addressline1: /* max 60 chars */ String,
-  /** Points to [[person.address.AddressRow.addressline2]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
   addressline2: Option[/* max 60 chars */ String],
-  /** Points to [[person.address.AddressRow.city]] */
+  /** Points to [[adventureworks.person.address.AddressRow.city]] */
   city: /* max 30 chars */ String,
-  /** Points to [[person.address.AddressRow.stateprovinceid]] */
+  /** Points to [[adventureworks.person.address.AddressRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
-  /** Points to [[person.address.AddressRow.postalcode]] */
+  /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
   postalcode: /* max 15 chars */ String,
-  /** Points to [[person.address.AddressRow.spatiallocation]] */
+  /** Points to [[adventureworks.person.address.AddressRow.spatiallocation]] */
   spatiallocation: Option[TypoBytea],
-  /** Points to [[person.address.AddressRow.rowguid]] */
+  /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.address.AddressRow.modifieddate]] */
+  /** Points to [[adventureworks.person.address.AddressRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

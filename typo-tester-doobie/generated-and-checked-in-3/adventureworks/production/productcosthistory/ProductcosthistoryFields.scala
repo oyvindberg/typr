@@ -3,20 +3,20 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productcosthistory
+package adventureworks.production.productcosthistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
+import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -35,14 +35,14 @@ trait ProductcosthistoryFields {
   def compositeIdIs(compositeId: ProductcosthistoryId): SqlExpr[Boolean, Required] =
     productid.isEqual(compositeId.productid).and(startdate.isEqual(compositeId.startdate))
   def compositeIdIn(compositeIds: Array[ProductcosthistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(productid)(_.productid), TuplePart(startdate)(_.startdate))
+    new CompositeIn(compositeIds)(TuplePart[ProductcosthistoryId](productid)(_.productid)(using as[Array[ProductId], Required](using ProductId.arrayPut, Write.fromPut(using ProductId.arrayPut)), implicitly), TuplePart[ProductcosthistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDateTime], Required](using TypoLocalDateTime.arrayPut, Write.fromPut(using TypoLocalDateTime.arrayPut)), implicitly))
   
 }
 
 object ProductcosthistoryFields {
   lazy val structure: Relation[ProductcosthistoryFields, ProductcosthistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductcosthistoryFields, ProductcosthistoryRow] {
   

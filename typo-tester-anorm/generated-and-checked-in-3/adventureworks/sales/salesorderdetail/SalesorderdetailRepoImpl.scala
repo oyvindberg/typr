@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderdetail
+package adventureworks.sales.salesorderdetail
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -14,6 +12,7 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.specialoffer.SpecialofferId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -43,7 +42,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     SQL"""delete
           from "sales"."salesorderdetail"
           where ("salesorderid", "salesorderdetailid")
-          in (select unnest(${salesorderid}), unnest(${salesorderdetailid}))
+          in (select unnest(${ParameterValue(salesorderid, null, SalesorderheaderId.arrayToStatement)}), unnest(${ParameterValue(salesorderdetailid, null, adventureworks.IntArrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -123,7 +122,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     SQL"""select "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"::text
           from "sales"."salesorderdetail"
           where ("salesorderid", "salesorderdetailid")
-          in (select unnest(${salesorderid}), unnest(${salesorderdetailid}))
+          in (select unnest(${ParameterValue(salesorderid, null, SalesorderheaderId.arrayToStatement)}), unnest(${ParameterValue(salesorderdetailid, null, adventureworks.IntArrayToStatement)}))
        """.as(SalesorderdetailRow.rowParser(1).*)
     
   }

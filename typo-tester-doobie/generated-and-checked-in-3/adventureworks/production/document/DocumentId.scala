@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package document
+package adventureworks.production.document
 
 import doobie.postgres.Text
 import doobie.util.Get

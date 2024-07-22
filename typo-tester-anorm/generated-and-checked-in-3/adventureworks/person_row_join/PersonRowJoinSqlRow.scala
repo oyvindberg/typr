@@ -3,8 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person_row_join
+package adventureworks.person_row_join
 
 import adventureworks.customtypes.TypoRecord
 import adventureworks.person.businessentity.BusinessentityId
@@ -22,7 +21,7 @@ import scala.util.Try
 
 /** SQL file: person_row_join.sql */
 case class PersonRowJoinSqlRow(
-  /** Points to [[sales.salesperson.SalespersonRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   email: /* nullability unknown */ Option[Array[TypoRecord]],
   emails: /* nullability unknown */ Option[Array[TypoRecord]]

@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productsubcategory
+package adventureworks.production.productsubcategory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -32,7 +31,7 @@ class ProductsubcategoryRepoImpl extends ProductsubcategoryRepo {
     sql"""delete from "production"."productsubcategory" where "productsubcategoryid" = ${Segment.paramSegment(productsubcategoryid)(ProductsubcategoryId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(productsubcategoryids: Array[ProductsubcategoryId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."productsubcategory" where "productsubcategoryid" = ANY(${productsubcategoryids})""".delete
+    sql"""delete from "production"."productsubcategory" where "productsubcategoryid" = ANY(${Segment.paramSegment(productsubcategoryids)(ProductsubcategoryId.arraySetter)})""".delete
   }
   override def insert(unsaved: ProductsubcategoryRow): ZIO[ZConnection, Throwable, ProductsubcategoryRow] = {
     sql"""insert into "production"."productsubcategory"("productsubcategoryid", "productcategoryid", "name", "rowguid", "modifieddate")

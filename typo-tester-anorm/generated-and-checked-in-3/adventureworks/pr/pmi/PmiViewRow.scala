@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pmi
+package adventureworks.pr.pmi
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
@@ -22,11 +20,11 @@ import scala.util.Try
 
 /** View: pr.pmi */
 case class PmiViewRow(
-  /** Points to [[production.productmodelillustration.ProductmodelillustrationRow.productmodelid]] */
+  /** Points to [[adventureworks.production.productmodelillustration.ProductmodelillustrationRow.productmodelid]] */
   productmodelid: ProductmodelId,
-  /** Points to [[production.productmodelillustration.ProductmodelillustrationRow.illustrationid]] */
+  /** Points to [[adventureworks.production.productmodelillustration.ProductmodelillustrationRow.illustrationid]] */
   illustrationid: IllustrationId,
-  /** Points to [[production.productmodelillustration.ProductmodelillustrationRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productmodelillustration.ProductmodelillustrationRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

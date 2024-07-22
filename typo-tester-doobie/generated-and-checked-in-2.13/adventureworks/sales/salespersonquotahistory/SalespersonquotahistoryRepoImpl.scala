@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salespersonquotahistory
+package adventureworks.sales.salespersonquotahistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -39,7 +37,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     sql"""delete
           from "sales"."salespersonquotahistory"
           where ("businessentityid", "quotadate")
-          in (select unnest(${businessentityid}), unnest(${quotadate}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(quotadate)(new Write.Single(TypoLocalDateTime.arrayPut))}))
        """.update.run
     
   }
@@ -100,7 +98,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     sql"""select "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
           from "sales"."salespersonquotahistory"
           where ("businessentityid", "quotadate")
-          in (select unnest(${businessentityid}), unnest(${quotadate}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(quotadate)(new Write.Single(TypoLocalDateTime.arrayPut))}))
        """.query(SalespersonquotahistoryRow.read).stream
     
   }

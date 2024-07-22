@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheader
+package adventureworks.sales.salesorderheader
 
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder

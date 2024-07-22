@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package password
+package adventureworks.person.password
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -33,7 +31,7 @@ trait PasswordFields {
 object PasswordFields {
   lazy val structure: Relation[PasswordFields, PasswordRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PasswordFields, PasswordRow] {
   

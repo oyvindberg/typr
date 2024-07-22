@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pu
-package pod
+package adventureworks.pu.pod
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -18,25 +16,25 @@ import io.circe.Encoder
 
 /** View: pu.pod */
 case class PodViewRow(
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.purchaseorderdetailid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.purchaseorderdetailid]] */
   id: Int,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.purchaseorderid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.purchaseorderid]] */
   purchaseorderid: PurchaseorderheaderId,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.purchaseorderdetailid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.purchaseorderdetailid]] */
   purchaseorderdetailid: Int,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.duedate]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.duedate]] */
   duedate: TypoLocalDateTime,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.orderqty]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.orderqty]] */
   orderqty: TypoShort,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.productid]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.productid]] */
   productid: ProductId,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.unitprice]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.unitprice]] */
   unitprice: BigDecimal,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.receivedqty]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.receivedqty]] */
   receivedqty: BigDecimal,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.rejectedqty]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.rejectedqty]] */
   rejectedqty: BigDecimal,
-  /** Points to [[purchasing.purchaseorderdetail.PurchaseorderdetailRow.modifieddate]] */
+  /** Points to [[adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

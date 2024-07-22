@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentity
+package adventureworks.person.businessentity
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class BusinessentityRepoImpl extends BusinessentityRepo {
     sql"""delete from "person"."businessentity" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."businessentity" where "businessentityid" = ANY(${businessentityids})""".update.run
+    sql"""delete from "person"."businessentity" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".update.run
   }
   override def insert(unsaved: BusinessentityRow): ConnectionIO[BusinessentityRow] = {
     sql"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
@@ -87,7 +85,7 @@ class BusinessentityRepoImpl extends BusinessentityRepo {
     sql"""select "businessentityid", "rowguid", "modifieddate"::text from "person"."businessentity" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".query(using BusinessentityRow.read).option
   }
   override def selectByIds(businessentityids: Array[BusinessentityId]): Stream[ConnectionIO, BusinessentityRow] = {
-    sql"""select "businessentityid", "rowguid", "modifieddate"::text from "person"."businessentity" where "businessentityid" = ANY(${businessentityids})""".query(using BusinessentityRow.read).stream
+    sql"""select "businessentityid", "rowguid", "modifieddate"::text from "person"."businessentity" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".query(using BusinessentityRow.read).stream
   }
   override def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ConnectionIO[Map[BusinessentityId, BusinessentityRow]] = {
     selectByIds(businessentityids).compile.toList.map { rows =>

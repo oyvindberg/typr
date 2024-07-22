@@ -3,12 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package only_pk_columns
+package adventureworks.public.only_pk_columns
 
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
+import anorm.ParameterMetaData
 import anorm.ParameterValue
 import anorm.SqlStringInterpolation
 import anorm.ToStatement
@@ -32,7 +32,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     SQL"""delete
           from "public"."only_pk_columns"
           where ("key_column_1", "key_column_2")
-          in (select unnest(${keyColumn1}), unnest(${keyColumn2}))
+          in (select unnest(${ParameterValue(keyColumn1, null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(keyColumn2, null, adventureworks.IntArrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -67,7 +67,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     SQL"""select "key_column_1", "key_column_2"
           from "public"."only_pk_columns"
           where ("key_column_1", "key_column_2")
-          in (select unnest(${keyColumn1}), unnest(${keyColumn2}))
+          in (select unnest(${ParameterValue(keyColumn1, null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(keyColumn2, null, adventureworks.IntArrayToStatement)}))
        """.as(OnlyPkColumnsRow.rowParser(1).*)
     
   }

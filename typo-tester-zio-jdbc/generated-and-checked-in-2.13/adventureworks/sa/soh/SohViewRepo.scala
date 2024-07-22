@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package soh
+package adventureworks.sa.soh
 
 import typo.dsl.SelectBuilder
 import zio.jdbc.ZConnection

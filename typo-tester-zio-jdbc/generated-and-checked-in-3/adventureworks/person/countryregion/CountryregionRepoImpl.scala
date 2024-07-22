@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package countryregion
+package adventureworks.person.countryregion
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class CountryregionRepoImpl extends CountryregionRepo {
     sql"""delete from "person"."countryregion" where "countryregioncode" = ${Segment.paramSegment(countryregioncode)(using CountryregionId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(countryregioncodes: Array[CountryregionId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "person"."countryregion" where "countryregioncode" = ANY(${countryregioncodes})""".delete
+    sql"""delete from "person"."countryregion" where "countryregioncode" = ANY(${Segment.paramSegment(countryregioncodes)(using CountryregionId.arraySetter)})""".delete
   }
   override def insert(unsaved: CountryregionRow): ZIO[ZConnection, Throwable, CountryregionRow] = {
     sql"""insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package ppp
+package adventureworks.pr.ppp
 
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql

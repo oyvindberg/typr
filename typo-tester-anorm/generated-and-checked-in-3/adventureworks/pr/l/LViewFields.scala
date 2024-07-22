@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package l
+package adventureworks.pr.l
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.location.LocationId
@@ -27,7 +25,7 @@ trait LViewFields {
 object LViewFields {
   lazy val structure: Relation[LViewFields, LViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[LViewFields, LViewRow] {
   

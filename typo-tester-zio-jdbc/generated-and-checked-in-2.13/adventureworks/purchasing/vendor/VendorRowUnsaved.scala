@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package vendor
+package adventureworks.purchasing.vendor
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -22,7 +21,7 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `purchasing.vendor` which has not been persisted yet */
 case class VendorRowUnsaved(
   /** Primary key for Vendor records.  Foreign key to BusinessEntity.BusinessEntityID
-      Points to [[person.businessentity.BusinessentityRow.businessentityid]] */
+      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Vendor account (identification) number. */
   accountnumber: AccountNumber,

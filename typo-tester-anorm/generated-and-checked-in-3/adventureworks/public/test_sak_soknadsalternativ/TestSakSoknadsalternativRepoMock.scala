@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_sak_soknadsalternativ
+package adventureworks.public.test_sak_soknadsalternativ
 
 import java.sql.Connection
 import scala.annotation.nowarn

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderdetail
+package adventureworks.sales.salesorderdetail
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -18,12 +16,14 @@ import adventureworks.sales.specialoffer.SpecialofferId
 import adventureworks.sales.specialofferproduct.SpecialofferproductFields
 import adventureworks.sales.specialofferproduct.SpecialofferproductId
 import adventureworks.sales.specialofferproduct.SpecialofferproductRow
+import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -51,19 +51,19 @@ trait SalesorderdetailFields {
   def compositeIdIs(compositeId: SalesorderdetailId): SqlExpr[Boolean, Required] =
     salesorderid.isEqual(compositeId.salesorderid).and(salesorderdetailid.isEqual(compositeId.salesorderdetailid))
   def compositeIdIn(compositeIds: Array[SalesorderdetailId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(salesorderid)(_.salesorderid), TuplePart(salesorderdetailid)(_.salesorderdetailid))
+    new CompositeIn(compositeIds)(TuplePart[SalesorderdetailId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId], Required](SalesorderheaderId.arrayPut, Write.fromPut(SalesorderheaderId.arrayPut)), implicitly), TuplePart[SalesorderdetailId](salesorderdetailid)(_.salesorderdetailid)(using as[Array[Int], Required](adventureworks.IntegerArrayMeta.put, Write.fromPut(adventureworks.IntegerArrayMeta.put)), implicitly))
   
   def extractSpecialofferproductIdIs(id: SpecialofferproductId): SqlExpr[Boolean, Required] =
     specialofferid.isEqual(id.specialofferid).and(productid.isEqual(id.productid))
   def extractSpecialofferproductIdIn(ids: Array[SpecialofferproductId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(ids)(TuplePart(specialofferid)(_.specialofferid), TuplePart(productid)(_.productid))
+    new CompositeIn(ids)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId], Required](SpecialofferId.arrayPut, Write.fromPut(SpecialofferId.arrayPut)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId], Required](ProductId.arrayPut, Write.fromPut(ProductId.arrayPut)), implicitly))
   
 }
 
 object SalesorderdetailFields {
   lazy val structure: Relation[SalesorderdetailFields, SalesorderdetailRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SalesorderdetailFields, SalesorderdetailRow] {
   

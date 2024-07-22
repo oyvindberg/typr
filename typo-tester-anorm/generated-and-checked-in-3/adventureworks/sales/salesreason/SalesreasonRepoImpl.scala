@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesreason
+package adventureworks.sales.salesreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class SalesreasonRepoImpl extends SalesreasonRepo {
   override def deleteByIds(salesreasonids: Array[SalesreasonId])(using c: Connection): Int = {
     SQL"""delete
           from "sales"."salesreason"
-          where "salesreasonid" = ANY(${salesreasonids})
+          where "salesreasonid" = ANY(${ParameterValue(salesreasonids, null, SalesreasonId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -99,7 +98,7 @@ class SalesreasonRepoImpl extends SalesreasonRepo {
   override def selectByIds(salesreasonids: Array[SalesreasonId])(using c: Connection): List[SalesreasonRow] = {
     SQL"""select "salesreasonid", "name", "reasontype", "modifieddate"::text
           from "sales"."salesreason"
-          where "salesreasonid" = ANY(${salesreasonids})
+          where "salesreasonid" = ANY(${ParameterValue(salesreasonids, null, SalesreasonId.arrayToStatement)})
        """.as(SalesreasonRow.rowParser(1).*)
     
   }

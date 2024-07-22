@@ -31,7 +31,7 @@ object addPackageAndImports {
     }
 
     val withPrefix =
-      code"""${NonEmptyList.fromList(file.pkg.idents).fold(sc.Code.Empty)(is => is.map(i => code"package $i").mkCode("\n"))}
+      code"""package ${file.pkg}
             |
             |${newImports.values.toList.sorted.map { i => code"import $i" }.mkCode("\n")}
             |

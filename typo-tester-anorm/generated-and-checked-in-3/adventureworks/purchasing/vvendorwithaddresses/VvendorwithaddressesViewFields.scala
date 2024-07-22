@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package vvendorwithaddresses
+package adventureworks.purchasing.vvendorwithaddresses
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
@@ -30,7 +28,7 @@ trait VvendorwithaddressesViewFields {
 object VvendorwithaddressesViewFields {
   lazy val structure: Relation[VvendorwithaddressesViewFields, VvendorwithaddressesViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VvendorwithaddressesViewFields, VvendorwithaddressesViewRow] {
   

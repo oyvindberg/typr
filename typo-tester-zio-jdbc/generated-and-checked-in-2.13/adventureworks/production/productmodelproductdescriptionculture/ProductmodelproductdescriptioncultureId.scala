@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelproductdescriptionculture
+package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId

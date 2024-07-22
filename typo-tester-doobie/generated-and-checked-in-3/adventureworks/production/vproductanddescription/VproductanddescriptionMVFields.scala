@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package vproductanddescription
+package adventureworks.production.vproductanddescription
 
 import adventureworks.production.culture.CultureId
 import adventureworks.production.product.ProductId
@@ -26,7 +24,7 @@ trait VproductanddescriptionMVFields {
 object VproductanddescriptionMVFields {
   lazy val structure: Relation[VproductanddescriptionMVFields, VproductanddescriptionMVRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VproductanddescriptionMVFields, VproductanddescriptionMVRow] {
   

@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderheader
+package adventureworks.purchasing.purchaseorderheader
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -34,13 +33,13 @@ case class PurchaseorderheaderRow(
       Constraint CK_PurchaseOrderHeader_Status affecting columns status: (((status >= 1) AND (status <= 4))) */
   status: TypoShort,
   /** Employee who created the purchase order. Foreign key to Employee.BusinessEntityID.
-      Points to [[humanresources.employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   employeeid: BusinessentityId,
   /** Vendor with whom the purchase order is placed. Foreign key to Vendor.BusinessEntityID.
-      Points to [[vendor.VendorRow.businessentityid]] */
+      Points to [[adventureworks.purchasing.vendor.VendorRow.businessentityid]] */
   vendorid: BusinessentityId,
   /** Shipping method. Foreign key to ShipMethod.ShipMethodID.
-      Points to [[shipmethod.ShipmethodRow.shipmethodid]] */
+      Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
   shipmethodid: ShipmethodId,
   /** Purchase order creation date.
       Default: now()

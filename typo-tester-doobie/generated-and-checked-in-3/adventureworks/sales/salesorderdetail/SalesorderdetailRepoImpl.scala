@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderdetail
+package adventureworks.sales.salesorderdetail
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -42,7 +40,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     sql"""delete
           from "sales"."salesorderdetail"
           where ("salesorderid", "salesorderdetailid")
-          in (select unnest(${salesorderid}), unnest(${salesorderdetailid}))
+          in (select unnest(${fromWrite(salesorderid)(using new Write.Single(SalesorderheaderId.arrayPut))}), unnest(${fromWrite(salesorderdetailid)(using new Write.Single(adventureworks.IntegerArrayMeta.put))}))
        """.update.run
     
   }
@@ -114,7 +112,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     sql"""select "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"::text
           from "sales"."salesorderdetail"
           where ("salesorderid", "salesorderdetailid")
-          in (select unnest(${salesorderid}), unnest(${salesorderdetailid}))
+          in (select unnest(${fromWrite(salesorderid)(using new Write.Single(SalesorderheaderId.arrayPut))}), unnest(${fromWrite(salesorderdetailid)(using new Write.Single(adventureworks.IntegerArrayMeta.put))}))
        """.query(using SalesorderdetailRow.read).stream
     
   }

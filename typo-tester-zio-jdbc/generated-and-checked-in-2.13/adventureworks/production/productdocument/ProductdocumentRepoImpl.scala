@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productdocument
+package adventureworks.production.productdocument
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -36,7 +35,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     sql"""delete
           from "production"."productdocument"
           where ("productid", "documentnode")
-          in (select unnest(${productid}), unnest(${documentnode}))
+          in (select unnest(${Segment.paramSegment(productid)(ProductId.arraySetter)}), unnest(${Segment.paramSegment(documentnode)(DocumentId.arraySetter)}))
        """.delete
     
   }
@@ -93,7 +92,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     sql"""select "productid", "modifieddate"::text, "documentnode"
           from "production"."productdocument"
           where ("productid", "documentnode")
-          in (select unnest(${productid}), unnest(${documentnode}))
+          in (select unnest(${Segment.paramSegment(productid)(ProductId.arraySetter)}), unnest(${Segment.paramSegment(documentnode)(DocumentId.arraySetter)}))
        """.query(ProductdocumentRow.jdbcDecoder).selectStream()
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialofferproduct
+package adventureworks.sales.specialofferproduct
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -15,12 +13,14 @@ import adventureworks.production.product.ProductRow
 import adventureworks.sales.specialoffer.SpecialofferFields
 import adventureworks.sales.specialoffer.SpecialofferId
 import adventureworks.sales.specialoffer.SpecialofferRow
+import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -40,14 +40,14 @@ trait SpecialofferproductFields {
   def compositeIdIs(compositeId: SpecialofferproductId): SqlExpr[Boolean, Required] =
     specialofferid.isEqual(compositeId.specialofferid).and(productid.isEqual(compositeId.productid))
   def compositeIdIn(compositeIds: Array[SpecialofferproductId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(specialofferid)(_.specialofferid), TuplePart(productid)(_.productid))
+    new CompositeIn(compositeIds)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId], Required](ToParameterValue(null, SpecialofferId.arrayToStatement), adventureworks.arrayParameterMetaData(SpecialofferId.parameterMetadata)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId], Required](ToParameterValue(null, ProductId.arrayToStatement), adventureworks.arrayParameterMetaData(ProductId.parameterMetadata)), implicitly))
   
 }
 
 object SpecialofferproductFields {
   lazy val structure: Relation[SpecialofferproductFields, SpecialofferproductRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SpecialofferproductFields, SpecialofferproductRow] {
   

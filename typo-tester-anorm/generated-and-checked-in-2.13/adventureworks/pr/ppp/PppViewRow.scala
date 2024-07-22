@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package ppp
+package adventureworks.pr.ppp
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -23,13 +21,13 @@ import scala.util.Try
 
 /** View: pr.ppp */
 case class PppViewRow(
-  /** Points to [[production.productproductphoto.ProductproductphotoRow.productid]] */
+  /** Points to [[adventureworks.production.productproductphoto.ProductproductphotoRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.productproductphoto.ProductproductphotoRow.productphotoid]] */
+  /** Points to [[adventureworks.production.productproductphoto.ProductproductphotoRow.productphotoid]] */
   productphotoid: ProductphotoId,
-  /** Points to [[production.productproductphoto.ProductproductphotoRow.primary]] */
+  /** Points to [[adventureworks.production.productproductphoto.ProductproductphotoRow.primary]] */
   primary: Flag,
-  /** Points to [[production.productproductphoto.ProductproductphotoRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productproductphoto.ProductproductphotoRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productcosthistory
+package adventureworks.production.productcosthistory
 
 import doobie.free.connection.ConnectionIO
 import doobie.free.connection.delay

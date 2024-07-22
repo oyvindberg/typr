@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package personphone
+package adventureworks.person.personphone
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -40,7 +38,7 @@ class PersonphoneRepoImpl extends PersonphoneRepo {
     sql"""delete
           from "person"."personphone"
           where ("businessentityid", "phonenumber", "phonenumbertypeid")
-          in (select unnest(${businessentityid}), unnest(${phonenumber}), unnest(${phonenumbertypeid}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(phonenumber)(new Write.Single(Phone.arrayPut))}), unnest(${fromWrite(phonenumbertypeid)(new Write.Single(PhonenumbertypeId.arrayPut))}))
        """.update.run
     
   }
@@ -98,7 +96,7 @@ class PersonphoneRepoImpl extends PersonphoneRepo {
     sql"""select "businessentityid", "phonenumber", "phonenumbertypeid", "modifieddate"::text
           from "person"."personphone"
           where ("businessentityid", "phonenumber", "phonenumbertypeid")
-          in (select unnest(${businessentityid}), unnest(${phonenumber}), unnest(${phonenumbertypeid}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(phonenumber)(new Write.Single(Phone.arrayPut))}), unnest(${fromWrite(phonenumbertypeid)(new Write.Single(PhonenumbertypeId.arrayPut))}))
        """.query(PersonphoneRow.read).stream
     
   }

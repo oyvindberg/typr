@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelproductdescriptionculture
+package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureFields
@@ -18,11 +16,13 @@ import adventureworks.production.productmodel.ProductmodelFields
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.production.productmodel.ProductmodelRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -45,14 +45,14 @@ trait ProductmodelproductdescriptioncultureFields {
   def compositeIdIs(compositeId: ProductmodelproductdescriptioncultureId): SqlExpr[Boolean, Required] =
     productmodelid.isEqual(compositeId.productmodelid).and(productdescriptionid.isEqual(compositeId.productdescriptionid)).and(cultureid.isEqual(compositeId.cultureid))
   def compositeIdIn(compositeIds: Array[ProductmodelproductdescriptioncultureId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(productmodelid)(_.productmodelid), TuplePart(productdescriptionid)(_.productdescriptionid), TuplePart(cultureid)(_.cultureid))
+    new CompositeIn(compositeIds)(TuplePart[ProductmodelproductdescriptioncultureId](productmodelid)(_.productmodelid)(using as[Array[ProductmodelId], Required](ProductmodelId.arrayJdbcEncoder, PGType.forArray(ProductmodelId.pgType)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](productdescriptionid)(_.productdescriptionid)(using as[Array[ProductdescriptionId], Required](ProductdescriptionId.arrayJdbcEncoder, PGType.forArray(ProductdescriptionId.pgType)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](cultureid)(_.cultureid)(using as[Array[CultureId], Required](CultureId.arrayJdbcEncoder, PGType.forArray(CultureId.pgType)), implicitly))
   
 }
 
 object ProductmodelproductdescriptioncultureFields {
   lazy val structure: Relation[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] {
   

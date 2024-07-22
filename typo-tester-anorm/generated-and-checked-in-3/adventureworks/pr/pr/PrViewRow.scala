@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pr
+package adventureworks.pr.pr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -25,23 +23,23 @@ import scala.util.Try
 
 /** View: pr.pr */
 case class PrViewRow(
-  /** Points to [[production.productreview.ProductreviewRow.productreviewid]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.productreviewid]] */
   id: ProductreviewId,
-  /** Points to [[production.productreview.ProductreviewRow.productreviewid]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.productreviewid]] */
   productreviewid: ProductreviewId,
-  /** Points to [[production.productreview.ProductreviewRow.productid]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.productreview.ProductreviewRow.reviewername]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.reviewername]] */
   reviewername: Name,
-  /** Points to [[production.productreview.ProductreviewRow.reviewdate]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.reviewdate]] */
   reviewdate: TypoLocalDateTime,
-  /** Points to [[production.productreview.ProductreviewRow.emailaddress]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.emailaddress]] */
   emailaddress: /* max 50 chars */ String,
-  /** Points to [[production.productreview.ProductreviewRow.rating]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.rating]] */
   rating: Int,
-  /** Points to [[production.productreview.ProductreviewRow.comments]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.comments]] */
   comments: Option[/* max 3850 chars */ String],
-  /** Points to [[production.productreview.ProductreviewRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productreview.ProductreviewRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

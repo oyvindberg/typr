@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package table_with_generated_columns
+package adventureworks.public.table_with_generated_columns
 
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
@@ -29,7 +27,7 @@ class TableWithGeneratedColumnsRepoImpl extends TableWithGeneratedColumnsRepo {
     sql"""delete from "public"."table-with-generated-columns" where "name" = ${fromWrite(name)(using new Write.Single(TableWithGeneratedColumnsId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(names: Array[TableWithGeneratedColumnsId]): ConnectionIO[Int] = {
-    sql"""delete from "public"."table-with-generated-columns" where "name" = ANY(${names})""".update.run
+    sql"""delete from "public"."table-with-generated-columns" where "name" = ANY(${fromWrite(names)(using new Write.Single(TableWithGeneratedColumnsId.arrayPut))})""".update.run
   }
   override def insert(unsaved: TableWithGeneratedColumnsRow): ConnectionIO[TableWithGeneratedColumnsRow] = {
     sql"""insert into "public"."table-with-generated-columns"("name")
@@ -73,7 +71,7 @@ class TableWithGeneratedColumnsRepoImpl extends TableWithGeneratedColumnsRepo {
     sql"""select "name", "name-type-always" from "public"."table-with-generated-columns" where "name" = ${fromWrite(name)(using new Write.Single(TableWithGeneratedColumnsId.put))}""".query(using TableWithGeneratedColumnsRow.read).option
   }
   override def selectByIds(names: Array[TableWithGeneratedColumnsId]): Stream[ConnectionIO, TableWithGeneratedColumnsRow] = {
-    sql"""select "name", "name-type-always" from "public"."table-with-generated-columns" where "name" = ANY(${names})""".query(using TableWithGeneratedColumnsRow.read).stream
+    sql"""select "name", "name-type-always" from "public"."table-with-generated-columns" where "name" = ANY(${fromWrite(names)(using new Write.Single(TableWithGeneratedColumnsId.arrayPut))})""".query(using TableWithGeneratedColumnsRow.read).stream
   }
   override def selectByIdsTracked(names: Array[TableWithGeneratedColumnsId]): ConnectionIO[Map[TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow]] = {
     selectByIds(names).compile.toList.map { rows =>

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package vvendorwithaddresses
+package adventureworks.purchasing.vvendorwithaddresses
 
 import anorm.SqlStringInterpolation
 import java.sql.Connection

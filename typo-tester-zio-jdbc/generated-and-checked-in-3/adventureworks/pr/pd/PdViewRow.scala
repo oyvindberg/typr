@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pd
+package adventureworks.pr.pd
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -19,15 +17,15 @@ import zio.json.internal.Write
 
 /** View: pr.pd */
 case class PdViewRow(
-  /** Points to [[production.productdescription.ProductdescriptionRow.productdescriptionid]] */
+  /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.productdescriptionid]] */
   id: ProductdescriptionId,
-  /** Points to [[production.productdescription.ProductdescriptionRow.productdescriptionid]] */
+  /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.productdescriptionid]] */
   productdescriptionid: ProductdescriptionId,
-  /** Points to [[production.productdescription.ProductdescriptionRow.description]] */
+  /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.description]] */
   description: /* max 400 chars */ String,
-  /** Points to [[production.productdescription.ProductdescriptionRow.rowguid]] */
+  /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[production.productdescription.ProductdescriptionRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

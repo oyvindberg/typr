@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package flaff
+package adventureworks.public.flaff
 
+import adventureworks.public.ShortText
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
 import doobie.postgres.syntax.FragmentOps
@@ -36,7 +35,7 @@ class FlaffRepoImpl extends FlaffRepo {
     sql"""delete
           from "public"."flaff"
           where ("code", "another_code", "some_number", "specifier")
-          in (select unnest(${code}), unnest(${anotherCode}), unnest(${someNumber}), unnest(${specifier}))
+          in (select unnest(${fromWrite(code)(new Write.Single(ShortText.arrayPut))}), unnest(${fromWrite(anotherCode)(new Write.Single(adventureworks.StringArrayMeta.put))}), unnest(${fromWrite(someNumber)(new Write.Single(adventureworks.IntegerArrayMeta.put))}), unnest(${fromWrite(specifier)(new Write.Single(ShortText.arrayPut))}))
        """.update.run
     
   }
@@ -66,7 +65,7 @@ class FlaffRepoImpl extends FlaffRepo {
     sql"""select "code", "another_code", "some_number", "specifier", "parentspecifier"
           from "public"."flaff"
           where ("code", "another_code", "some_number", "specifier")
-          in (select unnest(${code}), unnest(${anotherCode}), unnest(${someNumber}), unnest(${specifier}))
+          in (select unnest(${fromWrite(code)(new Write.Single(ShortText.arrayPut))}), unnest(${fromWrite(anotherCode)(new Write.Single(adventureworks.StringArrayMeta.put))}), unnest(${fromWrite(someNumber)(new Write.Single(adventureworks.IntegerArrayMeta.put))}), unnest(${fromWrite(specifier)(new Write.Single(ShortText.arrayPut))}))
        """.query(FlaffRow.read).stream
     
   }

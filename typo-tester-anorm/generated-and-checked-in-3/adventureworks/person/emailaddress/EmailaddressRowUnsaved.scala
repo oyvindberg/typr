@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package emailaddress
+package adventureworks.person.emailaddress
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -23,7 +22,7 @@ import scala.util.Try
 /** This class corresponds to a row in table `person.emailaddress` which has not been persisted yet */
 case class EmailaddressRowUnsaved(
   /** Primary key. Person associated with this email address.  Foreign key to Person.BusinessEntityID
-      Points to [[person.PersonRow.businessentityid]] */
+      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** E-mail address for the person. */
   emailaddress: Option[/* max 50 chars */ String],

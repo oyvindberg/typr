@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheader
+package adventureworks.sales.salesorderheader
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -20,6 +18,7 @@ import adventureworks.purchasing.shipmethod.ShipmethodId
 import adventureworks.sales.currencyrate.CurrencyrateId
 import adventureworks.sales.customer.CustomerId
 import adventureworks.sales.salesterritory.SalesterritoryId
+import adventureworks.streamingInsert
 import adventureworks.userdefined.CustomCreditcardId
 import anorm.BatchSql
 import anorm.NamedParameter
@@ -47,7 +46,7 @@ class SalesorderheaderRepoImpl extends SalesorderheaderRepo {
   override def deleteByIds(salesorderids: Array[SalesorderheaderId])(using c: Connection): Int = {
     SQL"""delete
           from "sales"."salesorderheader"
-          where "salesorderid" = ANY(${salesorderids})
+          where "salesorderid" = ANY(${ParameterValue(salesorderids, null, SalesorderheaderId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -157,7 +156,7 @@ class SalesorderheaderRepoImpl extends SalesorderheaderRepo {
   override def selectByIds(salesorderids: Array[SalesorderheaderId])(using c: Connection): List[SalesorderheaderRow] = {
     SQL"""select "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text
           from "sales"."salesorderheader"
-          where "salesorderid" = ANY(${salesorderids})
+          where "salesorderid" = ANY(${ParameterValue(salesorderids, null, SalesorderheaderId.arrayToStatement)})
        """.as(SalesorderheaderRow.rowParser(1).*)
     
   }

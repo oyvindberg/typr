@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelproductdescriptionculture
+package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -23,13 +21,13 @@ import io.circe.Encoder
     Composite primary key: productmodelid, productdescriptionid, cultureid */
 case class ProductmodelproductdescriptioncultureRow(
   /** Primary key. Foreign key to ProductModel.ProductModelID.
-      Points to [[productmodel.ProductmodelRow.productmodelid]] */
+      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
   productmodelid: ProductmodelId,
   /** Primary key. Foreign key to ProductDescription.ProductDescriptionID.
-      Points to [[productdescription.ProductdescriptionRow.productdescriptionid]] */
+      Points to [[adventureworks.production.productdescription.ProductdescriptionRow.productdescriptionid]] */
   productdescriptionid: ProductdescriptionId,
   /** Culture identification number. Foreign key to Culture.CultureID.
-      Points to [[culture.CultureRow.cultureid]] */
+      Points to [[adventureworks.production.culture.CultureRow.cultureid]] */
   cultureid: CultureId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime

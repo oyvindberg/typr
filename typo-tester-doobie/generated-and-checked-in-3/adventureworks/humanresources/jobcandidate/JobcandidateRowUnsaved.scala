@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package jobcandidate
+package adventureworks.humanresources.jobcandidate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -18,7 +16,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `humanresources.jobcandidate` which has not been persisted yet */
 case class JobcandidateRowUnsaved(
   /** Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID.
-      Points to [[employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: Option[BusinessentityId],
   /** RÃ©sumÃ© in XML format. */
   resume: Option[TypoXml],

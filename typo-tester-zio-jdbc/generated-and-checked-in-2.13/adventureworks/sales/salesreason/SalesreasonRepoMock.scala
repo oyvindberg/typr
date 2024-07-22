@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesreason
+package adventureworks.sales.salesreason
 
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder

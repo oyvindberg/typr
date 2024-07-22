@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package product
+package adventureworks.production.product
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -62,10 +61,10 @@ case class ProductRow(
   /** Product size. */
   size: Option[/* max 5 chars */ String],
   /** Unit of measure for Size column.
-      Points to [[unitmeasure.UnitmeasureRow.unitmeasurecode]] */
+      Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
   sizeunitmeasurecode: Option[UnitmeasureId],
   /** Unit of measure for Weight column.
-      Points to [[unitmeasure.UnitmeasureRow.unitmeasurecode]] */
+      Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
   weightunitmeasurecode: Option[UnitmeasureId],
   /** Product weight.
       Constraint CK_Product_Weight affecting columns weight: ((weight > 0.00)) */
@@ -83,10 +82,10 @@ case class ProductRow(
       Constraint CK_Product_Style affecting columns style: (((upper((style)::text) = ANY (ARRAY['W'::text, 'M'::text, 'U'::text])) OR (style IS NULL))) */
   style: Option[/* bpchar, max 2 chars */ String],
   /** Product is a member of this product subcategory. Foreign key to ProductSubCategory.ProductSubCategoryID.
-      Points to [[productsubcategory.ProductsubcategoryRow.productsubcategoryid]] */
+      Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]] */
   productsubcategoryid: Option[ProductsubcategoryId],
   /** Product is a member of this product model. Foreign key to ProductModel.ProductModelID.
-      Points to [[productmodel.ProductmodelRow.productmodelid]] */
+      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
   productmodelid: Option[ProductmodelId],
   /** Date the product was available for sale.
       Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate: (((sellenddate >= sellstartdate) OR (sellenddate IS NULL))) */

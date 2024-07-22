@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package productvendor
+package adventureworks.purchasing.productvendor
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -20,10 +19,10 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `purchasing.productvendor` which has not been persisted yet */
 case class ProductvendorRowUnsaved(
   /** Primary key. Foreign key to Product.ProductID.
-      Points to [[production.product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Primary key. Foreign key to Vendor.BusinessEntityID.
-      Points to [[vendor.VendorRow.businessentityid]] */
+      Points to [[adventureworks.purchasing.vendor.VendorRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** The average span of time (in days) between placing an order with the vendor and receiving the purchased product.
       Constraint CK_ProductVendor_AverageLeadTime affecting columns averageleadtime:  ((averageleadtime >= 1)) */
@@ -46,7 +45,7 @@ case class ProductvendorRowUnsaved(
       Constraint CK_ProductVendor_OnOrderQty affecting columns onorderqty:  ((onorderqty >= 0)) */
   onorderqty: Option[Int],
   /** The product's unit of measure.
-      Points to [[production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
+      Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
   unitmeasurecode: UnitmeasureId,
   /** Default: now() */
   modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault

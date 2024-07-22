@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package table_with_generated_columns
+package adventureworks.public.table_with_generated_columns
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
@@ -21,7 +19,7 @@ trait TableWithGeneratedColumnsFields {
 object TableWithGeneratedColumnsFields {
   lazy val structure: Relation[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow] {
   

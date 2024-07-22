@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pc
+package adventureworks.pr.pc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -17,15 +15,15 @@ import io.circe.Encoder
 
 /** View: pr.pc */
 case class PcViewRow(
-  /** Points to [[production.productcategory.ProductcategoryRow.productcategoryid]] */
+  /** Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]] */
   id: ProductcategoryId,
-  /** Points to [[production.productcategory.ProductcategoryRow.productcategoryid]] */
+  /** Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]] */
   productcategoryid: ProductcategoryId,
-  /** Points to [[production.productcategory.ProductcategoryRow.name]] */
+  /** Points to [[adventureworks.production.productcategory.ProductcategoryRow.name]] */
   name: Name,
-  /** Points to [[production.productcategory.ProductcategoryRow.rowguid]] */
+  /** Points to [[adventureworks.production.productcategory.ProductcategoryRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[production.productcategory.ProductcategoryRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productcategory.ProductcategoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

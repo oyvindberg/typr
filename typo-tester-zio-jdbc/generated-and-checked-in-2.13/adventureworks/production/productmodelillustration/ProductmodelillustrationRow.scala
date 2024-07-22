@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelillustration
+package adventureworks.production.productmodelillustration
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
@@ -23,10 +22,10 @@ import zio.json.internal.Write
     Composite primary key: productmodelid, illustrationid */
 case class ProductmodelillustrationRow(
   /** Primary key. Foreign key to ProductModel.ProductModelID.
-      Points to [[productmodel.ProductmodelRow.productmodelid]] */
+      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
   productmodelid: ProductmodelId,
   /** Primary key. Foreign key to Illustration.IllustrationID.
-      Points to [[illustration.IllustrationRow.illustrationid]] */
+      Points to [[adventureworks.production.illustration.IllustrationRow.illustrationid]] */
   illustrationid: IllustrationId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime

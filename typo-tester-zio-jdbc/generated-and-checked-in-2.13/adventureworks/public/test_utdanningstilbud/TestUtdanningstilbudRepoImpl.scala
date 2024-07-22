@@ -3,11 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_utdanningstilbud
+package adventureworks.public.test_utdanningstilbud
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +32,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     sql"""delete
           from "public"."test_utdanningstilbud"
           where ("organisasjonskode", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskode}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${Segment.paramSegment(organisasjonskode)(TestOrganisasjonId.arraySetter)}), unnest(${Segment.paramSegment(utdanningsmulighetKode)(adventureworks.StringArraySetter)}))
        """.delete
     
   }
@@ -61,7 +60,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     sql"""select "organisasjonskode", "utdanningsmulighet_kode"
           from "public"."test_utdanningstilbud"
           where ("organisasjonskode", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskode}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${Segment.paramSegment(organisasjonskode)(TestOrganisasjonId.arraySetter)}), unnest(${Segment.paramSegment(utdanningsmulighetKode)(adventureworks.StringArraySetter)}))
        """.query(TestUtdanningstilbudRow.jdbcDecoder).selectStream()
     
   }

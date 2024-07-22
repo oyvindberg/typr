@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package identity_test
+package adventureworks.public.identity_test
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
@@ -22,7 +20,7 @@ trait IdentityTestFields {
 object IdentityTestFields {
   lazy val structure: Relation[IdentityTestFields, IdentityTestRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[IdentityTestFields, IdentityTestRow] {
   

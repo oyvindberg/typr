@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package vproductmodelinstructions
+package adventureworks.production.vproductmodelinstructions
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -34,7 +32,7 @@ trait VproductmodelinstructionsViewFields {
 object VproductmodelinstructionsViewFields {
   lazy val structure: Relation[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] {
   

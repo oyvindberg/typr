@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package personphone
+package adventureworks.person.personphone
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Phone
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -38,7 +37,7 @@ class PersonphoneRepoImpl extends PersonphoneRepo {
     sql"""delete
           from "person"."personphone"
           where ("businessentityid", "phonenumber", "phonenumbertypeid")
-          in (select unnest(${businessentityid}), unnest(${phonenumber}), unnest(${phonenumbertypeid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(phonenumber)(Phone.arraySetter)}), unnest(${Segment.paramSegment(phonenumbertypeid)(PhonenumbertypeId.arraySetter)}))
        """.delete
     
   }
@@ -94,7 +93,7 @@ class PersonphoneRepoImpl extends PersonphoneRepo {
     sql"""select "businessentityid", "phonenumber", "phonenumbertypeid", "modifieddate"::text
           from "person"."personphone"
           where ("businessentityid", "phonenumber", "phonenumbertypeid")
-          in (select unnest(${businessentityid}), unnest(${phonenumber}), unnest(${phonenumbertypeid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(phonenumber)(Phone.arraySetter)}), unnest(${Segment.paramSegment(phonenumbertypeid)(PhonenumbertypeId.arraySetter)}))
        """.query(PersonphoneRow.jdbcDecoder).selectStream()
     
   }

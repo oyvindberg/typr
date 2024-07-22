@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package transactionhistory
+package adventureworks.production.transactionhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -35,7 +34,7 @@ class TransactionhistoryRepoImpl extends TransactionhistoryRepo {
   override def deleteByIds(transactionids: Array[TransactionhistoryId])(using c: Connection): Int = {
     SQL"""delete
           from "production"."transactionhistory"
-          where "transactionid" = ANY(${transactionids})
+          where "transactionid" = ANY(${ParameterValue(transactionids, null, TransactionhistoryId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -111,7 +110,7 @@ class TransactionhistoryRepoImpl extends TransactionhistoryRepo {
   override def selectByIds(transactionids: Array[TransactionhistoryId])(using c: Connection): List[TransactionhistoryRow] = {
     SQL"""select "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate"::text, "transactiontype", "quantity", "actualcost", "modifieddate"::text
           from "production"."transactionhistory"
-          where "transactionid" = ANY(${transactionids})
+          where "transactionid" = ANY(${ParameterValue(transactionids, null, TransactionhistoryId.arrayToStatement)})
        """.as(TransactionhistoryRow.rowParser(1).*)
     
   }

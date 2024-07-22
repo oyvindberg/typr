@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package emailaddress
+package adventureworks.person.emailaddress
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -37,7 +36,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     sql"""delete
           from "person"."emailaddress"
           where ("businessentityid", "emailaddressid")
-          in (select unnest(${businessentityid}), unnest(${emailaddressid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(emailaddressid)(adventureworks.IntArraySetter)}))
        """.delete
     
   }
@@ -99,7 +98,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     sql"""select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
           from "person"."emailaddress"
           where ("businessentityid", "emailaddressid")
-          in (select unnest(${businessentityid}), unnest(${emailaddressid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(emailaddressid)(adventureworks.IntArraySetter)}))
        """.query(EmailaddressRow.jdbcDecoder).selectStream()
     
   }

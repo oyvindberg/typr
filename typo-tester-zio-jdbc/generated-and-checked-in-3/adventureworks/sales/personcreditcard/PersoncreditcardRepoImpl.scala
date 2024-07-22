@@ -3,20 +3,18 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package personcreditcard
+package adventureworks.sales.personcreditcard
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import adventureworks.userdefined.CustomCreditcardId
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
 import zio.ZIO
-import zio.jdbc.JdbcEncoder
 import zio.jdbc.SqlFragment
 import zio.jdbc.SqlFragment.Segment
 import zio.jdbc.UpdateResult
@@ -31,13 +29,13 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
   override def deleteById(compositeId: PersoncreditcardId): ZIO[ZConnection, Throwable, Boolean] = {
     sql"""delete from "sales"."personcreditcard" where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(using BusinessentityId.setter)} AND "creditcardid" = ${Segment.paramSegment(compositeId.creditcardid)(using /* user-picked */ CustomCreditcardId.setter)}""".delete.map(_ > 0)
   }
-  override def deleteByIds(compositeIds: Array[PersoncreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZIO[ZConnection, Throwable, Long] = {
+  override def deleteByIds(compositeIds: Array[PersoncreditcardId]): ZIO[ZConnection, Throwable, Long] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val creditcardid = compositeIds.map(_.creditcardid)
     sql"""delete
           from "sales"."personcreditcard"
           where ("businessentityid", "creditcardid")
-          in (select unnest(${businessentityid}), unnest(${creditcardid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(creditcardid)(using CustomCreditcardId.arraySetter)}))
        """.delete
     
   }
@@ -85,17 +83,17 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
   override def selectById(compositeId: PersoncreditcardId): ZIO[ZConnection, Throwable, Option[PersoncreditcardRow]] = {
     sql"""select "businessentityid", "creditcardid", "modifieddate"::text from "sales"."personcreditcard" where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(using BusinessentityId.setter)} AND "creditcardid" = ${Segment.paramSegment(compositeId.creditcardid)(using /* user-picked */ CustomCreditcardId.setter)}""".query(using PersoncreditcardRow.jdbcDecoder).selectOne
   }
-  override def selectByIds(compositeIds: Array[PersoncreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZStream[ZConnection, Throwable, PersoncreditcardRow] = {
+  override def selectByIds(compositeIds: Array[PersoncreditcardId]): ZStream[ZConnection, Throwable, PersoncreditcardRow] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val creditcardid = compositeIds.map(_.creditcardid)
     sql"""select "businessentityid", "creditcardid", "modifieddate"::text
           from "sales"."personcreditcard"
           where ("businessentityid", "creditcardid")
-          in (select unnest(${businessentityid}), unnest(${creditcardid}))
+          in (select unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(creditcardid)(using CustomCreditcardId.arraySetter)}))
        """.query(using PersoncreditcardRow.jdbcDecoder).selectStream()
     
   }
-  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZIO[ZConnection, Throwable, Map[PersoncreditcardId, PersoncreditcardRow]] = {
+  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId]): ZIO[ZConnection, Throwable, Map[PersoncreditcardId, PersoncreditcardRow]] = {
     selectByIds(compositeIds).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package customtypes
+package testdb.hardcoded.customtypes
 
 import play.api.libs.json.JsError
 import play.api.libs.json.JsNull
@@ -16,6 +14,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
+import testdb.hardcoded.Text
 
 
 /**

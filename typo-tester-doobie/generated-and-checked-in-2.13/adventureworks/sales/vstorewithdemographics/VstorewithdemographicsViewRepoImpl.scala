@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vstorewithdemographics
+package adventureworks.sales.vstorewithdemographics
 
 import doobie.free.connection.ConnectionIO
 import doobie.syntax.string.toSqlInterpolator

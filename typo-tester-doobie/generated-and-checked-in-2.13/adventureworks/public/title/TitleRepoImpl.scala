@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title
+package adventureworks.public.title
 
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
@@ -28,7 +26,7 @@ class TitleRepoImpl extends TitleRepo {
     sql"""delete from "public"."title" where "code" = ${fromWrite(code)(new Write.Single(TitleId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(codes: Array[TitleId]): ConnectionIO[Int] = {
-    sql"""delete from "public"."title" where "code" = ANY(${codes})""".update.run
+    sql"""delete from "public"."title" where "code" = ANY(${fromWrite(codes)(new Write.Single(TitleId.arrayPut))})""".update.run
   }
   override def insert(unsaved: TitleRow): ConnectionIO[TitleRow] = {
     sql"""insert into "public"."title"("code")
@@ -49,7 +47,7 @@ class TitleRepoImpl extends TitleRepo {
     sql"""select "code" from "public"."title" where "code" = ${fromWrite(code)(new Write.Single(TitleId.put))}""".query(TitleRow.read).option
   }
   override def selectByIds(codes: Array[TitleId]): Stream[ConnectionIO, TitleRow] = {
-    sql"""select "code" from "public"."title" where "code" = ANY(${codes})""".query(TitleRow.read).stream
+    sql"""select "code" from "public"."title" where "code" = ANY(${fromWrite(codes)(new Write.Single(TitleId.arrayPut))})""".query(TitleRow.read).stream
   }
   override def selectByIdsTracked(codes: Array[TitleId]): ConnectionIO[Map[TitleId, TitleRow]] = {
     selectByIds(codes).compile.toList.map { rows =>

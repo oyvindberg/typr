@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_utdanningstilbud
+package adventureworks.public.test_utdanningstilbud
 
+import adventureworks.Text
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import anorm.Column
 import anorm.RowParser
@@ -23,7 +22,7 @@ import scala.util.Try
 /** Table: public.test_utdanningstilbud
     Composite primary key: organisasjonskode, utdanningsmulighet_kode */
 case class TestUtdanningstilbudRow(
-  /** Points to [[test_organisasjon.TestOrganisasjonRow.organisasjonskode]] */
+  /** Points to [[adventureworks.public.test_organisasjon.TestOrganisasjonRow.organisasjonskode]] */
   organisasjonskode: TestOrganisasjonId,
   utdanningsmulighetKode: String
 ){

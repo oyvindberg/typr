@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package tr
+package adventureworks.sa.tr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -32,7 +30,7 @@ trait TrViewFields {
 object TrViewFields {
   lazy val structure: Relation[TrViewFields, TrViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TrViewFields, TrViewRow] {
   

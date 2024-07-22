@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialofferproduct
+package adventureworks.sales.specialofferproduct
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.specialoffer.SpecialofferId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -39,7 +38,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     SQL"""delete
           from "sales"."specialofferproduct"
           where ("specialofferid", "productid")
-          in (select unnest(${specialofferid}), unnest(${productid}))
+          in (select unnest(${ParameterValue(specialofferid, null, SpecialofferId.arrayToStatement)}), unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -107,7 +106,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     SQL"""select "specialofferid", "productid", "rowguid", "modifieddate"::text
           from "sales"."specialofferproduct"
           where ("specialofferid", "productid")
-          in (select unnest(${specialofferid}), unnest(${productid}))
+          in (select unnest(${ParameterValue(specialofferid, null, SpecialofferId.arrayToStatement)}), unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}))
        """.as(SpecialofferproductRow.rowParser(1).*)
     
   }

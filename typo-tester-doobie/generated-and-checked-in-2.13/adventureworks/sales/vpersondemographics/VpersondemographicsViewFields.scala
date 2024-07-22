@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vpersondemographics
+package adventureworks.sales.vpersondemographics
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.customtypes.TypoMoney
@@ -35,7 +33,7 @@ trait VpersondemographicsViewFields {
 object VpersondemographicsViewFields {
   lazy val structure: Relation[VpersondemographicsViewFields, VpersondemographicsViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VpersondemographicsViewFields, VpersondemographicsViewRow] {
   

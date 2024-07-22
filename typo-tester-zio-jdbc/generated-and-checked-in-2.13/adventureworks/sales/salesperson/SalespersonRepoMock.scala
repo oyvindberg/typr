@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesperson
+package adventureworks.sales.salesperson
 
 import adventureworks.person.businessentity.BusinessentityId
 import scala.annotation.nowarn

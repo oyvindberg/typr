@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package transactionhistoryarchive
+package adventureworks.production.transactionhistoryarchive
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class TransactionhistoryarchiveRepoImpl extends TransactionhistoryarchiveRepo {
     sql"""delete from "production"."transactionhistoryarchive" where "transactionid" = ${fromWrite(transactionid)(using new Write.Single(TransactionhistoryarchiveId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(transactionids: Array[TransactionhistoryarchiveId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."transactionhistoryarchive" where "transactionid" = ANY(${transactionids})""".update.run
+    sql"""delete from "production"."transactionhistoryarchive" where "transactionid" = ANY(${fromWrite(transactionids)(using new Write.Single(TransactionhistoryarchiveId.arrayPut))})""".update.run
   }
   override def insert(unsaved: TransactionhistoryarchiveRow): ConnectionIO[TransactionhistoryarchiveRow] = {
     sql"""insert into "production"."transactionhistoryarchive"("transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")
@@ -93,7 +91,7 @@ class TransactionhistoryarchiveRepoImpl extends TransactionhistoryarchiveRepo {
     sql"""select "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate"::text, "transactiontype", "quantity", "actualcost", "modifieddate"::text from "production"."transactionhistoryarchive" where "transactionid" = ${fromWrite(transactionid)(using new Write.Single(TransactionhistoryarchiveId.put))}""".query(using TransactionhistoryarchiveRow.read).option
   }
   override def selectByIds(transactionids: Array[TransactionhistoryarchiveId]): Stream[ConnectionIO, TransactionhistoryarchiveRow] = {
-    sql"""select "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate"::text, "transactiontype", "quantity", "actualcost", "modifieddate"::text from "production"."transactionhistoryarchive" where "transactionid" = ANY(${transactionids})""".query(using TransactionhistoryarchiveRow.read).stream
+    sql"""select "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate"::text, "transactiontype", "quantity", "actualcost", "modifieddate"::text from "production"."transactionhistoryarchive" where "transactionid" = ANY(${fromWrite(transactionids)(using new Write.Single(TransactionhistoryarchiveId.arrayPut))})""".query(using TransactionhistoryarchiveRow.read).stream
   }
   override def selectByIdsTracked(transactionids: Array[TransactionhistoryarchiveId]): ConnectionIO[Map[TransactionhistoryarchiveId, TransactionhistoryarchiveRow]] = {
     selectByIds(transactionids).compile.toList.map { rows =>

@@ -3,16 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package football_club
+package testdb.hardcoded.myschema.football_club
 
 import anorm.Column
 import anorm.ParameterMetaData
 import anorm.ToStatement
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
+import testdb.hardcoded.Text
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `myschema.football_club` */

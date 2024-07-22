@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productlistpricehistory
+package adventureworks.production.productlistpricehistory
 
 import java.sql.Connection
 import typo.dsl.DeleteBuilder

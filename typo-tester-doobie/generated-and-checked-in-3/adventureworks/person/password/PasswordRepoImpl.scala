@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package password
+package adventureworks.person.password
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -34,7 +32,7 @@ class PasswordRepoImpl extends PasswordRepo {
     sql"""delete from "person"."password" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."password" where "businessentityid" = ANY(${businessentityids})""".update.run
+    sql"""delete from "person"."password" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".update.run
   }
   override def insert(unsaved: PasswordRow): ConnectionIO[PasswordRow] = {
     sql"""insert into "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")
@@ -88,7 +86,7 @@ class PasswordRepoImpl extends PasswordRepo {
     sql"""select "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text from "person"."password" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".query(using PasswordRow.read).option
   }
   override def selectByIds(businessentityids: Array[BusinessentityId]): Stream[ConnectionIO, PasswordRow] = {
-    sql"""select "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text from "person"."password" where "businessentityid" = ANY(${businessentityids})""".query(using PasswordRow.read).stream
+    sql"""select "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text from "person"."password" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".query(using PasswordRow.read).stream
   }
   override def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ConnectionIO[Map[BusinessentityId, PasswordRow]] = {
     selectByIds(businessentityids).compile.toList.map { rows =>

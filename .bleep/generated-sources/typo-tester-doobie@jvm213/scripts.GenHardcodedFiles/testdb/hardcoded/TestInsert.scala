@@ -3,8 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
+package testdb.hardcoded
 
 import doobie.free.connection.ConnectionIO
 import scala.util.Random

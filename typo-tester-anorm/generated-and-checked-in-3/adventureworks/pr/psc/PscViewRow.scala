@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package psc
+package adventureworks.pr.psc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -24,17 +22,17 @@ import scala.util.Try
 
 /** View: pr.psc */
 case class PscViewRow(
-  /** Points to [[production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]] */
+  /** Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]] */
   id: ProductsubcategoryId,
-  /** Points to [[production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]] */
+  /** Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]] */
   productsubcategoryid: ProductsubcategoryId,
-  /** Points to [[production.productsubcategory.ProductsubcategoryRow.productcategoryid]] */
+  /** Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.productcategoryid]] */
   productcategoryid: ProductcategoryId,
-  /** Points to [[production.productsubcategory.ProductsubcategoryRow.name]] */
+  /** Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.name]] */
   name: Name,
-  /** Points to [[production.productsubcategory.ProductsubcategoryRow.rowguid]] */
+  /** Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[production.productsubcategory.ProductsubcategoryRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

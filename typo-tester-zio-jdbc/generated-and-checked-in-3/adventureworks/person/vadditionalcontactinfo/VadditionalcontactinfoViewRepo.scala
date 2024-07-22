@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package vadditionalcontactinfo
+package adventureworks.person.vadditionalcontactinfo
 
 import typo.dsl.SelectBuilder
 import zio.jdbc.ZConnection

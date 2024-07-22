@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package shoppingcartitem
+package adventureworks.sales.shoppingcartitem
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -36,7 +35,7 @@ case class ShoppingcartitemRow(
       Constraint CK_ShoppingCartItem_Quantity affecting columns quantity: ((quantity >= 1)) */
   quantity: Int,
   /** Product ordered. Foreign key to Product.ProductID.
-      Points to [[production.product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Date the time the record was created.
       Default: now() */

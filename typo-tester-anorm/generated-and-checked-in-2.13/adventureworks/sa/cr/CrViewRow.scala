@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package cr
+package adventureworks.sa.cr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
@@ -24,19 +22,19 @@ import scala.util.Try
 
 /** View: sa.cr */
 case class CrViewRow(
-  /** Points to [[sales.currencyrate.CurrencyrateRow.currencyrateid]] */
+  /** Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.currencyrateid]] */
   currencyrateid: CurrencyrateId,
-  /** Points to [[sales.currencyrate.CurrencyrateRow.currencyratedate]] */
+  /** Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.currencyratedate]] */
   currencyratedate: TypoLocalDateTime,
-  /** Points to [[sales.currencyrate.CurrencyrateRow.fromcurrencycode]] */
+  /** Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.fromcurrencycode]] */
   fromcurrencycode: CurrencyId,
-  /** Points to [[sales.currencyrate.CurrencyrateRow.tocurrencycode]] */
+  /** Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.tocurrencycode]] */
   tocurrencycode: CurrencyId,
-  /** Points to [[sales.currencyrate.CurrencyrateRow.averagerate]] */
+  /** Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.averagerate]] */
   averagerate: BigDecimal,
-  /** Points to [[sales.currencyrate.CurrencyrateRow.endofdayrate]] */
+  /** Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.endofdayrate]] */
   endofdayrate: BigDecimal,
-  /** Points to [[sales.currencyrate.CurrencyrateRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

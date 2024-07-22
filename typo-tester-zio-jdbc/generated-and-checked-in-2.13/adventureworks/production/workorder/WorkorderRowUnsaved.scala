@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorder
+package adventureworks.production.workorder
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -20,7 +19,7 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `production.workorder` which has not been persisted yet */
 case class WorkorderRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Product quantity to build.
       Constraint CK_WorkOrder_OrderQty affecting columns orderqty:  ((orderqty > 0)) */
@@ -37,7 +36,7 @@ case class WorkorderRowUnsaved(
   /** Work order due date. */
   duedate: TypoLocalDateTime,
   /** Reason for inspection failure.
-      Points to [[scrapreason.ScrapreasonRow.scrapreasonid]] */
+      Points to [[adventureworks.production.scrapreason.ScrapreasonRow.scrapreasonid]] */
   scrapreasonid: Option[ScrapreasonId],
   /** Default: nextval('production.workorder_workorderid_seq'::regclass)
       Primary key for WorkOrder records. */

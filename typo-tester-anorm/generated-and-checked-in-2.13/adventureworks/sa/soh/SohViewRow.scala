@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package soh
+package adventureworks.sa.soh
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -35,57 +33,57 @@ import scala.util.Try
 
 /** View: sa.soh */
 case class SohViewRow(
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
   id: SalesorderheaderId,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
   salesorderid: SalesorderheaderId,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.revisionnumber]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.revisionnumber]] */
   revisionnumber: TypoShort,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.orderdate]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.orderdate]] */
   orderdate: TypoLocalDateTime,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.duedate]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.duedate]] */
   duedate: TypoLocalDateTime,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.shipdate]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.shipdate]] */
   shipdate: Option[TypoLocalDateTime],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.status]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.status]] */
   status: TypoShort,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.onlineorderflag]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.onlineorderflag]] */
   onlineorderflag: Flag,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.purchaseordernumber]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.purchaseordernumber]] */
   purchaseordernumber: Option[OrderNumber],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.accountnumber]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.accountnumber]] */
   accountnumber: Option[AccountNumber],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.customerid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.customerid]] */
   customerid: CustomerId,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
   salespersonid: Option[BusinessentityId],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.territoryid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.territoryid]] */
   territoryid: Option[SalesterritoryId],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.billtoaddressid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.billtoaddressid]] */
   billtoaddressid: AddressId,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.shiptoaddressid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.shiptoaddressid]] */
   shiptoaddressid: AddressId,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.shipmethodid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.shipmethodid]] */
   shipmethodid: ShipmethodId,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.creditcardid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.creditcardid]] */
   creditcardid: Option[/* user-picked */ CustomCreditcardId],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.creditcardapprovalcode]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.creditcardapprovalcode]] */
   creditcardapprovalcode: Option[/* max 15 chars */ String],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.currencyrateid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.currencyrateid]] */
   currencyrateid: Option[CurrencyrateId],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.subtotal]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.subtotal]] */
   subtotal: BigDecimal,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.taxamt]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.taxamt]] */
   taxamt: BigDecimal,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.freight]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.freight]] */
   freight: BigDecimal,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.totaldue]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.totaldue]] */
   totaldue: Option[BigDecimal],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.comment]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.comment]] */
   comment: Option[/* max 128 chars */ String],
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.rowguid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.salesorderheader.SalesorderheaderRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package sp
+package adventureworks.pe.sp
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -21,23 +19,23 @@ import io.circe.Encoder
 
 /** View: pe.sp */
 case class SpViewRow(
-  /** Points to [[person.stateprovince.StateprovinceRow.stateprovinceid]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   id: StateprovinceId,
-  /** Points to [[person.stateprovince.StateprovinceRow.stateprovinceid]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
-  /** Points to [[person.stateprovince.StateprovinceRow.stateprovincecode]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovincecode]] */
   stateprovincecode: /* bpchar, max 3 chars */ String,
-  /** Points to [[person.stateprovince.StateprovinceRow.countryregioncode]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.countryregioncode]] */
   countryregioncode: CountryregionId,
-  /** Points to [[person.stateprovince.StateprovinceRow.isonlystateprovinceflag]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.isonlystateprovinceflag]] */
   isonlystateprovinceflag: Flag,
-  /** Points to [[person.stateprovince.StateprovinceRow.name]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   name: Name,
-  /** Points to [[person.stateprovince.StateprovinceRow.territoryid]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.territoryid]] */
   territoryid: SalesterritoryId,
-  /** Points to [[person.stateprovince.StateprovinceRow.rowguid]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.stateprovince.StateprovinceRow.modifieddate]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

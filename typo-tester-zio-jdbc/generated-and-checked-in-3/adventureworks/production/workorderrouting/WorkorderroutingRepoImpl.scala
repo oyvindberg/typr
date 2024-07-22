@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorderrouting
+package adventureworks.production.workorderrouting
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
 import adventureworks.production.workorder.WorkorderId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -39,7 +38,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     sql"""delete
           from "production"."workorderrouting"
           where ("workorderid", "productid", "operationsequence")
-          in (select unnest(${workorderid}), unnest(${productid}), unnest(${operationsequence}))
+          in (select unnest(${Segment.paramSegment(workorderid)(using WorkorderId.arraySetter)}), unnest(${Segment.paramSegment(productid)(using adventureworks.IntArraySetter)}), unnest(${Segment.paramSegment(operationsequence)(using TypoShort.arraySetter)}))
        """.delete
     
   }
@@ -103,7 +102,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     sql"""select "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
           from "production"."workorderrouting"
           where ("workorderid", "productid", "operationsequence")
-          in (select unnest(${workorderid}), unnest(${productid}), unnest(${operationsequence}))
+          in (select unnest(${Segment.paramSegment(workorderid)(using WorkorderId.arraySetter)}), unnest(${Segment.paramSegment(productid)(using adventureworks.IntArraySetter)}), unnest(${Segment.paramSegment(operationsequence)(using TypoShort.arraySetter)}))
        """.query(using WorkorderroutingRow.jdbcDecoder).selectStream()
     
   }

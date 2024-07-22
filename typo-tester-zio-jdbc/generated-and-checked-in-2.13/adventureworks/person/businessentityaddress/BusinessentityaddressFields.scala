@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentityaddress
+package adventureworks.person.businessentityaddress
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -19,11 +17,13 @@ import adventureworks.person.businessentity.BusinessentityFields
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.businessentity.BusinessentityRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -47,14 +47,14 @@ trait BusinessentityaddressFields {
   def compositeIdIs(compositeId: BusinessentityaddressId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(addressid.isEqual(compositeId.addressid)).and(addresstypeid.isEqual(compositeId.addresstypeid))
   def compositeIdIn(compositeIds: Array[BusinessentityaddressId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(addressid)(_.addressid), TuplePart(addresstypeid)(_.addresstypeid))
+    new CompositeIn(compositeIds)(TuplePart[BusinessentityaddressId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly), TuplePart[BusinessentityaddressId](addressid)(_.addressid)(using as[Array[AddressId], Required](AddressId.arrayJdbcEncoder, PGType.forArray(AddressId.pgType)), implicitly), TuplePart[BusinessentityaddressId](addresstypeid)(_.addresstypeid)(using as[Array[AddresstypeId], Required](AddresstypeId.arrayJdbcEncoder, PGType.forArray(AddresstypeId.pgType)), implicitly))
   
 }
 
 object BusinessentityaddressFields {
   lazy val structure: Relation[BusinessentityaddressFields, BusinessentityaddressRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[BusinessentityaddressFields, BusinessentityaddressRow] {
   

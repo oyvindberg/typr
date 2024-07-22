@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentitycontact
+package adventureworks.person.businessentitycontact
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -40,7 +38,7 @@ class BusinessentitycontactRepoImpl extends BusinessentitycontactRepo {
     sql"""delete
           from "person"."businessentitycontact"
           where ("businessentityid", "personid", "contacttypeid")
-          in (select unnest(${businessentityid}), unnest(${personid}), unnest(${contacttypeid}))
+          in (select unnest(${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(personid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(contacttypeid)(using new Write.Single(ContacttypeId.arrayPut))}))
        """.update.run
     
   }
@@ -102,7 +100,7 @@ class BusinessentitycontactRepoImpl extends BusinessentitycontactRepo {
     sql"""select "businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate"::text
           from "person"."businessentitycontact"
           where ("businessentityid", "personid", "contacttypeid")
-          in (select unnest(${businessentityid}), unnest(${personid}), unnest(${contacttypeid}))
+          in (select unnest(${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(personid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(contacttypeid)(using new Write.Single(ContacttypeId.arrayPut))}))
        """.query(using BusinessentitycontactRow.read).stream
     
   }

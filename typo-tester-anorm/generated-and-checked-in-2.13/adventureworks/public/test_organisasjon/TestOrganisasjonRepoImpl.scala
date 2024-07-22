@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_organisasjon
+package adventureworks.public.test_organisasjon
 
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -28,7 +27,7 @@ class TestOrganisasjonRepoImpl extends TestOrganisasjonRepo {
   override def deleteByIds(organisasjonskodes: Array[TestOrganisasjonId])(implicit c: Connection): Int = {
     SQL"""delete
           from "public"."test_organisasjon"
-          where "organisasjonskode" = ANY(${organisasjonskodes})
+          where "organisasjonskode" = ANY(${ParameterValue(organisasjonskodes, null, TestOrganisasjonId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -60,7 +59,7 @@ class TestOrganisasjonRepoImpl extends TestOrganisasjonRepo {
   override def selectByIds(organisasjonskodes: Array[TestOrganisasjonId])(implicit c: Connection): List[TestOrganisasjonRow] = {
     SQL"""select "organisasjonskode"
           from "public"."test_organisasjon"
-          where "organisasjonskode" = ANY(${organisasjonskodes})
+          where "organisasjonskode" = ANY(${ParameterValue(organisasjonskodes, null, TestOrganisasjonId.arrayToStatement)})
        """.as(TestOrganisasjonRow.rowParser(1).*)
     
   }

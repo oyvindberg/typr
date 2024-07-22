@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package pp
+package adventureworks.pe.pp
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -27,7 +25,7 @@ trait PpViewFields {
 object PpViewFields {
   lazy val structure: Relation[PpViewFields, PpViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PpViewFields, PpViewRow] {
   

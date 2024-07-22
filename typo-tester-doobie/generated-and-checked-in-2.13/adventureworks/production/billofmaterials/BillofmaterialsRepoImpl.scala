@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package billofmaterials
+package adventureworks.production.billofmaterials
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -35,7 +33,7 @@ class BillofmaterialsRepoImpl extends BillofmaterialsRepo {
     sql"""delete from "production"."billofmaterials" where "billofmaterialsid" = ${fromWrite(billofmaterialsid)(new Write.Single(Meta.IntMeta.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(billofmaterialsids: Array[Int]): ConnectionIO[Int] = {
-    sql"""delete from "production"."billofmaterials" where "billofmaterialsid" = ANY(${billofmaterialsids})""".update.run
+    sql"""delete from "production"."billofmaterials" where "billofmaterialsid" = ANY(${fromWrite(billofmaterialsids)(new Write.Single(adventureworks.IntegerArrayMeta.put))})""".update.run
   }
   override def insert(unsaved: BillofmaterialsRow): ConnectionIO[BillofmaterialsRow] = {
     sql"""insert into "production"."billofmaterials"("billofmaterialsid", "productassemblyid", "componentid", "startdate", "enddate", "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate")
@@ -99,7 +97,7 @@ class BillofmaterialsRepoImpl extends BillofmaterialsRepo {
     sql"""select "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text from "production"."billofmaterials" where "billofmaterialsid" = ${fromWrite(billofmaterialsid)(new Write.Single(Meta.IntMeta.put))}""".query(BillofmaterialsRow.read).option
   }
   override def selectByIds(billofmaterialsids: Array[Int]): Stream[ConnectionIO, BillofmaterialsRow] = {
-    sql"""select "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text from "production"."billofmaterials" where "billofmaterialsid" = ANY(${billofmaterialsids})""".query(BillofmaterialsRow.read).stream
+    sql"""select "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text from "production"."billofmaterials" where "billofmaterialsid" = ANY(${fromWrite(billofmaterialsids)(new Write.Single(adventureworks.IntegerArrayMeta.put))})""".query(BillofmaterialsRow.read).stream
   }
   override def selectByIdsTracked(billofmaterialsids: Array[Int]): ConnectionIO[Map[Int, BillofmaterialsRow]] = {
     selectByIds(billofmaterialsids).compile.toList.map { rows =>

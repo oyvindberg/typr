@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package users
+package adventureworks.public.users
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoInstant
 import adventureworks.customtypes.TypoUnknownCitext
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -36,7 +35,7 @@ class UsersRepoImpl extends UsersRepo {
   override def deleteByIds(userIds: Array[UsersId])(implicit c: Connection): Int = {
     SQL"""delete
           from "public"."users"
-          where "user_id" = ANY(${userIds})
+          where "user_id" = ANY(${ParameterValue(userIds, null, UsersId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -101,7 +100,7 @@ class UsersRepoImpl extends UsersRepo {
   override def selectByIds(userIds: Array[UsersId])(implicit c: Connection): List[UsersRow] = {
     SQL"""select "user_id", "name", "last_name", "email"::text, "password", "created_at"::text, "verified_on"::text
           from "public"."users"
-          where "user_id" = ANY(${userIds})
+          where "user_id" = ANY(${ParameterValue(userIds, null, UsersId.arrayToStatement)})
        """.as(UsersRow.rowParser(1).*)
     
   }

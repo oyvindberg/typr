@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salestaxrate
+package adventureworks.sales.salestaxrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -38,7 +37,7 @@ class SalestaxrateRepoImpl extends SalestaxrateRepo {
   override def deleteByIds(salestaxrateids: Array[SalestaxrateId])(using c: Connection): Int = {
     SQL"""delete
           from "sales"."salestaxrate"
-          where "salestaxrateid" = ANY(${salestaxrateids})
+          where "salestaxrateid" = ANY(${ParameterValue(salestaxrateids, null, SalestaxrateId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -112,7 +111,7 @@ class SalestaxrateRepoImpl extends SalestaxrateRepo {
   override def selectByIds(salestaxrateids: Array[SalestaxrateId])(using c: Connection): List[SalestaxrateRow] = {
     SQL"""select "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
           from "sales"."salestaxrate"
-          where "salestaxrateid" = ANY(${salestaxrateids})
+          where "salestaxrateid" = ANY(${ParameterValue(salestaxrateids, null, SalestaxrateId.arrayToStatement)})
        """.as(SalestaxrateRow.rowParser(1).*)
     
   }

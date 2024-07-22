@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productinventory
+package adventureworks.production.productinventory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -41,7 +39,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     sql"""delete
           from "production"."productinventory"
           where ("productid", "locationid")
-          in (select unnest(${productid}), unnest(${locationid}))
+          in (select unnest(${fromWrite(productid)(new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(locationid)(new Write.Single(LocationId.arrayPut))}))
        """.update.run
     
   }
@@ -107,7 +105,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     sql"""select "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
           from "production"."productinventory"
           where ("productid", "locationid")
-          in (select unnest(${productid}), unnest(${locationid}))
+          in (select unnest(${fromWrite(productid)(new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(locationid)(new Write.Single(LocationId.arrayPut))}))
        """.query(ProductinventoryRow.read).stream
     
   }

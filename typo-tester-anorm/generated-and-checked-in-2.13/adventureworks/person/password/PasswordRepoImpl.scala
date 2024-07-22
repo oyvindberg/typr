@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package password
+package adventureworks.person.password
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -36,7 +35,7 @@ class PasswordRepoImpl extends PasswordRepo {
   override def deleteByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): Int = {
     SQL"""delete
           from "person"."password"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -102,7 +101,7 @@ class PasswordRepoImpl extends PasswordRepo {
   override def selectByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): List[PasswordRow] = {
     SQL"""select "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
           from "person"."password"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.as(PasswordRow.rowParser(1).*)
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package ct
+package adventureworks.pe.ct
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.contacttype.ContacttypeId
@@ -16,13 +14,13 @@ import io.circe.Encoder
 
 /** View: pe.ct */
 case class CtViewRow(
-  /** Points to [[person.contacttype.ContacttypeRow.contacttypeid]] */
+  /** Points to [[adventureworks.person.contacttype.ContacttypeRow.contacttypeid]] */
   id: ContacttypeId,
-  /** Points to [[person.contacttype.ContacttypeRow.contacttypeid]] */
+  /** Points to [[adventureworks.person.contacttype.ContacttypeRow.contacttypeid]] */
   contacttypeid: ContacttypeId,
-  /** Points to [[person.contacttype.ContacttypeRow.name]] */
+  /** Points to [[adventureworks.person.contacttype.ContacttypeRow.name]] */
   name: Name,
-  /** Points to [[person.contacttype.ContacttypeRow.modifieddate]] */
+  /** Points to [[adventureworks.person.contacttype.ContacttypeRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

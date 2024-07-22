@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeepayhistory
+package adventureworks.humanresources.employeepayhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -39,7 +37,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     sql"""delete
           from "humanresources"."employeepayhistory"
           where ("businessentityid", "ratechangedate")
-          in (select unnest(${businessentityid}), unnest(${ratechangedate}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(ratechangedate)(new Write.Single(TypoLocalDateTime.arrayPut))}))
        """.update.run
     
   }
@@ -97,7 +95,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     sql"""select "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
           from "humanresources"."employeepayhistory"
           where ("businessentityid", "ratechangedate")
-          in (select unnest(${businessentityid}), unnest(${ratechangedate}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(ratechangedate)(new Write.Single(TypoLocalDateTime.arrayPut))}))
        """.query(EmployeepayhistoryRow.read).stream
     
   }

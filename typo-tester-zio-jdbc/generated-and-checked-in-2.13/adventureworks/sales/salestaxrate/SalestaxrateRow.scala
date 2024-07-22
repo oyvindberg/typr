@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salestaxrate
+package adventureworks.sales.salestaxrate
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -28,7 +27,7 @@ case class SalestaxrateRow(
       Default: nextval('sales.salestaxrate_salestaxrateid_seq'::regclass) */
   salestaxrateid: SalestaxrateId,
   /** State, province, or country/region the sales tax applies to.
-      Points to [[person.stateprovince.StateprovinceRow.stateprovinceid]] */
+      Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
       Constraint CK_SalesTaxRate_TaxType affecting columns taxtype: (((taxtype >= 1) AND (taxtype <= 3))) */

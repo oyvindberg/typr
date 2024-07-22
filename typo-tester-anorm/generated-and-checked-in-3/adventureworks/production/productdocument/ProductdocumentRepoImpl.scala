@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productdocument
+package adventureworks.production.productdocument
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -38,7 +37,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     SQL"""delete
           from "production"."productdocument"
           where ("productid", "documentnode")
-          in (select unnest(${productid}), unnest(${documentnode}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(documentnode, null, DocumentId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -105,7 +104,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     SQL"""select "productid", "modifieddate"::text, "documentnode"
           from "production"."productdocument"
           where ("productid", "documentnode")
-          in (select unnest(${productid}), unnest(${documentnode}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(documentnode, null, DocumentId.arrayToStatement)}))
        """.as(ProductdocumentRow.rowParser(1).*)
     
   }

@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.sales.currency.CurrencyId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -36,7 +35,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     sql"""delete
           from "sales"."countryregioncurrency"
           where ("countryregioncode", "currencycode")
-          in (select unnest(${countryregioncode}), unnest(${currencycode}))
+          in (select unnest(${Segment.paramSegment(countryregioncode)(using CountryregionId.arraySetter)}), unnest(${Segment.paramSegment(currencycode)(using CurrencyId.arraySetter)}))
        """.delete
     
   }
@@ -90,7 +89,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     sql"""select "countryregioncode", "currencycode", "modifieddate"::text
           from "sales"."countryregioncurrency"
           where ("countryregioncode", "currencycode")
-          in (select unnest(${countryregioncode}), unnest(${currencycode}))
+          in (select unnest(${Segment.paramSegment(countryregioncode)(using CountryregionId.arraySetter)}), unnest(${Segment.paramSegment(currencycode)(using CurrencyId.arraySetter)}))
        """.query(using CountryregioncurrencyRow.jdbcDecoder).selectStream()
     
   }

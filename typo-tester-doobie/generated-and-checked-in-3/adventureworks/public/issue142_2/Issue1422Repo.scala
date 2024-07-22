@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142_2
+package adventureworks.public.issue142_2
 
 import adventureworks.public.issue142.Issue142Id
 import doobie.free.connection.ConnectionIO

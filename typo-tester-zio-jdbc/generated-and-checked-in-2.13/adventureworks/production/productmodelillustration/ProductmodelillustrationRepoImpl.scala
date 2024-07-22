@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelillustration
+package adventureworks.production.productmodelillustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
 import adventureworks.production.productmodel.ProductmodelId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -36,7 +35,7 @@ class ProductmodelillustrationRepoImpl extends ProductmodelillustrationRepo {
     sql"""delete
           from "production"."productmodelillustration"
           where ("productmodelid", "illustrationid")
-          in (select unnest(${productmodelid}), unnest(${illustrationid}))
+          in (select unnest(${Segment.paramSegment(productmodelid)(ProductmodelId.arraySetter)}), unnest(${Segment.paramSegment(illustrationid)(IllustrationId.arraySetter)}))
        """.delete
     
   }
@@ -90,7 +89,7 @@ class ProductmodelillustrationRepoImpl extends ProductmodelillustrationRepo {
     sql"""select "productmodelid", "illustrationid", "modifieddate"::text
           from "production"."productmodelillustration"
           where ("productmodelid", "illustrationid")
-          in (select unnest(${productmodelid}), unnest(${illustrationid}))
+          in (select unnest(${Segment.paramSegment(productmodelid)(ProductmodelId.arraySetter)}), unnest(${Segment.paramSegment(illustrationid)(IllustrationId.arraySetter)}))
        """.query(ProductmodelillustrationRow.jdbcDecoder).selectStream()
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productlistpricehistory
+package adventureworks.production.productlistpricehistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -17,7 +15,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.productlistpricehistory` which has not been persisted yet */
 case class ProductlistpricehistoryRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** List price start date.
       Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */

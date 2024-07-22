@@ -3,10 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package flaff
+package adventureworks.public.flaff
 
+import adventureworks.Text
+import adventureworks.public.ShortText
 import anorm.Column
 import anorm.RowParser
 import anorm.Success
@@ -22,14 +22,14 @@ import scala.util.Try
 /** Table: public.flaff
     Composite primary key: code, another_code, some_number, specifier */
 case class FlaffRow(
-  /** Points to [[FlaffRow.code]] */
+  /** Points to [[adventureworks.public.flaff.FlaffRow.code]] */
   code: ShortText,
-  /** Points to [[FlaffRow.anotherCode]] */
+  /** Points to [[adventureworks.public.flaff.FlaffRow.anotherCode]] */
   anotherCode: /* max 20 chars */ String,
-  /** Points to [[FlaffRow.someNumber]] */
+  /** Points to [[adventureworks.public.flaff.FlaffRow.someNumber]] */
   someNumber: Int,
   specifier: ShortText,
-  /** Points to [[FlaffRow.specifier]] */
+  /** Points to [[adventureworks.public.flaff.FlaffRow.specifier]] */
   parentspecifier: Option[ShortText]
 ){
    val compositeId: FlaffId = FlaffId(code, anotherCode, someNumber, specifier)

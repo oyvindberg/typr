@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package unitmeasure
+package adventureworks.production.unitmeasure
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class UnitmeasureRepoImpl extends UnitmeasureRepo {
     sql"""delete from "production"."unitmeasure" where "unitmeasurecode" = ${Segment.paramSegment(unitmeasurecode)(using UnitmeasureId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(unitmeasurecodes: Array[UnitmeasureId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."unitmeasure" where "unitmeasurecode" = ANY(${unitmeasurecodes})""".delete
+    sql"""delete from "production"."unitmeasure" where "unitmeasurecode" = ANY(${Segment.paramSegment(unitmeasurecodes)(using UnitmeasureId.arraySetter)})""".delete
   }
   override def insert(unsaved: UnitmeasureRow): ZIO[ZConnection, Throwable, UnitmeasureRow] = {
     sql"""insert into "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate")

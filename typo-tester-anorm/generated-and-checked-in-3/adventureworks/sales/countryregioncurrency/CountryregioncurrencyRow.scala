@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
@@ -26,10 +25,10 @@ import scala.util.Try
     Composite primary key: countryregioncode, currencycode */
 case class CountryregioncurrencyRow(
   /** ISO code for countries and regions. Foreign key to CountryRegion.CountryRegionCode.
-      Points to [[person.countryregion.CountryregionRow.countryregioncode]] */
+      Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** ISO standard currency code. Foreign key to Currency.CurrencyCode.
-      Points to [[currency.CurrencyRow.currencycode]] */
+      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
   currencycode: CurrencyId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime

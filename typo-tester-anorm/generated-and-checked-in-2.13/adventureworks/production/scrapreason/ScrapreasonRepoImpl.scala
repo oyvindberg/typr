@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package scrapreason
+package adventureworks.production.scrapreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class ScrapreasonRepoImpl extends ScrapreasonRepo {
   override def deleteByIds(scrapreasonids: Array[ScrapreasonId])(implicit c: Connection): Int = {
     SQL"""delete
           from "production"."scrapreason"
-          where "scrapreasonid" = ANY(${scrapreasonids})
+          where "scrapreasonid" = ANY(${ParameterValue(scrapreasonids, null, ScrapreasonId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -98,7 +97,7 @@ class ScrapreasonRepoImpl extends ScrapreasonRepo {
   override def selectByIds(scrapreasonids: Array[ScrapreasonId])(implicit c: Connection): List[ScrapreasonRow] = {
     SQL"""select "scrapreasonid", "name", "modifieddate"::text
           from "production"."scrapreason"
-          where "scrapreasonid" = ANY(${scrapreasonids})
+          where "scrapreasonid" = ANY(${ParameterValue(scrapreasonids, null, ScrapreasonId.arrayToStatement)})
        """.as(ScrapreasonRow.rowParser(1).*)
     
   }

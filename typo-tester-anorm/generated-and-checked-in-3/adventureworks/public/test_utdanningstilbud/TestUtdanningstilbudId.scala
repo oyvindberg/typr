@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_utdanningstilbud
+package adventureworks.public.test_utdanningstilbud
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import play.api.libs.json.JsObject
@@ -27,7 +25,7 @@ object TestUtdanningstilbudId {
   given reads: Reads[TestUtdanningstilbudId] = Reads[TestUtdanningstilbudId](json => JsResult.fromTry(
       Try(
         TestUtdanningstilbudId(
-          organisasjonskode = json.\("organisasjonskode").as(summon[Reads[TestOrganisasjonId]]),
+          organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads),
           utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
         )
       )
@@ -35,7 +33,7 @@ object TestUtdanningstilbudId {
   )
   given writes: OWrites[TestUtdanningstilbudId] = OWrites[TestUtdanningstilbudId](o =>
     new JsObject(ListMap[String, JsValue](
-      "organisasjonskode" -> summon[Writes[TestOrganisasjonId]].writes(o.organisasjonskode),
+      "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode),
       "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
     ))
   )

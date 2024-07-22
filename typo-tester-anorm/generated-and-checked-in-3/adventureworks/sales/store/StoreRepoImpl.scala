@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package store
+package adventureworks.sales.store
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -38,7 +37,7 @@ class StoreRepoImpl extends StoreRepo {
   override def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = {
     SQL"""delete
           from "sales"."store"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -105,7 +104,7 @@ class StoreRepoImpl extends StoreRepo {
   override def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[StoreRow] = {
     SQL"""select "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate"::text
           from "sales"."store"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.as(StoreRow.rowParser(1).*)
     
   }

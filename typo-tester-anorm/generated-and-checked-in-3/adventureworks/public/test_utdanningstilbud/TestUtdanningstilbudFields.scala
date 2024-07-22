@@ -3,19 +3,21 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_utdanningstilbud
+package adventureworks.public.test_utdanningstilbud
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonFields
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import adventureworks.public.test_organisasjon.TestOrganisasjonRow
+import anorm.ParameterMetaData
+import anorm.ToParameterValue
+import anorm.ToStatement
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
@@ -29,14 +31,14 @@ trait TestUtdanningstilbudFields {
   def compositeIdIs(compositeId: TestUtdanningstilbudId): SqlExpr[Boolean, Required] =
     organisasjonskode.isEqual(compositeId.organisasjonskode).and(utdanningsmulighetKode.isEqual(compositeId.utdanningsmulighetKode))
   def compositeIdIn(compositeIds: Array[TestUtdanningstilbudId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(organisasjonskode)(_.organisasjonskode), TuplePart(utdanningsmulighetKode)(_.utdanningsmulighetKode))
+    new CompositeIn(compositeIds)(TuplePart[TestUtdanningstilbudId](organisasjonskode)(_.organisasjonskode)(using as[Array[TestOrganisasjonId], Required](using ToParameterValue(null, TestOrganisasjonId.arrayToStatement), adventureworks.arrayParameterMetaData(using TestOrganisasjonId.parameterMetadata)), implicitly), TuplePart[TestUtdanningstilbudId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String], Required](using ToParameterValue(null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(using ParameterMetaData.StringParameterMetaData)), implicitly))
   
 }
 
 object TestUtdanningstilbudFields {
   lazy val structure: Relation[TestUtdanningstilbudFields, TestUtdanningstilbudRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TestUtdanningstilbudFields, TestUtdanningstilbudRow] {
   

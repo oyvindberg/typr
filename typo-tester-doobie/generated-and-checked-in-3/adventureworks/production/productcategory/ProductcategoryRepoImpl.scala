@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productcategory
+package adventureworks.production.productcategory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class ProductcategoryRepoImpl extends ProductcategoryRepo {
     sql"""delete from "production"."productcategory" where "productcategoryid" = ${fromWrite(productcategoryid)(using new Write.Single(ProductcategoryId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(productcategoryids: Array[ProductcategoryId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."productcategory" where "productcategoryid" = ANY(${productcategoryids})""".update.run
+    sql"""delete from "production"."productcategory" where "productcategoryid" = ANY(${fromWrite(productcategoryids)(using new Write.Single(ProductcategoryId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ProductcategoryRow): ConnectionIO[ProductcategoryRow] = {
     sql"""insert into "production"."productcategory"("productcategoryid", "name", "rowguid", "modifieddate")
@@ -89,7 +87,7 @@ class ProductcategoryRepoImpl extends ProductcategoryRepo {
     sql"""select "productcategoryid", "name", "rowguid", "modifieddate"::text from "production"."productcategory" where "productcategoryid" = ${fromWrite(productcategoryid)(using new Write.Single(ProductcategoryId.put))}""".query(using ProductcategoryRow.read).option
   }
   override def selectByIds(productcategoryids: Array[ProductcategoryId]): Stream[ConnectionIO, ProductcategoryRow] = {
-    sql"""select "productcategoryid", "name", "rowguid", "modifieddate"::text from "production"."productcategory" where "productcategoryid" = ANY(${productcategoryids})""".query(using ProductcategoryRow.read).stream
+    sql"""select "productcategoryid", "name", "rowguid", "modifieddate"::text from "production"."productcategory" where "productcategoryid" = ANY(${fromWrite(productcategoryids)(using new Write.Single(ProductcategoryId.arrayPut))})""".query(using ProductcategoryRow.read).stream
   }
   override def selectByIdsTracked(productcategoryids: Array[ProductcategoryId]): ConnectionIO[Map[ProductcategoryId, ProductcategoryRow]] = {
     selectByIds(productcategoryids).compile.toList.map { rows =>

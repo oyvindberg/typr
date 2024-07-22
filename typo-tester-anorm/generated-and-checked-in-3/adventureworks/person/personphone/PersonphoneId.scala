@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package personphone
+package adventureworks.person.personphone
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
@@ -15,7 +13,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -30,18 +27,18 @@ object PersonphoneId {
   given reads: Reads[PersonphoneId] = Reads[PersonphoneId](json => JsResult.fromTry(
       Try(
         PersonphoneId(
-          businessentityid = json.\("businessentityid").as(summon[Reads[BusinessentityId]]),
-          phonenumber = json.\("phonenumber").as(summon[Reads[Phone]]),
-          phonenumbertypeid = json.\("phonenumbertypeid").as(summon[Reads[PhonenumbertypeId]])
+          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+          phonenumber = json.\("phonenumber").as(Phone.reads),
+          phonenumbertypeid = json.\("phonenumbertypeid").as(PhonenumbertypeId.reads)
         )
       )
     ),
   )
   given writes: OWrites[PersonphoneId] = OWrites[PersonphoneId](o =>
     new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> summon[Writes[BusinessentityId]].writes(o.businessentityid),
-      "phonenumber" -> summon[Writes[Phone]].writes(o.phonenumber),
-      "phonenumbertypeid" -> summon[Writes[PhonenumbertypeId]].writes(o.phonenumbertypeid)
+      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+      "phonenumber" -> Phone.writes.writes(o.phonenumber),
+      "phonenumbertypeid" -> PhonenumbertypeId.writes.writes(o.phonenumbertypeid)
     ))
   )
 }

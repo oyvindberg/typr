@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package users
+package adventureworks.public.users
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoInstant
 import adventureworks.customtypes.TypoUnknownCitext
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class UsersRepoImpl extends UsersRepo {
     sql"""delete from "public"."users" where "user_id" = ${Segment.paramSegment(userId)(using UsersId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(userIds: Array[UsersId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "public"."users" where "user_id" = ANY(${userIds})""".delete
+    sql"""delete from "public"."users" where "user_id" = ANY(${Segment.paramSegment(userIds)(using UsersId.arraySetter)})""".delete
   }
   override def insert(unsaved: UsersRow): ZIO[ZConnection, Throwable, UsersRow] = {
     sql"""insert into "public"."users"("user_id", "name", "last_name", "email", "password", "created_at", "verified_on")

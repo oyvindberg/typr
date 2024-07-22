@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_utdanningstilbud
+package adventureworks.public.test_utdanningstilbud
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import cats.instances.list.catsStdInstancesForList
@@ -35,7 +33,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     sql"""delete
           from "public"."test_utdanningstilbud"
           where ("organisasjonskode", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskode}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${fromWrite(organisasjonskode)(using new Write.Single(TestOrganisasjonId.arrayPut))}), unnest(${fromWrite(utdanningsmulighetKode)(using new Write.Single(adventureworks.StringArrayMeta.put))}))
        """.update.run
     
   }
@@ -63,7 +61,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     sql"""select "organisasjonskode", "utdanningsmulighet_kode"
           from "public"."test_utdanningstilbud"
           where ("organisasjonskode", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskode}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${fromWrite(organisasjonskode)(using new Write.Single(TestOrganisasjonId.arrayPut))}), unnest(${fromWrite(utdanningsmulighetKode)(using new Write.Single(adventureworks.StringArrayMeta.put))}))
        """.query(using TestUtdanningstilbudRow.read).stream
     
   }

@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package shift
+package adventureworks.humanresources.shift
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class ShiftRepoImpl extends ShiftRepo {
     sql"""delete from "humanresources"."shift" where "shiftid" = ${Segment.paramSegment(shiftid)(ShiftId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(shiftids: Array[ShiftId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "humanresources"."shift" where "shiftid" = ANY(${shiftids})""".delete
+    sql"""delete from "humanresources"."shift" where "shiftid" = ANY(${Segment.paramSegment(shiftids)(ShiftId.arraySetter)})""".delete
   }
   override def insert(unsaved: ShiftRow): ZIO[ZConnection, Throwable, ShiftRow] = {
     sql"""insert into "humanresources"."shift"("shiftid", "name", "starttime", "endtime", "modifieddate")

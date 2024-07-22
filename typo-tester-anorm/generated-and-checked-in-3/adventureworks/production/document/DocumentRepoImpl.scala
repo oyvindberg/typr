@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package document
+package adventureworks.production.document
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
@@ -14,6 +12,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -40,7 +39,7 @@ class DocumentRepoImpl extends DocumentRepo {
   override def deleteByIds(documentnodes: Array[DocumentId])(using c: Connection): Int = {
     SQL"""delete
           from "production"."document"
-          where "documentnode" = ANY(${documentnodes})
+          where "documentnode" = ANY(${ParameterValue(documentnodes, null, DocumentId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -123,7 +122,7 @@ class DocumentRepoImpl extends DocumentRepo {
   override def selectByIds(documentnodes: Array[DocumentId])(using c: Connection): List[DocumentRow] = {
     SQL"""select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
           from "production"."document"
-          where "documentnode" = ANY(${documentnodes})
+          where "documentnode" = ANY(${ParameterValue(documentnodes, null, DocumentId.arrayToStatement)})
        """.as(DocumentRow.rowParser(1).*)
     
   }

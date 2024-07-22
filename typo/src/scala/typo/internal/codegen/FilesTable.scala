@@ -13,7 +13,6 @@ case class FilesTable(table: ComputedTable, fkAnalysis: FkAnalysis, options: Int
   val UnsavedRowFile: Option[sc.File] =
     for {
       unsaved <- table.maybeUnsavedRow
-      rowFile <- RowFile
     } yield {
       val comments = scaladoc(s"This class corresponds to a row in table `${table.dbTable.name.value}` which has not been persisted yet")(Nil)
 
@@ -59,8 +58,8 @@ case class FilesTable(table: ComputedTable, fkAnalysis: FkAnalysis, options: Int
           col.dbCol.maybeGenerated.map(_.asString),
           col.dbCol.comment,
           col.pointsTo map { case (relationName, columnName) =>
-            val shortened = sc.QIdent(relation.dropCommonPrefix(table.naming.rowName(relationName).idents, rowFile.tpe.value.idents))
-            s"Points to [[${shortened.dotName}.${table.naming.field(columnName).value}]]"
+            val rowName = table.naming.rowName(relationName)
+            s"Points to [[${rowName.dotName}.${table.naming.field(columnName).value}]]"
           },
           col.dbCol.constraints.map(c => s"Constraint ${c.name} affecting columns ${c.columns.map(_.value).mkString(", ")}:  ${c.checkClause}"),
           if (options.debugTypes)

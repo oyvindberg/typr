@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package pp
+package adventureworks.pe.pp
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -20,15 +18,15 @@ import zio.json.internal.Write
 
 /** View: pe.pp */
 case class PpViewRow(
-  /** Points to [[person.personphone.PersonphoneRow.businessentityid]] */
+  /** Points to [[adventureworks.person.personphone.PersonphoneRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[person.personphone.PersonphoneRow.businessentityid]] */
+  /** Points to [[adventureworks.person.personphone.PersonphoneRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.personphone.PersonphoneRow.phonenumber]] */
+  /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
   phonenumber: Phone,
-  /** Points to [[person.personphone.PersonphoneRow.phonenumbertypeid]] */
+  /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumbertypeid]] */
   phonenumbertypeid: PhonenumbertypeId,
-  /** Points to [[person.personphone.PersonphoneRow.modifieddate]] */
+  /** Points to [[adventureworks.person.personphone.PersonphoneRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

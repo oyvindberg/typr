@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package contacttype
+package adventureworks.person.contacttype
 
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder

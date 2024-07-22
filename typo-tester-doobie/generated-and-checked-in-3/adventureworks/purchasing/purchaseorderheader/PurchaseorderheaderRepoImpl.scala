@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderheader
+package adventureworks.purchasing.purchaseorderheader
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -35,7 +33,7 @@ class PurchaseorderheaderRepoImpl extends PurchaseorderheaderRepo {
     sql"""delete from "purchasing"."purchaseorderheader" where "purchaseorderid" = ${fromWrite(purchaseorderid)(using new Write.Single(PurchaseorderheaderId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(purchaseorderids: Array[PurchaseorderheaderId]): ConnectionIO[Int] = {
-    sql"""delete from "purchasing"."purchaseorderheader" where "purchaseorderid" = ANY(${purchaseorderids})""".update.run
+    sql"""delete from "purchasing"."purchaseorderheader" where "purchaseorderid" = ANY(${fromWrite(purchaseorderids)(using new Write.Single(PurchaseorderheaderId.arrayPut))})""".update.run
   }
   override def insert(unsaved: PurchaseorderheaderRow): ConnectionIO[PurchaseorderheaderRow] = {
     sql"""insert into "purchasing"."purchaseorderheader"("purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate", "shipdate", "subtotal", "taxamt", "freight", "modifieddate")
@@ -114,7 +112,7 @@ class PurchaseorderheaderRepoImpl extends PurchaseorderheaderRepo {
     sql"""select "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate"::text, "shipdate"::text, "subtotal", "taxamt", "freight", "modifieddate"::text from "purchasing"."purchaseorderheader" where "purchaseorderid" = ${fromWrite(purchaseorderid)(using new Write.Single(PurchaseorderheaderId.put))}""".query(using PurchaseorderheaderRow.read).option
   }
   override def selectByIds(purchaseorderids: Array[PurchaseorderheaderId]): Stream[ConnectionIO, PurchaseorderheaderRow] = {
-    sql"""select "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate"::text, "shipdate"::text, "subtotal", "taxamt", "freight", "modifieddate"::text from "purchasing"."purchaseorderheader" where "purchaseorderid" = ANY(${purchaseorderids})""".query(using PurchaseorderheaderRow.read).stream
+    sql"""select "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate"::text, "shipdate"::text, "subtotal", "taxamt", "freight", "modifieddate"::text from "purchasing"."purchaseorderheader" where "purchaseorderid" = ANY(${fromWrite(purchaseorderids)(using new Write.Single(PurchaseorderheaderId.arrayPut))})""".query(using PurchaseorderheaderRow.read).stream
   }
   override def selectByIdsTracked(purchaseorderids: Array[PurchaseorderheaderId]): ConnectionIO[Map[PurchaseorderheaderId, PurchaseorderheaderRow]] = {
     selectByIds(purchaseorderids).compile.toList.map { rows =>

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package crc
+package adventureworks.sa.crc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
@@ -22,11 +20,11 @@ import scala.util.Try
 
 /** View: sa.crc */
 case class CrcViewRow(
-  /** Points to [[sales.countryregioncurrency.CountryregioncurrencyRow.countryregioncode]] */
+  /** Points to [[adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow.countryregioncode]] */
   countryregioncode: CountryregionId,
-  /** Points to [[sales.countryregioncurrency.CountryregioncurrencyRow.currencycode]] */
+  /** Points to [[adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow.currencycode]] */
   currencycode: CurrencyId,
-  /** Points to [[sales.countryregioncurrency.CountryregioncurrencyRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

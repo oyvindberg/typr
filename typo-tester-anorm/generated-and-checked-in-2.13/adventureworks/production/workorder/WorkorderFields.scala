@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorder
+package adventureworks.production.workorder
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -44,7 +42,7 @@ trait WorkorderFields {
 object WorkorderFields {
   lazy val structure: Relation[WorkorderFields, WorkorderRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[WorkorderFields, WorkorderRow] {
   

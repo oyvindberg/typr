@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package department
+package adventureworks.humanresources.department
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class DepartmentRepoImpl extends DepartmentRepo {
     sql"""delete from "humanresources"."department" where "departmentid" = ${Segment.paramSegment(departmentid)(DepartmentId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(departmentids: Array[DepartmentId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "humanresources"."department" where "departmentid" = ANY(${departmentids})""".delete
+    sql"""delete from "humanresources"."department" where "departmentid" = ANY(${Segment.paramSegment(departmentids)(DepartmentId.arraySetter)})""".delete
   }
   override def insert(unsaved: DepartmentRow): ZIO[ZConnection, Throwable, DepartmentRow] = {
     sql"""insert into "humanresources"."department"("departmentid", "name", "groupname", "modifieddate")

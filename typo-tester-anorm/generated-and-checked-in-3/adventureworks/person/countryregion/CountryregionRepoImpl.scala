@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package countryregion
+package adventureworks.person.countryregion
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class CountryregionRepoImpl extends CountryregionRepo {
   override def deleteByIds(countryregioncodes: Array[CountryregionId])(using c: Connection): Int = {
     SQL"""delete
           from "person"."countryregion"
-          where "countryregioncode" = ANY(${countryregioncodes})
+          where "countryregioncode" = ANY(${ParameterValue(countryregioncodes, null, CountryregionId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -95,7 +94,7 @@ class CountryregionRepoImpl extends CountryregionRepo {
   override def selectByIds(countryregioncodes: Array[CountryregionId])(using c: Connection): List[CountryregionRow] = {
     SQL"""select "countryregioncode", "name", "modifieddate"::text
           from "person"."countryregion"
-          where "countryregioncode" = ANY(${countryregioncodes})
+          where "countryregioncode" = ANY(${ParameterValue(countryregioncodes, null, CountryregionId.arrayToStatement)})
        """.as(CountryregionRow.rowParser(1).*)
     
   }

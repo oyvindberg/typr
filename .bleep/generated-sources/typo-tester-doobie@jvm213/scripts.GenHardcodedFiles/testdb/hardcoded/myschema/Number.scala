@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
+package testdb.hardcoded.myschema
 
 import cats.data.NonEmptyList
 import doobie.enumerated.JdbcType

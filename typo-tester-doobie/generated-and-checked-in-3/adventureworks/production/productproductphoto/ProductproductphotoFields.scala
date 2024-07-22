@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productproductphoto
+package adventureworks.production.productproductphoto
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
@@ -15,12 +13,14 @@ import adventureworks.production.productphoto.ProductphotoFields
 import adventureworks.production.productphoto.ProductphotoId
 import adventureworks.production.productphoto.ProductphotoRow
 import adventureworks.public.Flag
+import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -40,14 +40,14 @@ trait ProductproductphotoFields {
   def compositeIdIs(compositeId: ProductproductphotoId): SqlExpr[Boolean, Required] =
     productid.isEqual(compositeId.productid).and(productphotoid.isEqual(compositeId.productphotoid))
   def compositeIdIn(compositeIds: Array[ProductproductphotoId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(productid)(_.productid), TuplePart(productphotoid)(_.productphotoid))
+    new CompositeIn(compositeIds)(TuplePart[ProductproductphotoId](productid)(_.productid)(using as[Array[ProductId], Required](using ProductId.arrayPut, Write.fromPut(using ProductId.arrayPut)), implicitly), TuplePart[ProductproductphotoId](productphotoid)(_.productphotoid)(using as[Array[ProductphotoId], Required](using ProductphotoId.arrayPut, Write.fromPut(using ProductphotoId.arrayPut)), implicitly))
   
 }
 
 object ProductproductphotoFields {
   lazy val structure: Relation[ProductproductphotoFields, ProductproductphotoRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductproductphotoFields, ProductproductphotoRow] {
   

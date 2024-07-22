@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package addresstype
+package adventureworks.person.addresstype
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream

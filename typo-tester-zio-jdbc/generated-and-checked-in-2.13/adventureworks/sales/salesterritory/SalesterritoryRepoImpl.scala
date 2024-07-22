@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritory
+package adventureworks.sales.salesterritory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +32,7 @@ class SalesterritoryRepoImpl extends SalesterritoryRepo {
     sql"""delete from "sales"."salesterritory" where "territoryid" = ${Segment.paramSegment(territoryid)(SalesterritoryId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(territoryids: Array[SalesterritoryId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."salesterritory" where "territoryid" = ANY(${territoryids})""".delete
+    sql"""delete from "sales"."salesterritory" where "territoryid" = ANY(${Segment.paramSegment(territoryids)(SalesterritoryId.arraySetter)})""".delete
   }
   override def insert(unsaved: SalesterritoryRow): ZIO[ZConnection, Throwable, SalesterritoryRow] = {
     sql"""insert into "sales"."salesterritory"("territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")

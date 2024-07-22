@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package vstateprovincecountryregion
+package adventureworks.person.vstateprovincecountryregion
 
 import anorm.SqlStringInterpolation
 import java.sql.Connection

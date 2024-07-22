@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_organisasjon
+package adventureworks.public.test_organisasjon
 
+import adventureworks.Text
 import anorm.RowParser
 import anorm.Success
 import play.api.libs.json.JsObject

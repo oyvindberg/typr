@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package addresstype
+package adventureworks.person.addresstype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class AddresstypeRepoImpl extends AddresstypeRepo {
     sql"""delete from "person"."addresstype" where "addresstypeid" = ${fromWrite(addresstypeid)(using new Write.Single(AddresstypeId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(addresstypeids: Array[AddresstypeId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."addresstype" where "addresstypeid" = ANY(${addresstypeids})""".update.run
+    sql"""delete from "person"."addresstype" where "addresstypeid" = ANY(${fromWrite(addresstypeids)(using new Write.Single(AddresstypeId.arrayPut))})""".update.run
   }
   override def insert(unsaved: AddresstypeRow): ConnectionIO[AddresstypeRow] = {
     sql"""insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
@@ -89,7 +87,7 @@ class AddresstypeRepoImpl extends AddresstypeRepo {
     sql"""select "addresstypeid", "name", "rowguid", "modifieddate"::text from "person"."addresstype" where "addresstypeid" = ${fromWrite(addresstypeid)(using new Write.Single(AddresstypeId.put))}""".query(using AddresstypeRow.read).option
   }
   override def selectByIds(addresstypeids: Array[AddresstypeId]): Stream[ConnectionIO, AddresstypeRow] = {
-    sql"""select "addresstypeid", "name", "rowguid", "modifieddate"::text from "person"."addresstype" where "addresstypeid" = ANY(${addresstypeids})""".query(using AddresstypeRow.read).stream
+    sql"""select "addresstypeid", "name", "rowguid", "modifieddate"::text from "person"."addresstype" where "addresstypeid" = ANY(${fromWrite(addresstypeids)(using new Write.Single(AddresstypeId.arrayPut))})""".query(using AddresstypeRow.read).stream
   }
   override def selectByIdsTracked(addresstypeids: Array[AddresstypeId]): ConnectionIO[Map[AddresstypeId, AddresstypeRow]] = {
     selectByIds(addresstypeids).compile.toList.map { rows =>

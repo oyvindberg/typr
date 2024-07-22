@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package table_with_generated_columns
+package adventureworks.public.table_with_generated_columns
 
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -31,7 +30,7 @@ class TableWithGeneratedColumnsRepoImpl extends TableWithGeneratedColumnsRepo {
   override def deleteByIds(names: Array[TableWithGeneratedColumnsId])(implicit c: Connection): Int = {
     SQL"""delete
           from "public"."table-with-generated-columns"
-          where "name" = ANY(${names})
+          where "name" = ANY(${ParameterValue(names, null, TableWithGeneratedColumnsId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -87,7 +86,7 @@ class TableWithGeneratedColumnsRepoImpl extends TableWithGeneratedColumnsRepo {
   override def selectByIds(names: Array[TableWithGeneratedColumnsId])(implicit c: Connection): List[TableWithGeneratedColumnsRow] = {
     SQL"""select "name", "name-type-always"
           from "public"."table-with-generated-columns"
-          where "name" = ANY(${names})
+          where "name" = ANY(${ParameterValue(names, null, TableWithGeneratedColumnsId.arrayToStatement)})
        """.as(TableWithGeneratedColumnsRow.rowParser(1).*)
     
   }

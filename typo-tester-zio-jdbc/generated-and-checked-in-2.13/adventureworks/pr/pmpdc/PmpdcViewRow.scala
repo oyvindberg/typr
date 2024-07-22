@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pmpdc
+package adventureworks.pr.pmpdc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
@@ -20,13 +18,13 @@ import zio.json.internal.Write
 
 /** View: pr.pmpdc */
 case class PmpdcViewRow(
-  /** Points to [[production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.productmodelid]] */
+  /** Points to [[adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.productmodelid]] */
   productmodelid: ProductmodelId,
-  /** Points to [[production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.productdescriptionid]] */
+  /** Points to [[adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.productdescriptionid]] */
   productdescriptionid: ProductdescriptionId,
-  /** Points to [[production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid]] */
+  /** Points to [[adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid]] */
   cultureid: CultureId,
-  /** Points to [[production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

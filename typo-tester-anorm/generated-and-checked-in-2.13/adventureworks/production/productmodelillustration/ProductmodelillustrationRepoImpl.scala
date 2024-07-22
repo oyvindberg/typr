@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelillustration
+package adventureworks.production.productmodelillustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
 import adventureworks.production.productmodel.ProductmodelId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -38,7 +37,7 @@ class ProductmodelillustrationRepoImpl extends ProductmodelillustrationRepo {
     SQL"""delete
           from "production"."productmodelillustration"
           where ("productmodelid", "illustrationid")
-          in (select unnest(${productmodelid}), unnest(${illustrationid}))
+          in (select unnest(${ParameterValue(productmodelid, null, ProductmodelId.arrayToStatement)}), unnest(${ParameterValue(illustrationid, null, IllustrationId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -102,7 +101,7 @@ class ProductmodelillustrationRepoImpl extends ProductmodelillustrationRepo {
     SQL"""select "productmodelid", "illustrationid", "modifieddate"::text
           from "production"."productmodelillustration"
           where ("productmodelid", "illustrationid")
-          in (select unnest(${productmodelid}), unnest(${illustrationid}))
+          in (select unnest(${ParameterValue(productmodelid, null, ProductmodelId.arrayToStatement)}), unnest(${ParameterValue(illustrationid, null, IllustrationId.arrayToStatement)}))
        """.as(ProductmodelillustrationRow.rowParser(1).*)
     
   }

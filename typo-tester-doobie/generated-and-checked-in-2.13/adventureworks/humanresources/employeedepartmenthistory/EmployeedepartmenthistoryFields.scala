@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeedepartmenthistory
+package adventureworks.humanresources.employeedepartmenthistory
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.customtypes.TypoLocalDateTime
@@ -18,12 +16,14 @@ import adventureworks.humanresources.shift.ShiftFields
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.humanresources.shift.ShiftRow
 import adventureworks.person.businessentity.BusinessentityId
+import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -49,14 +49,14 @@ trait EmployeedepartmenthistoryFields {
   def compositeIdIs(compositeId: EmployeedepartmenthistoryId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(startdate.isEqual(compositeId.startdate)).and(departmentid.isEqual(compositeId.departmentid)).and(shiftid.isEqual(compositeId.shiftid))
   def compositeIdIn(compositeIds: Array[EmployeedepartmenthistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(startdate)(_.startdate), TuplePart(departmentid)(_.departmentid), TuplePart(shiftid)(_.shiftid))
+    new CompositeIn(compositeIds)(TuplePart[EmployeedepartmenthistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayPut, Write.fromPut(BusinessentityId.arrayPut)), implicitly), TuplePart[EmployeedepartmenthistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDate], Required](TypoLocalDate.arrayPut, Write.fromPut(TypoLocalDate.arrayPut)), implicitly), TuplePart[EmployeedepartmenthistoryId](departmentid)(_.departmentid)(using as[Array[DepartmentId], Required](DepartmentId.arrayPut, Write.fromPut(DepartmentId.arrayPut)), implicitly), TuplePart[EmployeedepartmenthistoryId](shiftid)(_.shiftid)(using as[Array[ShiftId], Required](ShiftId.arrayPut, Write.fromPut(ShiftId.arrayPut)), implicitly))
   
 }
 
 object EmployeedepartmenthistoryFields {
   lazy val structure: Relation[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] {
   

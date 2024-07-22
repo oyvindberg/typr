@@ -3,20 +3,20 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_sak_soknadsalternativ
+package adventureworks.public.test_sak_soknadsalternativ
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudFields
 import adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudId
 import adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -33,19 +33,19 @@ trait TestSakSoknadsalternativFields {
   def compositeIdIs(compositeId: TestSakSoknadsalternativId): SqlExpr[Boolean, Required] =
     organisasjonskodeSaksbehandler.isEqual(compositeId.organisasjonskodeSaksbehandler).and(utdanningsmulighetKode.isEqual(compositeId.utdanningsmulighetKode))
   def compositeIdIn(compositeIds: Array[TestSakSoknadsalternativId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(organisasjonskodeSaksbehandler)(_.organisasjonskodeSaksbehandler), TuplePart(utdanningsmulighetKode)(_.utdanningsmulighetKode))
+    new CompositeIn(compositeIds)(TuplePart[TestSakSoknadsalternativId](organisasjonskodeSaksbehandler)(_.organisasjonskodeSaksbehandler)(using as[Array[String], Required](using adventureworks.StringArrayEncoder, PGType.forArray(using PGType.PGTypeString)), implicitly), TuplePart[TestSakSoknadsalternativId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String], Required](using adventureworks.StringArrayEncoder, PGType.forArray(using PGType.PGTypeString)), implicitly))
   
   def extractTestUtdanningstilbudIdIs(id: TestUtdanningstilbudId): SqlExpr[Boolean, Required] =
     organisasjonskodeTilbyder.isEqual(id.organisasjonskode).and(utdanningsmulighetKode.isEqual(id.utdanningsmulighetKode))
   def extractTestUtdanningstilbudIdIn(ids: Array[TestUtdanningstilbudId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(ids)(TuplePart(organisasjonskodeTilbyder)(_.organisasjonskode), TuplePart(utdanningsmulighetKode)(_.utdanningsmulighetKode))
+    new CompositeIn(ids)(TuplePart[TestUtdanningstilbudId](organisasjonskodeTilbyder)(_.organisasjonskode)(using as[Array[TestOrganisasjonId], Required](using TestOrganisasjonId.arrayJdbcEncoder, PGType.forArray(using TestOrganisasjonId.pgType)), implicitly), TuplePart[TestUtdanningstilbudId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String], Required](using adventureworks.StringArrayEncoder, PGType.forArray(using PGType.PGTypeString)), implicitly))
   
 }
 
 object TestSakSoknadsalternativFields {
   lazy val structure: Relation[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] {
   

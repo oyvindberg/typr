@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142
+package adventureworks.public.issue142
 
+import adventureworks.Text
 import java.sql.Types
 import typo.dsl.PGType
 import zio.jdbc.JdbcDecoder

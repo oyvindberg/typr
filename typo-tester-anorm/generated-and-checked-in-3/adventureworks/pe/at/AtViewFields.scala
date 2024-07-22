@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package at
+package adventureworks.pe.at
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -27,7 +25,7 @@ trait AtViewFields {
 object AtViewFields {
   lazy val structure: Relation[AtViewFields, AtViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[AtViewFields, AtViewRow] {
   

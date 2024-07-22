@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeepayhistory
+package adventureworks.humanresources.employeepayhistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -14,7 +12,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,16 +25,16 @@ object EmployeepayhistoryId {
   given reads: Reads[EmployeepayhistoryId] = Reads[EmployeepayhistoryId](json => JsResult.fromTry(
       Try(
         EmployeepayhistoryId(
-          businessentityid = json.\("businessentityid").as(summon[Reads[BusinessentityId]]),
-          ratechangedate = json.\("ratechangedate").as(summon[Reads[TypoLocalDateTime]])
+          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+          ratechangedate = json.\("ratechangedate").as(TypoLocalDateTime.reads)
         )
       )
     ),
   )
   given writes: OWrites[EmployeepayhistoryId] = OWrites[EmployeepayhistoryId](o =>
     new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> summon[Writes[BusinessentityId]].writes(o.businessentityid),
-      "ratechangedate" -> summon[Writes[TypoLocalDateTime]].writes(o.ratechangedate)
+      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+      "ratechangedate" -> TypoLocalDateTime.writes.writes(o.ratechangedate)
     ))
   )
 }

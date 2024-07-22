@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderdetail
+package adventureworks.purchasing.purchaseorderdetail
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -20,7 +19,7 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `purchasing.purchaseorderdetail` which has not been persisted yet */
 case class PurchaseorderdetailRowUnsaved(
   /** Primary key. Foreign key to PurchaseOrderHeader.PurchaseOrderID.
-      Points to [[purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
+      Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
   purchaseorderid: PurchaseorderheaderId,
   /** Date the product is expected to be received. */
   duedate: TypoLocalDateTime,
@@ -28,7 +27,7 @@ case class PurchaseorderdetailRowUnsaved(
       Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0)) */
   orderqty: TypoShort,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[production.product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Vendor's selling price of a single product.
       Constraint CK_PurchaseOrderDetail_UnitPrice affecting columns unitprice:  ((unitprice >= 0.00)) */

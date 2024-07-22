@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package football_club
+package testdb.hardcoded.myschema.football_club
 
 import anorm.BatchSql
 import anorm.NamedParameter
@@ -18,6 +15,7 @@ import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
+import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +31,7 @@ class FootballClubRepoImpl extends FootballClubRepo {
   override def deleteByIds(ids: Array[FootballClubId])(using c: Connection): Int = {
     SQL"""delete
           from "myschema"."football_club"
-          where "id" = ANY(${ids})
+          where "id" = ANY(${ParameterValue(ids, null, FootballClubId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -83,7 +81,7 @@ class FootballClubRepoImpl extends FootballClubRepo {
   override def selectByIds(ids: Array[FootballClubId])(using c: Connection): List[FootballClubRow] = {
     SQL"""select "id", "name"
           from "myschema"."football_club"
-          where "id" = ANY(${ids})
+          where "id" = ANY(${ParameterValue(ids, null, FootballClubId.arrayToStatement)})
        """.as(FootballClubRow.rowParser(1).*)
     
   }

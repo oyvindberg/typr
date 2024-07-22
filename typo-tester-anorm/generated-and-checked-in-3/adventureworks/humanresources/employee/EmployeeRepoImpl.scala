@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employee
+package adventureworks.humanresources.employee
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDate
@@ -14,6 +12,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -40,7 +39,7 @@ class EmployeeRepoImpl extends EmployeeRepo {
   override def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = {
     SQL"""delete
           from "humanresources"."employee"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -131,7 +130,7 @@ class EmployeeRepoImpl extends EmployeeRepo {
   override def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[EmployeeRow] = {
     SQL"""select "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"
           from "humanresources"."employee"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.as(EmployeeRow.rowParser(1).*)
     
   }

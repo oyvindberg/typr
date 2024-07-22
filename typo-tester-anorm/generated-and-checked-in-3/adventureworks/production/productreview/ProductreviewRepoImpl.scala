@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productreview
+package adventureworks.production.productreview
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -37,7 +36,7 @@ class ProductreviewRepoImpl extends ProductreviewRepo {
   override def deleteByIds(productreviewids: Array[ProductreviewId])(using c: Connection): Int = {
     SQL"""delete
           from "production"."productreview"
-          where "productreviewid" = ANY(${productreviewids})
+          where "productreviewid" = ANY(${ParameterValue(productreviewids, null, ProductreviewId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -109,7 +108,7 @@ class ProductreviewRepoImpl extends ProductreviewRepo {
   override def selectByIds(productreviewids: Array[ProductreviewId])(using c: Connection): List[ProductreviewRow] = {
     SQL"""select "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text
           from "production"."productreview"
-          where "productreviewid" = ANY(${productreviewids})
+          where "productreviewid" = ANY(${ParameterValue(productreviewids, null, ProductreviewId.arrayToStatement)})
        """.as(ProductreviewRow.rowParser(1).*)
     
   }

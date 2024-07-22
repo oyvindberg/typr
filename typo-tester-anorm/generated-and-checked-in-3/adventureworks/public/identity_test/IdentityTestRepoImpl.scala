@@ -3,11 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package identity_test
+package adventureworks.public.identity_test
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -33,7 +32,7 @@ class IdentityTestRepoImpl extends IdentityTestRepo {
   override def deleteByIds(names: Array[IdentityTestId])(using c: Connection): Int = {
     SQL"""delete
           from "public"."identity-test"
-          where "name" = ANY(${names})
+          where "name" = ANY(${ParameterValue(names, null, IdentityTestId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -93,7 +92,7 @@ class IdentityTestRepoImpl extends IdentityTestRepo {
   override def selectByIds(names: Array[IdentityTestId])(using c: Connection): List[IdentityTestRow] = {
     SQL"""select "always_generated", "default_generated", "name"
           from "public"."identity-test"
-          where "name" = ANY(${names})
+          where "name" = ANY(${ParameterValue(names, null, IdentityTestId.arrayToStatement)})
        """.as(IdentityTestRow.rowParser(1).*)
     
   }

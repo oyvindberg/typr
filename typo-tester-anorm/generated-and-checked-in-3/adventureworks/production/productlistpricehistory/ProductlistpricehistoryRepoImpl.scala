@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productlistpricehistory
+package adventureworks.production.productlistpricehistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -38,7 +37,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     SQL"""delete
           from "production"."productlistpricehistory"
           where ("productid", "startdate")
-          in (select unnest(${productid}), unnest(${startdate}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -104,7 +103,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     SQL"""select "productid", "startdate"::text, "enddate"::text, "listprice", "modifieddate"::text
           from "production"."productlistpricehistory"
           where ("productid", "startdate")
-          in (select unnest(${productid}), unnest(${startdate}))
+          in (select unnest(${ParameterValue(productid, null, ProductId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}))
        """.as(ProductlistpricehistoryRow.rowParser(1).*)
     
   }

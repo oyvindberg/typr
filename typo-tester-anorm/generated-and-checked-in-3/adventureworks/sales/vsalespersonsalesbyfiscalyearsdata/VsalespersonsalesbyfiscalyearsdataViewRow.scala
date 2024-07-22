@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vsalespersonsalesbyfiscalyearsdata
+package adventureworks.sales.vsalespersonsalesbyfiscalyearsdata
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
@@ -23,12 +21,12 @@ import scala.util.Try
 
 /** View: sales.vsalespersonsalesbyfiscalyearsdata */
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
-  /** Points to [[salesorderheader.SalesorderheaderRow.salespersonid]] */
+  /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
   salespersonid: Option[BusinessentityId],
   fullname: /* nullability unknown */ Option[String],
-  /** Points to [[humanresources.employee.EmployeeRow.jobtitle]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
-  /** Points to [[salesterritory.SalesterritoryRow.name]] */
+  /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: /* nullability unknown */ Option[BigDecimal],
   fiscalyear: /* nullability unknown */ Option[BigDecimal]

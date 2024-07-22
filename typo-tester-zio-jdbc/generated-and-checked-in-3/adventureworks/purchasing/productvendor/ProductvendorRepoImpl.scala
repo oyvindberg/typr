@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package productvendor
+package adventureworks.purchasing.productvendor
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -38,7 +37,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     sql"""delete
           from "purchasing"."productvendor"
           where ("productid", "businessentityid")
-          in (select unnest(${productid}), unnest(${businessentityid}))
+          in (select unnest(${Segment.paramSegment(productid)(using ProductId.arraySetter)}), unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}))
        """.delete
     
   }
@@ -100,7 +99,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     sql"""select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
           from "purchasing"."productvendor"
           where ("productid", "businessentityid")
-          in (select unnest(${productid}), unnest(${businessentityid}))
+          in (select unnest(${Segment.paramSegment(productid)(using ProductId.arraySetter)}), unnest(${Segment.paramSegment(businessentityid)(using BusinessentityId.arraySetter)}))
        """.query(using ProductvendorRow.jdbcDecoder).selectStream()
     
   }

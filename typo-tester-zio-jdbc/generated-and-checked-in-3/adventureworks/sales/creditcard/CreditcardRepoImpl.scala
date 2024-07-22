@@ -3,20 +3,18 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package creditcard
+package adventureworks.sales.creditcard
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
+import adventureworks.streamingInsert
 import adventureworks.userdefined.CustomCreditcardId
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
 import zio.ZIO
-import zio.jdbc.JdbcEncoder
 import zio.jdbc.SqlFragment
 import zio.jdbc.SqlFragment.Segment
 import zio.jdbc.SqlFragment.Setter
@@ -32,8 +30,8 @@ class CreditcardRepoImpl extends CreditcardRepo {
   override def deleteById(creditcardid: /* user-picked */ CustomCreditcardId): ZIO[ZConnection, Throwable, Boolean] = {
     sql"""delete from "sales"."creditcard" where "creditcardid" = ${Segment.paramSegment(creditcardid)(using /* user-picked */ CustomCreditcardId.setter)}""".delete.map(_ > 0)
   }
-  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."creditcard" where "creditcardid" = ANY(${creditcardids})""".delete
+  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ZIO[ZConnection, Throwable, Long] = {
+    sql"""delete from "sales"."creditcard" where "creditcardid" = ANY(${Segment.paramSegment(creditcardids)(using CustomCreditcardId.arraySetter)})""".delete
   }
   override def insert(unsaved: CreditcardRow): ZIO[ZConnection, Throwable, CreditcardRow] = {
     sql"""insert into "sales"."creditcard"("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")
@@ -85,10 +83,10 @@ class CreditcardRepoImpl extends CreditcardRepo {
   override def selectById(creditcardid: /* user-picked */ CustomCreditcardId): ZIO[ZConnection, Throwable, Option[CreditcardRow]] = {
     sql"""select "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text from "sales"."creditcard" where "creditcardid" = ${Segment.paramSegment(creditcardid)(using /* user-picked */ CustomCreditcardId.setter)}""".query(using CreditcardRow.jdbcDecoder).selectOne
   }
-  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZStream[ZConnection, Throwable, CreditcardRow] = {
+  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ZStream[ZConnection, Throwable, CreditcardRow] = {
     sql"""select "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text from "sales"."creditcard" where "creditcardid" = ANY(${Segment.paramSegment(creditcardids)(using CustomCreditcardId.arraySetter)})""".query(using CreditcardRow.jdbcDecoder).selectStream()
   }
-  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZIO[ZConnection, Throwable, Map[/* user-picked */ CustomCreditcardId, CreditcardRow]] = {
+  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ZIO[ZConnection, Throwable, Map[/* user-picked */ CustomCreditcardId, CreditcardRow]] = {
     selectByIds(creditcardids).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.creditcardid, x)).toMap
       creditcardids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap

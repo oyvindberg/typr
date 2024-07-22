@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package unitmeasure
+package adventureworks.production.unitmeasure
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class UnitmeasureRepoImpl extends UnitmeasureRepo {
     sql"""delete from "production"."unitmeasure" where "unitmeasurecode" = ${fromWrite(unitmeasurecode)(new Write.Single(UnitmeasureId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(unitmeasurecodes: Array[UnitmeasureId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."unitmeasure" where "unitmeasurecode" = ANY(${unitmeasurecodes})""".update.run
+    sql"""delete from "production"."unitmeasure" where "unitmeasurecode" = ANY(${fromWrite(unitmeasurecodes)(new Write.Single(UnitmeasureId.arrayPut))})""".update.run
   }
   override def insert(unsaved: UnitmeasureRow): ConnectionIO[UnitmeasureRow] = {
     sql"""insert into "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate")
@@ -81,7 +79,7 @@ class UnitmeasureRepoImpl extends UnitmeasureRepo {
     sql"""select "unitmeasurecode", "name", "modifieddate"::text from "production"."unitmeasure" where "unitmeasurecode" = ${fromWrite(unitmeasurecode)(new Write.Single(UnitmeasureId.put))}""".query(UnitmeasureRow.read).option
   }
   override def selectByIds(unitmeasurecodes: Array[UnitmeasureId]): Stream[ConnectionIO, UnitmeasureRow] = {
-    sql"""select "unitmeasurecode", "name", "modifieddate"::text from "production"."unitmeasure" where "unitmeasurecode" = ANY(${unitmeasurecodes})""".query(UnitmeasureRow.read).stream
+    sql"""select "unitmeasurecode", "name", "modifieddate"::text from "production"."unitmeasure" where "unitmeasurecode" = ANY(${fromWrite(unitmeasurecodes)(new Write.Single(UnitmeasureId.arrayPut))})""".query(UnitmeasureRow.read).stream
   }
   override def selectByIdsTracked(unitmeasurecodes: Array[UnitmeasureId]): ConnectionIO[Map[UnitmeasureId, UnitmeasureRow]] = {
     selectByIds(unitmeasurecodes).compile.toList.map { rows =>

@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package person
+package testdb.hardcoded.myschema.person
 
 import anorm.BatchSql
 import anorm.NamedParameter
@@ -20,8 +17,11 @@ import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.myschema.Number
+import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
 import testdb.hardcoded.myschema.marital_status.MaritalStatusId
+import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -37,7 +37,7 @@ class PersonRepoImpl extends PersonRepo {
   override def deleteByIds(ids: Array[PersonId])(implicit c: Connection): Int = {
     SQL"""delete
           from "myschema"."person"
-          where "id" = ANY(${ids})
+          where "id" = ANY(${ParameterValue(ids, null, PersonId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -140,7 +140,7 @@ class PersonRepoImpl extends PersonRepo {
   override def selectByIds(ids: Array[PersonId])(implicit c: Connection): List[PersonRow] = {
     SQL"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
           from "myschema"."person"
-          where "id" = ANY(${ids})
+          where "id" = ANY(${ParameterValue(ids, null, PersonId.arrayToStatement)})
        """.as(PersonRow.rowParser(1).*)
     
   }

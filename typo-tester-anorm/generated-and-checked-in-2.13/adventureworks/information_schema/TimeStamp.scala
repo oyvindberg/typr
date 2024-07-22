@@ -3,9 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package information_schema
+package adventureworks.information_schema
 
+import adventureworks.Text
 import adventureworks.customtypes.TypoInstant
 import anorm.Column
 import anorm.ParameterMetaData

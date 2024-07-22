@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeedepartmenthistory
+package adventureworks.humanresources.employeedepartmenthistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDate
@@ -20,13 +18,13 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `humanresources.employeedepartmenthistory` which has not been persisted yet */
 case class EmployeedepartmenthistoryRowUnsaved(
   /** Employee identification number. Foreign key to Employee.BusinessEntityID.
-      Points to [[employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Department in which the employee worked including currently. Foreign key to Department.DepartmentID.
-      Points to [[department.DepartmentRow.departmentid]] */
+      Points to [[adventureworks.humanresources.department.DepartmentRow.departmentid]] */
   departmentid: DepartmentId,
   /** Identifies which 8-hour shift the employee works. Foreign key to Shift.Shift.ID.
-      Points to [[shift.ShiftRow.shiftid]] */
+      Points to [[adventureworks.humanresources.shift.ShiftRow.shiftid]] */
   shiftid: ShiftId,
   /** Date the employee started work in the department.
       Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */

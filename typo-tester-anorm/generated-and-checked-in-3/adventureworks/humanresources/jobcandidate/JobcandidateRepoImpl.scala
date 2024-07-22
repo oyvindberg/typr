@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package jobcandidate
+package adventureworks.humanresources.jobcandidate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -36,7 +35,7 @@ class JobcandidateRepoImpl extends JobcandidateRepo {
   override def deleteByIds(jobcandidateids: Array[JobcandidateId])(using c: Connection): Int = {
     SQL"""delete
           from "humanresources"."jobcandidate"
-          where "jobcandidateid" = ANY(${jobcandidateids})
+          where "jobcandidateid" = ANY(${ParameterValue(jobcandidateids, null, JobcandidateId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -101,7 +100,7 @@ class JobcandidateRepoImpl extends JobcandidateRepo {
   override def selectByIds(jobcandidateids: Array[JobcandidateId])(using c: Connection): List[JobcandidateRow] = {
     SQL"""select "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
           from "humanresources"."jobcandidate"
-          where "jobcandidateid" = ANY(${jobcandidateids})
+          where "jobcandidateid" = ANY(${ParameterValue(jobcandidateids, null, JobcandidateId.arrayToStatement)})
        """.as(JobcandidateRow.rowParser(1).*)
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package stateprovince
+package adventureworks.person.stateprovince
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -14,6 +12,7 @@ import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -39,7 +38,7 @@ class StateprovinceRepoImpl extends StateprovinceRepo {
   override def deleteByIds(stateprovinceids: Array[StateprovinceId])(using c: Connection): Int = {
     SQL"""delete
           from "person"."stateprovince"
-          where "stateprovinceid" = ANY(${stateprovinceids})
+          where "stateprovinceid" = ANY(${ParameterValue(stateprovinceids, null, StateprovinceId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -114,7 +113,7 @@ class StateprovinceRepoImpl extends StateprovinceRepo {
   override def selectByIds(stateprovinceids: Array[StateprovinceId])(using c: Connection): List[StateprovinceRow] = {
     SQL"""select "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text
           from "person"."stateprovince"
-          where "stateprovinceid" = ANY(${stateprovinceids})
+          where "stateprovinceid" = ANY(${ParameterValue(stateprovinceids, null, StateprovinceId.arrayToStatement)})
        """.as(StateprovinceRow.rowParser(1).*)
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package personcreditcard
+package adventureworks.sales.personcreditcard
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -16,7 +14,6 @@ import doobie.free.connection.ConnectionIO
 import doobie.postgres.syntax.FragmentOps
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
 import doobie.syntax.string.toSqlInterpolator
-import doobie.util.Put
 import doobie.util.Write
 import doobie.util.fragment.Fragment
 import doobie.util.update.Update
@@ -33,13 +30,13 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
   override def deleteById(compositeId: PersoncreditcardId): ConnectionIO[Boolean] = {
     sql"""delete from "sales"."personcreditcard" where "businessentityid" = ${fromWrite(compositeId.businessentityid)(using new Write.Single(BusinessentityId.put))} AND "creditcardid" = ${fromWrite(compositeId.creditcardid)(using new Write.Single(/* user-picked */ CustomCreditcardId.put))}""".update.run.map(_ > 0)
   }
-  override def deleteByIds(compositeIds: Array[PersoncreditcardId])(using put0: Put[Array[/* user-picked */ CustomCreditcardId]]): ConnectionIO[Int] = {
+  override def deleteByIds(compositeIds: Array[PersoncreditcardId]): ConnectionIO[Int] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val creditcardid = compositeIds.map(_.creditcardid)
     sql"""delete
           from "sales"."personcreditcard"
           where ("businessentityid", "creditcardid")
-          in (select unnest(${businessentityid}), unnest(${creditcardid}))
+          in (select unnest(${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(creditcardid)(using new Write.Single(CustomCreditcardId.arrayPut))}))
        """.update.run
     
   }
@@ -89,17 +86,17 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
   override def selectById(compositeId: PersoncreditcardId): ConnectionIO[Option[PersoncreditcardRow]] = {
     sql"""select "businessentityid", "creditcardid", "modifieddate"::text from "sales"."personcreditcard" where "businessentityid" = ${fromWrite(compositeId.businessentityid)(using new Write.Single(BusinessentityId.put))} AND "creditcardid" = ${fromWrite(compositeId.creditcardid)(using new Write.Single(/* user-picked */ CustomCreditcardId.put))}""".query(using PersoncreditcardRow.read).option
   }
-  override def selectByIds(compositeIds: Array[PersoncreditcardId])(using puts0: Put[Array[/* user-picked */ CustomCreditcardId]]): Stream[ConnectionIO, PersoncreditcardRow] = {
+  override def selectByIds(compositeIds: Array[PersoncreditcardId]): Stream[ConnectionIO, PersoncreditcardRow] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val creditcardid = compositeIds.map(_.creditcardid)
     sql"""select "businessentityid", "creditcardid", "modifieddate"::text
           from "sales"."personcreditcard"
           where ("businessentityid", "creditcardid")
-          in (select unnest(${businessentityid}), unnest(${creditcardid}))
+          in (select unnest(${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(creditcardid)(using new Write.Single(CustomCreditcardId.arrayPut))}))
        """.query(using PersoncreditcardRow.read).stream
     
   }
-  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId])(using puts0: Put[Array[/* user-picked */ CustomCreditcardId]]): ConnectionIO[Map[PersoncreditcardId, PersoncreditcardRow]] = {
+  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId]): ConnectionIO[Map[PersoncreditcardId, PersoncreditcardRow]] = {
     selectByIds(compositeIds).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap

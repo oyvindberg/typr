@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pm
+package adventureworks.pr.pm
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -26,19 +24,19 @@ import scala.util.Try
 
 /** View: pr.pm */
 case class PmViewRow(
-  /** Points to [[production.productmodel.ProductmodelRow.productmodelid]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
   id: ProductmodelId,
-  /** Points to [[production.productmodel.ProductmodelRow.productmodelid]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
   productmodelid: ProductmodelId,
-  /** Points to [[production.productmodel.ProductmodelRow.name]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
-  /** Points to [[production.productmodel.ProductmodelRow.catalogdescription]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.catalogdescription]] */
   catalogdescription: Option[TypoXml],
-  /** Points to [[production.productmodel.ProductmodelRow.instructions]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.instructions]] */
   instructions: Option[TypoXml],
-  /** Points to [[production.productmodel.ProductmodelRow.rowguid]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[production.productmodel.ProductmodelRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productsubcategory
+package adventureworks.production.productsubcategory
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -30,7 +29,7 @@ case class ProductsubcategoryRow(
       Default: nextval('production.productsubcategory_productsubcategoryid_seq'::regclass) */
   productsubcategoryid: ProductsubcategoryId,
   /** Product category identification number. Foreign key to ProductCategory.ProductCategoryID.
-      Points to [[productcategory.ProductcategoryRow.productcategoryid]] */
+      Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]] */
   productcategoryid: ProductcategoryId,
   /** Subcategory description. */
   name: Name,

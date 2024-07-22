@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package scrapreason
+package adventureworks.production.scrapreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class ScrapreasonRepoImpl extends ScrapreasonRepo {
     sql"""delete from "production"."scrapreason" where "scrapreasonid" = ${fromWrite(scrapreasonid)(using new Write.Single(ScrapreasonId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(scrapreasonids: Array[ScrapreasonId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."scrapreason" where "scrapreasonid" = ANY(${scrapreasonids})""".update.run
+    sql"""delete from "production"."scrapreason" where "scrapreasonid" = ANY(${fromWrite(scrapreasonids)(using new Write.Single(ScrapreasonId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ScrapreasonRow): ConnectionIO[ScrapreasonRow] = {
     sql"""insert into "production"."scrapreason"("scrapreasonid", "name", "modifieddate")
@@ -84,7 +82,7 @@ class ScrapreasonRepoImpl extends ScrapreasonRepo {
     sql"""select "scrapreasonid", "name", "modifieddate"::text from "production"."scrapreason" where "scrapreasonid" = ${fromWrite(scrapreasonid)(using new Write.Single(ScrapreasonId.put))}""".query(using ScrapreasonRow.read).option
   }
   override def selectByIds(scrapreasonids: Array[ScrapreasonId]): Stream[ConnectionIO, ScrapreasonRow] = {
-    sql"""select "scrapreasonid", "name", "modifieddate"::text from "production"."scrapreason" where "scrapreasonid" = ANY(${scrapreasonids})""".query(using ScrapreasonRow.read).stream
+    sql"""select "scrapreasonid", "name", "modifieddate"::text from "production"."scrapreason" where "scrapreasonid" = ANY(${fromWrite(scrapreasonids)(using new Write.Single(ScrapreasonId.arrayPut))})""".query(using ScrapreasonRow.read).stream
   }
   override def selectByIdsTracked(scrapreasonids: Array[ScrapreasonId]): ConnectionIO[Map[ScrapreasonId, ScrapreasonRow]] = {
     selectByIds(scrapreasonids).compile.toList.map { rows =>

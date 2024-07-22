@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package department
+package adventureworks.humanresources.department
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -25,7 +23,7 @@ trait DepartmentFields {
 object DepartmentFields {
   lazy val structure: Relation[DepartmentFields, DepartmentRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[DepartmentFields, DepartmentRow] {
   

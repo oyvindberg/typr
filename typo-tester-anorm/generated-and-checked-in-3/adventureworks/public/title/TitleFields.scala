@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title
+package adventureworks.public.title
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLikeNoHkt
@@ -19,7 +17,7 @@ trait TitleFields {
 object TitleFields {
   lazy val structure: Relation[TitleFields, TitleRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TitleFields, TitleRow] {
   

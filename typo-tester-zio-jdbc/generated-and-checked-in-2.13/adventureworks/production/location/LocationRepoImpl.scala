@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package location
+package adventureworks.production.location
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class LocationRepoImpl extends LocationRepo {
     sql"""delete from "production"."location" where "locationid" = ${Segment.paramSegment(locationid)(LocationId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(locationids: Array[LocationId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."location" where "locationid" = ANY(${locationids})""".delete
+    sql"""delete from "production"."location" where "locationid" = ANY(${Segment.paramSegment(locationids)(LocationId.arraySetter)})""".delete
   }
   override def insert(unsaved: LocationRow): ZIO[ZConnection, Throwable, LocationRow] = {
     sql"""insert into "production"."location"("locationid", "name", "costrate", "availability", "modifieddate")

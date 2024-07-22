@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package marital_status
+package testdb.hardcoded.myschema.marital_status
 
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
@@ -30,7 +27,7 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
     sql"""delete from "myschema"."marital_status" where "id" = ${fromWrite(id)(new Write.Single(MaritalStatusId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(ids: Array[MaritalStatusId]): ConnectionIO[Int] = {
-    sql"""delete from "myschema"."marital_status" where "id" = ANY(${ids})""".update.run
+    sql"""delete from "myschema"."marital_status" where "id" = ANY(${fromWrite(ids)(new Write.Single(MaritalStatusId.arrayPut))})""".update.run
   }
   override def insert(unsaved: MaritalStatusRow): ConnectionIO[MaritalStatusRow] = {
     sql"""insert into "myschema"."marital_status"("id")
@@ -59,7 +56,7 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
     sql"""select "id" from "myschema"."marital_status" where "id" = ${fromWrite(id)(new Write.Single(MaritalStatusId.put))}""".query(MaritalStatusRow.read).option
   }
   override def selectByIds(ids: Array[MaritalStatusId]): Stream[ConnectionIO, MaritalStatusRow] = {
-    sql"""select "id" from "myschema"."marital_status" where "id" = ANY(${ids})""".query(MaritalStatusRow.read).stream
+    sql"""select "id" from "myschema"."marital_status" where "id" = ANY(${fromWrite(ids)(new Write.Single(MaritalStatusId.arrayPut))})""".query(MaritalStatusRow.read).stream
   }
   override def selectByIdsTracked(ids: Array[MaritalStatusId]): ConnectionIO[Map[MaritalStatusId, MaritalStatusRow]] = {
     selectByIds(ids).compile.toList.map { rows =>

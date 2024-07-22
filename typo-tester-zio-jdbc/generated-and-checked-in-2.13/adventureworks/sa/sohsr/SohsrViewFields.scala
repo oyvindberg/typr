@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sohsr
+package adventureworks.sa.sohsr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
@@ -24,7 +22,7 @@ trait SohsrViewFields {
 object SohsrViewFields {
   lazy val structure: Relation[SohsrViewFields, SohsrViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SohsrViewFields, SohsrViewRow] {
   

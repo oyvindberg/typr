@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package personphone
+package adventureworks.person.personphone
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Phone
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -40,7 +39,7 @@ class PersonphoneRepoImpl extends PersonphoneRepo {
     SQL"""delete
           from "person"."personphone"
           where ("businessentityid", "phonenumber", "phonenumbertypeid")
-          in (select unnest(${businessentityid}), unnest(${phonenumber}), unnest(${phonenumbertypeid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(phonenumber, null, Phone.arrayToStatement)}), unnest(${ParameterValue(phonenumbertypeid, null, PhonenumbertypeId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -106,7 +105,7 @@ class PersonphoneRepoImpl extends PersonphoneRepo {
     SQL"""select "businessentityid", "phonenumber", "phonenumbertypeid", "modifieddate"::text
           from "person"."personphone"
           where ("businessentityid", "phonenumber", "phonenumbertypeid")
-          in (select unnest(${businessentityid}), unnest(${phonenumber}), unnest(${phonenumbertypeid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(phonenumber, null, Phone.arrayToStatement)}), unnest(${ParameterValue(phonenumbertypeid, null, PhonenumbertypeId.arrayToStatement)}))
        """.as(PersonphoneRow.rowParser(1).*)
     
   }

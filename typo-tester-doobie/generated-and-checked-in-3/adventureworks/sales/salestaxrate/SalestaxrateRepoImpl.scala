@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salestaxrate
+package adventureworks.sales.salestaxrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -36,7 +34,7 @@ class SalestaxrateRepoImpl extends SalestaxrateRepo {
     sql"""delete from "sales"."salestaxrate" where "salestaxrateid" = ${fromWrite(salestaxrateid)(using new Write.Single(SalestaxrateId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(salestaxrateids: Array[SalestaxrateId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."salestaxrate" where "salestaxrateid" = ANY(${salestaxrateids})""".update.run
+    sql"""delete from "sales"."salestaxrate" where "salestaxrateid" = ANY(${fromWrite(salestaxrateids)(using new Write.Single(SalestaxrateId.arrayPut))})""".update.run
   }
   override def insert(unsaved: SalestaxrateRow): ConnectionIO[SalestaxrateRow] = {
     sql"""insert into "sales"."salestaxrate"("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")
@@ -98,7 +96,7 @@ class SalestaxrateRepoImpl extends SalestaxrateRepo {
     sql"""select "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text from "sales"."salestaxrate" where "salestaxrateid" = ${fromWrite(salestaxrateid)(using new Write.Single(SalestaxrateId.put))}""".query(using SalestaxrateRow.read).option
   }
   override def selectByIds(salestaxrateids: Array[SalestaxrateId]): Stream[ConnectionIO, SalestaxrateRow] = {
-    sql"""select "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text from "sales"."salestaxrate" where "salestaxrateid" = ANY(${salestaxrateids})""".query(using SalestaxrateRow.read).stream
+    sql"""select "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text from "sales"."salestaxrate" where "salestaxrateid" = ANY(${fromWrite(salestaxrateids)(using new Write.Single(SalestaxrateId.arrayPut))})""".query(using SalestaxrateRow.read).stream
   }
   override def selectByIdsTracked(salestaxrateids: Array[SalestaxrateId]): ConnectionIO[Map[SalestaxrateId, SalestaxrateRow]] = {
     selectByIds(salestaxrateids).compile.toList.map { rows =>

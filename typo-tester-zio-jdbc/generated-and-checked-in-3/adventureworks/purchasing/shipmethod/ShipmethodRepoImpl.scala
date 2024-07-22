@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package shipmethod
+package adventureworks.purchasing.shipmethod
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -32,7 +31,7 @@ class ShipmethodRepoImpl extends ShipmethodRepo {
     sql"""delete from "purchasing"."shipmethod" where "shipmethodid" = ${Segment.paramSegment(shipmethodid)(using ShipmethodId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(shipmethodids: Array[ShipmethodId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "purchasing"."shipmethod" where "shipmethodid" = ANY(${shipmethodids})""".delete
+    sql"""delete from "purchasing"."shipmethod" where "shipmethodid" = ANY(${Segment.paramSegment(shipmethodids)(using ShipmethodId.arraySetter)})""".delete
   }
   override def insert(unsaved: ShipmethodRow): ZIO[ZConnection, Throwable, ShipmethodRow] = {
     sql"""insert into "purchasing"."shipmethod"("shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate")

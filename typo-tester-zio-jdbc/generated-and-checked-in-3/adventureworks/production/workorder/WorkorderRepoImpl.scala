@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorder
+package adventureworks.production.workorder
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.scrapreason.ScrapreasonId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +32,7 @@ class WorkorderRepoImpl extends WorkorderRepo {
     sql"""delete from "production"."workorder" where "workorderid" = ${Segment.paramSegment(workorderid)(using WorkorderId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(workorderids: Array[WorkorderId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."workorder" where "workorderid" = ANY(${workorderids})""".delete
+    sql"""delete from "production"."workorder" where "workorderid" = ANY(${Segment.paramSegment(workorderids)(using WorkorderId.arraySetter)})""".delete
   }
   override def insert(unsaved: WorkorderRow): ZIO[ZConnection, Throwable, WorkorderRow] = {
     sql"""insert into "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")

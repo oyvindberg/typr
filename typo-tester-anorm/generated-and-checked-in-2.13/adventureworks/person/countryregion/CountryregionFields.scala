@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package countryregion
+package adventureworks.person.countryregion
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -24,7 +22,7 @@ trait CountryregionFields {
 object CountryregionFields {
   lazy val structure: Relation[CountryregionFields, CountryregionRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[CountryregionFields, CountryregionRow] {
   

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currencyrate
+package adventureworks.sales.currencyrate
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyFields
@@ -37,7 +35,7 @@ trait CurrencyrateFields {
 object CurrencyrateFields {
   lazy val structure: Relation[CurrencyrateFields, CurrencyrateRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[CurrencyrateFields, CurrencyrateRow] {
   

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sod
+package adventureworks.sa.sod
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -22,27 +20,27 @@ import zio.json.internal.Write
 
 /** View: sa.sod */
 case class SodViewRow(
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.salesorderdetailid]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.salesorderdetailid]] */
   id: Int,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.salesorderid]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.salesorderid]] */
   salesorderid: SalesorderheaderId,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.salesorderdetailid]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.salesorderdetailid]] */
   salesorderdetailid: Int,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.carriertrackingnumber]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.carriertrackingnumber]] */
   carriertrackingnumber: Option[/* max 25 chars */ String],
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.orderqty]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.orderqty]] */
   orderqty: TypoShort,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.productid]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.productid]] */
   productid: ProductId,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.specialofferid]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.specialofferid]] */
   specialofferid: SpecialofferId,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.unitprice]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.unitprice]] */
   unitprice: BigDecimal,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.unitpricediscount]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.unitpricediscount]] */
   unitpricediscount: BigDecimal,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.rowguid]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.salesorderdetail.SalesorderdetailRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

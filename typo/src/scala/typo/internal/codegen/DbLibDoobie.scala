@@ -45,8 +45,8 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
       .map(c => c.dbName.code ++ (if (isRead) SqlCast.fromPgCode(c) else sc.Code.Empty))
       .mkCode(", ")
 
-  def runtimeInterpolateValue(name: sc.Code, tpe: sc.Type, forbidInline: Boolean = false): sc.Code =
-    if (inlineImplicits && !forbidInline)
+  def runtimeInterpolateValue(name: sc.Code, tpe: sc.Type): sc.Code =
+    if (inlineImplicits)
       tpe match {
         case TypesScala.Optional(underlying) =>
           code"$${$fromWrite($name)(${dialect.usingCall}new $Write.SingleOpt(${lookupPutFor(underlying)}))}"
@@ -62,6 +62,16 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
       case composite: IdComputed.Composite =>
         code"${composite.cols.map(cc => code"${cc.dbName.code} = ${runtimeInterpolateValue(code"${composite.paramName}.${cc.name}", cc.tpe)}").mkCode(" AND ")}"
     }
+  override def resolveConstAs(tpe: sc.Type): sc.Code = {
+    val put = lookupPutFor(tpe)
+    val (write, optionality) = tpe match {
+      case TypesScala.Optional(underlying) =>
+        (code"$Write.fromPutOption(${dialect.usingCall}${lookupPutFor(underlying)})", TypesScala.Option)
+      case other =>
+        (code"$Write.fromPut(${dialect.usingCall}${lookupPutFor(other)})", sc.Type.dsl.Required)
+    }
+    code"${sc.Type.dsl.ConstAsAs}[$tpe, $optionality](${dialect.usingCall}$put, $write)"
+  }
 
   override def repoSig(repoMethod: RepoMethod): Right[Nothing, sc.Code] = {
     val name = repoMethod.methodName
@@ -72,24 +82,11 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
         Right(code"def $name: ${fs2Stream.of(ConnectionIO, rowType)}")
       case RepoMethod.SelectById(_, _, id, rowType) =>
         Right(code"def $name(${id.param}): ${ConnectionIO.of(TypesScala.Option.of(rowType))}")
-      case RepoMethod.SelectByIds(_, _, idComputed, idsParam, rowType) =>
-        val usedDefineds = idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"puts$i"), Put.of(sc.Type.ArrayOf(colType)), None) }
-        usedDefineds match {
-          case Nil =>
-            Right(code"def $name($idsParam): ${fs2Stream.of(ConnectionIO, rowType)}")
-          case nonEmpty =>
-            Right(code"def $name($idsParam)(${dialect.usingDefinition} ${nonEmpty.map(_.code).mkCode(", ")}): ${fs2Stream.of(ConnectionIO, rowType)}")
-        }
+      case RepoMethod.SelectByIds(_, _, _, idsParam, rowType) =>
+        Right(code"def $name($idsParam): ${fs2Stream.of(ConnectionIO, rowType)}")
       case RepoMethod.SelectByIdsTracked(x) =>
-        val usedDefineds = x.idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"puts$i"), Put.of(sc.Type.ArrayOf(colType)), None) }
         val returnType = ConnectionIO.of(TypesScala.Map.of(x.idComputed.tpe, x.rowType))
-        usedDefineds match {
-          case Nil =>
-            Right(code"def $name(${x.idsParam}): $returnType")
-          case nonEmpty =>
-            Right(code"def $name(${x.idsParam})(${dialect.usingDefinition} ${nonEmpty.map(_.code).mkCode(", ")}): $returnType")
-        }
-
+        Right(code"def $name(${x.idsParam}): $returnType")
       case RepoMethod.SelectByUnique(_, keyColumns, _, rowType) =>
         Right(code"def $name(${keyColumns.map(_.param.code).mkCode(", ")}): ${ConnectionIO.of(TypesScala.Option.of(rowType))}")
       case RepoMethod.SelectByFieldValues(_, _, _, fieldValueOrIdsParam, rowType) =>
@@ -118,14 +115,8 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
         Right(code"def $name: ${sc.Type.dsl.DeleteBuilder.of(fieldsType, rowType)}")
       case RepoMethod.Delete(_, id) =>
         Right(code"def $name(${id.param}): ${ConnectionIO.of(TypesScala.Boolean)}")
-      case RepoMethod.DeleteByIds(_, idComputed, idsParam) =>
-        val usedDefineds = idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"put$i"), Put.of(sc.Type.ArrayOf(colType)), None) }
-        usedDefineds match {
-          case Nil =>
-            Right(code"def $name($idsParam): ${ConnectionIO.of(TypesScala.Int)}")
-          case nonEmpty =>
-            Right(code"def $name($idsParam)(${dialect.usingDefinition} ${nonEmpty.map(_.code).mkCode(", ")}): ${ConnectionIO.of(TypesScala.Int)}")
-        }
+      case RepoMethod.DeleteByIds(_, _, idsParam) =>
+        Right(code"def $name($idsParam): ${ConnectionIO.of(TypesScala.Int)}")
 
       case RepoMethod.SqlFile(sqlScript) =>
         val params = sc.Params(sqlScript.params.map(p => sc.Param(p.name, p.tpe, None)))
@@ -167,7 +158,7 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
               code"""|select ${dbNames(cols, isRead = true)}
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, col.tpe, forbidInline = true)})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
             code"""|$vals
@@ -176,7 +167,7 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
 
           case unaryId: IdComputed.Unary =>
             val sql = SQL(
-              code"""select $joinedColNames from $relName where ${code"${unaryId.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, idsParam.tpe, forbidInline = true)})"}"""
+              code"""select $joinedColNames from $relName where ${code"${unaryId.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, idsParam.tpe)})"}"""
             )
             code"""${query(sql, rowType)}.stream"""
         }
@@ -410,7 +401,7 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
               code"""|delete
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, col.tpe, forbidInline = true)})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
             code"""|$vals
@@ -419,7 +410,7 @@ class DbLibDoobie(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDef
 
           case x: IdComputed.Unary =>
             val sql = SQL(
-              code"""delete from $relName where ${code"${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, x.tpe, forbidInline = true)})"}"""
+              code"""delete from $relName where ${code"${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, sc.Type.ArrayOf(x.tpe))})"}"""
             )
             code"$sql.update.run"
         }

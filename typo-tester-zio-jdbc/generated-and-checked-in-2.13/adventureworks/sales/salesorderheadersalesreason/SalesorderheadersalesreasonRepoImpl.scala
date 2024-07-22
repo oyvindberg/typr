@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheadersalesreason
+package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -36,7 +35,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     sql"""delete
           from "sales"."salesorderheadersalesreason"
           where ("salesorderid", "salesreasonid")
-          in (select unnest(${salesorderid}), unnest(${salesreasonid}))
+          in (select unnest(${Segment.paramSegment(salesorderid)(SalesorderheaderId.arraySetter)}), unnest(${Segment.paramSegment(salesreasonid)(SalesreasonId.arraySetter)}))
        """.delete
     
   }
@@ -90,7 +89,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     sql"""select "salesorderid", "salesreasonid", "modifieddate"::text
           from "sales"."salesorderheadersalesreason"
           where ("salesorderid", "salesreasonid")
-          in (select unnest(${salesorderid}), unnest(${salesreasonid}))
+          in (select unnest(${Segment.paramSegment(salesorderid)(SalesorderheaderId.arraySetter)}), unnest(${Segment.paramSegment(salesreasonid)(SalesreasonId.arraySetter)}))
        """.query(SalesorderheadersalesreasonRow.jdbcDecoder).selectStream()
     
   }

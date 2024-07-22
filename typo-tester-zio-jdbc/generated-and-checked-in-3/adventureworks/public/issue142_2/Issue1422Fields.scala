@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142_2
+package adventureworks.public.issue142_2
 
 import adventureworks.public.issue142.Issue142Fields
 import adventureworks.public.issue142.Issue142Id
@@ -26,7 +24,7 @@ trait Issue1422Fields {
 object Issue1422Fields {
   lazy val structure: Relation[Issue1422Fields, Issue1422Row] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[Issue1422Fields, Issue1422Row] {
   

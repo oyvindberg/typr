@@ -3,11 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package football_club
+package testdb.hardcoded.myschema.football_club
 
+import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +28,7 @@ class FootballClubRepoImpl extends FootballClubRepo {
     sql"""delete from "myschema"."football_club" where "id" = ${Segment.paramSegment(id)(using FootballClubId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(ids: Array[FootballClubId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "myschema"."football_club" where "id" = ANY(${ids})""".delete
+    sql"""delete from "myschema"."football_club" where "id" = ANY(${Segment.paramSegment(ids)(using FootballClubId.arraySetter)})""".delete
   }
   override def insert(unsaved: FootballClubRow): ZIO[ZConnection, Throwable, FootballClubRow] = {
     sql"""insert into "myschema"."football_club"("id", "name")

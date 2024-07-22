@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheader
+package adventureworks.sales.salesorderheader
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -44,7 +42,7 @@ class SalesorderheaderRepoImpl extends SalesorderheaderRepo {
     sql"""delete from "sales"."salesorderheader" where "salesorderid" = ${fromWrite(salesorderid)(new Write.Single(SalesorderheaderId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(salesorderids: Array[SalesorderheaderId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."salesorderheader" where "salesorderid" = ANY(${salesorderids})""".update.run
+    sql"""delete from "sales"."salesorderheader" where "salesorderid" = ANY(${fromWrite(salesorderids)(new Write.Single(SalesorderheaderId.arrayPut))})""".update.run
   }
   override def insert(unsaved: SalesorderheaderRow): ConnectionIO[SalesorderheaderRow] = {
     sql"""insert into "sales"."salesorderheader"("salesorderid", "revisionnumber", "orderdate", "duedate", "shipdate", "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate")
@@ -142,7 +140,7 @@ class SalesorderheaderRepoImpl extends SalesorderheaderRepo {
     sql"""select "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text from "sales"."salesorderheader" where "salesorderid" = ${fromWrite(salesorderid)(new Write.Single(SalesorderheaderId.put))}""".query(SalesorderheaderRow.read).option
   }
   override def selectByIds(salesorderids: Array[SalesorderheaderId]): Stream[ConnectionIO, SalesorderheaderRow] = {
-    sql"""select "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text from "sales"."salesorderheader" where "salesorderid" = ANY(${salesorderids})""".query(SalesorderheaderRow.read).stream
+    sql"""select "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text from "sales"."salesorderheader" where "salesorderid" = ANY(${fromWrite(salesorderids)(new Write.Single(SalesorderheaderId.arrayPut))})""".query(SalesorderheaderRow.read).stream
   }
   override def selectByIdsTracked(salesorderids: Array[SalesorderheaderId]): ConnectionIO[Map[SalesorderheaderId, SalesorderheaderRow]] = {
     selectByIds(salesorderids).compile.toList.map { rows =>

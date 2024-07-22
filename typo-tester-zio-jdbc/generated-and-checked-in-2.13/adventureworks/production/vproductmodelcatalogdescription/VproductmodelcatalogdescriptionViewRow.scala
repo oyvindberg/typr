@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package vproductmodelcatalogdescription
+package adventureworks.production.vproductmodelcatalogdescription
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -20,9 +18,9 @@ import zio.json.internal.Write
 
 /** View: production.vproductmodelcatalogdescription */
 case class VproductmodelcatalogdescriptionViewRow(
-  /** Points to [[productmodel.ProductmodelRow.productmodelid]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
   productmodelid: ProductmodelId,
-  /** Points to [[productmodel.ProductmodelRow.name]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
   summary: /* nullability unknown */ Option[String],
   manufacturer: /* nullability unknown */ Option[String],
@@ -45,9 +43,9 @@ case class VproductmodelcatalogdescriptionViewRow(
   productline: /* nullability unknown */ Option[/* max 256 chars */ String],
   style: /* nullability unknown */ Option[/* max 256 chars */ String],
   riderexperience: /* nullability unknown */ Option[/* max 1024 chars */ String],
-  /** Points to [[productmodel.ProductmodelRow.rowguid]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[productmodel.ProductmodelRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

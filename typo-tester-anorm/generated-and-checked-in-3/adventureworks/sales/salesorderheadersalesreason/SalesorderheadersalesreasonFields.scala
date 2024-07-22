@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheadersalesreason
+package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderFields
@@ -14,12 +12,14 @@ import adventureworks.sales.salesorderheader.SalesorderheaderRow
 import adventureworks.sales.salesreason.SalesreasonFields
 import adventureworks.sales.salesreason.SalesreasonId
 import adventureworks.sales.salesreason.SalesreasonRow
+import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -38,14 +38,14 @@ trait SalesorderheadersalesreasonFields {
   def compositeIdIs(compositeId: SalesorderheadersalesreasonId): SqlExpr[Boolean, Required] =
     salesorderid.isEqual(compositeId.salesorderid).and(salesreasonid.isEqual(compositeId.salesreasonid))
   def compositeIdIn(compositeIds: Array[SalesorderheadersalesreasonId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(salesorderid)(_.salesorderid), TuplePart(salesreasonid)(_.salesreasonid))
+    new CompositeIn(compositeIds)(TuplePart[SalesorderheadersalesreasonId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId], Required](using ToParameterValue(null, SalesorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(using SalesorderheaderId.parameterMetadata)), implicitly), TuplePart[SalesorderheadersalesreasonId](salesreasonid)(_.salesreasonid)(using as[Array[SalesreasonId], Required](using ToParameterValue(null, SalesreasonId.arrayToStatement), adventureworks.arrayParameterMetaData(using SalesreasonId.parameterMetadata)), implicitly))
   
 }
 
 object SalesorderheadersalesreasonFields {
   lazy val structure: Relation[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] {
   

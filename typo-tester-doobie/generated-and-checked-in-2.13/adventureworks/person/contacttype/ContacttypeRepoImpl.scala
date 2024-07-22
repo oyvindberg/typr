@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package contacttype
+package adventureworks.person.contacttype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class ContacttypeRepoImpl extends ContacttypeRepo {
     sql"""delete from "person"."contacttype" where "contacttypeid" = ${fromWrite(contacttypeid)(new Write.Single(ContacttypeId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(contacttypeids: Array[ContacttypeId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."contacttype" where "contacttypeid" = ANY(${contacttypeids})""".update.run
+    sql"""delete from "person"."contacttype" where "contacttypeid" = ANY(${fromWrite(contacttypeids)(new Write.Single(ContacttypeId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ContacttypeRow): ConnectionIO[ContacttypeRow] = {
     sql"""insert into "person"."contacttype"("contacttypeid", "name", "modifieddate")
@@ -84,7 +82,7 @@ class ContacttypeRepoImpl extends ContacttypeRepo {
     sql"""select "contacttypeid", "name", "modifieddate"::text from "person"."contacttype" where "contacttypeid" = ${fromWrite(contacttypeid)(new Write.Single(ContacttypeId.put))}""".query(ContacttypeRow.read).option
   }
   override def selectByIds(contacttypeids: Array[ContacttypeId]): Stream[ConnectionIO, ContacttypeRow] = {
-    sql"""select "contacttypeid", "name", "modifieddate"::text from "person"."contacttype" where "contacttypeid" = ANY(${contacttypeids})""".query(ContacttypeRow.read).stream
+    sql"""select "contacttypeid", "name", "modifieddate"::text from "person"."contacttype" where "contacttypeid" = ANY(${fromWrite(contacttypeids)(new Write.Single(ContacttypeId.arrayPut))})""".query(ContacttypeRow.read).stream
   }
   override def selectByIdsTracked(contacttypeids: Array[ContacttypeId]): ConnectionIO[Map[ContacttypeId, ContacttypeRow]] = {
     selectByIds(contacttypeids).compile.toList.map { rows =>

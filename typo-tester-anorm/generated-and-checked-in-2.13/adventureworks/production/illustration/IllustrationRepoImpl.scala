@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package illustration
+package adventureworks.production.illustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -35,7 +34,7 @@ class IllustrationRepoImpl extends IllustrationRepo {
   override def deleteByIds(illustrationids: Array[IllustrationId])(implicit c: Connection): Int = {
     SQL"""delete
           from "production"."illustration"
-          where "illustrationid" = ANY(${illustrationids})
+          where "illustrationid" = ANY(${ParameterValue(illustrationids, null, IllustrationId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -99,7 +98,7 @@ class IllustrationRepoImpl extends IllustrationRepo {
   override def selectByIds(illustrationids: Array[IllustrationId])(implicit c: Connection): List[IllustrationRow] = {
     SQL"""select "illustrationid", "diagram", "modifieddate"::text
           from "production"."illustration"
-          where "illustrationid" = ANY(${illustrationids})
+          where "illustrationid" = ANY(${ParameterValue(illustrationids, null, IllustrationId.arrayToStatement)})
        """.as(IllustrationRow.rowParser(1).*)
     
   }

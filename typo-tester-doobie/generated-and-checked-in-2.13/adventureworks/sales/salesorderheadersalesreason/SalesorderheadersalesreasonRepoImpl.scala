@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheadersalesreason
+package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -38,7 +36,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     sql"""delete
           from "sales"."salesorderheadersalesreason"
           where ("salesorderid", "salesreasonid")
-          in (select unnest(${salesorderid}), unnest(${salesreasonid}))
+          in (select unnest(${fromWrite(salesorderid)(new Write.Single(SalesorderheaderId.arrayPut))}), unnest(${fromWrite(salesreasonid)(new Write.Single(SalesreasonId.arrayPut))}))
        """.update.run
     
   }
@@ -94,7 +92,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     sql"""select "salesorderid", "salesreasonid", "modifieddate"::text
           from "sales"."salesorderheadersalesreason"
           where ("salesorderid", "salesreasonid")
-          in (select unnest(${salesorderid}), unnest(${salesreasonid}))
+          in (select unnest(${fromWrite(salesorderid)(new Write.Single(SalesorderheaderId.arrayPut))}), unnest(${fromWrite(salesreasonid)(new Write.Single(SalesreasonId.arrayPut))}))
        """.query(SalesorderheadersalesreasonRow.read).stream
     
   }

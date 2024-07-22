@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package addresstype
+package adventureworks.person.addresstype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class AddresstypeRepoImpl extends AddresstypeRepo {
     sql"""delete from "person"."addresstype" where "addresstypeid" = ${Segment.paramSegment(addresstypeid)(AddresstypeId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(addresstypeids: Array[AddresstypeId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "person"."addresstype" where "addresstypeid" = ANY(${addresstypeids})""".delete
+    sql"""delete from "person"."addresstype" where "addresstypeid" = ANY(${Segment.paramSegment(addresstypeids)(AddresstypeId.arraySetter)})""".delete
   }
   override def insert(unsaved: AddresstypeRow): ZIO[ZConnection, Throwable, AddresstypeRow] = {
     sql"""insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")

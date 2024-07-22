@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -18,10 +16,10 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.countryregioncurrency` which has not been persisted yet */
 case class CountryregioncurrencyRowUnsaved(
   /** ISO code for countries and regions. Foreign key to CountryRegion.CountryRegionCode.
-      Points to [[person.countryregion.CountryregionRow.countryregioncode]] */
+      Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** ISO standard currency code. Foreign key to Currency.CurrencyCode.
-      Points to [[currency.CurrencyRow.currencycode]] */
+      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
   currencycode: CurrencyId,
   /** Default: now() */
   modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault

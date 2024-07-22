@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employee
+package adventureworks.humanresources.employee
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDate
@@ -37,7 +35,7 @@ class EmployeeRepoImpl extends EmployeeRepo {
     sql"""delete from "humanresources"."employee" where "businessentityid" = ${fromWrite(businessentityid)(new Write.Single(BusinessentityId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ConnectionIO[Int] = {
-    sql"""delete from "humanresources"."employee" where "businessentityid" = ANY(${businessentityids})""".update.run
+    sql"""delete from "humanresources"."employee" where "businessentityid" = ANY(${fromWrite(businessentityids)(new Write.Single(BusinessentityId.arrayPut))})""".update.run
   }
   override def insert(unsaved: EmployeeRow): ConnectionIO[EmployeeRow] = {
     sql"""insert into "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")
@@ -116,7 +114,7 @@ class EmployeeRepoImpl extends EmployeeRepo {
     sql"""select "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode" from "humanresources"."employee" where "businessentityid" = ${fromWrite(businessentityid)(new Write.Single(BusinessentityId.put))}""".query(EmployeeRow.read).option
   }
   override def selectByIds(businessentityids: Array[BusinessentityId]): Stream[ConnectionIO, EmployeeRow] = {
-    sql"""select "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode" from "humanresources"."employee" where "businessentityid" = ANY(${businessentityids})""".query(EmployeeRow.read).stream
+    sql"""select "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode" from "humanresources"."employee" where "businessentityid" = ANY(${fromWrite(businessentityids)(new Write.Single(BusinessentityId.arrayPut))})""".query(EmployeeRow.read).stream
   }
   override def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ConnectionIO[Map[BusinessentityId, EmployeeRow]] = {
     selectByIds(businessentityids).compile.toList.map { rows =>

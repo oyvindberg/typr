@@ -81,6 +81,7 @@ object sc {
     case object Wildcard extends Type
     case class TApply(underlying: Type, targs: List[Type]) extends Type
     case class Qualified(value: QIdent) extends Type {
+      def /(ident: Ident): Qualified = Qualified(value / ident)
       lazy val dotName = value.dotName
       def name = value.name
     }
@@ -103,6 +104,8 @@ object sc {
       val Bijection = Qualified("typo.dsl.Bijection")
       val CompositeIn = Qualified("typo.dsl.SqlExpr.CompositeIn")
       val CompositeTuplePart = Qualified("typo.dsl.SqlExpr.CompositeIn.TuplePart")
+      val ConstAs = Qualified("typo.dsl.SqlExpr.Const.As")
+      val ConstAsAs = ConstAs / sc.Ident("as")
       val DeleteBuilder = Qualified("typo.dsl.DeleteBuilder")
       val DeleteBuilderMock = Qualified("typo.dsl.DeleteBuilder.DeleteBuilderMock")
       val DeleteParams = Qualified("typo.dsl.DeleteParams")

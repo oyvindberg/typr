@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderdetail
+package adventureworks.sales.salesorderdetail
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -27,7 +26,7 @@ import zio.json.internal.Write
     Composite primary key: salesorderid, salesorderdetailid */
 case class SalesorderdetailRow(
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
-      Points to [[salesorderheader.SalesorderheaderRow.salesorderid]] */
+      Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
   salesorderid: SalesorderheaderId,
   /** Primary key. One incremental unique number per product sold.
       Default: nextval('sales.salesorderdetail_salesorderdetailid_seq'::regclass) */
@@ -38,10 +37,10 @@ case class SalesorderdetailRow(
       Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0)) */
   orderqty: TypoShort,
   /** Product sold to customer. Foreign key to Product.ProductID.
-      Points to [[specialofferproduct.SpecialofferproductRow.productid]] */
+      Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]] */
   productid: ProductId,
   /** Promotional code. Foreign key to SpecialOffer.SpecialOfferID.
-      Points to [[specialofferproduct.SpecialofferproductRow.specialofferid]] */
+      Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.specialofferid]] */
   specialofferid: SpecialofferId,
   /** Selling price of a single product.
       Constraint CK_SalesOrderDetail_UnitPrice affecting columns unitprice: ((unitprice >= 0.00)) */

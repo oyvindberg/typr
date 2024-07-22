@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package culture
+package adventureworks.production.culture
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class CultureRepoImpl extends CultureRepo {
     sql"""delete from "production"."culture" where "cultureid" = ${Segment.paramSegment(cultureid)(CultureId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(cultureids: Array[CultureId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."culture" where "cultureid" = ANY(${cultureids})""".delete
+    sql"""delete from "production"."culture" where "cultureid" = ANY(${Segment.paramSegment(cultureids)(CultureId.arraySetter)})""".delete
   }
   override def insert(unsaved: CultureRow): ZIO[ZConnection, Throwable, CultureRow] = {
     sql"""insert into "production"."culture"("cultureid", "name", "modifieddate")

@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package document
+package adventureworks.production.document
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
@@ -28,7 +27,7 @@ case class DocumentRow(
   /** Title of the document. */
   title: /* max 50 chars */ String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
-      Points to [[humanresources.employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   owner: BusinessentityId,
   /** 0 = This is a folder, 1 = This is a document.
       Default: false */

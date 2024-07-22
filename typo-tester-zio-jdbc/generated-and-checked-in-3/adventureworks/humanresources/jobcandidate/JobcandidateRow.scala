@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package jobcandidate
+package adventureworks.humanresources.jobcandidate
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
@@ -26,7 +25,7 @@ case class JobcandidateRow(
       Default: nextval('humanresources.jobcandidate_jobcandidateid_seq'::regclass) */
   jobcandidateid: JobcandidateId,
   /** Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID.
-      Points to [[employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: Option[BusinessentityId],
   /** RÃ©sumÃ© in XML format. */
   resume: Option[TypoXml],

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderheader
+package adventureworks.purchasing.purchaseorderheader
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -52,7 +50,7 @@ trait PurchaseorderheaderFields {
 object PurchaseorderheaderFields {
   lazy val structure: Relation[PurchaseorderheaderFields, PurchaseorderheaderRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PurchaseorderheaderFields, PurchaseorderheaderRow] {
   

@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title
+package adventureworks.public.title
 
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -26,7 +25,7 @@ class TitleRepoImpl extends TitleRepo {
     sql"""delete from "public"."title" where "code" = ${Segment.paramSegment(code)(using TitleId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(codes: Array[TitleId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "public"."title" where "code" = ANY(${codes})""".delete
+    sql"""delete from "public"."title" where "code" = ANY(${Segment.paramSegment(codes)(using TitleId.arraySetter)})""".delete
   }
   override def insert(unsaved: TitleRow): ZIO[ZConnection, Throwable, TitleRow] = {
     sql"""insert into "public"."title"("code")

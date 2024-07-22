@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package billofmaterials
+package adventureworks.production.billofmaterials
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +32,7 @@ class BillofmaterialsRepoImpl extends BillofmaterialsRepo {
     sql"""delete from "production"."billofmaterials" where "billofmaterialsid" = ${Segment.paramSegment(billofmaterialsid)(using Setter.intSetter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(billofmaterialsids: Array[Int]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."billofmaterials" where "billofmaterialsid" = ANY(${billofmaterialsids})""".delete
+    sql"""delete from "production"."billofmaterials" where "billofmaterialsid" = ANY(${Segment.paramSegment(billofmaterialsids)(using adventureworks.IntArraySetter)})""".delete
   }
   override def insert(unsaved: BillofmaterialsRow): ZIO[ZConnection, Throwable, BillofmaterialsRow] = {
     sql"""insert into "production"."billofmaterials"("billofmaterialsid", "productassemblyid", "componentid", "startdate", "enddate", "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate")

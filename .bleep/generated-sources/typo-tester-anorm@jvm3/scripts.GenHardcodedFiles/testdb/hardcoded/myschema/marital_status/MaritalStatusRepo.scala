@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package marital_status
+package testdb.hardcoded.myschema.marital_status
 
 import java.sql.Connection
 import typo.dsl.DeleteBuilder

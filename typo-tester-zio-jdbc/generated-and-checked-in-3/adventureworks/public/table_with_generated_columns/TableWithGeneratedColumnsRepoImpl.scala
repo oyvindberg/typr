@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package table_with_generated_columns
+package adventureworks.public.table_with_generated_columns
 
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -27,7 +26,7 @@ class TableWithGeneratedColumnsRepoImpl extends TableWithGeneratedColumnsRepo {
     sql"""delete from "public"."table-with-generated-columns" where "name" = ${Segment.paramSegment(name)(using TableWithGeneratedColumnsId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(names: Array[TableWithGeneratedColumnsId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "public"."table-with-generated-columns" where "name" = ANY(${names})""".delete
+    sql"""delete from "public"."table-with-generated-columns" where "name" = ANY(${Segment.paramSegment(names)(using TableWithGeneratedColumnsId.arraySetter)})""".delete
   }
   override def insert(unsaved: TableWithGeneratedColumnsRow): ZIO[ZConnection, Throwable, TableWithGeneratedColumnsRow] = {
     sql"""insert into "public"."table-with-generated-columns"("name")

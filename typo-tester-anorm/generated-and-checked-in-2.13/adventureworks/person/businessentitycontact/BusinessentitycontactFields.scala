@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentitycontact
+package adventureworks.person.businessentitycontact
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -17,12 +15,14 @@ import adventureworks.person.contacttype.ContacttypeId
 import adventureworks.person.contacttype.ContacttypeRow
 import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
+import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -46,14 +46,14 @@ trait BusinessentitycontactFields {
   def compositeIdIs(compositeId: BusinessentitycontactId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(personid.isEqual(compositeId.personid)).and(contacttypeid.isEqual(compositeId.contacttypeid))
   def compositeIdIn(compositeIds: Array[BusinessentitycontactId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(personid)(_.personid), TuplePart(contacttypeid)(_.contacttypeid))
+    new CompositeIn(compositeIds)(TuplePart[BusinessentitycontactId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](ToParameterValue(null, BusinessentityId.arrayToStatement), adventureworks.arrayParameterMetaData(BusinessentityId.parameterMetadata)), implicitly), TuplePart[BusinessentitycontactId](personid)(_.personid)(using as[Array[BusinessentityId], Required](ToParameterValue(null, BusinessentityId.arrayToStatement), adventureworks.arrayParameterMetaData(BusinessentityId.parameterMetadata)), implicitly), TuplePart[BusinessentitycontactId](contacttypeid)(_.contacttypeid)(using as[Array[ContacttypeId], Required](ToParameterValue(null, ContacttypeId.arrayToStatement), adventureworks.arrayParameterMetaData(ContacttypeId.parameterMetadata)), implicitly))
   
 }
 
 object BusinessentitycontactFields {
   lazy val structure: Relation[BusinessentitycontactFields, BusinessentitycontactRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[BusinessentitycontactFields, BusinessentitycontactRow] {
   

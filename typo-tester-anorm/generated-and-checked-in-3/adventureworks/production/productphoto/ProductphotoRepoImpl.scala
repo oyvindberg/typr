@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productphoto
+package adventureworks.production.productphoto
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -36,7 +35,7 @@ class ProductphotoRepoImpl extends ProductphotoRepo {
   override def deleteByIds(productphotoids: Array[ProductphotoId])(using c: Connection): Int = {
     SQL"""delete
           from "production"."productphoto"
-          where "productphotoid" = ANY(${productphotoids})
+          where "productphotoid" = ANY(${ParameterValue(productphotoids, null, ProductphotoId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -103,7 +102,7 @@ class ProductphotoRepoImpl extends ProductphotoRepo {
   override def selectByIds(productphotoids: Array[ProductphotoId])(using c: Connection): List[ProductphotoRow] = {
     SQL"""select "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate"::text
           from "production"."productphoto"
-          where "productphotoid" = ANY(${productphotoids})
+          where "productphotoid" = ANY(${ParameterValue(productphotoids, null, ProductphotoId.arrayToStatement)})
        """.as(ProductphotoRow.rowParser(1).*)
     
   }

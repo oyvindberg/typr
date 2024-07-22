@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package stateprovince
+package adventureworks.person.stateprovince
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -28,12 +27,12 @@ case class StateprovinceRowUnsaved(
   /** ISO standard state or province code. */
   stateprovincecode: /* bpchar, max 3 chars */ String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
-      Points to [[countryregion.CountryregionRow.countryregioncode]] */
+      Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** State or province description. */
   name: Name,
   /** ID of the territory in which the state or province is located. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[sales.salesterritory.SalesterritoryRow.territoryid]] */
+      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   territoryid: SalesterritoryId,
   /** Default: nextval('person.stateprovince_stateprovinceid_seq'::regclass)
       Primary key for StateProvince records. */

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currencyrate
+package adventureworks.sales.currencyrate
 
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder

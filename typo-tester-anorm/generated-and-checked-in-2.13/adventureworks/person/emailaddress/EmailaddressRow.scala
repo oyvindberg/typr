@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package emailaddress
+package adventureworks.person.emailaddress
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -28,7 +27,7 @@ import scala.util.Try
     Composite primary key: businessentityid, emailaddressid */
 case class EmailaddressRow(
   /** Primary key. Person associated with this email address.  Foreign key to Person.BusinessEntityID
-      Points to [[person.PersonRow.businessentityid]] */
+      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Primary key. ID of this email address.
       Default: nextval('person.emailaddress_emailaddressid_seq'::regclass) */

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesperson
+package adventureworks.sales.salesperson
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -35,7 +33,7 @@ class SalespersonRepoImpl extends SalespersonRepo {
     sql"""delete from "sales"."salesperson" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."salesperson" where "businessentityid" = ANY(${businessentityids})""".update.run
+    sql"""delete from "sales"."salesperson" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".update.run
   }
   override def insert(unsaved: SalespersonRow): ConnectionIO[SalespersonRow] = {
     sql"""insert into "sales"."salesperson"("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")
@@ -105,7 +103,7 @@ class SalespersonRepoImpl extends SalespersonRepo {
     sql"""select "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text from "sales"."salesperson" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".query(using SalespersonRow.read).option
   }
   override def selectByIds(businessentityids: Array[BusinessentityId]): Stream[ConnectionIO, SalespersonRow] = {
-    sql"""select "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text from "sales"."salesperson" where "businessentityid" = ANY(${businessentityids})""".query(using SalespersonRow.read).stream
+    sql"""select "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text from "sales"."salesperson" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".query(using SalespersonRow.read).stream
   }
   override def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ConnectionIO[Map[BusinessentityId, SalespersonRow]] = {
     selectByIds(businessentityids).compile.toList.map { rows =>

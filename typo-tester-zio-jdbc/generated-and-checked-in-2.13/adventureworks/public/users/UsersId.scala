@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package users
+package adventureworks.public.users
 
+import adventureworks.Text
 import adventureworks.customtypes.TypoUUID
 import typo.dsl.Bijection
 import typo.dsl.PGType
@@ -19,8 +18,8 @@ import zio.json.JsonEncoder
 /** Type for the primary key of table `public.users` */
 case class UsersId(value: TypoUUID) extends AnyVal
 object UsersId {
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[UsersId]] = JdbcDecoder[Array[TypoUUID]].map(_.map(UsersId.apply))
-  implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[UsersId]] = JdbcEncoder[Array[TypoUUID]].contramap(_.map(_.value))
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[UsersId]] = TypoUUID.arrayJdbcDecoder.map(_.map(UsersId.apply))
+  implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[UsersId]] = TypoUUID.arrayJdbcEncoder.contramap(_.map(_.value))
   implicit lazy val arraySetter: Setter[Array[UsersId]] = TypoUUID.arraySetter.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[UsersId, TypoUUID] = Bijection[UsersId, TypoUUID](_.value)(UsersId.apply)
   implicit lazy val jdbcDecoder: JdbcDecoder[UsersId] = TypoUUID.jdbcDecoder.map(UsersId.apply)

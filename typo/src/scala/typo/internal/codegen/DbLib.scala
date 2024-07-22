@@ -3,6 +3,7 @@ package internal
 package codegen
 
 trait DbLib {
+  def resolveConstAs(tpe: sc.Type): sc.Code
   def defaultedInstance: List[sc.Given]
   def repoSig(repoMethod: RepoMethod): Either[DbLib.NotImplementedFor, sc.Code]
   def repoImpl(repoMethod: RepoMethod): sc.Code

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package phonenumbertype
+package adventureworks.person.phonenumbertype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class PhonenumbertypeRepoImpl extends PhonenumbertypeRepo {
     sql"""delete from "person"."phonenumbertype" where "phonenumbertypeid" = ${fromWrite(phonenumbertypeid)(using new Write.Single(PhonenumbertypeId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(phonenumbertypeids: Array[PhonenumbertypeId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."phonenumbertype" where "phonenumbertypeid" = ANY(${phonenumbertypeids})""".update.run
+    sql"""delete from "person"."phonenumbertype" where "phonenumbertypeid" = ANY(${fromWrite(phonenumbertypeids)(using new Write.Single(PhonenumbertypeId.arrayPut))})""".update.run
   }
   override def insert(unsaved: PhonenumbertypeRow): ConnectionIO[PhonenumbertypeRow] = {
     sql"""insert into "person"."phonenumbertype"("phonenumbertypeid", "name", "modifieddate")
@@ -84,7 +82,7 @@ class PhonenumbertypeRepoImpl extends PhonenumbertypeRepo {
     sql"""select "phonenumbertypeid", "name", "modifieddate"::text from "person"."phonenumbertype" where "phonenumbertypeid" = ${fromWrite(phonenumbertypeid)(using new Write.Single(PhonenumbertypeId.put))}""".query(using PhonenumbertypeRow.read).option
   }
   override def selectByIds(phonenumbertypeids: Array[PhonenumbertypeId]): Stream[ConnectionIO, PhonenumbertypeRow] = {
-    sql"""select "phonenumbertypeid", "name", "modifieddate"::text from "person"."phonenumbertype" where "phonenumbertypeid" = ANY(${phonenumbertypeids})""".query(using PhonenumbertypeRow.read).stream
+    sql"""select "phonenumbertypeid", "name", "modifieddate"::text from "person"."phonenumbertype" where "phonenumbertypeid" = ANY(${fromWrite(phonenumbertypeids)(using new Write.Single(PhonenumbertypeId.arrayPut))})""".query(using PhonenumbertypeRow.read).stream
   }
   override def selectByIdsTracked(phonenumbertypeids: Array[PhonenumbertypeId]): ConnectionIO[Map[PhonenumbertypeId, PhonenumbertypeRow]] = {
     selectByIds(phonenumbertypeids).compile.toList.map { rows =>

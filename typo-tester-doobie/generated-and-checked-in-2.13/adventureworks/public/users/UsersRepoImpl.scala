@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package users
+package adventureworks.public.users
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoInstant
@@ -33,7 +31,7 @@ class UsersRepoImpl extends UsersRepo {
     sql"""delete from "public"."users" where "user_id" = ${fromWrite(userId)(new Write.Single(UsersId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(userIds: Array[UsersId]): ConnectionIO[Int] = {
-    sql"""delete from "public"."users" where "user_id" = ANY(${userIds})""".update.run
+    sql"""delete from "public"."users" where "user_id" = ANY(${fromWrite(userIds)(new Write.Single(UsersId.arrayPut))})""".update.run
   }
   override def insert(unsaved: UsersRow): ConnectionIO[UsersRow] = {
     sql"""insert into "public"."users"("user_id", "name", "last_name", "email", "password", "created_at", "verified_on")
@@ -86,7 +84,7 @@ class UsersRepoImpl extends UsersRepo {
     sql"""select "user_id", "name", "last_name", "email"::text, "password", "created_at"::text, "verified_on"::text from "public"."users" where "user_id" = ${fromWrite(userId)(new Write.Single(UsersId.put))}""".query(UsersRow.read).option
   }
   override def selectByIds(userIds: Array[UsersId]): Stream[ConnectionIO, UsersRow] = {
-    sql"""select "user_id", "name", "last_name", "email"::text, "password", "created_at"::text, "verified_on"::text from "public"."users" where "user_id" = ANY(${userIds})""".query(UsersRow.read).stream
+    sql"""select "user_id", "name", "last_name", "email"::text, "password", "created_at"::text, "verified_on"::text from "public"."users" where "user_id" = ANY(${fromWrite(userIds)(new Write.Single(UsersId.arrayPut))})""".query(UsersRow.read).stream
   }
   override def selectByIdsTracked(userIds: Array[UsersId]): ConnectionIO[Map[UsersId, UsersRow]] = {
     selectByIds(userIds).compile.toList.map { rows =>

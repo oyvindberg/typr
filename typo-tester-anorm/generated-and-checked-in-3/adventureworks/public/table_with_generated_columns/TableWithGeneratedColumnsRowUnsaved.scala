@@ -3,16 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package table_with_generated_columns
+package adventureworks.public.table_with_generated_columns
 
+import adventureworks.Text
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -30,7 +28,7 @@ object TableWithGeneratedColumnsRowUnsaved {
   given reads: Reads[TableWithGeneratedColumnsRowUnsaved] = Reads[TableWithGeneratedColumnsRowUnsaved](json => JsResult.fromTry(
       Try(
         TableWithGeneratedColumnsRowUnsaved(
-          name = json.\("name").as(summon[Reads[TableWithGeneratedColumnsId]])
+          name = json.\("name").as(TableWithGeneratedColumnsId.reads)
         )
       )
     ),
@@ -40,7 +38,7 @@ object TableWithGeneratedColumnsRowUnsaved {
   }
   given writes: OWrites[TableWithGeneratedColumnsRowUnsaved] = OWrites[TableWithGeneratedColumnsRowUnsaved](o =>
     new JsObject(ListMap[String, JsValue](
-      "name" -> summon[Writes[TableWithGeneratedColumnsId]].writes(o.name)
+      "name" -> TableWithGeneratedColumnsId.writes.writes(o.name)
     ))
   )
 }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package person
+package adventureworks.person.person
 
 import adventureworks.person.businessentity.BusinessentityId
 import doobie.free.connection.ConnectionIO

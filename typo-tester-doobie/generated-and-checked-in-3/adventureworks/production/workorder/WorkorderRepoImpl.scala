@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorder
+package adventureworks.production.workorder
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -35,7 +33,7 @@ class WorkorderRepoImpl extends WorkorderRepo {
     sql"""delete from "production"."workorder" where "workorderid" = ${fromWrite(workorderid)(using new Write.Single(WorkorderId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(workorderids: Array[WorkorderId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."workorder" where "workorderid" = ANY(${workorderids})""".update.run
+    sql"""delete from "production"."workorder" where "workorderid" = ANY(${fromWrite(workorderids)(using new Write.Single(WorkorderId.arrayPut))})""".update.run
   }
   override def insert(unsaved: WorkorderRow): ConnectionIO[WorkorderRow] = {
     sql"""insert into "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")
@@ -93,7 +91,7 @@ class WorkorderRepoImpl extends WorkorderRepo {
     sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder" where "workorderid" = ${fromWrite(workorderid)(using new Write.Single(WorkorderId.put))}""".query(using WorkorderRow.read).option
   }
   override def selectByIds(workorderids: Array[WorkorderId]): Stream[ConnectionIO, WorkorderRow] = {
-    sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder" where "workorderid" = ANY(${workorderids})""".query(using WorkorderRow.read).stream
+    sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder" where "workorderid" = ANY(${fromWrite(workorderids)(using new Write.Single(WorkorderId.arrayPut))})""".query(using WorkorderRow.read).stream
   }
   override def selectByIdsTracked(workorderids: Array[WorkorderId]): ConnectionIO[Map[WorkorderId, WorkorderRow]] = {
     selectByIds(workorderids).compile.toList.map { rows =>

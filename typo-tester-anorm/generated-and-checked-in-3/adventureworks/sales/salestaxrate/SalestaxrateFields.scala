@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salestaxrate
+package adventureworks.sales.salestaxrate
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -37,7 +35,7 @@ trait SalestaxrateFields {
 object SalestaxrateFields {
   lazy val structure: Relation[SalestaxrateFields, SalestaxrateRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SalestaxrateFields, SalestaxrateRow] {
   

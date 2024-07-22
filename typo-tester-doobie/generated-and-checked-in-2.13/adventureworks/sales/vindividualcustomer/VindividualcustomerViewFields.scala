@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vindividualcustomer
+package adventureworks.sales.vindividualcustomer
 
 import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
@@ -42,7 +40,7 @@ trait VindividualcustomerViewFields {
 object VindividualcustomerViewFields {
   lazy val structure: Relation[VindividualcustomerViewFields, VindividualcustomerViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VindividualcustomerViewFields, VindividualcustomerViewRow] {
   

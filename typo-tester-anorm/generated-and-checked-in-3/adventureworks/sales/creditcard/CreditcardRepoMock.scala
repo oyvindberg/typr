@@ -3,12 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package creditcard
+package adventureworks.sales.creditcard
 
 import adventureworks.userdefined.CustomCreditcardId
-import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
@@ -29,7 +26,7 @@ class CreditcardRepoMock(toRow: Function1[CreditcardRowUnsaved, CreditcardRow],
   override def deleteById(creditcardid: /* user-picked */ CustomCreditcardId)(using c: Connection): Boolean = {
     map.remove(creditcardid).isDefined
   }
-  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Int = {
+  override def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection): Int = {
     creditcardids.map(id => map.remove(id)).count(_.isDefined)
   }
   override def insert(unsaved: CreditcardRow)(using c: Connection): CreditcardRow = {
@@ -66,10 +63,10 @@ class CreditcardRepoMock(toRow: Function1[CreditcardRowUnsaved, CreditcardRow],
   override def selectById(creditcardid: /* user-picked */ CustomCreditcardId)(using c: Connection): Option[CreditcardRow] = {
     map.get(creditcardid)
   }
-  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): List[CreditcardRow] = {
+  override def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection): List[CreditcardRow] = {
     creditcardids.flatMap(map.get).toList
   }
-  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection, toStatement0: ToStatement[Array[/* user-picked */ CustomCreditcardId]]): Map[/* user-picked */ CustomCreditcardId, CreditcardRow] = {
+  override def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId])(using c: Connection): Map[/* user-picked */ CustomCreditcardId, CreditcardRow] = {
     val byId = selectByIds(creditcardids).view.map(x => (x.creditcardid, x)).toMap
     creditcardids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }

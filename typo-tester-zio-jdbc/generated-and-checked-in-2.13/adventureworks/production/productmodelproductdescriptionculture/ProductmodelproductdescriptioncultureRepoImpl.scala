@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelproductdescriptionculture
+package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
 import adventureworks.production.productmodel.ProductmodelId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -38,7 +37,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     sql"""delete
           from "production"."productmodelproductdescriptionculture"
           where ("productmodelid", "productdescriptionid", "cultureid")
-          in (select unnest(${productmodelid}), unnest(${productdescriptionid}), unnest(${cultureid}))
+          in (select unnest(${Segment.paramSegment(productmodelid)(ProductmodelId.arraySetter)}), unnest(${Segment.paramSegment(productdescriptionid)(ProductdescriptionId.arraySetter)}), unnest(${Segment.paramSegment(cultureid)(CultureId.arraySetter)}))
        """.delete
     
   }
@@ -94,7 +93,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     sql"""select "productmodelid", "productdescriptionid", "cultureid", "modifieddate"::text
           from "production"."productmodelproductdescriptionculture"
           where ("productmodelid", "productdescriptionid", "cultureid")
-          in (select unnest(${productmodelid}), unnest(${productdescriptionid}), unnest(${cultureid}))
+          in (select unnest(${Segment.paramSegment(productmodelid)(ProductmodelId.arraySetter)}), unnest(${Segment.paramSegment(productdescriptionid)(ProductdescriptionId.arraySetter)}), unnest(${Segment.paramSegment(cultureid)(CultureId.arraySetter)}))
        """.query(ProductmodelproductdescriptioncultureRow.jdbcDecoder).selectStream()
     
   }

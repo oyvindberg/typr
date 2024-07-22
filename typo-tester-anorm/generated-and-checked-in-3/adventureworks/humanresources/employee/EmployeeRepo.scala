@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employee
+package adventureworks.humanresources.employee
 
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection

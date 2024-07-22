@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package vadditionalcontactinfo
+package adventureworks.person.vadditionalcontactinfo
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -20,13 +18,13 @@ import io.circe.Encoder
 
 /** View: person.vadditionalcontactinfo */
 case class VadditionalcontactinfoViewRow(
-  /** Points to [[person.PersonRow.businessentityid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.PersonRow.firstname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
-  /** Points to [[person.PersonRow.middlename]] */
+  /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
   middlename: Option[Name],
-  /** Points to [[person.PersonRow.lastname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   telephonenumber: /* nullability unknown */ Option[TypoXml],
   telephonespecialinstructions: /* nullability unknown */ Option[String],
@@ -39,9 +37,9 @@ case class VadditionalcontactinfoViewRow(
   emailaddress: /* nullability unknown */ Option[TypoXml],
   emailspecialinstructions: /* nullability unknown */ Option[String],
   emailtelephonenumber: /* nullability unknown */ Option[TypoXml],
-  /** Points to [[person.PersonRow.rowguid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.PersonRow.modifieddate]] */
+  /** Points to [[adventureworks.person.person.PersonRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

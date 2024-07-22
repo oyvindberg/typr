@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package transactionhistory
+package adventureworks.production.transactionhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -25,7 +23,7 @@ case class TransactionhistoryRow(
       Default: nextval('production.transactionhistory_transactionid_seq'::regclass) */
   transactionid: TransactionhistoryId,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Purchase order, sales order, or work order identification number. */
   referenceorderid: Int,

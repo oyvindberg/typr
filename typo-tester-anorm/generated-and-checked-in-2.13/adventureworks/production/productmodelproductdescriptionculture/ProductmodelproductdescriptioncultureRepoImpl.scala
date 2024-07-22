@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelproductdescriptionculture
+package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
 import adventureworks.production.productmodel.ProductmodelId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -40,7 +39,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     SQL"""delete
           from "production"."productmodelproductdescriptionculture"
           where ("productmodelid", "productdescriptionid", "cultureid")
-          in (select unnest(${productmodelid}), unnest(${productdescriptionid}), unnest(${cultureid}))
+          in (select unnest(${ParameterValue(productmodelid, null, ProductmodelId.arrayToStatement)}), unnest(${ParameterValue(productdescriptionid, null, ProductdescriptionId.arrayToStatement)}), unnest(${ParameterValue(cultureid, null, CultureId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -106,7 +105,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     SQL"""select "productmodelid", "productdescriptionid", "cultureid", "modifieddate"::text
           from "production"."productmodelproductdescriptionculture"
           where ("productmodelid", "productdescriptionid", "cultureid")
-          in (select unnest(${productmodelid}), unnest(${productdescriptionid}), unnest(${cultureid}))
+          in (select unnest(${ParameterValue(productmodelid, null, ProductmodelId.arrayToStatement)}), unnest(${ParameterValue(productdescriptionid, null, ProductdescriptionId.arrayToStatement)}), unnest(${ParameterValue(cultureid, null, CultureId.arrayToStatement)}))
        """.as(ProductmodelproductdescriptioncultureRow.rowParser(1).*)
     
   }

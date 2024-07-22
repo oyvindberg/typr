@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pu
-package sm
+package adventureworks.pu.sm
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -25,19 +23,19 @@ import scala.util.Try
 
 /** View: pu.sm */
 case class SmViewRow(
-  /** Points to [[purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
+  /** Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
   id: ShipmethodId,
-  /** Points to [[purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
+  /** Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
   shipmethodid: ShipmethodId,
-  /** Points to [[purchasing.shipmethod.ShipmethodRow.name]] */
+  /** Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.name]] */
   name: Name,
-  /** Points to [[purchasing.shipmethod.ShipmethodRow.shipbase]] */
+  /** Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipbase]] */
   shipbase: BigDecimal,
-  /** Points to [[purchasing.shipmethod.ShipmethodRow.shiprate]] */
+  /** Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shiprate]] */
   shiprate: BigDecimal,
-  /** Points to [[purchasing.shipmethod.ShipmethodRow.rowguid]] */
+  /** Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[purchasing.shipmethod.ShipmethodRow.modifieddate]] */
+  /** Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

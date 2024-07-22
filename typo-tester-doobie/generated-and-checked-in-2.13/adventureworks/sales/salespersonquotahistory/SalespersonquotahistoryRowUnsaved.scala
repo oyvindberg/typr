@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salespersonquotahistory
+package adventureworks.sales.salespersonquotahistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -18,7 +16,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.salespersonquotahistory` which has not been persisted yet */
 case class SalespersonquotahistoryRowUnsaved(
   /** Sales person identification number. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[salesperson.SalespersonRow.businessentityid]] */
+      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Sales quota date. */
   quotadate: TypoLocalDateTime,

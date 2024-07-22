@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package compositepk
-package person
+package testdb.hardcoded.compositepk.person
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLikeNoHkt
@@ -23,7 +20,7 @@ trait PersonFields {
 object PersonFields {
   lazy val structure: Relation[PersonFields, PersonRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PersonFields, PersonRow] {
   

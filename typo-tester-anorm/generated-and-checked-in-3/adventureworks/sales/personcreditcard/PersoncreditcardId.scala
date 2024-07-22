@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package personcreditcard
+package adventureworks.sales.personcreditcard
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
@@ -14,7 +12,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,16 +25,16 @@ object PersoncreditcardId {
   given reads: Reads[PersoncreditcardId] = Reads[PersoncreditcardId](json => JsResult.fromTry(
       Try(
         PersoncreditcardId(
-          businessentityid = json.\("businessentityid").as(summon[Reads[BusinessentityId]]),
-          creditcardid = json.\("creditcardid").as(summon[Reads[CustomCreditcardId]])
+          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+          creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads)
         )
       )
     ),
   )
   given writes: OWrites[PersoncreditcardId] = OWrites[PersoncreditcardId](o =>
     new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> summon[Writes[BusinessentityId]].writes(o.businessentityid),
-      "creditcardid" -> summon[Writes[CustomCreditcardId]].writes(o.creditcardid)
+      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+      "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid)
     ))
   )
 }

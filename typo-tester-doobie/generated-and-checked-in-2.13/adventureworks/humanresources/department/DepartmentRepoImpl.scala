@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package department
+package adventureworks.humanresources.department
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class DepartmentRepoImpl extends DepartmentRepo {
     sql"""delete from "humanresources"."department" where "departmentid" = ${fromWrite(departmentid)(new Write.Single(DepartmentId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(departmentids: Array[DepartmentId]): ConnectionIO[Int] = {
-    sql"""delete from "humanresources"."department" where "departmentid" = ANY(${departmentids})""".update.run
+    sql"""delete from "humanresources"."department" where "departmentid" = ANY(${fromWrite(departmentids)(new Write.Single(DepartmentId.arrayPut))})""".update.run
   }
   override def insert(unsaved: DepartmentRow): ConnectionIO[DepartmentRow] = {
     sql"""insert into "humanresources"."department"("departmentid", "name", "groupname", "modifieddate")
@@ -85,7 +83,7 @@ class DepartmentRepoImpl extends DepartmentRepo {
     sql"""select "departmentid", "name", "groupname", "modifieddate"::text from "humanresources"."department" where "departmentid" = ${fromWrite(departmentid)(new Write.Single(DepartmentId.put))}""".query(DepartmentRow.read).option
   }
   override def selectByIds(departmentids: Array[DepartmentId]): Stream[ConnectionIO, DepartmentRow] = {
-    sql"""select "departmentid", "name", "groupname", "modifieddate"::text from "humanresources"."department" where "departmentid" = ANY(${departmentids})""".query(DepartmentRow.read).stream
+    sql"""select "departmentid", "name", "groupname", "modifieddate"::text from "humanresources"."department" where "departmentid" = ANY(${fromWrite(departmentids)(new Write.Single(DepartmentId.arrayPut))})""".query(DepartmentRow.read).stream
   }
   override def selectByIdsTracked(departmentids: Array[DepartmentId]): ConnectionIO[Map[DepartmentId, DepartmentRow]] = {
     selectByIds(departmentids).compile.toList.map { rows =>

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderheader
+package adventureworks.purchasing.purchaseorderheader
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -19,13 +17,13 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `purchasing.purchaseorderheader` which has not been persisted yet */
 case class PurchaseorderheaderRowUnsaved(
   /** Employee who created the purchase order. Foreign key to Employee.BusinessEntityID.
-      Points to [[humanresources.employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   employeeid: BusinessentityId,
   /** Vendor with whom the purchase order is placed. Foreign key to Vendor.BusinessEntityID.
-      Points to [[vendor.VendorRow.businessentityid]] */
+      Points to [[adventureworks.purchasing.vendor.VendorRow.businessentityid]] */
   vendorid: BusinessentityId,
   /** Shipping method. Foreign key to ShipMethod.ShipMethodID.
-      Points to [[shipmethod.ShipmethodRow.shipmethodid]] */
+      Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
   shipmethodid: ShipmethodId,
   /** Estimated shipment date from the vendor.
       Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL))) */

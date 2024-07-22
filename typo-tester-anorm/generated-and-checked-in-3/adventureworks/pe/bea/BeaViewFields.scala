@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package bea
+package adventureworks.pe.bea
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -29,7 +27,7 @@ trait BeaViewFields {
 object BeaViewFields {
   lazy val structure: Relation[BeaViewFields, BeaViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[BeaViewFields, BeaViewRow] {
   

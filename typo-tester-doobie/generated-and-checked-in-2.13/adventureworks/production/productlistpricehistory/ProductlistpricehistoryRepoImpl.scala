@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productlistpricehistory
+package adventureworks.production.productlistpricehistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -38,7 +36,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     sql"""delete
           from "production"."productlistpricehistory"
           where ("productid", "startdate")
-          in (select unnest(${productid}), unnest(${startdate}))
+          in (select unnest(${fromWrite(productid)(new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(startdate)(new Write.Single(TypoLocalDateTime.arrayPut))}))
        """.update.run
     
   }
@@ -96,7 +94,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     sql"""select "productid", "startdate"::text, "enddate"::text, "listprice", "modifieddate"::text
           from "production"."productlistpricehistory"
           where ("productid", "startdate")
-          in (select unnest(${productid}), unnest(${startdate}))
+          in (select unnest(${fromWrite(productid)(new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(startdate)(new Write.Single(TypoLocalDateTime.arrayPut))}))
        """.query(ProductlistpricehistoryRow.read).stream
     
   }

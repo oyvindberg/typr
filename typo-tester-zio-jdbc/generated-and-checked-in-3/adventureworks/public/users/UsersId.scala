@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package users
+package adventureworks.public.users
 
+import adventureworks.Text
 import adventureworks.customtypes.TypoUUID
 import typo.dsl.Bijection
 import typo.dsl.PGType
@@ -19,14 +18,14 @@ import zio.json.JsonEncoder
 /** Type for the primary key of table `public.users` */
 case class UsersId(value: TypoUUID) extends AnyVal
 object UsersId {
-  given arrayJdbcDecoder: JdbcDecoder[Array[UsersId]] = JdbcDecoder[Array[TypoUUID]].map(_.map(UsersId.apply))
-  given arrayJdbcEncoder: JdbcEncoder[Array[UsersId]] = JdbcEncoder[Array[TypoUUID]].contramap(_.map(_.value))
+  given arrayJdbcDecoder: JdbcDecoder[Array[UsersId]] = TypoUUID.arrayJdbcDecoder.map(_.map(UsersId.apply))
+  given arrayJdbcEncoder: JdbcEncoder[Array[UsersId]] = TypoUUID.arrayJdbcEncoder.contramap(_.map(_.value))
   given arraySetter: Setter[Array[UsersId]] = TypoUUID.arraySetter.contramap(_.map(_.value))
   given bijection: Bijection[UsersId, TypoUUID] = Bijection[UsersId, TypoUUID](_.value)(UsersId.apply)
   given jdbcDecoder: JdbcDecoder[UsersId] = TypoUUID.jdbcDecoder.map(UsersId.apply)
   given jdbcEncoder: JdbcEncoder[UsersId] = TypoUUID.jdbcEncoder.contramap(_.value)
-  given jsonDecoder: JsonDecoder[UsersId] = summon[JsonDecoder[TypoUUID]].map(UsersId.apply)
-  given jsonEncoder: JsonEncoder[UsersId] = summon[JsonEncoder[TypoUUID]].contramap(_.value)
+  given jsonDecoder: JsonDecoder[UsersId] = TypoUUID.jsonDecoder.map(UsersId.apply)
+  given jsonEncoder: JsonEncoder[UsersId] = TypoUUID.jsonEncoder.contramap(_.value)
   given ordering(using O0: Ordering[TypoUUID]): Ordering[UsersId] = Ordering.by(_.value)
   given pgType: PGType[UsersId] = TypoUUID.pgType.as
   given setter: Setter[UsersId] = TypoUUID.setter.contramap(_.value)

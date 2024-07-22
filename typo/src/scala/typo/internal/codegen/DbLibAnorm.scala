@@ -12,6 +12,7 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
   val ToSql = sc.Type.Qualified("anorm.ToSql")
   val NamedParameter = sc.Type.Qualified("anorm.NamedParameter")
   val ParameterValue = sc.Type.Qualified("anorm.ParameterValue")
+  val ToParameterValue = sc.Type.Qualified("anorm.ToParameterValue")
   val RowParser = sc.Type.Qualified("anorm.RowParser")
   val Success = sc.Type.Qualified("anorm.Success")
   val SqlMappingError = sc.Type.Qualified("anorm.SqlMappingError")
@@ -48,16 +49,16 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
             // drop structured imports from anorm.*, as the auto-import thing would need to be more clever to handle this
             code"""|object ${ExecuteReturningSyntax.name} {
                    |  /* add executeReturning to anorm. it needs to be inside the package, because everything is hidden */
-                   |  implicit class Ops(batchSql: BatchSql) {
-                   |    def executeReturning[T](parser: ResultSetParser[T])(${dialect.usingDefinition} c: ${TypesJava.Connection}): T =
-                   |      $managed(batchSql.getFilledStatement(c, getGeneratedKeys = true))(using StatementResource, statementClassTag).acquireAndGet { ps =>
+                   |  implicit class Ops(batchSql: anorm.BatchSql) {
+                   |    def executeReturning[T](parser: anorm.ResultSetParser[T])(${dialect.usingDefinition} c: ${TypesJava.Connection}): T =
+                   |      $managed(batchSql.getFilledStatement(c, getGeneratedKeys = true))(using anorm.StatementResource, anorm.statementClassTag).acquireAndGet { ps =>
                    |        ps.executeBatch()
-                   |        Sql
+                   |        anorm.Sql
                    |          .asTry(
                    |            parser,
-                   |            $managed(ps.getGeneratedKeys)(using ResultSetResource, resultSetClassTag),
+                   |            $managed(ps.getGeneratedKeys)(using anorm.ResultSetResource, anorm.resultSetClassTag),
                    |            onFirstRow = false,
-                   |            ColumnAliaser.empty
+                   |            anorm.ColumnAliaser.empty
                    |          )
                    |          .get
                    |      }
@@ -80,8 +81,8 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
     ).flatten
   }
 
-  def runtimeInterpolateValue(name: sc.Code, tpe: sc.Type, forbidInline: Boolean = false): sc.Code =
-    if (inlineImplicits && !forbidInline)
+  def runtimeInterpolateValue(name: sc.Code, tpe: sc.Type): sc.Code =
+    if (inlineImplicits)
       code"$${$ParameterValue($name, null, ${lookupToStatementFor(tpe)})}"
     else code"$${$name}"
 
@@ -192,6 +193,14 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
         case other => sc.Summon(ToStatement.of(other)).code
       }
 
+  override def resolveConstAs(tpe: sc.Type): sc.Code = {
+    val optionality = tpe match {
+      case TypesScala.Optional(_) => TypesScala.Option
+      case _                      => sc.Type.dsl.Required
+    }
+    code"${sc.Type.dsl.ConstAsAs}[$tpe, $optionality](${dialect.usingCall}$ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
+  }
+
   override def repoSig(repoMethod: RepoMethod): Right[Nothing, sc.Code] = {
     val name = repoMethod.methodName
     repoMethod match {
@@ -201,13 +210,11 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
         Right(code"def $name(${dialect.usingDefinition} c: ${TypesJava.Connection}): ${TypesScala.List.of(rowType)}")
       case RepoMethod.SelectById(_, _, id, rowType) =>
         Right(code"def $name(${id.param})(${dialect.usingDefinition} c: ${TypesJava.Connection}): ${TypesScala.Option.of(rowType)}")
-      case RepoMethod.SelectByIds(_, _, idComputed, idsParam, rowType) =>
-        val usedDefineds = idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"toStatement$i"), ToStatement.of(sc.Type.ArrayOf(colType)), None) }
-        val params = sc.Param(sc.Ident("c"), TypesJava.Connection, None) :: usedDefineds
+      case RepoMethod.SelectByIds(_, _, _, idsParam, rowType) =>
+        val params = List(sc.Param(sc.Ident("c"), TypesJava.Connection, None))
         Right(code"def $name($idsParam)(${dialect.usingDefinition} ${params.map(_.code).mkCode(", ")}): ${TypesScala.List.of(rowType)}")
       case RepoMethod.SelectByIdsTracked(x) =>
-        val usedDefineds = x.idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"toStatement$i"), ToStatement.of(sc.Type.ArrayOf(colType)), None) }
-        val params = sc.Param(sc.Ident("c"), TypesJava.Connection, None) :: usedDefineds
+        val params = List(sc.Param(sc.Ident("c"), TypesJava.Connection, None))
         Right(code"def $name(${x.idsParam})(${dialect.usingDefinition} ${params.map(_.code).mkCode(", ")}): ${TypesScala.Map.of(x.idComputed.tpe, x.rowType)}")
       case RepoMethod.SelectByUnique(_, keyColumns, _, rowType) =>
         Right(code"def $name(${keyColumns.map(_.param.code).mkCode(", ")})(${dialect.usingDefinition} c: ${TypesJava.Connection}): ${TypesScala.Option.of(rowType)}")
@@ -237,9 +244,8 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
         Right(code"def $name: ${sc.Type.dsl.DeleteBuilder.of(fieldsType, rowType)}")
       case RepoMethod.Delete(_, id) =>
         Right(code"def $name(${id.param})(${dialect.usingDefinition} c: ${TypesJava.Connection}): ${TypesScala.Boolean}")
-      case RepoMethod.DeleteByIds(_, idComputed, idsParam) =>
-        val usedDefineds = idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"toStatement$i"), ToStatement.of(sc.Type.ArrayOf(colType)), None) }
-        val params = sc.Param(sc.Ident("c"), TypesJava.Connection, None) :: usedDefineds
+      case RepoMethod.DeleteByIds(_, _, idsParam) =>
+        val params = List(sc.Param(sc.Ident("c"), TypesJava.Connection, None))
         Right(code"def $name($idsParam)(${dialect.usingDefinition} ${params.map(_.code).mkCode(", ")}): ${TypesScala.Int}")
       case RepoMethod.SqlFile(sqlScript) =>
         val params = sc.Params(sqlScript.params.map(p => sc.Param(p.name, p.tpe, None)))
@@ -281,7 +287,7 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
               code"""|select ${joinedColNames}
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, col.tpe, forbidInline = true)})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
             code"""|$vals
@@ -292,7 +298,7 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
             val sql = SQL {
               code"""|select ${joinedColNames}
                      |from $relName
-                     |where ${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, idsParam.tpe, forbidInline = true)})
+                     |where ${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, idsParam.tpe)})
                      |""".stripMargin
             }
 
@@ -561,7 +567,7 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
               code"""|delete
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, col.tpe, forbidInline = true)})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
             code"""|$vals
@@ -572,7 +578,7 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
             val sql = SQL {
               code"""|delete
                      |from $relName
-                     |where ${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, x.tpe, forbidInline = true)})
+                     |where ${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, sc.Type.ArrayOf(x.tpe))})
                      |""".stripMargin
             }
 

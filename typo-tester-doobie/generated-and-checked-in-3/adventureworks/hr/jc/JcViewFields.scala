@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package jc
+package adventureworks.hr.jc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
@@ -28,7 +26,7 @@ trait JcViewFields {
 object JcViewFields {
   lazy val structure: Relation[JcViewFields, JcViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[JcViewFields, JcViewRow] {
   

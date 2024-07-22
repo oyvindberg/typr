@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package s
+package adventureworks.hr.s
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
@@ -23,17 +21,17 @@ import scala.util.Try
 
 /** View: hr.s */
 case class SViewRow(
-  /** Points to [[humanresources.shift.ShiftRow.shiftid]] */
+  /** Points to [[adventureworks.humanresources.shift.ShiftRow.shiftid]] */
   id: ShiftId,
-  /** Points to [[humanresources.shift.ShiftRow.shiftid]] */
+  /** Points to [[adventureworks.humanresources.shift.ShiftRow.shiftid]] */
   shiftid: ShiftId,
-  /** Points to [[humanresources.shift.ShiftRow.name]] */
+  /** Points to [[adventureworks.humanresources.shift.ShiftRow.name]] */
   name: Name,
-  /** Points to [[humanresources.shift.ShiftRow.starttime]] */
+  /** Points to [[adventureworks.humanresources.shift.ShiftRow.starttime]] */
   starttime: TypoLocalTime,
-  /** Points to [[humanresources.shift.ShiftRow.endtime]] */
+  /** Points to [[adventureworks.humanresources.shift.ShiftRow.endtime]] */
   endtime: TypoLocalTime,
-  /** Points to [[humanresources.shift.ShiftRow.modifieddate]] */
+  /** Points to [[adventureworks.humanresources.shift.ShiftRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

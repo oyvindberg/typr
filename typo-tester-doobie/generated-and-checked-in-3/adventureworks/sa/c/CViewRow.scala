@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package c
+package adventureworks.sa.c
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -18,19 +16,19 @@ import io.circe.Encoder
 
 /** View: sa.c */
 case class CViewRow(
-  /** Points to [[sales.customer.CustomerRow.customerid]] */
+  /** Points to [[adventureworks.sales.customer.CustomerRow.customerid]] */
   id: CustomerId,
-  /** Points to [[sales.customer.CustomerRow.customerid]] */
+  /** Points to [[adventureworks.sales.customer.CustomerRow.customerid]] */
   customerid: CustomerId,
-  /** Points to [[sales.customer.CustomerRow.personid]] */
+  /** Points to [[adventureworks.sales.customer.CustomerRow.personid]] */
   personid: Option[BusinessentityId],
-  /** Points to [[sales.customer.CustomerRow.storeid]] */
+  /** Points to [[adventureworks.sales.customer.CustomerRow.storeid]] */
   storeid: Option[BusinessentityId],
-  /** Points to [[sales.customer.CustomerRow.territoryid]] */
+  /** Points to [[adventureworks.sales.customer.CustomerRow.territoryid]] */
   territoryid: Option[SalesterritoryId],
-  /** Points to [[sales.customer.CustomerRow.rowguid]] */
+  /** Points to [[adventureworks.sales.customer.CustomerRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.customer.CustomerRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.customer.CustomerRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

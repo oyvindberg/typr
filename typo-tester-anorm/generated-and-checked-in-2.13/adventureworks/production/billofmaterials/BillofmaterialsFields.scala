@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package billofmaterials
+package adventureworks.production.billofmaterials
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -47,7 +45,7 @@ trait BillofmaterialsFields {
 object BillofmaterialsFields {
   lazy val structure: Relation[BillofmaterialsFields, BillofmaterialsRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[BillofmaterialsFields, BillofmaterialsRow] {
   

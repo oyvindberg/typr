@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package customer
+package adventureworks.sales.customer
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -46,7 +44,7 @@ trait CustomerFields {
 object CustomerFields {
   lazy val structure: Relation[CustomerFields, CustomerRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[CustomerFields, CustomerRow] {
   

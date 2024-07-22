@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeepayhistory
+package adventureworks.humanresources.employeepayhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -18,7 +16,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `humanresources.employeepayhistory` which has not been persisted yet */
 case class EmployeepayhistoryRowUnsaved(
   /** Employee identification number. Foreign key to Employee.BusinessEntityID.
-      Points to [[employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Date the change in pay is effective */
   ratechangedate: TypoLocalDateTime,

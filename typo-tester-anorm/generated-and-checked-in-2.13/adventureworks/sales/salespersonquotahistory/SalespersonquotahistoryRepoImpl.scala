@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salespersonquotahistory
+package adventureworks.sales.salespersonquotahistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -39,7 +38,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     SQL"""delete
           from "sales"."salespersonquotahistory"
           where ("businessentityid", "quotadate")
-          in (select unnest(${businessentityid}), unnest(${quotadate}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(quotadate, null, TypoLocalDateTime.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -108,7 +107,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     SQL"""select "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
           from "sales"."salespersonquotahistory"
           where ("businessentityid", "quotadate")
-          in (select unnest(${businessentityid}), unnest(${quotadate}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(quotadate, null, TypoLocalDateTime.arrayToStatement)}))
        """.as(SalespersonquotahistoryRow.rowParser(1).*)
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package scrapreason
+package adventureworks.production.scrapreason
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -24,7 +22,7 @@ trait ScrapreasonFields {
 object ScrapreasonFields {
   lazy val structure: Relation[ScrapreasonFields, ScrapreasonRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ScrapreasonFields, ScrapreasonRow] {
   

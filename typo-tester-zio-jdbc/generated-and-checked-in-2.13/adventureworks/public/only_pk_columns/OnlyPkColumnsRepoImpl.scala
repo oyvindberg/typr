@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package only_pk_columns
+package adventureworks.public.only_pk_columns
 
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -32,7 +31,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     sql"""delete
           from "public"."only_pk_columns"
           where ("key_column_1", "key_column_2")
-          in (select unnest(${keyColumn1}), unnest(${keyColumn2}))
+          in (select unnest(${Segment.paramSegment(keyColumn1)(adventureworks.StringArraySetter)}), unnest(${Segment.paramSegment(keyColumn2)(adventureworks.IntArraySetter)}))
        """.delete
     
   }
@@ -60,7 +59,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     sql"""select "key_column_1", "key_column_2"
           from "public"."only_pk_columns"
           where ("key_column_1", "key_column_2")
-          in (select unnest(${keyColumn1}), unnest(${keyColumn2}))
+          in (select unnest(${Segment.paramSegment(keyColumn1)(adventureworks.StringArraySetter)}), unnest(${Segment.paramSegment(keyColumn2)(adventureworks.IntArraySetter)}))
        """.query(OnlyPkColumnsRow.jdbcDecoder).selectStream()
     
   }

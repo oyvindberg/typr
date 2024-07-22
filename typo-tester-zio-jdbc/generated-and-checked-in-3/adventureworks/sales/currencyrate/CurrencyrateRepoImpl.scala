@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currencyrate
+package adventureworks.sales.currencyrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class CurrencyrateRepoImpl extends CurrencyrateRepo {
     sql"""delete from "sales"."currencyrate" where "currencyrateid" = ${Segment.paramSegment(currencyrateid)(using CurrencyrateId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(currencyrateids: Array[CurrencyrateId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."currencyrate" where "currencyrateid" = ANY(${currencyrateids})""".delete
+    sql"""delete from "sales"."currencyrate" where "currencyrateid" = ANY(${Segment.paramSegment(currencyrateids)(using CurrencyrateId.arraySetter)})""".delete
   }
   override def insert(unsaved: CurrencyrateRow): ZIO[ZConnection, Throwable, CurrencyrateRow] = {
     sql"""insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")

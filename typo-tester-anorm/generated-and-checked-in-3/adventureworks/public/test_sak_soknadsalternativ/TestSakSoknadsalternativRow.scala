@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_sak_soknadsalternativ
+package adventureworks.public.test_sak_soknadsalternativ
 
+import adventureworks.Text
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudId
 import anorm.Column
@@ -25,9 +24,9 @@ import scala.util.Try
     Composite primary key: organisasjonskode_saksbehandler, utdanningsmulighet_kode */
 case class TestSakSoknadsalternativRow(
   organisasjonskodeSaksbehandler: String,
-  /** Points to [[test_utdanningstilbud.TestUtdanningstilbudRow.utdanningsmulighetKode]] */
+  /** Points to [[adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudRow.utdanningsmulighetKode]] */
   utdanningsmulighetKode: String,
-  /** Points to [[test_utdanningstilbud.TestUtdanningstilbudRow.organisasjonskode]] */
+  /** Points to [[adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudRow.organisasjonskode]] */
   organisasjonskodeTilbyder: TestOrganisasjonId
 ){
    val compositeId: TestSakSoknadsalternativId = TestSakSoknadsalternativId(organisasjonskodeSaksbehandler, utdanningsmulighetKode)

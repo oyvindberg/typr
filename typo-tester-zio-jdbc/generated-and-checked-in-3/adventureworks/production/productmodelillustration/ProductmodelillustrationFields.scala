@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelillustration
+package adventureworks.production.productmodelillustration
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationFields
@@ -15,11 +13,13 @@ import adventureworks.production.productmodel.ProductmodelFields
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.production.productmodel.ProductmodelRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -38,14 +38,14 @@ trait ProductmodelillustrationFields {
   def compositeIdIs(compositeId: ProductmodelillustrationId): SqlExpr[Boolean, Required] =
     productmodelid.isEqual(compositeId.productmodelid).and(illustrationid.isEqual(compositeId.illustrationid))
   def compositeIdIn(compositeIds: Array[ProductmodelillustrationId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(productmodelid)(_.productmodelid), TuplePart(illustrationid)(_.illustrationid))
+    new CompositeIn(compositeIds)(TuplePart[ProductmodelillustrationId](productmodelid)(_.productmodelid)(using as[Array[ProductmodelId], Required](using ProductmodelId.arrayJdbcEncoder, PGType.forArray(using ProductmodelId.pgType)), implicitly), TuplePart[ProductmodelillustrationId](illustrationid)(_.illustrationid)(using as[Array[IllustrationId], Required](using IllustrationId.arrayJdbcEncoder, PGType.forArray(using IllustrationId.pgType)), implicitly))
   
 }
 
 object ProductmodelillustrationFields {
   lazy val structure: Relation[ProductmodelillustrationFields, ProductmodelillustrationRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductmodelillustrationFields, ProductmodelillustrationRow] {
   

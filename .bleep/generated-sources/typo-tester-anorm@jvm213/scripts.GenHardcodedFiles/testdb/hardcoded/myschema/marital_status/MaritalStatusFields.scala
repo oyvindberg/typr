@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package marital_status
+package testdb.hardcoded.myschema.marital_status
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLikeNoHkt
@@ -20,7 +17,7 @@ trait MaritalStatusFields {
 object MaritalStatusFields {
   lazy val structure: Relation[MaritalStatusFields, MaritalStatusRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[MaritalStatusFields, MaritalStatusRow] {
   

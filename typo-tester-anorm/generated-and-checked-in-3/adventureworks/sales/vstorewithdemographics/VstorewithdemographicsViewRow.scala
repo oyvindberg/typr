@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vstorewithdemographics
+package adventureworks.sales.vstorewithdemographics
 
 import adventureworks.customtypes.TypoMoney
 import adventureworks.person.businessentity.BusinessentityId
@@ -24,9 +22,9 @@ import scala.util.Try
 
 /** View: sales.vstorewithdemographics */
 case class VstorewithdemographicsViewRow(
-  /** Points to [[store.StoreRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.store.StoreRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[store.StoreRow.name]] */
+  /** Points to [[adventureworks.sales.store.StoreRow.name]] */
   name: Name,
   annualSales: /* nullability unknown */ Option[TypoMoney],
   annualRevenue: /* nullability unknown */ Option[TypoMoney],

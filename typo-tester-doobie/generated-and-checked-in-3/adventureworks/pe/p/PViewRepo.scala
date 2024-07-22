@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package p
+package adventureworks.pe.p
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream

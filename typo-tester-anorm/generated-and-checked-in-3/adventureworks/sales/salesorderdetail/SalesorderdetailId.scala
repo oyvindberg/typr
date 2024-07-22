@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderdetail
+package adventureworks.sales.salesorderdetail
 
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import play.api.libs.json.JsObject
@@ -27,7 +25,7 @@ object SalesorderdetailId {
   given reads: Reads[SalesorderdetailId] = Reads[SalesorderdetailId](json => JsResult.fromTry(
       Try(
         SalesorderdetailId(
-          salesorderid = json.\("salesorderid").as(summon[Reads[SalesorderheaderId]]),
+          salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
           salesorderdetailid = json.\("salesorderdetailid").as(Reads.IntReads)
         )
       )
@@ -35,7 +33,7 @@ object SalesorderdetailId {
   )
   given writes: OWrites[SalesorderdetailId] = OWrites[SalesorderdetailId](o =>
     new JsObject(ListMap[String, JsValue](
-      "salesorderid" -> summon[Writes[SalesorderheaderId]].writes(o.salesorderid),
+      "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
       "salesorderdetailid" -> Writes.IntWrites.writes(o.salesorderdetailid)
     ))
   )

@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package password
+package adventureworks.person.password
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -32,7 +31,7 @@ class PasswordRepoImpl extends PasswordRepo {
     sql"""delete from "person"."password" where "businessentityid" = ${Segment.paramSegment(businessentityid)(using BusinessentityId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "person"."password" where "businessentityid" = ANY(${businessentityids})""".delete
+    sql"""delete from "person"."password" where "businessentityid" = ANY(${Segment.paramSegment(businessentityids)(using BusinessentityId.arraySetter)})""".delete
   }
   override def insert(unsaved: PasswordRow): ZIO[ZConnection, Throwable, PasswordRow] = {
     sql"""insert into "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")

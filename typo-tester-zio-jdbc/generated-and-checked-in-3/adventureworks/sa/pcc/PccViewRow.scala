@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package pcc
+package adventureworks.sa.pcc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -19,13 +17,13 @@ import zio.json.internal.Write
 
 /** View: sa.pcc */
 case class PccViewRow(
-  /** Points to [[sales.personcreditcard.PersoncreditcardRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.personcreditcard.PersoncreditcardRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[sales.personcreditcard.PersoncreditcardRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.personcreditcard.PersoncreditcardRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[sales.personcreditcard.PersoncreditcardRow.creditcardid]] */
+  /** Points to [[adventureworks.sales.personcreditcard.PersoncreditcardRow.creditcardid]] */
   creditcardid: /* user-picked */ CustomCreditcardId,
-  /** Points to [[sales.personcreditcard.PersoncreditcardRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.personcreditcard.PersoncreditcardRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

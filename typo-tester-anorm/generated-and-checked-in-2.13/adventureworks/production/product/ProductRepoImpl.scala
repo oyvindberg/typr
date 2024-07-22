@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package product
+package adventureworks.production.product
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -16,6 +14,7 @@ import adventureworks.production.productsubcategory.ProductsubcategoryId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import adventureworks.public.Flag
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -42,7 +41,7 @@ class ProductRepoImpl extends ProductRepo {
   override def deleteByIds(productids: Array[ProductId])(implicit c: Connection): Int = {
     SQL"""delete
           from "production"."product"
-          where "productid" = ANY(${productids})
+          where "productid" = ANY(${ParameterValue(productids, null, ProductId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -137,7 +136,7 @@ class ProductRepoImpl extends ProductRepo {
   override def selectByIds(productids: Array[ProductId])(implicit c: Connection): List[ProductRow] = {
     SQL"""select "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text
           from "production"."product"
-          where "productid" = ANY(${productids})
+          where "productid" = ANY(${ParameterValue(productids, null, ProductId.arrayToStatement)})
        """.as(ProductRow.rowParser(1).*)
     
   }

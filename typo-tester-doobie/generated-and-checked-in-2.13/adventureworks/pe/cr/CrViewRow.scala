@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package cr
+package adventureworks.pe.cr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
@@ -16,11 +14,11 @@ import io.circe.Encoder
 
 /** View: pe.cr */
 case class CrViewRow(
-  /** Points to [[person.countryregion.CountryregionRow.countryregioncode]] */
+  /** Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
   countryregioncode: CountryregionId,
-  /** Points to [[person.countryregion.CountryregionRow.name]] */
+  /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   name: Name,
-  /** Points to [[person.countryregion.CountryregionRow.modifieddate]] */
+  /** Points to [[adventureworks.person.countryregion.CountryregionRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

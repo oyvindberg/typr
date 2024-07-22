@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package customtypes
+package testdb.hardcoded.customtypes
 
 import doobie.postgres.Text
 import io.circe.Decoder

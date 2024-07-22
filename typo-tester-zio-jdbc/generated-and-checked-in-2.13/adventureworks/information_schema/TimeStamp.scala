@@ -3,9 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package information_schema
+package adventureworks.information_schema
 
+import adventureworks.Text
 import adventureworks.customtypes.TypoInstant
 import java.sql.Types
 import typo.dsl.Bijection
@@ -21,8 +21,8 @@ import zio.json.JsonEncoder
   */
 case class TimeStamp(value: TypoInstant)
 object TimeStamp {
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TimeStamp]] = JdbcDecoder[Array[TypoInstant]].map(_.map(TimeStamp.apply))
-  implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TimeStamp]] = JdbcEncoder[Array[TypoInstant]].contramap(_.map(_.value))
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TimeStamp]] = TypoInstant.arrayJdbcDecoder.map(_.map(TimeStamp.apply))
+  implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TimeStamp]] = TypoInstant.arrayJdbcEncoder.contramap(_.map(_.value))
   implicit lazy val arraySetter: Setter[Array[TimeStamp]] = TypoInstant.arraySetter.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[TimeStamp, TypoInstant] = Bijection[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
   implicit lazy val jdbcDecoder: JdbcDecoder[TimeStamp] = TypoInstant.jdbcDecoder.map(TimeStamp.apply)

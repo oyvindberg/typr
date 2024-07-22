@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pmpdc
+package adventureworks.pr.pmpdc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
@@ -26,7 +24,7 @@ trait PmpdcViewFields {
 object PmpdcViewFields {
   lazy val structure: Relation[PmpdcViewFields, PmpdcViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PmpdcViewFields, PmpdcViewRow] {
   

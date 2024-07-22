@@ -3,8 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person_dynamic
+package adventureworks.person_dynamic
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream

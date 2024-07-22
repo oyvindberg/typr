@@ -3,11 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package identity_test
+package adventureworks.public.identity_test
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -29,7 +28,7 @@ class IdentityTestRepoImpl extends IdentityTestRepo {
     sql"""delete from "public"."identity-test" where "name" = ${Segment.paramSegment(name)(using IdentityTestId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(names: Array[IdentityTestId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "public"."identity-test" where "name" = ANY(${names})""".delete
+    sql"""delete from "public"."identity-test" where "name" = ANY(${Segment.paramSegment(names)(using IdentityTestId.arraySetter)})""".delete
   }
   override def insert(unsaved: IdentityTestRow): ZIO[ZConnection, Throwable, IdentityTestRow] = {
     sql"""insert into "public"."identity-test"("default_generated", "name")

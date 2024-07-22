@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productdocument
+package adventureworks.production.productdocument
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -22,13 +20,13 @@ import io.circe.Encoder
     Composite primary key: productid, documentnode */
 case class ProductdocumentRow(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime,
   /** Document identification number. Foreign key to Document.DocumentNode.
       Default: '/'::character varying
-      Points to [[document.DocumentRow.documentnode]] */
+      Points to [[adventureworks.production.document.DocumentRow.documentnode]] */
   documentnode: DocumentId
 ){
    val compositeId: ProductdocumentId = ProductdocumentId(productid, documentnode)

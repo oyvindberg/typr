@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialoffer
+package adventureworks.sales.specialoffer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class SpecialofferRepoImpl extends SpecialofferRepo {
     sql"""delete from "sales"."specialoffer" where "specialofferid" = ${Segment.paramSegment(specialofferid)(SpecialofferId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(specialofferids: Array[SpecialofferId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."specialoffer" where "specialofferid" = ANY(${specialofferids})""".delete
+    sql"""delete from "sales"."specialoffer" where "specialofferid" = ANY(${Segment.paramSegment(specialofferids)(SpecialofferId.arraySetter)})""".delete
   }
   override def insert(unsaved: SpecialofferRow): ZIO[ZConnection, Throwable, SpecialofferRow] = {
     sql"""insert into "sales"."specialoffer"("specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")

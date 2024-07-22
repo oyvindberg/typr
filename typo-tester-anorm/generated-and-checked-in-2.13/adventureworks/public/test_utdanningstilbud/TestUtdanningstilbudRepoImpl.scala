@@ -3,13 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_utdanningstilbud
+package adventureworks.public.test_utdanningstilbud
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
+import anorm.ParameterMetaData
 import anorm.ParameterValue
 import anorm.SqlStringInterpolation
 import anorm.ToStatement
@@ -33,7 +33,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     SQL"""delete
           from "public"."test_utdanningstilbud"
           where ("organisasjonskode", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskode}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${ParameterValue(organisasjonskode, null, TestOrganisasjonId.arrayToStatement)}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
        """.executeUpdate()
     
   }
@@ -68,7 +68,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     SQL"""select "organisasjonskode", "utdanningsmulighet_kode"
           from "public"."test_utdanningstilbud"
           where ("organisasjonskode", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskode}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${ParameterValue(organisasjonskode, null, TestOrganisasjonId.arrayToStatement)}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
        """.as(TestUtdanningstilbudRow.rowParser(1).*)
     
   }

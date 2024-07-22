@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package emailaddress
+package adventureworks.person.emailaddress
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -39,7 +37,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     sql"""delete
           from "person"."emailaddress"
           where ("businessentityid", "emailaddressid")
-          in (select unnest(${businessentityid}), unnest(${emailaddressid}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(emailaddressid)(new Write.Single(adventureworks.IntegerArrayMeta.put))}))
        """.update.run
     
   }
@@ -103,7 +101,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     sql"""select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
           from "person"."emailaddress"
           where ("businessentityid", "emailaddressid")
-          in (select unnest(${businessentityid}), unnest(${emailaddressid}))
+          in (select unnest(${fromWrite(businessentityid)(new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(emailaddressid)(new Write.Single(adventureworks.IntegerArrayMeta.put))}))
        """.query(EmailaddressRow.read).stream
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderdetail
+package adventureworks.purchasing.purchaseorderdetail
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -24,7 +22,7 @@ import io.circe.Encoder
     Composite primary key: purchaseorderid, purchaseorderdetailid */
 case class PurchaseorderdetailRow(
   /** Primary key. Foreign key to PurchaseOrderHeader.PurchaseOrderID.
-      Points to [[purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
+      Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
   purchaseorderid: PurchaseorderheaderId,
   /** Primary key. One line number per purchased product.
       Default: nextval('purchasing.purchaseorderdetail_purchaseorderdetailid_seq'::regclass) */
@@ -35,7 +33,7 @@ case class PurchaseorderdetailRow(
       Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0)) */
   orderqty: TypoShort,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[production.product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Vendor's selling price of a single product.
       Constraint CK_PurchaseOrderDetail_UnitPrice affecting columns unitprice: ((unitprice >= 0.00)) */

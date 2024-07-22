@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package person
+package adventureworks.person.person
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -14,6 +12,7 @@ import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.public.NameStyle
+import adventureworks.streamingInsert
 import adventureworks.userdefined.FirstName
 import anorm.BatchSql
 import anorm.NamedParameter
@@ -41,7 +40,7 @@ class PersonRepoImpl extends PersonRepo {
   override def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = {
     SQL"""delete
           from "person"."person"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -121,7 +120,7 @@ class PersonRepoImpl extends PersonRepo {
   override def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[PersonRow] = {
     SQL"""select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
           from "person"."person"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.as(PersonRow.rowParser(1).*)
     
   }

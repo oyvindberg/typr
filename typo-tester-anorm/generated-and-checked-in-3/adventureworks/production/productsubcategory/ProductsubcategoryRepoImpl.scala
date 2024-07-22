@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productsubcategory
+package adventureworks.production.productsubcategory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -36,7 +35,7 @@ class ProductsubcategoryRepoImpl extends ProductsubcategoryRepo {
   override def deleteByIds(productsubcategoryids: Array[ProductsubcategoryId])(using c: Connection): Int = {
     SQL"""delete
           from "production"."productsubcategory"
-          where "productsubcategoryid" = ANY(${productsubcategoryids})
+          where "productsubcategoryid" = ANY(${ParameterValue(productsubcategoryids, null, ProductsubcategoryId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -105,7 +104,7 @@ class ProductsubcategoryRepoImpl extends ProductsubcategoryRepo {
   override def selectByIds(productsubcategoryids: Array[ProductsubcategoryId])(using c: Connection): List[ProductsubcategoryRow] = {
     SQL"""select "productsubcategoryid", "productcategoryid", "name", "rowguid", "modifieddate"::text
           from "production"."productsubcategory"
-          where "productsubcategoryid" = ANY(${productsubcategoryids})
+          where "productsubcategoryid" = ANY(${ParameterValue(productsubcategoryids, null, ProductsubcategoryId.arrayToStatement)})
        """.as(ProductsubcategoryRow.rowParser(1).*)
     
   }

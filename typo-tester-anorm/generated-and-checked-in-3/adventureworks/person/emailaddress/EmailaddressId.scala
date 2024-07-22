@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package emailaddress
+package adventureworks.person.emailaddress
 
 import adventureworks.person.businessentity.BusinessentityId
 import play.api.libs.json.JsObject
@@ -27,7 +25,7 @@ object EmailaddressId {
   given reads: Reads[EmailaddressId] = Reads[EmailaddressId](json => JsResult.fromTry(
       Try(
         EmailaddressId(
-          businessentityid = json.\("businessentityid").as(summon[Reads[BusinessentityId]]),
+          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
           emailaddressid = json.\("emailaddressid").as(Reads.IntReads)
         )
       )
@@ -35,7 +33,7 @@ object EmailaddressId {
   )
   given writes: OWrites[EmailaddressId] = OWrites[EmailaddressId](o =>
     new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> summon[Writes[BusinessentityId]].writes(o.businessentityid),
+      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
       "emailaddressid" -> Writes.IntWrites.writes(o.emailaddressid)
     ))
   )

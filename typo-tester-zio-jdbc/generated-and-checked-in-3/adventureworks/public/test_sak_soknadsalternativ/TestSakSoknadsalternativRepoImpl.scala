@@ -3,11 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_sak_soknadsalternativ
+package adventureworks.public.test_sak_soknadsalternativ
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +32,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     sql"""delete
           from "public"."test_sak_soknadsalternativ"
           where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskodeSaksbehandler}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${Segment.paramSegment(organisasjonskodeSaksbehandler)(using adventureworks.StringArraySetter)}), unnest(${Segment.paramSegment(utdanningsmulighetKode)(using adventureworks.StringArraySetter)}))
        """.delete
     
   }
@@ -61,7 +60,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     sql"""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
           from "public"."test_sak_soknadsalternativ"
           where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskodeSaksbehandler}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${Segment.paramSegment(organisasjonskodeSaksbehandler)(using adventureworks.StringArraySetter)}), unnest(${Segment.paramSegment(utdanningsmulighetKode)(using adventureworks.StringArraySetter)}))
        """.query(using TestSakSoknadsalternativRow.jdbcDecoder).selectStream()
     
   }

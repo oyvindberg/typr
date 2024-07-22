@@ -3,11 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package issue142_2
+package adventureworks.public.issue142_2
 
 import adventureworks.public.issue142.Issue142Id
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -29,7 +28,7 @@ class Issue1422RepoImpl extends Issue1422Repo {
   override def deleteByIds(tabellkodes: Array[Issue142Id])(using c: Connection): Int = {
     SQL"""delete
           from "public"."issue142_2"
-          where "tabellkode" = ANY(${tabellkodes})
+          where "tabellkode" = ANY(${ParameterValue(tabellkodes, null, Issue142Id.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -61,7 +60,7 @@ class Issue1422RepoImpl extends Issue1422Repo {
   override def selectByIds(tabellkodes: Array[Issue142Id])(using c: Connection): List[Issue1422Row] = {
     SQL"""select "tabellkode"
           from "public"."issue142_2"
-          where "tabellkode" = ANY(${tabellkodes})
+          where "tabellkode" = ANY(${ParameterValue(tabellkodes, null, Issue142Id.arrayToStatement)})
        """.as(Issue1422Row.rowParser(1).*)
     
   }

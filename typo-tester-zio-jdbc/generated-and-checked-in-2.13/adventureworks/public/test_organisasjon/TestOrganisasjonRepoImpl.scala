@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_organisasjon
+package adventureworks.public.test_organisasjon
 
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -26,7 +25,7 @@ class TestOrganisasjonRepoImpl extends TestOrganisasjonRepo {
     sql"""delete from "public"."test_organisasjon" where "organisasjonskode" = ${Segment.paramSegment(organisasjonskode)(TestOrganisasjonId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(organisasjonskodes: Array[TestOrganisasjonId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "public"."test_organisasjon" where "organisasjonskode" = ANY(${organisasjonskodes})""".delete
+    sql"""delete from "public"."test_organisasjon" where "organisasjonskode" = ANY(${Segment.paramSegment(organisasjonskodes)(TestOrganisasjonId.arraySetter)})""".delete
   }
   override def insert(unsaved: TestOrganisasjonRow): ZIO[ZConnection, Throwable, TestOrganisasjonRow] = {
     sql"""insert into "public"."test_organisasjon"("organisasjonskode")

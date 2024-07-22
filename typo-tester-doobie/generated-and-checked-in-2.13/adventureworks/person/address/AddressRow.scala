@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package address
+package adventureworks.person.address
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
@@ -33,7 +31,7 @@ case class AddressRow(
   /** Name of the city. */
   city: /* max 30 chars */ String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
-      Points to [[stateprovince.StateprovinceRow.stateprovinceid]] */
+      Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
   postalcode: /* max 15 chars */ String,

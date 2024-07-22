@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentityaddress
+package adventureworks.person.businessentityaddress
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -41,7 +40,7 @@ class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
     SQL"""delete
           from "person"."businessentityaddress"
           where ("businessentityid", "addressid", "addresstypeid")
-          in (select unnest(${businessentityid}), unnest(${addressid}), unnest(${addresstypeid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(addressid, null, AddressId.arrayToStatement)}), unnest(${ParameterValue(addresstypeid, null, AddresstypeId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -111,7 +110,7 @@ class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
     SQL"""select "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
           from "person"."businessentityaddress"
           where ("businessentityid", "addressid", "addresstypeid")
-          in (select unnest(${businessentityid}), unnest(${addressid}), unnest(${addresstypeid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(addressid, null, AddressId.arrayToStatement)}), unnest(${ParameterValue(addresstypeid, null, AddresstypeId.arrayToStatement)}))
        """.as(BusinessentityaddressRow.rowParser(1).*)
     
   }

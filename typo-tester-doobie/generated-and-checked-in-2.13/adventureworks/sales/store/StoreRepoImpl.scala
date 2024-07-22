@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package store
+package adventureworks.sales.store
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -35,7 +33,7 @@ class StoreRepoImpl extends StoreRepo {
     sql"""delete from "sales"."store" where "businessentityid" = ${fromWrite(businessentityid)(new Write.Single(BusinessentityId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(businessentityids: Array[BusinessentityId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."store" where "businessentityid" = ANY(${businessentityids})""".update.run
+    sql"""delete from "sales"."store" where "businessentityid" = ANY(${fromWrite(businessentityids)(new Write.Single(BusinessentityId.arrayPut))})""".update.run
   }
   override def insert(unsaved: StoreRow): ConnectionIO[StoreRow] = {
     sql"""insert into "sales"."store"("businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate")
@@ -90,7 +88,7 @@ class StoreRepoImpl extends StoreRepo {
     sql"""select "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate"::text from "sales"."store" where "businessentityid" = ${fromWrite(businessentityid)(new Write.Single(BusinessentityId.put))}""".query(StoreRow.read).option
   }
   override def selectByIds(businessentityids: Array[BusinessentityId]): Stream[ConnectionIO, StoreRow] = {
-    sql"""select "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate"::text from "sales"."store" where "businessentityid" = ANY(${businessentityids})""".query(StoreRow.read).stream
+    sql"""select "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate"::text from "sales"."store" where "businessentityid" = ANY(${fromWrite(businessentityids)(new Write.Single(BusinessentityId.arrayPut))})""".query(StoreRow.read).stream
   }
   override def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ConnectionIO[Map[BusinessentityId, StoreRow]] = {
     selectByIds(businessentityids).compile.toList.map { rows =>

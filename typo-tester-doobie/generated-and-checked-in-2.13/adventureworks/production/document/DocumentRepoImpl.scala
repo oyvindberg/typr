@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package document
+package adventureworks.production.document
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
@@ -37,7 +35,7 @@ class DocumentRepoImpl extends DocumentRepo {
     sql"""delete from "production"."document" where "documentnode" = ${fromWrite(documentnode)(new Write.Single(DocumentId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(documentnodes: Array[DocumentId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."document" where "documentnode" = ANY(${documentnodes})""".update.run
+    sql"""delete from "production"."document" where "documentnode" = ANY(${fromWrite(documentnodes)(new Write.Single(DocumentId.arrayPut))})""".update.run
   }
   override def insert(unsaved: DocumentRow): ConnectionIO[DocumentRow] = {
     sql"""insert into "production"."document"("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")
@@ -108,7 +106,7 @@ class DocumentRepoImpl extends DocumentRepo {
     sql"""select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode" from "production"."document" where "documentnode" = ${fromWrite(documentnode)(new Write.Single(DocumentId.put))}""".query(DocumentRow.read).option
   }
   override def selectByIds(documentnodes: Array[DocumentId]): Stream[ConnectionIO, DocumentRow] = {
-    sql"""select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode" from "production"."document" where "documentnode" = ANY(${documentnodes})""".query(DocumentRow.read).stream
+    sql"""select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode" from "production"."document" where "documentnode" = ANY(${fromWrite(documentnodes)(new Write.Single(DocumentId.arrayPut))})""".query(DocumentRow.read).stream
   }
   override def selectByIdsTracked(documentnodes: Array[DocumentId]): ConnectionIO[Map[DocumentId, DocumentRow]] = {
     selectByIds(documentnodes).compile.toList.map { rows =>

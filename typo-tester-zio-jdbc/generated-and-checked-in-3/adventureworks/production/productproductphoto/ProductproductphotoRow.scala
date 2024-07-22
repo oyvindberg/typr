@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productproductphoto
+package adventureworks.production.productproductphoto
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -24,10 +23,10 @@ import zio.json.internal.Write
     Composite primary key: productid, productphotoid */
 case class ProductproductphotoRow(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Product photo identification number. Foreign key to ProductPhoto.ProductPhotoID.
-      Points to [[productphoto.ProductphotoRow.productphotoid]] */
+      Points to [[adventureworks.production.productphoto.ProductphotoRow.productphotoid]] */
   productphotoid: ProductphotoId,
   /** 0 = Photo is not the principal image. 1 = Photo is the principal image.
       Default: false */

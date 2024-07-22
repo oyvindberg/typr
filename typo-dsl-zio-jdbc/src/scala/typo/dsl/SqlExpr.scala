@@ -135,7 +135,7 @@ object SqlExpr {
     }
 
     object As {
-      implicit def as[T, N[_], R](implicit E: JdbcEncoder[N[T]], P: PGType[T]): As[T, N] =
+      implicit def as[T, N[_]](implicit E: JdbcEncoder[N[T]], P: PGType[T]): As[T, N] =
         (value: N[T]) => SqlExpr.Const(value, E, P)
     }
   }
@@ -231,7 +231,20 @@ object SqlExpr {
   }
 
   object CompositeIn {
-    case class TuplePart[Tuple, T, Row](field: FieldLike[T, Required, Row])(val extract: Tuple => T)(implicit val asConst: Const.As[Array[T], Required], val CT: ClassTag[T])
+
+    /** @param ev
+      *   not used. must have a value to write an `AnyVal`
+      */
+    class TuplePart0[Tuple](private val ev: Boolean) extends AnyVal {
+      def apply[T, Row](field: FieldLike[T, Required, Row])(extract: Tuple => T)(implicit asConst: Const.As[Array[T], Required], CT: ClassTag[T]) =
+        new TuplePart[Tuple, T, Row](field, extract, asConst, CT)
+    }
+
+    object TuplePart {
+      def apply[Tuple] = new TuplePart0[Tuple](false)
+    }
+
+    class TuplePart[Tuple, T, Row](val field: FieldLike[T, Required, Row], val extract: Tuple => T, val asConst: Const.As[Array[T], Required], val CT: ClassTag[T])
   }
 
   case class RowExpr(exprs: List[SqlExpr.SqlExprNoHkt[?]]) extends SqlExpr[List[?], Required] {

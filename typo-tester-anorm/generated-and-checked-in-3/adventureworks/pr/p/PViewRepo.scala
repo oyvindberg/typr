@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package p
+package adventureworks.pr.p
 
 import java.sql.Connection
 import typo.dsl.SelectBuilder

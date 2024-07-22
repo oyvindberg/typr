@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package spqh
+package adventureworks.sa.spqh
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -19,17 +17,17 @@ import zio.json.internal.Write
 
 /** View: sa.spqh */
 case class SpqhViewRow(
-  /** Points to [[sales.salespersonquotahistory.SalespersonquotahistoryRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[sales.salespersonquotahistory.SalespersonquotahistoryRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[sales.salespersonquotahistory.SalespersonquotahistoryRow.quotadate]] */
+  /** Points to [[adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.quotadate]] */
   quotadate: TypoLocalDateTime,
-  /** Points to [[sales.salespersonquotahistory.SalespersonquotahistoryRow.salesquota]] */
+  /** Points to [[adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.salesquota]] */
   salesquota: BigDecimal,
-  /** Points to [[sales.salespersonquotahistory.SalespersonquotahistoryRow.rowguid]] */
+  /** Points to [[adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.salespersonquotahistory.SalespersonquotahistoryRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package wr
+package adventureworks.pr.wr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -25,31 +23,31 @@ import scala.util.Try
 
 /** View: pr.wr */
 case class WrViewRow(
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.workorderid]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.workorderid]] */
   id: WorkorderId,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.workorderid]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.workorderid]] */
   workorderid: WorkorderId,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.productid]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.productid]] */
   productid: Int,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.operationsequence]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.operationsequence]] */
   operationsequence: TypoShort,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.locationid]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.locationid]] */
   locationid: LocationId,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.scheduledstartdate]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.scheduledstartdate]] */
   scheduledstartdate: TypoLocalDateTime,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.scheduledenddate]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.scheduledenddate]] */
   scheduledenddate: TypoLocalDateTime,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.actualstartdate]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualstartdate]] */
   actualstartdate: Option[TypoLocalDateTime],
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.actualenddate]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualenddate]] */
   actualenddate: Option[TypoLocalDateTime],
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.actualresourcehrs]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualresourcehrs]] */
   actualresourcehrs: Option[BigDecimal],
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.plannedcost]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.plannedcost]] */
   plannedcost: BigDecimal,
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.actualcost]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualcost]] */
   actualcost: Option[BigDecimal],
-  /** Points to [[production.workorderrouting.WorkorderroutingRow.modifieddate]] */
+  /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

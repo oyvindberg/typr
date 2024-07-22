@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package p
+package adventureworks.pe.p
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -28,33 +26,33 @@ import scala.util.Try
 
 /** View: pe.p */
 case class PViewRow(
-  /** Points to [[person.person.PersonRow.businessentityid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[person.person.PersonRow.businessentityid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.person.PersonRow.persontype]] */
+  /** Points to [[adventureworks.person.person.PersonRow.persontype]] */
   persontype: /* bpchar, max 2 chars */ String,
-  /** Points to [[person.person.PersonRow.namestyle]] */
+  /** Points to [[adventureworks.person.person.PersonRow.namestyle]] */
   namestyle: NameStyle,
-  /** Points to [[person.person.PersonRow.title]] */
+  /** Points to [[adventureworks.person.person.PersonRow.title]] */
   title: Option[/* max 8 chars */ String],
-  /** Points to [[person.person.PersonRow.firstname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
-  /** Points to [[person.person.PersonRow.middlename]] */
+  /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
   middlename: Option[Name],
-  /** Points to [[person.person.PersonRow.lastname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
-  /** Points to [[person.person.PersonRow.suffix]] */
+  /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
   suffix: Option[/* max 10 chars */ String],
-  /** Points to [[person.person.PersonRow.emailpromotion]] */
+  /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int,
-  /** Points to [[person.person.PersonRow.additionalcontactinfo]] */
+  /** Points to [[adventureworks.person.person.PersonRow.additionalcontactinfo]] */
   additionalcontactinfo: Option[TypoXml],
-  /** Points to [[person.person.PersonRow.demographics]] */
+  /** Points to [[adventureworks.person.person.PersonRow.demographics]] */
   demographics: Option[TypoXml],
-  /** Points to [[person.person.PersonRow.rowguid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.person.PersonRow.modifieddate]] */
+  /** Points to [[adventureworks.person.person.PersonRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesperson
+package adventureworks.sales.salesperson
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -24,10 +22,10 @@ import io.circe.Encoder
     Primary key: businessentityid */
 case class SalespersonRow(
   /** Primary key for SalesPerson records. Foreign key to Employee.BusinessEntityID
-      Points to [[humanresources.employee.EmployeeRow.businessentityid]] */
+      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Territory currently assigned to. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[salesterritory.SalesterritoryRow.territoryid]] */
+      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   territoryid: Option[SalesterritoryId],
   /** Projected yearly sales.
       Constraint CK_SalesPerson_SalesQuota affecting columns salesquota: ((salesquota > 0.00)) */

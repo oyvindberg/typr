@@ -3,25 +3,23 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package anorm
-package testdb
-package hardcoded
+package anorm.testdb.hardcoded
 
 import java.sql.Connection
 import resource.managed
 
 object ExecuteReturningSyntax {
   /* add executeReturning to anorm. it needs to be inside the package, because everything is hidden */
-  implicit class Ops(batchSql: BatchSql) {
-    def executeReturning[T](parser: ResultSetParser[T])(implicit c: Connection): T =
-      managed(batchSql.getFilledStatement(c, getGeneratedKeys = true))(using StatementResource, statementClassTag).acquireAndGet { ps =>
+  implicit class Ops(batchSql: anorm.BatchSql) {
+    def executeReturning[T](parser: anorm.ResultSetParser[T])(implicit c: Connection): T =
+      managed(batchSql.getFilledStatement(c, getGeneratedKeys = true))(using anorm.StatementResource, anorm.statementClassTag).acquireAndGet { ps =>
         ps.executeBatch()
-        Sql
+        anorm.Sql
           .asTry(
             parser,
-            managed(ps.getGeneratedKeys)(using ResultSetResource, resultSetClassTag),
+            managed(ps.getGeneratedKeys)(using anorm.ResultSetResource, anorm.resultSetClassTag),
             onFirstRow = false,
-            ColumnAliaser.empty
+            anorm.ColumnAliaser.empty
           )
           .get
       }

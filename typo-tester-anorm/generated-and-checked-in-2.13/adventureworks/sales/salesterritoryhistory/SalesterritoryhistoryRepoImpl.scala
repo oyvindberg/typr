@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritoryhistory
+package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -41,7 +40,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     SQL"""delete
           from "sales"."salesterritoryhistory"
           where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${territoryid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}), unnest(${ParameterValue(territoryid, null, SalesterritoryId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -112,7 +111,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     SQL"""select "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
           from "sales"."salesterritoryhistory"
           where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${territoryid}))
+          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}), unnest(${ParameterValue(territoryid, null, SalesterritoryId.arrayToStatement)}))
        """.as(SalesterritoryhistoryRow.rowParser(1).*)
     
   }

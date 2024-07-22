@@ -3,9 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package customtypes
+package adventureworks.customtypes
 
+import adventureworks.Text
 import anorm.Column
 import anorm.ParameterMetaData
 import anorm.ToStatement
@@ -52,7 +52,7 @@ object TypoCircle {
   given reads: Reads[TypoCircle] = Reads[TypoCircle](json => JsResult.fromTry(
       Try(
         TypoCircle(
-          center = json.\("center").as(summon[Reads[TypoPoint]]),
+          center = json.\("center").as(TypoPoint.reads),
           radius = json.\("radius").as(Reads.DoubleReads)
         )
       )
@@ -65,7 +65,7 @@ object TypoCircle {
   given toStatement: ToStatement[TypoCircle] = ToStatement[TypoCircle]((s, index, v) => s.setObject(index, new PGcircle(v.center.x, v.center.y, v.radius)))
   given writes: OWrites[TypoCircle] = OWrites[TypoCircle](o =>
     new JsObject(ListMap[String, JsValue](
-      "center" -> summon[Writes[TypoPoint]].writes(o.center),
+      "center" -> TypoPoint.writes.writes(o.center),
       "radius" -> Writes.DoubleWrites.writes(o.radius)
     ))
   )

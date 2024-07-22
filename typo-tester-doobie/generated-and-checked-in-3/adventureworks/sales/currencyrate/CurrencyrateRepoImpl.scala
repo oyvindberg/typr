@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currencyrate
+package adventureworks.sales.currencyrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class CurrencyrateRepoImpl extends CurrencyrateRepo {
     sql"""delete from "sales"."currencyrate" where "currencyrateid" = ${fromWrite(currencyrateid)(using new Write.Single(CurrencyrateId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(currencyrateids: Array[CurrencyrateId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."currencyrate" where "currencyrateid" = ANY(${currencyrateids})""".update.run
+    sql"""delete from "sales"."currencyrate" where "currencyrateid" = ANY(${fromWrite(currencyrateids)(using new Write.Single(CurrencyrateId.arrayPut))})""".update.run
   }
   override def insert(unsaved: CurrencyrateRow): ConnectionIO[CurrencyrateRow] = {
     sql"""insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
@@ -89,7 +87,7 @@ class CurrencyrateRepoImpl extends CurrencyrateRepo {
     sql"""select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text from "sales"."currencyrate" where "currencyrateid" = ${fromWrite(currencyrateid)(using new Write.Single(CurrencyrateId.put))}""".query(using CurrencyrateRow.read).option
   }
   override def selectByIds(currencyrateids: Array[CurrencyrateId]): Stream[ConnectionIO, CurrencyrateRow] = {
-    sql"""select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text from "sales"."currencyrate" where "currencyrateid" = ANY(${currencyrateids})""".query(using CurrencyrateRow.read).stream
+    sql"""select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text from "sales"."currencyrate" where "currencyrateid" = ANY(${fromWrite(currencyrateids)(using new Write.Single(CurrencyrateId.arrayPut))})""".query(using CurrencyrateRow.read).stream
   }
   override def selectByIdsTracked(currencyrateids: Array[CurrencyrateId]): ConnectionIO[Map[CurrencyrateId, CurrencyrateRow]] = {
     selectByIds(currencyrateids).compile.toList.map { rows =>

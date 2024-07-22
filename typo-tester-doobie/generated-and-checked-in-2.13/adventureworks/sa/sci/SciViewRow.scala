@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sci
+package adventureworks.sa.sci
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -17,19 +15,19 @@ import io.circe.Encoder
 
 /** View: sa.sci */
 case class SciViewRow(
-  /** Points to [[sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartitemid]] */
+  /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartitemid]] */
   id: ShoppingcartitemId,
-  /** Points to [[sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartitemid]] */
+  /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartitemid]] */
   shoppingcartitemid: ShoppingcartitemId,
-  /** Points to [[sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartid]] */
+  /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartid]] */
   shoppingcartid: /* max 50 chars */ String,
-  /** Points to [[sales.shoppingcartitem.ShoppingcartitemRow.quantity]] */
+  /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.quantity]] */
   quantity: Int,
-  /** Points to [[sales.shoppingcartitem.ShoppingcartitemRow.productid]] */
+  /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.productid]] */
   productid: ProductId,
-  /** Points to [[sales.shoppingcartitem.ShoppingcartitemRow.datecreated]] */
+  /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.datecreated]] */
   datecreated: TypoLocalDateTime,
-  /** Points to [[sales.shoppingcartitem.ShoppingcartitemRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritory
+package adventureworks.sales.salesterritory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -37,7 +36,7 @@ class SalesterritoryRepoImpl extends SalesterritoryRepo {
   override def deleteByIds(territoryids: Array[SalesterritoryId])(using c: Connection): Int = {
     SQL"""delete
           from "sales"."salesterritory"
-          where "territoryid" = ANY(${territoryids})
+          where "territoryid" = ANY(${ParameterValue(territoryids, null, SalesterritoryId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -123,7 +122,7 @@ class SalesterritoryRepoImpl extends SalesterritoryRepo {
   override def selectByIds(territoryids: Array[SalesterritoryId])(using c: Connection): List[SalesterritoryRow] = {
     SQL"""select "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate"::text
           from "sales"."salesterritory"
-          where "territoryid" = ANY(${territoryids})
+          where "territoryid" = ANY(${ParameterValue(territoryids, null, SalesterritoryId.arrayToStatement)})
        """.as(SalesterritoryRow.rowParser(1).*)
     
   }

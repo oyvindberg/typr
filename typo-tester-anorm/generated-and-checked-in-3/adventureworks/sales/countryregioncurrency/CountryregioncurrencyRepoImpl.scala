@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.sales.currency.CurrencyId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -38,7 +37,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     SQL"""delete
           from "sales"."countryregioncurrency"
           where ("countryregioncode", "currencycode")
-          in (select unnest(${countryregioncode}), unnest(${currencycode}))
+          in (select unnest(${ParameterValue(countryregioncode, null, CountryregionId.arrayToStatement)}), unnest(${ParameterValue(currencycode, null, CurrencyId.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -102,7 +101,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     SQL"""select "countryregioncode", "currencycode", "modifieddate"::text
           from "sales"."countryregioncurrency"
           where ("countryregioncode", "currencycode")
-          in (select unnest(${countryregioncode}), unnest(${currencycode}))
+          in (select unnest(${ParameterValue(countryregioncode, null, CountryregionId.arrayToStatement)}), unnest(${ParameterValue(currencycode, null, CurrencyId.arrayToStatement)}))
        """.as(CountryregioncurrencyRow.rowParser(1).*)
     
   }

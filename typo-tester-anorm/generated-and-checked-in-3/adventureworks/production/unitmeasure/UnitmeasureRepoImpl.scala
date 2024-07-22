@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package unitmeasure
+package adventureworks.production.unitmeasure
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class UnitmeasureRepoImpl extends UnitmeasureRepo {
   override def deleteByIds(unitmeasurecodes: Array[UnitmeasureId])(using c: Connection): Int = {
     SQL"""delete
           from "production"."unitmeasure"
-          where "unitmeasurecode" = ANY(${unitmeasurecodes})
+          where "unitmeasurecode" = ANY(${ParameterValue(unitmeasurecodes, null, UnitmeasureId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -95,7 +94,7 @@ class UnitmeasureRepoImpl extends UnitmeasureRepo {
   override def selectByIds(unitmeasurecodes: Array[UnitmeasureId])(using c: Connection): List[UnitmeasureRow] = {
     SQL"""select "unitmeasurecode", "name", "modifieddate"::text
           from "production"."unitmeasure"
-          where "unitmeasurecode" = ANY(${unitmeasurecodes})
+          where "unitmeasurecode" = ANY(${ParameterValue(unitmeasurecodes, null, UnitmeasureId.arrayToStatement)})
        """.as(UnitmeasureRow.rowParser(1).*)
     
   }

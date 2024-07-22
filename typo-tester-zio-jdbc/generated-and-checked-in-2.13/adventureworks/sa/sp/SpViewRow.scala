@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sp
+package adventureworks.sa.sp
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -20,25 +18,25 @@ import zio.json.internal.Write
 
 /** View: sa.sp */
 case class SpViewRow(
-  /** Points to [[sales.salesperson.SalespersonRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[sales.salesperson.SalespersonRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[sales.salesperson.SalespersonRow.territoryid]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.territoryid]] */
   territoryid: Option[SalesterritoryId],
-  /** Points to [[sales.salesperson.SalespersonRow.salesquota]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesquota]] */
   salesquota: Option[BigDecimal],
-  /** Points to [[sales.salesperson.SalespersonRow.bonus]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.bonus]] */
   bonus: BigDecimal,
-  /** Points to [[sales.salesperson.SalespersonRow.commissionpct]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.commissionpct]] */
   commissionpct: BigDecimal,
-  /** Points to [[sales.salesperson.SalespersonRow.salesytd]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesytd]] */
   salesytd: BigDecimal,
-  /** Points to [[sales.salesperson.SalespersonRow.saleslastyear]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.saleslastyear]] */
   saleslastyear: BigDecimal,
-  /** Points to [[sales.salesperson.SalespersonRow.rowguid]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.salesperson.SalespersonRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

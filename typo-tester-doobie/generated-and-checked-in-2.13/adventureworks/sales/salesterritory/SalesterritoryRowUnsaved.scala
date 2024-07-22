@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritory
+package adventureworks.sales.salesterritory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -21,7 +19,7 @@ case class SalesterritoryRowUnsaved(
   /** Sales territory description */
   name: Name,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
-      Points to [[person.countryregion.CountryregionRow.countryregioncode]] */
+      Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** Geographic area to which the sales territory belong. */
   group: /* max 50 chars */ String,

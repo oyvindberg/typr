@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package transactionhistoryarchive
+package adventureworks.production.transactionhistoryarchive
 
 import adventureworks.customtypes.TypoLocalDateTime
 import typo.dsl.Path
@@ -29,7 +27,7 @@ trait TransactionhistoryarchiveFields {
 object TransactionhistoryarchiveFields {
   lazy val structure: Relation[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] {
   

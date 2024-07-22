@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productmodelproductdescriptionculture
+package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
@@ -15,7 +13,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -30,18 +27,18 @@ object ProductmodelproductdescriptioncultureId {
   given reads: Reads[ProductmodelproductdescriptioncultureId] = Reads[ProductmodelproductdescriptioncultureId](json => JsResult.fromTry(
       Try(
         ProductmodelproductdescriptioncultureId(
-          productmodelid = json.\("productmodelid").as(summon[Reads[ProductmodelId]]),
-          productdescriptionid = json.\("productdescriptionid").as(summon[Reads[ProductdescriptionId]]),
-          cultureid = json.\("cultureid").as(summon[Reads[CultureId]])
+          productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
+          productdescriptionid = json.\("productdescriptionid").as(ProductdescriptionId.reads),
+          cultureid = json.\("cultureid").as(CultureId.reads)
         )
       )
     ),
   )
   given writes: OWrites[ProductmodelproductdescriptioncultureId] = OWrites[ProductmodelproductdescriptioncultureId](o =>
     new JsObject(ListMap[String, JsValue](
-      "productmodelid" -> summon[Writes[ProductmodelId]].writes(o.productmodelid),
-      "productdescriptionid" -> summon[Writes[ProductdescriptionId]].writes(o.productdescriptionid),
-      "cultureid" -> summon[Writes[CultureId]].writes(o.cultureid)
+      "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
+      "productdescriptionid" -> ProductdescriptionId.writes.writes(o.productdescriptionid),
+      "cultureid" -> CultureId.writes.writes(o.cultureid)
     ))
   )
 }

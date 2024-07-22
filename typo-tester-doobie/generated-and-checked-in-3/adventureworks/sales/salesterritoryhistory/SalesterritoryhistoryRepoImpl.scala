@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritoryhistory
+package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -40,7 +38,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     sql"""delete
           from "sales"."salesterritoryhistory"
           where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${territoryid}))
+          in (select unnest(${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(startdate)(using new Write.Single(TypoLocalDateTime.arrayPut))}), unnest(${fromWrite(territoryid)(using new Write.Single(SalesterritoryId.arrayPut))}))
        """.update.run
     
   }
@@ -103,7 +101,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     sql"""select "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
           from "sales"."salesterritoryhistory"
           where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${businessentityid}), unnest(${startdate}), unnest(${territoryid}))
+          in (select unnest(${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.arrayPut))}), unnest(${fromWrite(startdate)(using new Write.Single(TypoLocalDateTime.arrayPut))}), unnest(${fromWrite(territoryid)(using new Write.Single(SalesterritoryId.arrayPut))}))
        """.query(using SalesterritoryhistoryRow.read).stream
     
   }

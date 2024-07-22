@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderdetail
+package adventureworks.sales.salesorderdetail
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -14,6 +12,7 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.specialoffer.SpecialofferId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -40,7 +39,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     sql"""delete
           from "sales"."salesorderdetail"
           where ("salesorderid", "salesorderdetailid")
-          in (select unnest(${salesorderid}), unnest(${salesorderdetailid}))
+          in (select unnest(${Segment.paramSegment(salesorderid)(using SalesorderheaderId.arraySetter)}), unnest(${Segment.paramSegment(salesorderdetailid)(using adventureworks.IntArraySetter)}))
        """.delete
     
   }
@@ -110,7 +109,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     sql"""select "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"::text
           from "sales"."salesorderdetail"
           where ("salesorderid", "salesorderdetailid")
-          in (select unnest(${salesorderid}), unnest(${salesorderdetailid}))
+          in (select unnest(${Segment.paramSegment(salesorderid)(using SalesorderheaderId.arraySetter)}), unnest(${Segment.paramSegment(salesorderdetailid)(using adventureworks.IntArraySetter)}))
        """.query(using SalesorderdetailRow.jdbcDecoder).selectStream()
     
   }

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salespersonquotahistory
+package adventureworks.sales.salespersonquotahistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -13,11 +11,13 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesperson.SalespersonFields
 import adventureworks.sales.salesperson.SalespersonRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -35,14 +35,14 @@ trait SalespersonquotahistoryFields {
   def compositeIdIs(compositeId: SalespersonquotahistoryId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(quotadate.isEqual(compositeId.quotadate))
   def compositeIdIn(compositeIds: Array[SalespersonquotahistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(quotadate)(_.quotadate))
+    new CompositeIn(compositeIds)(TuplePart[SalespersonquotahistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly), TuplePart[SalespersonquotahistoryId](quotadate)(_.quotadate)(using as[Array[TypoLocalDateTime], Required](TypoLocalDateTime.arrayJdbcEncoder, PGType.forArray(TypoLocalDateTime.pgType)), implicitly))
   
 }
 
 object SalespersonquotahistoryFields {
   lazy val structure: Relation[SalespersonquotahistoryFields, SalespersonquotahistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SalespersonquotahistoryFields, SalespersonquotahistoryRow] {
   

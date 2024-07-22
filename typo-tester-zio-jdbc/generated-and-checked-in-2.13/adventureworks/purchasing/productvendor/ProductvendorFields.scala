@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package productvendor
+package adventureworks.purchasing.productvendor
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -18,11 +16,13 @@ import adventureworks.production.unitmeasure.UnitmeasureRow
 import adventureworks.purchasing.vendor.VendorFields
 import adventureworks.purchasing.vendor.VendorRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -53,14 +53,14 @@ trait ProductvendorFields {
   def compositeIdIs(compositeId: ProductvendorId): SqlExpr[Boolean, Required] =
     productid.isEqual(compositeId.productid).and(businessentityid.isEqual(compositeId.businessentityid))
   def compositeIdIn(compositeIds: Array[ProductvendorId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(productid)(_.productid), TuplePart(businessentityid)(_.businessentityid))
+    new CompositeIn(compositeIds)(TuplePart[ProductvendorId](productid)(_.productid)(using as[Array[ProductId], Required](ProductId.arrayJdbcEncoder, PGType.forArray(ProductId.pgType)), implicitly), TuplePart[ProductvendorId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly))
   
 }
 
 object ProductvendorFields {
   lazy val structure: Relation[ProductvendorFields, ProductvendorRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductvendorFields, ProductvendorRow] {
   

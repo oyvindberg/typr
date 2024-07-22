@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package tr
+package adventureworks.sa.tr
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -27,21 +25,21 @@ import scala.util.Try
 
 /** View: sa.tr */
 case class TrViewRow(
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.salestaxrateid]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.salestaxrateid]] */
   id: SalestaxrateId,
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.salestaxrateid]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.salestaxrateid]] */
   salestaxrateid: SalestaxrateId,
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.stateprovinceid]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.taxtype]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.taxtype]] */
   taxtype: TypoShort,
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.taxrate]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.taxrate]] */
   taxrate: BigDecimal,
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.name]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.name]] */
   name: Name,
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.rowguid]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.salestaxrate.SalestaxrateRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salestaxrate.SalestaxrateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

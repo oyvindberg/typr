@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package pi
+package adventureworks.pr.pi
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -26,21 +24,21 @@ import scala.util.Try
 
 /** View: pr.pi */
 case class PiViewRow(
-  /** Points to [[production.productinventory.ProductinventoryRow.productid]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.productid]] */
   id: ProductId,
-  /** Points to [[production.productinventory.ProductinventoryRow.productid]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.productinventory.ProductinventoryRow.locationid]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.locationid]] */
   locationid: LocationId,
-  /** Points to [[production.productinventory.ProductinventoryRow.shelf]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.shelf]] */
   shelf: /* max 10 chars */ String,
-  /** Points to [[production.productinventory.ProductinventoryRow.bin]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.bin]] */
   bin: TypoShort,
-  /** Points to [[production.productinventory.ProductinventoryRow.quantity]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.quantity]] */
   quantity: TypoShort,
-  /** Points to [[production.productinventory.ProductinventoryRow.rowguid]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[production.productinventory.ProductinventoryRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

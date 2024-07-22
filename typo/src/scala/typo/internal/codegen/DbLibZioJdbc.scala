@@ -80,6 +80,8 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         // generated type
         case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
           code"$x.$jdbcDecoderName"
+        case sc.Type.ArrayOf(targ: sc.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
+          code"$targ.$arrayJdbcDecoderName"
         case x if missingInstancesByType.contains(JdbcDecoder.of(x)) =>
           code"${missingInstancesByType(JdbcDecoder.of(x))}"
         case other =>
@@ -105,6 +107,8 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         // generated type
         case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
           code"$x.$jdbcEncoderName"
+        case sc.Type.ArrayOf(targ: sc.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
+          code"$targ.$arrayJdbcEncoderName"
         case x if missingInstancesByType.contains(JdbcDecoder.of(x)) =>
           code"${missingInstancesByType(JdbcEncoder.of(x))}"
         case other =>
@@ -164,8 +168,8 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         case other                 => sc.Summon(PGType.of(other)).code
       }
 
-  private def runtimeInterpolateValue(name: sc.Code, tpe: sc.Type, forbidInline: Boolean = false): sc.Code = {
-    if (inlineImplicits && !forbidInline)
+  private def runtimeInterpolateValue(name: sc.Code, tpe: sc.Type): sc.Code = {
+    if (inlineImplicits)
       code"$${$Segment.paramSegment($name)(${dialect.usingCall}${lookupSetter(tpe)})}"
     else code"$${$name}"
   }
@@ -178,6 +182,14 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         code"${composite.cols.map(cc => code"${cc.dbName} = ${runtimeInterpolateValue(code"${composite.paramName}.${cc.name}", cc.tpe)}").mkCode(" AND ")}"
     }
 
+  override def resolveConstAs(tpe: sc.Type): sc.Code = {
+    val optionality = tpe match {
+      case TypesScala.Optional(_) => TypesScala.Option
+      case _                      => sc.Type.dsl.Required
+    }
+    code"${sc.Type.dsl.ConstAsAs}[$tpe, $optionality](${dialect.usingCall}${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
+  }
+
   override def repoSig(repoMethod: RepoMethod): Either[DbLib.NotImplementedFor, sc.Code] = {
     val name = repoMethod.methodName
     repoMethod match {
@@ -187,25 +199,11 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         Right(code"def $name: ${ZStream.of(ZConnection, Throwable, rowType)}")
       case RepoMethod.SelectById(_, _, id, rowType) =>
         Right(code"def $name(${id.param}): ${ZIO.of(ZConnection, Throwable, TypesScala.Option.of(rowType))}")
-      case RepoMethod.SelectByIds(_, _, idComputed, idsParam, rowType) =>
-        val usedDefineds = idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"encoder$i"), JdbcEncoder.of(sc.Type.ArrayOf(colType)), None) }
-
-        usedDefineds match {
-          case Nil =>
-            Right(code"def $name($idsParam): ${ZStream.of(ZConnection, Throwable, rowType)}")
-          case nonEmpty =>
-            Right(code"def $name($idsParam)(${dialect.usingDefinition} ${nonEmpty.map(_.code).mkCode(", ")}): ${ZStream.of(ZConnection, Throwable, rowType)}")
-        }
+      case RepoMethod.SelectByIds(_, _, _, idsParam, rowType) =>
+        Right(code"def $name($idsParam): ${ZStream.of(ZConnection, Throwable, rowType)}")
       case RepoMethod.SelectByIdsTracked(x) =>
-        val usedDefineds = x.idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"encoder$i"), JdbcEncoder.of(sc.Type.ArrayOf(colType)), None) }
         val returnType = ZIO.of(ZConnection, Throwable, TypesScala.Map.of(x.idComputed.tpe, x.rowType))
-        usedDefineds match {
-          case Nil =>
-            Right(code"def $name(${x.idsParam}): $returnType")
-          case nonEmpty =>
-            Right(code"def $name(${x.idsParam})(${dialect.usingDefinition} ${nonEmpty.map(_.code).mkCode(", ")}): $returnType")
-        }
-
+        Right(code"def $name(${x.idsParam}): $returnType")
       case RepoMethod.SelectByUnique(_, keyColumns, _, rowType) =>
         Right(code"def $name(${keyColumns.map(_.param.code).mkCode(", ")}): ${ZIO.of(ZConnection, Throwable, TypesScala.Option.of(rowType))}")
       case RepoMethod.SelectByFieldValues(_, _, _, fieldValueOrIdsParam, rowType) =>
@@ -243,14 +241,8 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         Right(code"def $name: ${sc.Type.dsl.DeleteBuilder.of(fieldsType, rowType)}")
       case RepoMethod.Delete(_, id) =>
         Right(code"def $name(${id.param}): ${ZIO.of(ZConnection, Throwable, TypesScala.Boolean)}")
-      case RepoMethod.DeleteByIds(_, idComputed, idsParam) =>
-        val usedDefineds = idComputed.userDefinedColTypes.zipWithIndex.map { case (colType, i) => sc.Param(sc.Ident(s"encoder$i"), JdbcEncoder.of(sc.Type.ArrayOf(colType)), None) }
-        usedDefineds match {
-          case Nil =>
-            Right(code"def $name(${idsParam}): ${ZIO.of(ZConnection, Throwable, TypesScala.Long)}")
-          case nonEmpty =>
-            Right(code"def $name(${idsParam})(${dialect.usingDefinition} ${nonEmpty.map(_.code).mkCode(", ")}): ${ZIO.of(ZConnection, Throwable, TypesScala.Long)}")
-        }
+      case RepoMethod.DeleteByIds(_, _, idsParam) =>
+        Right(code"def $name(${idsParam}): ${ZIO.of(ZConnection, Throwable, TypesScala.Long)}")
       case RepoMethod.SqlFile(sqlScript) =>
         val params = sc.Params(sqlScript.params.map(p => sc.Param(p.name, p.tpe, None)))
 
@@ -287,7 +279,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
               code"""|select ${dbNames(cols, isRead = true)}
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, col.tpe, forbidInline = true)})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
             code"""|$vals
@@ -490,7 +482,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
               code"""|delete
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, col.tpe, forbidInline = true)})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
             code"""|$vals
@@ -499,7 +491,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
 
           case x: IdComputed.Unary =>
             val sql = SQL(
-              code"""delete from $relName where ${code"${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, x.tpe, forbidInline = true)})"}"""
+              code"""delete from $relName where ${code"${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, sc.Type.ArrayOf(x.tpe))})"}"""
             )
             code"$sql.delete"
         }

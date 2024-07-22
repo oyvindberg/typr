@@ -3,8 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person_row_join
+package adventureworks.person_row_join
 
 import adventureworks.customtypes.TypoRecord
 import adventureworks.person.businessentity.BusinessentityId
@@ -17,7 +16,7 @@ import zio.json.internal.Write
 
 /** SQL file: person_row_join.sql */
 case class PersonRowJoinSqlRow(
-  /** Points to [[sales.salesperson.SalespersonRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   email: /* nullability unknown */ Option[Array[TypoRecord]],
   emails: /* nullability unknown */ Option[Array[TypoRecord]]
@@ -29,8 +28,8 @@ object PersonRowJoinSqlRow {
       columIndex + 2 ->
         PersonRowJoinSqlRow(
           businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          email = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoRecord]]).unsafeDecode(columIndex + 1, rs)._2,
-          emails = JdbcDecoder.optionDecoder(using JdbcDecoder[Array[TypoRecord]]).unsafeDecode(columIndex + 2, rs)._2
+          email = JdbcDecoder.optionDecoder(using TypoRecord.arrayJdbcDecoder).unsafeDecode(columIndex + 1, rs)._2,
+          emails = JdbcDecoder.optionDecoder(using TypoRecord.arrayJdbcDecoder).unsafeDecode(columIndex + 2, rs)._2
         )
   }
   given jsonDecoder: JsonDecoder[PersonRowJoinSqlRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>

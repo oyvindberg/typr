@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentitycontact
+package adventureworks.person.businessentitycontact
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -23,13 +22,13 @@ import scala.util.Try
 /** This class corresponds to a row in table `person.businessentitycontact` which has not been persisted yet */
 case class BusinessentitycontactRowUnsaved(
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[businessentity.BusinessentityRow.businessentityid]] */
+      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Primary key. Foreign key to Person.BusinessEntityID.
-      Points to [[person.PersonRow.businessentityid]] */
+      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   personid: BusinessentityId,
   /** Primary key.  Foreign key to ContactType.ContactTypeID.
-      Points to [[contacttype.ContacttypeRow.contacttypeid]] */
+      Points to [[adventureworks.person.contacttype.ContacttypeRow.contacttypeid]] */
   contacttypeid: ContacttypeId,
   /** Default: uuid_generate_v1() */
   rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,

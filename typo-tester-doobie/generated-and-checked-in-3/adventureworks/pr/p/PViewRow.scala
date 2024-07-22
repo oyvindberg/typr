@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package p
+package adventureworks.pr.p
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -27,57 +25,57 @@ import scala.util.Try
 
 /** View: pr.p */
 case class PViewRow(
-  /** Points to [[production.product.ProductRow.productid]] */
+  /** Points to [[adventureworks.production.product.ProductRow.productid]] */
   id: ProductId,
-  /** Points to [[production.product.ProductRow.productid]] */
+  /** Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.product.ProductRow.name]] */
+  /** Points to [[adventureworks.production.product.ProductRow.name]] */
   name: Name,
-  /** Points to [[production.product.ProductRow.productnumber]] */
+  /** Points to [[adventureworks.production.product.ProductRow.productnumber]] */
   productnumber: /* max 25 chars */ String,
-  /** Points to [[production.product.ProductRow.makeflag]] */
+  /** Points to [[adventureworks.production.product.ProductRow.makeflag]] */
   makeflag: Flag,
-  /** Points to [[production.product.ProductRow.finishedgoodsflag]] */
+  /** Points to [[adventureworks.production.product.ProductRow.finishedgoodsflag]] */
   finishedgoodsflag: Flag,
-  /** Points to [[production.product.ProductRow.color]] */
+  /** Points to [[adventureworks.production.product.ProductRow.color]] */
   color: Option[/* max 15 chars */ String],
-  /** Points to [[production.product.ProductRow.safetystocklevel]] */
+  /** Points to [[adventureworks.production.product.ProductRow.safetystocklevel]] */
   safetystocklevel: TypoShort,
-  /** Points to [[production.product.ProductRow.reorderpoint]] */
+  /** Points to [[adventureworks.production.product.ProductRow.reorderpoint]] */
   reorderpoint: TypoShort,
-  /** Points to [[production.product.ProductRow.standardcost]] */
+  /** Points to [[adventureworks.production.product.ProductRow.standardcost]] */
   standardcost: BigDecimal,
-  /** Points to [[production.product.ProductRow.listprice]] */
+  /** Points to [[adventureworks.production.product.ProductRow.listprice]] */
   listprice: BigDecimal,
-  /** Points to [[production.product.ProductRow.size]] */
+  /** Points to [[adventureworks.production.product.ProductRow.size]] */
   size: Option[/* max 5 chars */ String],
-  /** Points to [[production.product.ProductRow.sizeunitmeasurecode]] */
+  /** Points to [[adventureworks.production.product.ProductRow.sizeunitmeasurecode]] */
   sizeunitmeasurecode: Option[UnitmeasureId],
-  /** Points to [[production.product.ProductRow.weightunitmeasurecode]] */
+  /** Points to [[adventureworks.production.product.ProductRow.weightunitmeasurecode]] */
   weightunitmeasurecode: Option[UnitmeasureId],
-  /** Points to [[production.product.ProductRow.weight]] */
+  /** Points to [[adventureworks.production.product.ProductRow.weight]] */
   weight: Option[BigDecimal],
-  /** Points to [[production.product.ProductRow.daystomanufacture]] */
+  /** Points to [[adventureworks.production.product.ProductRow.daystomanufacture]] */
   daystomanufacture: Int,
-  /** Points to [[production.product.ProductRow.productline]] */
+  /** Points to [[adventureworks.production.product.ProductRow.productline]] */
   productline: Option[/* bpchar, max 2 chars */ String],
-  /** Points to [[production.product.ProductRow.class]] */
+  /** Points to [[adventureworks.production.product.ProductRow.class]] */
   `class`: Option[/* bpchar, max 2 chars */ String],
-  /** Points to [[production.product.ProductRow.style]] */
+  /** Points to [[adventureworks.production.product.ProductRow.style]] */
   style: Option[/* bpchar, max 2 chars */ String],
-  /** Points to [[production.product.ProductRow.productsubcategoryid]] */
+  /** Points to [[adventureworks.production.product.ProductRow.productsubcategoryid]] */
   productsubcategoryid: Option[ProductsubcategoryId],
-  /** Points to [[production.product.ProductRow.productmodelid]] */
+  /** Points to [[adventureworks.production.product.ProductRow.productmodelid]] */
   productmodelid: Option[ProductmodelId],
-  /** Points to [[production.product.ProductRow.sellstartdate]] */
+  /** Points to [[adventureworks.production.product.ProductRow.sellstartdate]] */
   sellstartdate: TypoLocalDateTime,
-  /** Points to [[production.product.ProductRow.sellenddate]] */
+  /** Points to [[adventureworks.production.product.ProductRow.sellenddate]] */
   sellenddate: Option[TypoLocalDateTime],
-  /** Points to [[production.product.ProductRow.discontinueddate]] */
+  /** Points to [[adventureworks.production.product.ProductRow.discontinueddate]] */
   discontinueddate: Option[TypoLocalDateTime],
-  /** Points to [[production.product.ProductRow.rowguid]] */
+  /** Points to [[adventureworks.production.product.ProductRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[production.product.ProductRow.modifieddate]] */
+  /** Points to [[adventureworks.production.product.ProductRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

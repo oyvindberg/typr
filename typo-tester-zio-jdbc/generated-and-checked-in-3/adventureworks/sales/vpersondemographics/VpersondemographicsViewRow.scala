@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vpersondemographics
+package adventureworks.sales.vpersondemographics
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.customtypes.TypoMoney
@@ -19,7 +17,7 @@ import zio.json.internal.Write
 
 /** View: sales.vpersondemographics */
 case class VpersondemographicsViewRow(
-  /** Points to [[person.person.PersonRow.businessentityid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   totalpurchaseytd: /* nullability unknown */ Option[TypoMoney],
   datefirstpurchase: /* nullability unknown */ Option[TypoLocalDate],

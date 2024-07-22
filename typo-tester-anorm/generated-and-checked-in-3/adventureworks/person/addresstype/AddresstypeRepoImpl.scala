@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package addresstype
+package adventureworks.person.addresstype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -35,7 +34,7 @@ class AddresstypeRepoImpl extends AddresstypeRepo {
   override def deleteByIds(addresstypeids: Array[AddresstypeId])(using c: Connection): Int = {
     SQL"""delete
           from "person"."addresstype"
-          where "addresstypeid" = ANY(${addresstypeids})
+          where "addresstypeid" = ANY(${ParameterValue(addresstypeids, null, AddresstypeId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -103,7 +102,7 @@ class AddresstypeRepoImpl extends AddresstypeRepo {
   override def selectByIds(addresstypeids: Array[AddresstypeId])(using c: Connection): List[AddresstypeRow] = {
     SQL"""select "addresstypeid", "name", "rowguid", "modifieddate"::text
           from "person"."addresstype"
-          where "addresstypeid" = ANY(${addresstypeids})
+          where "addresstypeid" = ANY(${ParameterValue(addresstypeids, null, AddresstypeId.arrayToStatement)})
        """.as(AddresstypeRow.rowParser(1).*)
     
   }

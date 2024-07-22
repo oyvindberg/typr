@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package vstateprovincecountryregion
+package adventureworks.person.vstateprovincecountryregion
 
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.person.stateprovince.StateprovinceId
@@ -30,7 +28,7 @@ trait VstateprovincecountryregionMVFields {
 object VstateprovincecountryregionMVFields {
   lazy val structure: Relation[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] {
   

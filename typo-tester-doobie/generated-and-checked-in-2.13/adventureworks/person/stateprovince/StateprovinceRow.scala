@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package stateprovince
+package adventureworks.person.stateprovince
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -31,7 +29,7 @@ case class StateprovinceRow(
   /** ISO standard state or province code. */
   stateprovincecode: /* bpchar, max 3 chars */ String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
-      Points to [[countryregion.CountryregionRow.countryregioncode]] */
+      Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** 0 = StateProvinceCode exists. 1 = StateProvinceCode unavailable, using CountryRegionCode.
       Default: true */
@@ -39,7 +37,7 @@ case class StateprovinceRow(
   /** State or province description. */
   name: Name,
   /** ID of the territory in which the state or province is located. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[sales.salesterritory.SalesterritoryRow.territoryid]] */
+      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   territoryid: SalesterritoryId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,

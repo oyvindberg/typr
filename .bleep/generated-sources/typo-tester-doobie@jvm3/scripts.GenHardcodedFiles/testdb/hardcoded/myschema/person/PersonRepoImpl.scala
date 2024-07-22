@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package person
+package testdb.hardcoded.myschema.person
 
 import cats.data.NonEmptyList
 import cats.instances.list.catsStdInstancesForList
@@ -22,6 +19,8 @@ import doobie.util.meta.Meta
 import doobie.util.update.Update
 import fs2.Stream
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.myschema.Number
+import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
 import testdb.hardcoded.myschema.marital_status.MaritalStatusId
 import typo.dsl.DeleteBuilder
@@ -37,7 +36,7 @@ class PersonRepoImpl extends PersonRepo {
     sql"""delete from "myschema"."person" where "id" = ${fromWrite(id)(using new Write.Single(PersonId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(ids: Array[PersonId]): ConnectionIO[Int] = {
-    sql"""delete from "myschema"."person" where "id" = ANY(${ids})""".update.run
+    sql"""delete from "myschema"."person" where "id" = ANY(${fromWrite(ids)(using new Write.Single(PersonId.arrayPut))})""".update.run
   }
   override def insert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
     sql"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
@@ -119,7 +118,7 @@ class PersonRepoImpl extends PersonRepo {
     sql"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number" from "myschema"."person" where "id" = ${fromWrite(id)(using new Write.Single(PersonId.put))}""".query(using PersonRow.read).option
   }
   override def selectByIds(ids: Array[PersonId]): Stream[ConnectionIO, PersonRow] = {
-    sql"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number" from "myschema"."person" where "id" = ANY(${ids})""".query(using PersonRow.read).stream
+    sql"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number" from "myschema"."person" where "id" = ANY(${fromWrite(ids)(using new Write.Single(PersonId.arrayPut))})""".query(using PersonRow.read).stream
   }
   override def selectByIdsTracked(ids: Array[PersonId]): ConnectionIO[Map[PersonId, PersonRow]] = {
     selectByIds(ids).compile.toList.map { rows =>

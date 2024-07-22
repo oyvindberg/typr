@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionFields
@@ -15,11 +13,13 @@ import adventureworks.sales.currency.CurrencyFields
 import adventureworks.sales.currency.CurrencyId
 import adventureworks.sales.currency.CurrencyRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -38,14 +38,14 @@ trait CountryregioncurrencyFields {
   def compositeIdIs(compositeId: CountryregioncurrencyId): SqlExpr[Boolean, Required] =
     countryregioncode.isEqual(compositeId.countryregioncode).and(currencycode.isEqual(compositeId.currencycode))
   def compositeIdIn(compositeIds: Array[CountryregioncurrencyId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(countryregioncode)(_.countryregioncode), TuplePart(currencycode)(_.currencycode))
+    new CompositeIn(compositeIds)(TuplePart[CountryregioncurrencyId](countryregioncode)(_.countryregioncode)(using as[Array[CountryregionId], Required](CountryregionId.arrayJdbcEncoder, PGType.forArray(CountryregionId.pgType)), implicitly), TuplePart[CountryregioncurrencyId](currencycode)(_.currencycode)(using as[Array[CurrencyId], Required](CurrencyId.arrayJdbcEncoder, PGType.forArray(CurrencyId.pgType)), implicitly))
   
 }
 
 object CountryregioncurrencyFields {
   lazy val structure: Relation[CountryregioncurrencyFields, CountryregioncurrencyRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[CountryregioncurrencyFields, CountryregioncurrencyRow] {
   

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package cc
+package adventureworks.sa.cc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -17,19 +15,19 @@ import io.circe.Encoder
 
 /** View: sa.cc */
 case class CcViewRow(
-  /** Points to [[sales.creditcard.CreditcardRow.creditcardid]] */
+  /** Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
   id: /* user-picked */ CustomCreditcardId,
-  /** Points to [[sales.creditcard.CreditcardRow.creditcardid]] */
+  /** Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
   creditcardid: /* user-picked */ CustomCreditcardId,
-  /** Points to [[sales.creditcard.CreditcardRow.cardtype]] */
+  /** Points to [[adventureworks.sales.creditcard.CreditcardRow.cardtype]] */
   cardtype: /* max 50 chars */ String,
-  /** Points to [[sales.creditcard.CreditcardRow.cardnumber]] */
+  /** Points to [[adventureworks.sales.creditcard.CreditcardRow.cardnumber]] */
   cardnumber: /* max 25 chars */ String,
-  /** Points to [[sales.creditcard.CreditcardRow.expmonth]] */
+  /** Points to [[adventureworks.sales.creditcard.CreditcardRow.expmonth]] */
   expmonth: TypoShort,
-  /** Points to [[sales.creditcard.CreditcardRow.expyear]] */
+  /** Points to [[adventureworks.sales.creditcard.CreditcardRow.expyear]] */
   expyear: TypoShort,
-  /** Points to [[sales.creditcard.CreditcardRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.creditcard.CreditcardRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

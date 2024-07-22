@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package personphone
+package adventureworks.person.personphone
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -15,12 +13,14 @@ import adventureworks.person.phonenumbertype.PhonenumbertypeFields
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.person.phonenumbertype.PhonenumbertypeRow
 import adventureworks.public.Phone
+import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -40,14 +40,14 @@ trait PersonphoneFields {
   def compositeIdIs(compositeId: PersonphoneId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(phonenumber.isEqual(compositeId.phonenumber)).and(phonenumbertypeid.isEqual(compositeId.phonenumbertypeid))
   def compositeIdIn(compositeIds: Array[PersonphoneId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(phonenumber)(_.phonenumber), TuplePart(phonenumbertypeid)(_.phonenumbertypeid))
+    new CompositeIn(compositeIds)(TuplePart[PersonphoneId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](using BusinessentityId.arrayPut, Write.fromPut(using BusinessentityId.arrayPut)), implicitly), TuplePart[PersonphoneId](phonenumber)(_.phonenumber)(using as[Array[Phone], Required](using Phone.arrayPut, Write.fromPut(using Phone.arrayPut)), implicitly), TuplePart[PersonphoneId](phonenumbertypeid)(_.phonenumbertypeid)(using as[Array[PhonenumbertypeId], Required](using PhonenumbertypeId.arrayPut, Write.fromPut(using PhonenumbertypeId.arrayPut)), implicitly))
   
 }
 
 object PersonphoneFields {
   lazy val structure: Relation[PersonphoneFields, PersonphoneRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PersonphoneFields, PersonphoneRow] {
   

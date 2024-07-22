@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package pgtest
+package adventureworks.public.pgtest
 
 import adventureworks.customtypes.TypoBox
 import adventureworks.customtypes.TypoBytea
@@ -31,6 +29,8 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoVector
 import adventureworks.customtypes.TypoXml
+import adventureworks.public.Mydomain
+import adventureworks.public.Myenum
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
@@ -112,7 +112,7 @@ trait PgtestFields {
 object PgtestFields {
   lazy val structure: Relation[PgtestFields, PgtestRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PgtestFields, PgtestRow] {
   

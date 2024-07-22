@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package users
+package adventureworks.public.users
 
 import adventureworks.customtypes.TypoUUID
 import doobie.postgres.Text
@@ -21,8 +19,8 @@ object UsersId {
   given arrayGet: Get[Array[UsersId]] = TypoUUID.arrayGet.map(_.map(UsersId.apply))
   given arrayPut: Put[Array[UsersId]] = TypoUUID.arrayPut.contramap(_.map(_.value))
   given bijection: Bijection[UsersId, TypoUUID] = Bijection[UsersId, TypoUUID](_.value)(UsersId.apply)
-  given decoder: Decoder[UsersId] = summon[Decoder[TypoUUID]].map(UsersId.apply)
-  given encoder: Encoder[UsersId] = summon[Encoder[TypoUUID]].contramap(_.value)
+  given decoder: Decoder[UsersId] = TypoUUID.decoder.map(UsersId.apply)
+  given encoder: Encoder[UsersId] = TypoUUID.encoder.contramap(_.value)
   given get: Get[UsersId] = TypoUUID.get.map(UsersId.apply)
   given ordering(using O0: Ordering[TypoUUID]): Ordering[UsersId] = Ordering.by(_.value)
   given put: Put[UsersId] = TypoUUID.put.contramap(_.value)

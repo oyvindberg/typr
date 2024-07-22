@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vemployeedepartment
+package adventureworks.humanresources.vemployeedepartment
 
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.person.businessentity.BusinessentityId
@@ -20,25 +18,25 @@ import zio.json.internal.Write
 
 /** View: humanresources.vemployeedepartment */
 case class VemployeedepartmentViewRow(
-  /** Points to [[employee.EmployeeRow.businessentityid]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.person.PersonRow.title]] */
+  /** Points to [[adventureworks.person.person.PersonRow.title]] */
   title: Option[/* max 8 chars */ String],
-  /** Points to [[person.person.PersonRow.firstname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
-  /** Points to [[person.person.PersonRow.middlename]] */
+  /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
   middlename: Option[Name],
-  /** Points to [[person.person.PersonRow.lastname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
-  /** Points to [[person.person.PersonRow.suffix]] */
+  /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
   suffix: Option[/* max 10 chars */ String],
-  /** Points to [[employee.EmployeeRow.jobtitle]] */
+  /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
-  /** Points to [[department.DepartmentRow.name]] */
+  /** Points to [[adventureworks.humanresources.department.DepartmentRow.name]] */
   department: Name,
-  /** Points to [[department.DepartmentRow.groupname]] */
+  /** Points to [[adventureworks.humanresources.department.DepartmentRow.groupname]] */
   groupname: Name,
-  /** Points to [[employeedepartmenthistory.EmployeedepartmenthistoryRow.startdate]] */
+  /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.startdate]] */
   startdate: TypoLocalDate
 )
 

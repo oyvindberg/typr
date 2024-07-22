@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_organisasjon
+package adventureworks.public.test_organisasjon
 
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
@@ -28,7 +26,7 @@ class TestOrganisasjonRepoImpl extends TestOrganisasjonRepo {
     sql"""delete from "public"."test_organisasjon" where "organisasjonskode" = ${fromWrite(organisasjonskode)(new Write.Single(TestOrganisasjonId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Int] = {
-    sql"""delete from "public"."test_organisasjon" where "organisasjonskode" = ANY(${organisasjonskodes})""".update.run
+    sql"""delete from "public"."test_organisasjon" where "organisasjonskode" = ANY(${fromWrite(organisasjonskodes)(new Write.Single(TestOrganisasjonId.arrayPut))})""".update.run
   }
   override def insert(unsaved: TestOrganisasjonRow): ConnectionIO[TestOrganisasjonRow] = {
     sql"""insert into "public"."test_organisasjon"("organisasjonskode")
@@ -49,7 +47,7 @@ class TestOrganisasjonRepoImpl extends TestOrganisasjonRepo {
     sql"""select "organisasjonskode" from "public"."test_organisasjon" where "organisasjonskode" = ${fromWrite(organisasjonskode)(new Write.Single(TestOrganisasjonId.put))}""".query(TestOrganisasjonRow.read).option
   }
   override def selectByIds(organisasjonskodes: Array[TestOrganisasjonId]): Stream[ConnectionIO, TestOrganisasjonRow] = {
-    sql"""select "organisasjonskode" from "public"."test_organisasjon" where "organisasjonskode" = ANY(${organisasjonskodes})""".query(TestOrganisasjonRow.read).stream
+    sql"""select "organisasjonskode" from "public"."test_organisasjon" where "organisasjonskode" = ANY(${fromWrite(organisasjonskodes)(new Write.Single(TestOrganisasjonId.arrayPut))})""".query(TestOrganisasjonRow.read).stream
   }
   override def selectByIdsTracked(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Map[TestOrganisasjonId, TestOrganisasjonRow]] = {
     selectByIds(organisasjonskodes).compile.toList.map { rows =>

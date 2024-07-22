@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialoffer
+package adventureworks.sales.specialoffer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class SpecialofferRepoImpl extends SpecialofferRepo {
     sql"""delete from "sales"."specialoffer" where "specialofferid" = ${fromWrite(specialofferid)(using new Write.Single(SpecialofferId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(specialofferids: Array[SpecialofferId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."specialoffer" where "specialofferid" = ANY(${specialofferids})""".update.run
+    sql"""delete from "sales"."specialoffer" where "specialofferid" = ANY(${fromWrite(specialofferids)(using new Write.Single(SpecialofferId.arrayPut))})""".update.run
   }
   override def insert(unsaved: SpecialofferRow): ConnectionIO[SpecialofferRow] = {
     sql"""insert into "sales"."specialoffer"("specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")
@@ -102,7 +100,7 @@ class SpecialofferRepoImpl extends SpecialofferRepo {
     sql"""select "specialofferid", "description", "discountpct", "type", "category", "startdate"::text, "enddate"::text, "minqty", "maxqty", "rowguid", "modifieddate"::text from "sales"."specialoffer" where "specialofferid" = ${fromWrite(specialofferid)(using new Write.Single(SpecialofferId.put))}""".query(using SpecialofferRow.read).option
   }
   override def selectByIds(specialofferids: Array[SpecialofferId]): Stream[ConnectionIO, SpecialofferRow] = {
-    sql"""select "specialofferid", "description", "discountpct", "type", "category", "startdate"::text, "enddate"::text, "minqty", "maxqty", "rowguid", "modifieddate"::text from "sales"."specialoffer" where "specialofferid" = ANY(${specialofferids})""".query(using SpecialofferRow.read).stream
+    sql"""select "specialofferid", "description", "discountpct", "type", "category", "startdate"::text, "enddate"::text, "minqty", "maxqty", "rowguid", "modifieddate"::text from "sales"."specialoffer" where "specialofferid" = ANY(${fromWrite(specialofferids)(using new Write.Single(SpecialofferId.arrayPut))})""".query(using SpecialofferRow.read).stream
   }
   override def selectByIdsTracked(specialofferids: Array[SpecialofferId]): ConnectionIO[Map[SpecialofferId, SpecialofferRow]] = {
     selectByIds(specialofferids).compile.toList.map { rows =>

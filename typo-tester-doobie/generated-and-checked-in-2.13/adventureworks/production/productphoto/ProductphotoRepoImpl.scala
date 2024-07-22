@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productphoto
+package adventureworks.production.productphoto
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
@@ -33,7 +31,7 @@ class ProductphotoRepoImpl extends ProductphotoRepo {
     sql"""delete from "production"."productphoto" where "productphotoid" = ${fromWrite(productphotoid)(new Write.Single(ProductphotoId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(productphotoids: Array[ProductphotoId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."productphoto" where "productphotoid" = ANY(${productphotoids})""".update.run
+    sql"""delete from "production"."productphoto" where "productphotoid" = ANY(${fromWrite(productphotoids)(new Write.Single(ProductphotoId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ProductphotoRow): ConnectionIO[ProductphotoRow] = {
     sql"""insert into "production"."productphoto"("productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate")
@@ -88,7 +86,7 @@ class ProductphotoRepoImpl extends ProductphotoRepo {
     sql"""select "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate"::text from "production"."productphoto" where "productphotoid" = ${fromWrite(productphotoid)(new Write.Single(ProductphotoId.put))}""".query(ProductphotoRow.read).option
   }
   override def selectByIds(productphotoids: Array[ProductphotoId]): Stream[ConnectionIO, ProductphotoRow] = {
-    sql"""select "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate"::text from "production"."productphoto" where "productphotoid" = ANY(${productphotoids})""".query(ProductphotoRow.read).stream
+    sql"""select "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate"::text from "production"."productphoto" where "productphotoid" = ANY(${fromWrite(productphotoids)(new Write.Single(ProductphotoId.arrayPut))})""".query(ProductphotoRow.read).stream
   }
   override def selectByIdsTracked(productphotoids: Array[ProductphotoId]): ConnectionIO[Map[ProductphotoId, ProductphotoRow]] = {
     selectByIds(productphotoids).compile.toList.map { rows =>

@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title_domain
+package adventureworks.public.title_domain
 
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -26,7 +25,7 @@ class TitleDomainRepoImpl extends TitleDomainRepo {
     sql"""delete from "public"."title_domain" where "code" = ${Segment.paramSegment(code)(TitleDomainId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(codes: Array[TitleDomainId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "public"."title_domain" where "code" = ANY(${codes})""".delete
+    sql"""delete from "public"."title_domain" where "code" = ANY(${Segment.paramSegment(codes)(TitleDomainId.arraySetter)})""".delete
   }
   override def insert(unsaved: TitleDomainRow): ZIO[ZConnection, Throwable, TitleDomainRow] = {
     sql"""insert into "public"."title_domain"("code")

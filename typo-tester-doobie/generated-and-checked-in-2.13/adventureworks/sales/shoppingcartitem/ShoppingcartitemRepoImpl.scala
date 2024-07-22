@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package shoppingcartitem
+package adventureworks.sales.shoppingcartitem
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class ShoppingcartitemRepoImpl extends ShoppingcartitemRepo {
     sql"""delete from "sales"."shoppingcartitem" where "shoppingcartitemid" = ${fromWrite(shoppingcartitemid)(new Write.Single(ShoppingcartitemId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(shoppingcartitemids: Array[ShoppingcartitemId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."shoppingcartitem" where "shoppingcartitemid" = ANY(${shoppingcartitemids})""".update.run
+    sql"""delete from "sales"."shoppingcartitem" where "shoppingcartitemid" = ANY(${fromWrite(shoppingcartitemids)(new Write.Single(ShoppingcartitemId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ShoppingcartitemRow): ConnectionIO[ShoppingcartitemRow] = {
     sql"""insert into "sales"."shoppingcartitem"("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")
@@ -94,7 +92,7 @@ class ShoppingcartitemRepoImpl extends ShoppingcartitemRepo {
     sql"""select "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text from "sales"."shoppingcartitem" where "shoppingcartitemid" = ${fromWrite(shoppingcartitemid)(new Write.Single(ShoppingcartitemId.put))}""".query(ShoppingcartitemRow.read).option
   }
   override def selectByIds(shoppingcartitemids: Array[ShoppingcartitemId]): Stream[ConnectionIO, ShoppingcartitemRow] = {
-    sql"""select "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text from "sales"."shoppingcartitem" where "shoppingcartitemid" = ANY(${shoppingcartitemids})""".query(ShoppingcartitemRow.read).stream
+    sql"""select "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text from "sales"."shoppingcartitem" where "shoppingcartitemid" = ANY(${fromWrite(shoppingcartitemids)(new Write.Single(ShoppingcartitemId.arrayPut))})""".query(ShoppingcartitemRow.read).stream
   }
   override def selectByIdsTracked(shoppingcartitemids: Array[ShoppingcartitemId]): ConnectionIO[Map[ShoppingcartitemId, ShoppingcartitemRow]] = {
     selectByIds(shoppingcartitemids).compile.toList.map { rows =>

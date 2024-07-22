@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritoryhistory
+package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -15,12 +13,14 @@ import adventureworks.sales.salesperson.SalespersonRow
 import adventureworks.sales.salesterritory.SalesterritoryFields
 import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.sales.salesterritory.SalesterritoryRow
+import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -43,14 +43,14 @@ trait SalesterritoryhistoryFields {
   def compositeIdIs(compositeId: SalesterritoryhistoryId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(startdate.isEqual(compositeId.startdate)).and(territoryid.isEqual(compositeId.territoryid))
   def compositeIdIn(compositeIds: Array[SalesterritoryhistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(startdate)(_.startdate), TuplePart(territoryid)(_.territoryid))
+    new CompositeIn(compositeIds)(TuplePart[SalesterritoryhistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](ToParameterValue(null, BusinessentityId.arrayToStatement), adventureworks.arrayParameterMetaData(BusinessentityId.parameterMetadata)), implicitly), TuplePart[SalesterritoryhistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDateTime], Required](ToParameterValue(null, TypoLocalDateTime.arrayToStatement), adventureworks.arrayParameterMetaData(TypoLocalDateTime.parameterMetadata)), implicitly), TuplePart[SalesterritoryhistoryId](territoryid)(_.territoryid)(using as[Array[SalesterritoryId], Required](ToParameterValue(null, SalesterritoryId.arrayToStatement), adventureworks.arrayParameterMetaData(SalesterritoryId.parameterMetadata)), implicitly))
   
 }
 
 object SalesterritoryhistoryFields {
   lazy val structure: Relation[SalesterritoryhistoryFields, SalesterritoryhistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SalesterritoryhistoryFields, SalesterritoryhistoryRow] {
   

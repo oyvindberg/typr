@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package bec
+package adventureworks.pe.bec
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -20,17 +18,17 @@ import zio.json.internal.Write
 
 /** View: pe.bec */
 case class BecViewRow(
-  /** Points to [[person.businessentitycontact.BusinessentitycontactRow.businessentityid]] */
+  /** Points to [[adventureworks.person.businessentitycontact.BusinessentitycontactRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[person.businessentitycontact.BusinessentitycontactRow.businessentityid]] */
+  /** Points to [[adventureworks.person.businessentitycontact.BusinessentitycontactRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.businessentitycontact.BusinessentitycontactRow.personid]] */
+  /** Points to [[adventureworks.person.businessentitycontact.BusinessentitycontactRow.personid]] */
   personid: BusinessentityId,
-  /** Points to [[person.businessentitycontact.BusinessentitycontactRow.contacttypeid]] */
+  /** Points to [[adventureworks.person.businessentitycontact.BusinessentitycontactRow.contacttypeid]] */
   contacttypeid: ContacttypeId,
-  /** Points to [[person.businessentitycontact.BusinessentitycontactRow.rowguid]] */
+  /** Points to [[adventureworks.person.businessentitycontact.BusinessentitycontactRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.businessentitycontact.BusinessentitycontactRow.modifieddate]] */
+  /** Points to [[adventureworks.person.businessentitycontact.BusinessentitycontactRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

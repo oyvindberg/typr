@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sth
+package adventureworks.sa.sth
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -25,19 +23,19 @@ import scala.util.Try
 
 /** View: sa.sth */
 case class SthViewRow(
-  /** Points to [[sales.salesterritoryhistory.SalesterritoryhistoryRow.territoryid]] */
+  /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.territoryid]] */
   id: SalesterritoryId,
-  /** Points to [[sales.salesterritoryhistory.SalesterritoryhistoryRow.businessentityid]] */
+  /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[sales.salesterritoryhistory.SalesterritoryhistoryRow.territoryid]] */
+  /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.territoryid]] */
   territoryid: SalesterritoryId,
-  /** Points to [[sales.salesterritoryhistory.SalesterritoryhistoryRow.startdate]] */
+  /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
-  /** Points to [[sales.salesterritoryhistory.SalesterritoryhistoryRow.enddate]] */
+  /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.enddate]] */
   enddate: Option[TypoLocalDateTime],
-  /** Points to [[sales.salesterritoryhistory.SalesterritoryhistoryRow.rowguid]] */
+  /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.salesterritoryhistory.SalesterritoryhistoryRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

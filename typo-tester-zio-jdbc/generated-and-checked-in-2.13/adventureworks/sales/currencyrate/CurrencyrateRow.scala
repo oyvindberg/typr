@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currencyrate
+package adventureworks.sales.currencyrate
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
@@ -27,10 +26,10 @@ case class CurrencyrateRow(
   /** Date and time the exchange rate was obtained. */
   currencyratedate: TypoLocalDateTime,
   /** Exchange rate was converted from this currency code.
-      Points to [[currency.CurrencyRow.currencycode]] */
+      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
   fromcurrencycode: CurrencyId,
   /** Exchange rate was converted to this currency code.
-      Points to [[currency.CurrencyRow.currencycode]] */
+      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
   tocurrencycode: CurrencyId,
   /** Average exchange rate for the day. */
   averagerate: BigDecimal,

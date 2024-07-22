@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package d
+package adventureworks.pr.d
 
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
@@ -21,31 +19,31 @@ import io.circe.Encoder
 
 /** View: pr.d */
 case class DViewRow(
-  /** Points to [[production.document.DocumentRow.title]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.title]] */
   title: /* max 50 chars */ String,
-  /** Points to [[production.document.DocumentRow.owner]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.owner]] */
   owner: BusinessentityId,
-  /** Points to [[production.document.DocumentRow.folderflag]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.folderflag]] */
   folderflag: Flag,
-  /** Points to [[production.document.DocumentRow.filename]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.filename]] */
   filename: /* max 400 chars */ String,
-  /** Points to [[production.document.DocumentRow.fileextension]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.fileextension]] */
   fileextension: Option[/* max 8 chars */ String],
-  /** Points to [[production.document.DocumentRow.revision]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.revision]] */
   revision: /* bpchar, max 5 chars */ String,
-  /** Points to [[production.document.DocumentRow.changenumber]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.changenumber]] */
   changenumber: Int,
-  /** Points to [[production.document.DocumentRow.status]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.status]] */
   status: TypoShort,
-  /** Points to [[production.document.DocumentRow.documentsummary]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.documentsummary]] */
   documentsummary: Option[String],
-  /** Points to [[production.document.DocumentRow.document]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.document]] */
   document: Option[TypoBytea],
-  /** Points to [[production.document.DocumentRow.rowguid]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[production.document.DocumentRow.modifieddate]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.modifieddate]] */
   modifieddate: TypoLocalDateTime,
-  /** Points to [[production.document.DocumentRow.documentnode]] */
+  /** Points to [[adventureworks.production.document.DocumentRow.documentnode]] */
   documentnode: DocumentId
 )
 

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialofferproduct
+package adventureworks.sales.specialofferproduct
 
 import adventureworks.production.product.ProductId
 import adventureworks.sales.specialoffer.SpecialofferId
@@ -14,7 +12,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,16 +25,16 @@ object SpecialofferproductId {
   given reads: Reads[SpecialofferproductId] = Reads[SpecialofferproductId](json => JsResult.fromTry(
       Try(
         SpecialofferproductId(
-          specialofferid = json.\("specialofferid").as(summon[Reads[SpecialofferId]]),
-          productid = json.\("productid").as(summon[Reads[ProductId]])
+          specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
+          productid = json.\("productid").as(ProductId.reads)
         )
       )
     ),
   )
   given writes: OWrites[SpecialofferproductId] = OWrites[SpecialofferproductId](o =>
     new JsObject(ListMap[String, JsValue](
-      "specialofferid" -> summon[Writes[SpecialofferId]].writes(o.specialofferid),
-      "productid" -> summon[Writes[ProductId]].writes(o.productid)
+      "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
+      "productid" -> ProductId.writes.writes(o.productid)
     ))
   )
 }

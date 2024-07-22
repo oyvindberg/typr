@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package businessentityaddress
+package adventureworks.person.businessentityaddress
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -28,13 +27,13 @@ import scala.util.Try
     Composite primary key: businessentityid, addressid, addresstypeid */
 case class BusinessentityaddressRow(
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[businessentity.BusinessentityRow.businessentityid]] */
+      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Primary key. Foreign key to Address.AddressID.
-      Points to [[address.AddressRow.addressid]] */
+      Points to [[adventureworks.person.address.AddressRow.addressid]] */
   addressid: AddressId,
   /** Primary key. Foreign key to AddressType.AddressTypeID.
-      Points to [[addresstype.AddresstypeRow.addresstypeid]] */
+      Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]] */
   addresstypeid: AddresstypeId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,

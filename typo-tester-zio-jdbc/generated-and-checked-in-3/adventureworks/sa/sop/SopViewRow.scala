@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package sop
+package adventureworks.sa.sop
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -20,15 +18,15 @@ import zio.json.internal.Write
 
 /** View: sa.sop */
 case class SopViewRow(
-  /** Points to [[sales.specialofferproduct.SpecialofferproductRow.specialofferid]] */
+  /** Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.specialofferid]] */
   id: SpecialofferId,
-  /** Points to [[sales.specialofferproduct.SpecialofferproductRow.specialofferid]] */
+  /** Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.specialofferid]] */
   specialofferid: SpecialofferId,
-  /** Points to [[sales.specialofferproduct.SpecialofferproductRow.productid]] */
+  /** Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]] */
   productid: ProductId,
-  /** Points to [[sales.specialofferproduct.SpecialofferproductRow.rowguid]] */
+  /** Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[sales.specialofferproduct.SpecialofferproductRow.modifieddate]] */
+  /** Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

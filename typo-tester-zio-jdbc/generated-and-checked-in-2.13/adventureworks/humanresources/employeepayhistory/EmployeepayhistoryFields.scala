@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package employeepayhistory
+package adventureworks.humanresources.employeepayhistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -13,11 +11,13 @@ import adventureworks.humanresources.employee.EmployeeFields
 import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -35,14 +35,14 @@ trait EmployeepayhistoryFields {
   def compositeIdIs(compositeId: EmployeepayhistoryId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(ratechangedate.isEqual(compositeId.ratechangedate))
   def compositeIdIn(compositeIds: Array[EmployeepayhistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(ratechangedate)(_.ratechangedate))
+    new CompositeIn(compositeIds)(TuplePart[EmployeepayhistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly), TuplePart[EmployeepayhistoryId](ratechangedate)(_.ratechangedate)(using as[Array[TypoLocalDateTime], Required](TypoLocalDateTime.arrayJdbcEncoder, PGType.forArray(TypoLocalDateTime.pgType)), implicitly))
   
 }
 
 object EmployeepayhistoryFields {
   lazy val structure: Relation[EmployeepayhistoryFields, EmployeepayhistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[EmployeepayhistoryFields, EmployeepayhistoryRow] {
   

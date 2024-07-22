@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currency
+package adventureworks.sales.currency
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class CurrencyRepoImpl extends CurrencyRepo {
   override def deleteByIds(currencycodes: Array[CurrencyId])(implicit c: Connection): Int = {
     SQL"""delete
           from "sales"."currency"
-          where "currencycode" = ANY(${currencycodes})
+          where "currencycode" = ANY(${ParameterValue(currencycodes, null, CurrencyId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -95,7 +94,7 @@ class CurrencyRepoImpl extends CurrencyRepo {
   override def selectByIds(currencycodes: Array[CurrencyId])(implicit c: Connection): List[CurrencyRow] = {
     SQL"""select "currencycode", "name", "modifieddate"::text
           from "sales"."currency"
-          where "currencycode" = ANY(${currencycodes})
+          where "currencycode" = ANY(${ParameterValue(currencycodes, null, CurrencyId.arrayToStatement)})
        """.as(CurrencyRow.rowParser(1).*)
     
   }

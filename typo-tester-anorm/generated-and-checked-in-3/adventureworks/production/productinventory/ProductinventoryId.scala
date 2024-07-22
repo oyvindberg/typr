@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productinventory
+package adventureworks.production.productinventory
 
 import adventureworks.production.location.LocationId
 import adventureworks.production.product.ProductId
@@ -14,7 +12,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,16 +25,16 @@ object ProductinventoryId {
   given reads: Reads[ProductinventoryId] = Reads[ProductinventoryId](json => JsResult.fromTry(
       Try(
         ProductinventoryId(
-          productid = json.\("productid").as(summon[Reads[ProductId]]),
-          locationid = json.\("locationid").as(summon[Reads[LocationId]])
+          productid = json.\("productid").as(ProductId.reads),
+          locationid = json.\("locationid").as(LocationId.reads)
         )
       )
     ),
   )
   given writes: OWrites[ProductinventoryId] = OWrites[ProductinventoryId](o =>
     new JsObject(ListMap[String, JsValue](
-      "productid" -> summon[Writes[ProductId]].writes(o.productid),
-      "locationid" -> summon[Writes[LocationId]].writes(o.locationid)
+      "productid" -> ProductId.writes.writes(o.productid),
+      "locationid" -> LocationId.writes.writes(o.locationid)
     ))
   )
 }

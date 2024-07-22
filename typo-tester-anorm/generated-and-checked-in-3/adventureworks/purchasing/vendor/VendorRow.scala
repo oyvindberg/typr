@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package vendor
+package adventureworks.purchasing.vendor
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -31,7 +30,7 @@ import scala.util.Try
     Primary key: businessentityid */
 case class VendorRow(
   /** Primary key for Vendor records.  Foreign key to BusinessEntity.BusinessEntityID
-      Points to [[person.businessentity.BusinessentityRow.businessentityid]] */
+      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Vendor account (identification) number. */
   accountnumber: AccountNumber,

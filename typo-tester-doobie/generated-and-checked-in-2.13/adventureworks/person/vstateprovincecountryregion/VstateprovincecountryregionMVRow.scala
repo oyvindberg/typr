@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package vstateprovincecountryregion
+package adventureworks.person.vstateprovincecountryregion
 
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.person.stateprovince.StateprovinceId
@@ -19,19 +17,19 @@ import io.circe.Encoder
 
 /** Materialized View: person.vstateprovincecountryregion */
 case class VstateprovincecountryregionMVRow(
-  /** Points to [[stateprovince.StateprovinceRow.stateprovinceid]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
-  /** Points to [[stateprovince.StateprovinceRow.stateprovincecode]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovincecode]] */
   stateprovincecode: /* bpchar, max 3 chars */ String,
-  /** Points to [[stateprovince.StateprovinceRow.isonlystateprovinceflag]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.isonlystateprovinceflag]] */
   isonlystateprovinceflag: Flag,
-  /** Points to [[stateprovince.StateprovinceRow.name]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   stateprovincename: Name,
-  /** Points to [[stateprovince.StateprovinceRow.territoryid]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.territoryid]] */
   territoryid: SalesterritoryId,
-  /** Points to [[countryregion.CountryregionRow.countryregioncode]] */
+  /** Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
   countryregioncode: CountryregionId,
-  /** Points to [[countryregion.CountryregionRow.name]] */
+  /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name
 )
 

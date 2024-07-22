@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package countryregioncurrency
+package adventureworks.sales.countryregioncurrency
 
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.sales.currency.CurrencyId
@@ -14,7 +12,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,16 +25,16 @@ object CountryregioncurrencyId {
   given reads: Reads[CountryregioncurrencyId] = Reads[CountryregioncurrencyId](json => JsResult.fromTry(
       Try(
         CountryregioncurrencyId(
-          countryregioncode = json.\("countryregioncode").as(summon[Reads[CountryregionId]]),
-          currencycode = json.\("currencycode").as(summon[Reads[CurrencyId]])
+          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+          currencycode = json.\("currencycode").as(CurrencyId.reads)
         )
       )
     ),
   )
   given writes: OWrites[CountryregioncurrencyId] = OWrites[CountryregioncurrencyId](o =>
     new JsObject(ListMap[String, JsValue](
-      "countryregioncode" -> summon[Writes[CountryregionId]].writes(o.countryregioncode),
-      "currencycode" -> summon[Writes[CurrencyId]].writes(o.currencycode)
+      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+      "currencycode" -> CurrencyId.writes.writes(o.currencycode)
     ))
   )
 }

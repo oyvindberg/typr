@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheadersalesreason
+package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
@@ -14,7 +12,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,16 +25,16 @@ object SalesorderheadersalesreasonId {
   given reads: Reads[SalesorderheadersalesreasonId] = Reads[SalesorderheadersalesreasonId](json => JsResult.fromTry(
       Try(
         SalesorderheadersalesreasonId(
-          salesorderid = json.\("salesorderid").as(summon[Reads[SalesorderheaderId]]),
-          salesreasonid = json.\("salesreasonid").as(summon[Reads[SalesreasonId]])
+          salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
+          salesreasonid = json.\("salesreasonid").as(SalesreasonId.reads)
         )
       )
     ),
   )
   given writes: OWrites[SalesorderheadersalesreasonId] = OWrites[SalesorderheadersalesreasonId](o =>
     new JsObject(ListMap[String, JsValue](
-      "salesorderid" -> summon[Writes[SalesorderheaderId]].writes(o.salesorderid),
-      "salesreasonid" -> summon[Writes[SalesreasonId]].writes(o.salesreasonid)
+      "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
+      "salesreasonid" -> SalesreasonId.writes.writes(o.salesreasonid)
     ))
   )
 }

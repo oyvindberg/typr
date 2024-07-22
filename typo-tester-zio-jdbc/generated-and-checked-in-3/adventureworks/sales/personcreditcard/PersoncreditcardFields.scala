@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package personcreditcard
+package adventureworks.sales.personcreditcard
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
@@ -15,11 +13,13 @@ import adventureworks.sales.creditcard.CreditcardFields
 import adventureworks.sales.creditcard.CreditcardRow
 import adventureworks.userdefined.CustomCreditcardId
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -38,14 +38,14 @@ trait PersoncreditcardFields {
   def compositeIdIs(compositeId: PersoncreditcardId): SqlExpr[Boolean, Required] =
     businessentityid.isEqual(compositeId.businessentityid).and(creditcardid.isEqual(compositeId.creditcardid))
   def compositeIdIn(compositeIds: Array[PersoncreditcardId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(businessentityid)(_.businessentityid), TuplePart(creditcardid)(_.creditcardid))
+    new CompositeIn(compositeIds)(TuplePart[PersoncreditcardId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](using BusinessentityId.arrayJdbcEncoder, PGType.forArray(using BusinessentityId.pgType)), implicitly), TuplePart[PersoncreditcardId](creditcardid)(_.creditcardid)(using as[Array[/* user-picked */ CustomCreditcardId], Required](using CustomCreditcardId.arrayJdbcEncoder, PGType.forArray(using CustomCreditcardId.pgType)), implicitly))
   
 }
 
 object PersoncreditcardFields {
   lazy val structure: Relation[PersoncreditcardFields, PersoncreditcardRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PersoncreditcardFields, PersoncreditcardRow] {
   

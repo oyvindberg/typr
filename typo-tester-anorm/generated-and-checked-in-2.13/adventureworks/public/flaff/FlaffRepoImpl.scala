@@ -3,12 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package flaff
+package adventureworks.public.flaff
 
+import adventureworks.public.ShortText
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
+import anorm.ParameterMetaData
 import anorm.ParameterValue
 import anorm.SqlStringInterpolation
 import anorm.ToStatement
@@ -34,7 +35,7 @@ class FlaffRepoImpl extends FlaffRepo {
     SQL"""delete
           from "public"."flaff"
           where ("code", "another_code", "some_number", "specifier")
-          in (select unnest(${code}), unnest(${anotherCode}), unnest(${someNumber}), unnest(${specifier}))
+          in (select unnest(${ParameterValue(code, null, ShortText.arrayToStatement)}), unnest(${ParameterValue(anotherCode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(someNumber, null, adventureworks.IntArrayToStatement)}), unnest(${ParameterValue(specifier, null, ShortText.arrayToStatement)}))
        """.executeUpdate()
     
   }
@@ -71,7 +72,7 @@ class FlaffRepoImpl extends FlaffRepo {
     SQL"""select "code", "another_code", "some_number", "specifier", "parentspecifier"
           from "public"."flaff"
           where ("code", "another_code", "some_number", "specifier")
-          in (select unnest(${code}), unnest(${anotherCode}), unnest(${someNumber}), unnest(${specifier}))
+          in (select unnest(${ParameterValue(code, null, ShortText.arrayToStatement)}), unnest(${ParameterValue(anotherCode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(someNumber, null, adventureworks.IntArrayToStatement)}), unnest(${ParameterValue(specifier, null, ShortText.arrayToStatement)}))
        """.as(FlaffRow.rowParser(1).*)
     
   }

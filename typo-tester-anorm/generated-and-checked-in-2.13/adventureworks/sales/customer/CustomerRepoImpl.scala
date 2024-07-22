@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package customer
+package adventureworks.sales.customer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -37,7 +36,7 @@ class CustomerRepoImpl extends CustomerRepo {
   override def deleteByIds(customerids: Array[CustomerId])(implicit c: Connection): Int = {
     SQL"""delete
           from "sales"."customer"
-          where "customerid" = ANY(${customerids})
+          where "customerid" = ANY(${ParameterValue(customerids, null, CustomerId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -107,7 +106,7 @@ class CustomerRepoImpl extends CustomerRepo {
   override def selectByIds(customerids: Array[CustomerId])(implicit c: Connection): List[CustomerRow] = {
     SQL"""select "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text
           from "sales"."customer"
-          where "customerid" = ANY(${customerids})
+          where "customerid" = ANY(${ParameterValue(customerids, null, CustomerId.arrayToStatement)})
        """.as(CustomerRow.rowParser(1).*)
     
   }

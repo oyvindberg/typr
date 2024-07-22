@@ -3,11 +3,8 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package personcreditcard
+package adventureworks.sales.personcreditcard
 
-import adventureworks.userdefined.CustomCreditcardId
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
 import typo.dsl.DeleteBuilder.DeleteBuilderMock
@@ -20,7 +17,6 @@ import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 import zio.Chunk
 import zio.ZIO
-import zio.jdbc.JdbcEncoder
 import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
@@ -33,7 +29,7 @@ class PersoncreditcardRepoMock(toRow: Function1[PersoncreditcardRowUnsaved, Pers
   override def deleteById(compositeId: PersoncreditcardId): ZIO[ZConnection, Throwable, Boolean] = {
     ZIO.succeed(map.remove(compositeId).isDefined)
   }
-  override def deleteByIds(compositeIds: Array[PersoncreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZIO[ZConnection, Throwable, Long] = {
+  override def deleteByIds(compositeIds: Array[PersoncreditcardId]): ZIO[ZConnection, Throwable, Long] = {
     ZIO.succeed(compositeIds.map(id => map.remove(id)).count(_.isDefined).toLong)
   }
   override def insert(unsaved: PersoncreditcardRow): ZIO[ZConnection, Throwable, PersoncreditcardRow] = {
@@ -77,10 +73,10 @@ class PersoncreditcardRepoMock(toRow: Function1[PersoncreditcardRowUnsaved, Pers
   override def selectById(compositeId: PersoncreditcardId): ZIO[ZConnection, Throwable, Option[PersoncreditcardRow]] = {
     ZIO.succeed(map.get(compositeId))
   }
-  override def selectByIds(compositeIds: Array[PersoncreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZStream[ZConnection, Throwable, PersoncreditcardRow] = {
+  override def selectByIds(compositeIds: Array[PersoncreditcardId]): ZStream[ZConnection, Throwable, PersoncreditcardRow] = {
     ZStream.fromIterable(compositeIds.flatMap(map.get))
   }
-  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId])(using encoder0: JdbcEncoder[Array[/* user-picked */ CustomCreditcardId]]): ZIO[ZConnection, Throwable, Map[PersoncreditcardId, PersoncreditcardRow]] = {
+  override def selectByIdsTracked(compositeIds: Array[PersoncreditcardId]): ZIO[ZConnection, Throwable, Map[PersoncreditcardId, PersoncreditcardRow]] = {
     selectByIds(compositeIds).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap

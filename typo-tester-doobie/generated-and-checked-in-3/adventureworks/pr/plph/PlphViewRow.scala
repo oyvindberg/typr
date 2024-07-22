@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package plph
+package adventureworks.pr.plph
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
@@ -16,17 +14,17 @@ import io.circe.Encoder
 
 /** View: pr.plph */
 case class PlphViewRow(
-  /** Points to [[production.productlistpricehistory.ProductlistpricehistoryRow.productid]] */
+  /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.productid]] */
   id: ProductId,
-  /** Points to [[production.productlistpricehistory.ProductlistpricehistoryRow.productid]] */
+  /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.productid]] */
   productid: ProductId,
-  /** Points to [[production.productlistpricehistory.ProductlistpricehistoryRow.startdate]] */
+  /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
-  /** Points to [[production.productlistpricehistory.ProductlistpricehistoryRow.enddate]] */
+  /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.enddate]] */
   enddate: Option[TypoLocalDateTime],
-  /** Points to [[production.productlistpricehistory.ProductlistpricehistoryRow.listprice]] */
+  /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.listprice]] */
   listprice: BigDecimal,
-  /** Points to [[production.productlistpricehistory.ProductlistpricehistoryRow.modifieddate]] */
+  /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

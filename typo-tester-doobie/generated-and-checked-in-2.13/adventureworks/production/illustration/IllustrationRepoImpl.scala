@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package illustration
+package adventureworks.production.illustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class IllustrationRepoImpl extends IllustrationRepo {
     sql"""delete from "production"."illustration" where "illustrationid" = ${fromWrite(illustrationid)(new Write.Single(IllustrationId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(illustrationids: Array[IllustrationId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."illustration" where "illustrationid" = ANY(${illustrationids})""".update.run
+    sql"""delete from "production"."illustration" where "illustrationid" = ANY(${fromWrite(illustrationids)(new Write.Single(IllustrationId.arrayPut))})""".update.run
   }
   override def insert(unsaved: IllustrationRow): ConnectionIO[IllustrationRow] = {
     sql"""insert into "production"."illustration"("illustrationid", "diagram", "modifieddate")
@@ -84,7 +82,7 @@ class IllustrationRepoImpl extends IllustrationRepo {
     sql"""select "illustrationid", "diagram", "modifieddate"::text from "production"."illustration" where "illustrationid" = ${fromWrite(illustrationid)(new Write.Single(IllustrationId.put))}""".query(IllustrationRow.read).option
   }
   override def selectByIds(illustrationids: Array[IllustrationId]): Stream[ConnectionIO, IllustrationRow] = {
-    sql"""select "illustrationid", "diagram", "modifieddate"::text from "production"."illustration" where "illustrationid" = ANY(${illustrationids})""".query(IllustrationRow.read).stream
+    sql"""select "illustrationid", "diagram", "modifieddate"::text from "production"."illustration" where "illustrationid" = ANY(${fromWrite(illustrationids)(new Write.Single(IllustrationId.arrayPut))})""".query(IllustrationRow.read).stream
   }
   override def selectByIdsTracked(illustrationids: Array[IllustrationId]): ConnectionIO[Map[IllustrationId, IllustrationRow]] = {
     selectByIds(illustrationids).compile.toList.map { rows =>

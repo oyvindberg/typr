@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorderrouting
+package adventureworks.production.workorderrouting
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -15,12 +13,15 @@ import adventureworks.production.location.LocationRow
 import adventureworks.production.workorder.WorkorderFields
 import adventureworks.production.workorder.WorkorderId
 import adventureworks.production.workorder.WorkorderRow
+import anorm.ParameterMetaData
+import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -49,14 +50,14 @@ trait WorkorderroutingFields {
   def compositeIdIs(compositeId: WorkorderroutingId): SqlExpr[Boolean, Required] =
     workorderid.isEqual(compositeId.workorderid).and(productid.isEqual(compositeId.productid)).and(operationsequence.isEqual(compositeId.operationsequence))
   def compositeIdIn(compositeIds: Array[WorkorderroutingId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(workorderid)(_.workorderid), TuplePart(productid)(_.productid), TuplePart(operationsequence)(_.operationsequence))
+    new CompositeIn(compositeIds)(TuplePart[WorkorderroutingId](workorderid)(_.workorderid)(using as[Array[WorkorderId], Required](ToParameterValue(null, WorkorderId.arrayToStatement), adventureworks.arrayParameterMetaData(WorkorderId.parameterMetadata)), implicitly), TuplePart[WorkorderroutingId](productid)(_.productid)(using as[Array[Int], Required](ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(ParameterMetaData.IntParameterMetaData)), implicitly), TuplePart[WorkorderroutingId](operationsequence)(_.operationsequence)(using as[Array[TypoShort], Required](ToParameterValue(null, TypoShort.arrayToStatement), adventureworks.arrayParameterMetaData(TypoShort.parameterMetadata)), implicitly))
   
 }
 
 object WorkorderroutingFields {
   lazy val structure: Relation[WorkorderroutingFields, WorkorderroutingRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[WorkorderroutingFields, WorkorderroutingRow] {
   

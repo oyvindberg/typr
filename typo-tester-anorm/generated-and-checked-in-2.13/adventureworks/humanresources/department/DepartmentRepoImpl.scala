@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package department
+package adventureworks.humanresources.department
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -34,7 +33,7 @@ class DepartmentRepoImpl extends DepartmentRepo {
   override def deleteByIds(departmentids: Array[DepartmentId])(implicit c: Connection): Int = {
     SQL"""delete
           from "humanresources"."department"
-          where "departmentid" = ANY(${departmentids})
+          where "departmentid" = ANY(${ParameterValue(departmentids, null, DepartmentId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -99,7 +98,7 @@ class DepartmentRepoImpl extends DepartmentRepo {
   override def selectByIds(departmentids: Array[DepartmentId])(implicit c: Connection): List[DepartmentRow] = {
     SQL"""select "departmentid", "name", "groupname", "modifieddate"::text
           from "humanresources"."department"
-          where "departmentid" = ANY(${departmentids})
+          where "departmentid" = ANY(${ParameterValue(departmentids, null, DepartmentId.arrayToStatement)})
        """.as(DepartmentRow.rowParser(1).*)
     
   }

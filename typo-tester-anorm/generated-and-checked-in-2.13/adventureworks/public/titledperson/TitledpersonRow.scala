@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package titledperson
+package adventureworks.public.titledperson
 
+import adventureworks.Text
 import adventureworks.public.title.TitleId
 import adventureworks.public.title_domain.TitleDomainId
 import anorm.Column
@@ -23,9 +22,9 @@ import scala.util.Try
 
 /** Table: public.titledperson */
 case class TitledpersonRow(
-  /** Points to [[title_domain.TitleDomainRow.code]] */
+  /** Points to [[adventureworks.public.title_domain.TitleDomainRow.code]] */
   titleShort: TitleDomainId,
-  /** Points to [[title.TitleRow.code]] */
+  /** Points to [[adventureworks.public.title.TitleRow.code]] */
   title: TitleId,
   name: String
 )

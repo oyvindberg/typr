@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesterritoryhistory
+package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -19,10 +17,10 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.salesterritoryhistory` which has not been persisted yet */
 case class SalesterritoryhistoryRowUnsaved(
   /** Primary key. The sales rep.  Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[salesperson.SalespersonRow.businessentityid]] */
+      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Primary key. Territory identification number. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[salesterritory.SalesterritoryRow.territoryid]] */
+      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   territoryid: SalesterritoryId,
   /** Primary key. Date the sales representive started work in the territory.
       Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */

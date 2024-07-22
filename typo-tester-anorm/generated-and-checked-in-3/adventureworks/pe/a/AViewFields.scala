@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package a
+package adventureworks.pe.a
 
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
@@ -34,7 +32,7 @@ trait AViewFields {
 object AViewFields {
   lazy val structure: Relation[AViewFields, AViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[AViewFields, AViewRow] {
   

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package stateprovince
+package adventureworks.person.stateprovince
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -37,7 +35,7 @@ class StateprovinceRepoImpl extends StateprovinceRepo {
     sql"""delete from "person"."stateprovince" where "stateprovinceid" = ${fromWrite(stateprovinceid)(new Write.Single(StateprovinceId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(stateprovinceids: Array[StateprovinceId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."stateprovince" where "stateprovinceid" = ANY(${stateprovinceids})""".update.run
+    sql"""delete from "person"."stateprovince" where "stateprovinceid" = ANY(${fromWrite(stateprovinceids)(new Write.Single(StateprovinceId.arrayPut))})""".update.run
   }
   override def insert(unsaved: StateprovinceRow): ConnectionIO[StateprovinceRow] = {
     sql"""insert into "person"."stateprovince"("stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")
@@ -100,7 +98,7 @@ class StateprovinceRepoImpl extends StateprovinceRepo {
     sql"""select "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text from "person"."stateprovince" where "stateprovinceid" = ${fromWrite(stateprovinceid)(new Write.Single(StateprovinceId.put))}""".query(StateprovinceRow.read).option
   }
   override def selectByIds(stateprovinceids: Array[StateprovinceId]): Stream[ConnectionIO, StateprovinceRow] = {
-    sql"""select "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text from "person"."stateprovince" where "stateprovinceid" = ANY(${stateprovinceids})""".query(StateprovinceRow.read).stream
+    sql"""select "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text from "person"."stateprovince" where "stateprovinceid" = ANY(${fromWrite(stateprovinceids)(new Write.Single(StateprovinceId.arrayPut))})""".query(StateprovinceRow.read).stream
   }
   override def selectByIdsTracked(stateprovinceids: Array[StateprovinceId]): ConnectionIO[Map[StateprovinceId, StateprovinceRow]] = {
     selectByIds(stateprovinceids).compile.toList.map { rows =>

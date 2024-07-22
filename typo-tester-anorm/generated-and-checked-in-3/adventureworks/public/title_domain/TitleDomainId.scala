@@ -3,10 +3,10 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title_domain
+package adventureworks.public.title_domain
 
+import adventureworks.Text
+import adventureworks.public.ShortText
 import anorm.Column
 import anorm.ParameterMetaData
 import anorm.ToStatement
@@ -37,7 +37,7 @@ object TitleDomainId {
               
   given arrayColumn: Column[Array[TitleDomainId]] = ShortText.arrayColumn.map(_.map(TitleDomainId.apply))
   given arrayToStatement: ToStatement[Array[TitleDomainId]] = ShortText.arrayToStatement.contramap(_.map(_.value))
-  given column: Column[TitleDomainId] = summon[Column[ShortText]].map(TitleDomainId.apply)
+  given column: Column[TitleDomainId] = ShortText.column.map(TitleDomainId.apply)
   given ordering: Ordering[TitleDomainId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TitleDomainId] = new ParameterMetaData[TitleDomainId] {
     override def sqlType: String = """"public"."short_text""""
@@ -48,6 +48,6 @@ object TitleDomainId {
     override def unsafeEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.text.unsafeEncode(v.value, sb)
     override def unsafeArrayEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.text.unsafeArrayEncode(v.value, sb)
   }
-  given toStatement: ToStatement[TitleDomainId] = summon[ToStatement[ShortText]].contramap(_.value)
+  given toStatement: ToStatement[TitleDomainId] = ShortText.toStatement.contramap(_.value)
   given writes: Writes[TitleDomainId] = Writes[TitleDomainId](value => ShortText.writes.writes(value.value))
 }

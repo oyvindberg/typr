@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package jc
+package adventureworks.hr.jc
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
@@ -17,15 +15,15 @@ import io.circe.Encoder
 
 /** View: hr.jc */
 case class JcViewRow(
-  /** Points to [[humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   id: JobcandidateId,
-  /** Points to [[humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  /** Points to [[humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
   businessentityid: Option[BusinessentityId],
-  /** Points to [[humanresources.jobcandidate.JobcandidateRow.resume]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.resume]] */
   resume: Option[TypoXml],
-  /** Points to [[humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
+  /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

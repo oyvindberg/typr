@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package jobcandidate
+package adventureworks.humanresources.jobcandidate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -33,7 +31,7 @@ class JobcandidateRepoImpl extends JobcandidateRepo {
     sql"""delete from "humanresources"."jobcandidate" where "jobcandidateid" = ${fromWrite(jobcandidateid)(using new Write.Single(JobcandidateId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(jobcandidateids: Array[JobcandidateId]): ConnectionIO[Int] = {
-    sql"""delete from "humanresources"."jobcandidate" where "jobcandidateid" = ANY(${jobcandidateids})""".update.run
+    sql"""delete from "humanresources"."jobcandidate" where "jobcandidateid" = ANY(${fromWrite(jobcandidateids)(using new Write.Single(JobcandidateId.arrayPut))})""".update.run
   }
   override def insert(unsaved: JobcandidateRow): ConnectionIO[JobcandidateRow] = {
     sql"""insert into "humanresources"."jobcandidate"("jobcandidateid", "businessentityid", "resume", "modifieddate")
@@ -86,7 +84,7 @@ class JobcandidateRepoImpl extends JobcandidateRepo {
     sql"""select "jobcandidateid", "businessentityid", "resume", "modifieddate"::text from "humanresources"."jobcandidate" where "jobcandidateid" = ${fromWrite(jobcandidateid)(using new Write.Single(JobcandidateId.put))}""".query(using JobcandidateRow.read).option
   }
   override def selectByIds(jobcandidateids: Array[JobcandidateId]): Stream[ConnectionIO, JobcandidateRow] = {
-    sql"""select "jobcandidateid", "businessentityid", "resume", "modifieddate"::text from "humanresources"."jobcandidate" where "jobcandidateid" = ANY(${jobcandidateids})""".query(using JobcandidateRow.read).stream
+    sql"""select "jobcandidateid", "businessentityid", "resume", "modifieddate"::text from "humanresources"."jobcandidate" where "jobcandidateid" = ANY(${fromWrite(jobcandidateids)(using new Write.Single(JobcandidateId.arrayPut))})""".query(using JobcandidateRow.read).stream
   }
   override def selectByIdsTracked(jobcandidateids: Array[JobcandidateId]): ConnectionIO[Map[JobcandidateId, JobcandidateRow]] = {
     selectByIds(jobcandidateids).compile.toList.map { rows =>

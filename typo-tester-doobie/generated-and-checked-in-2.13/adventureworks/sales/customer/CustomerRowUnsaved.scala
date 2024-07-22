@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package customer
+package adventureworks.sales.customer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -19,13 +17,13 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.customer` which has not been persisted yet */
 case class CustomerRowUnsaved(
   /** Foreign key to Person.BusinessEntityID
-      Points to [[person.person.PersonRow.businessentityid]] */
+      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   personid: Option[BusinessentityId],
   /** Foreign key to Store.BusinessEntityID
-      Points to [[store.StoreRow.businessentityid]] */
+      Points to [[adventureworks.sales.store.StoreRow.businessentityid]] */
   storeid: Option[BusinessentityId],
   /** ID of the territory in which the customer is located. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[salesterritory.SalesterritoryRow.territoryid]] */
+      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   territoryid: Option[SalesterritoryId],
   /** Default: nextval('sales.customer_customerid_seq'::regclass)
       Primary key. */

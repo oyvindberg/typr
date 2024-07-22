@@ -62,8 +62,8 @@ case class FilesRelation(
           col.dbCol.columnDefault.map(x => s"Default: $x"),
           col.dbCol.maybeGenerated.map(_.asString),
           col.pointsTo.map { case (relationName, columnName) =>
-            val shortened = sc.QIdent(dropCommonPrefix(naming.rowName(relationName).idents, names.RowName.value.idents))
-            s"Points to [[${shortened.dotName}.${naming.field(columnName).value}]]"
+            val rowName = naming.rowName(relationName)
+            s"Points to [[${rowName.dotName}.${naming.field(columnName).value}]]"
           },
           col.dbCol.constraints.map(c => s"Constraint ${c.name} affecting columns ${c.columns.map(_.value).mkString(", ")}: ${c.checkClause}"),
           if (options.debugTypes)
@@ -189,7 +189,7 @@ case class FilesRelation(
         }
 
       val extractFkMember: List[sc.Code] =
-        maybeFkAnalysis.toList.flatMap(_.extractFksIdsFromRow).flatMap { x =>
+        maybeFkAnalysis.toList.flatMap(_.extractFksIdsFromRow).flatMap { (x: FkAnalysis.ExtractFkId) =>
           val predicateType = sc.Type.dsl.SqlExpr.of(TypesScala.Boolean, sc.Type.dsl.Required)
           val is = {
             val expr = x.colPairs
@@ -200,7 +200,9 @@ case class FilesRelation(
 
           }
           val in = {
-            val parts = x.colPairs.map { case (otherCol, thisCol) => code"${sc.Type.dsl.CompositeTuplePart}(${thisCol.name})(_.${otherCol.name})" }
+            val parts = x.colPairs.map { case (otherCol, thisCol) =>
+              code"${sc.Type.dsl.CompositeTuplePart.of(x.otherCompositeIdType)}(${thisCol.name})(_.${otherCol.name})(using ${options.dbLib.get.resolveConstAs(sc.Type.ArrayOf(thisCol.tpe))}, implicitly)"
+            }
             code"""|def extract${x.name}In(ids: ${sc.Type.ArrayOf(x.otherCompositeIdType)}): $predicateType =
                    |  new ${sc.Type.dsl.CompositeIn}(ids)(${parts.mkCode(", ")})
                    |""".stripMargin
@@ -226,7 +228,8 @@ case class FilesRelation(
               }
               val in = {
                 val ids = x.paramName.appended("s")
-                val parts = x.cols.map(col => code"${sc.Type.dsl.CompositeTuplePart}(${col.name})(_.${col.name})")
+                val parts =
+                  x.cols.map(col => code"${sc.Type.dsl.CompositeTuplePart.of(x.tpe)}(${col.name})(_.${col.name})(using ${options.dbLib.get.resolveConstAs(sc.Type.ArrayOf(col.tpe))}, implicitly)")
                 code"""|def compositeIdIn($ids: ${sc.Type.ArrayOf(x.tpe)}): $predicateType =
                        |  new ${sc.Type.dsl.CompositeIn}($ids)(${parts.mkCode(", ")})
                        |""".stripMargin
@@ -238,17 +241,17 @@ case class FilesRelation(
 
       val ImplName = sc.Ident("Impl")
       val str =
-        code"""trait ${fieldsName.name} {
-            |  ${(colMembers ++ fkMembers ++ compositeIdMembers ++ extractFkMember).mkCode("\n")}
-            |}
-            |
-            |object ${fieldsName.name} {
-            |  lazy val structure: ${sc.Type.dsl.StructureRelation}[$fieldsName, ${names.RowName}] =
-            |    new $ImplName(${TypesScala.Nil})
-            |    
-            |  ${structureFile(ImplName, fieldsName, cols)}
-            |}
-            |""".stripMargin
+        code"""|trait ${fieldsName.name} {
+               |  ${(colMembers ++ fkMembers ++ compositeIdMembers ++ extractFkMember).mkCode("\n")}
+               |}
+               |
+               |object ${fieldsName.name} {
+               |  lazy val structure: ${sc.Type.dsl.StructureRelation}[$fieldsName, ${names.RowName}] =
+               |    new $ImplName(${TypesScala.Nil})
+               |
+               |  ${structureFile(ImplName, fieldsName, cols)}
+               |}
+               |""".stripMargin
 
       sc.File(fieldsName, str, Nil, scope = Scope.Main)
     }
@@ -363,10 +366,4 @@ case class FilesRelation(
 
     sc.File(names.RepoMockName, str, secondaryTypes = Nil, scope = Scope.Test)
   }
-
-  def dropCommonPrefix[T](a: List[T], b: List[T]): List[T] =
-    (a, b) match {
-      case (x :: xs, y :: ys) if x == y && xs.nonEmpty => dropCommonPrefix(xs, ys)
-      case _                                           => a
-    }
 }

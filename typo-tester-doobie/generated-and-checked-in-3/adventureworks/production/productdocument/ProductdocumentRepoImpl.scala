@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productdocument
+package adventureworks.production.productdocument
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -38,7 +36,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     sql"""delete
           from "production"."productdocument"
           where ("productid", "documentnode")
-          in (select unnest(${productid}), unnest(${documentnode}))
+          in (select unnest(${fromWrite(productid)(using new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(documentnode)(using new Write.Single(DocumentId.arrayPut))}))
        """.update.run
     
   }
@@ -97,7 +95,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     sql"""select "productid", "modifieddate"::text, "documentnode"
           from "production"."productdocument"
           where ("productid", "documentnode")
-          in (select unnest(${productid}), unnest(${documentnode}))
+          in (select unnest(${fromWrite(productid)(using new Write.Single(ProductId.arrayPut))}), unnest(${fromWrite(documentnode)(using new Write.Single(DocumentId.arrayPut))}))
        """.query(using ProductdocumentRow.read).stream
     
   }

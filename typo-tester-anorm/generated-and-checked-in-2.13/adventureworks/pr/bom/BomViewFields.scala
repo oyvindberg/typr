@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package bom
+package adventureworks.pr.bom
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -33,7 +31,7 @@ trait BomViewFields {
 object BomViewFields {
   lazy val structure: Relation[BomViewFields, BomViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[BomViewFields, BomViewRow] {
   

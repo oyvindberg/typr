@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package specialoffer
+package adventureworks.sales.specialoffer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -36,7 +35,7 @@ class SpecialofferRepoImpl extends SpecialofferRepo {
   override def deleteByIds(specialofferids: Array[SpecialofferId])(implicit c: Connection): Int = {
     SQL"""delete
           from "sales"."specialoffer"
-          where "specialofferid" = ANY(${specialofferids})
+          where "specialofferid" = ANY(${ParameterValue(specialofferids, null, SpecialofferId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -117,7 +116,7 @@ class SpecialofferRepoImpl extends SpecialofferRepo {
   override def selectByIds(specialofferids: Array[SpecialofferId])(implicit c: Connection): List[SpecialofferRow] = {
     SQL"""select "specialofferid", "description", "discountpct", "type", "category", "startdate"::text, "enddate"::text, "minqty", "maxqty", "rowguid", "modifieddate"::text
           from "sales"."specialoffer"
-          where "specialofferid" = ANY(${specialofferids})
+          where "specialofferid" = ANY(${ParameterValue(specialofferids, null, SpecialofferId.arrayToStatement)})
        """.as(SpecialofferRow.rowParser(1).*)
     
   }

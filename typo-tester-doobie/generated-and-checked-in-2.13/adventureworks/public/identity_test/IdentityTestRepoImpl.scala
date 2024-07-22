@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package identity_test
+package adventureworks.public.identity_test
 
 import adventureworks.customtypes.Defaulted
 import cats.instances.list.catsStdInstancesForList
@@ -31,7 +29,7 @@ class IdentityTestRepoImpl extends IdentityTestRepo {
     sql"""delete from "public"."identity-test" where "name" = ${fromWrite(name)(new Write.Single(IdentityTestId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(names: Array[IdentityTestId]): ConnectionIO[Int] = {
-    sql"""delete from "public"."identity-test" where "name" = ANY(${names})""".update.run
+    sql"""delete from "public"."identity-test" where "name" = ANY(${fromWrite(names)(new Write.Single(IdentityTestId.arrayPut))})""".update.run
   }
   override def insert(unsaved: IdentityTestRow): ConnectionIO[IdentityTestRow] = {
     sql"""insert into "public"."identity-test"("default_generated", "name")
@@ -79,7 +77,7 @@ class IdentityTestRepoImpl extends IdentityTestRepo {
     sql"""select "always_generated", "default_generated", "name" from "public"."identity-test" where "name" = ${fromWrite(name)(new Write.Single(IdentityTestId.put))}""".query(IdentityTestRow.read).option
   }
   override def selectByIds(names: Array[IdentityTestId]): Stream[ConnectionIO, IdentityTestRow] = {
-    sql"""select "always_generated", "default_generated", "name" from "public"."identity-test" where "name" = ANY(${names})""".query(IdentityTestRow.read).stream
+    sql"""select "always_generated", "default_generated", "name" from "public"."identity-test" where "name" = ANY(${fromWrite(names)(new Write.Single(IdentityTestId.arrayPut))})""".query(IdentityTestRow.read).stream
   }
   override def selectByIdsTracked(names: Array[IdentityTestId]): ConnectionIO[Map[IdentityTestId, IdentityTestRow]] = {
     selectByIds(names).compile.toList.map { rows =>

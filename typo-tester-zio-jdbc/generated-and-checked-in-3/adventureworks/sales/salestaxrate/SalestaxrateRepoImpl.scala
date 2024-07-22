@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salestaxrate
+package adventureworks.sales.salestaxrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -13,6 +11,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -34,7 +33,7 @@ class SalestaxrateRepoImpl extends SalestaxrateRepo {
     sql"""delete from "sales"."salestaxrate" where "salestaxrateid" = ${Segment.paramSegment(salestaxrateid)(using SalestaxrateId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(salestaxrateids: Array[SalestaxrateId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."salestaxrate" where "salestaxrateid" = ANY(${salestaxrateids})""".delete
+    sql"""delete from "sales"."salestaxrate" where "salestaxrateid" = ANY(${Segment.paramSegment(salestaxrateids)(using SalestaxrateId.arraySetter)})""".delete
   }
   override def insert(unsaved: SalestaxrateRow): ZIO[ZConnection, Throwable, SalestaxrateRow] = {
     sql"""insert into "sales"."salestaxrate"("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")

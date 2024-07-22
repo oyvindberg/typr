@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package location
+package adventureworks.production.location
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -26,7 +24,7 @@ trait LocationFields {
 object LocationFields {
   lazy val structure: Relation[LocationFields, LocationRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[LocationFields, LocationRow] {
   

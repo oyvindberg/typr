@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package title_domain
+package adventureworks.public.title_domain
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLikeNoHkt
@@ -19,7 +17,7 @@ trait TitleDomainFields {
 object TitleDomainFields {
   lazy val structure: Relation[TitleDomainFields, TitleDomainRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[TitleDomainFields, TitleDomainRow] {
   

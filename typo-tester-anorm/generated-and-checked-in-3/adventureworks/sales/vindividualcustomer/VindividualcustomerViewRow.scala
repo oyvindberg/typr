@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package vindividualcustomer
+package adventureworks.sales.vindividualcustomer
 
 import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
@@ -26,41 +24,41 @@ import scala.util.Try
 
 /** View: sales.vindividualcustomer */
 case class VindividualcustomerViewRow(
-  /** Points to [[person.person.PersonRow.businessentityid]] */
+  /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.person.PersonRow.title]] */
+  /** Points to [[adventureworks.person.person.PersonRow.title]] */
   title: Option[/* max 8 chars */ String],
-  /** Points to [[person.person.PersonRow.firstname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
-  /** Points to [[person.person.PersonRow.middlename]] */
+  /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
   middlename: Option[Name],
-  /** Points to [[person.person.PersonRow.lastname]] */
+  /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
-  /** Points to [[person.person.PersonRow.suffix]] */
+  /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
   suffix: Option[/* max 10 chars */ String],
-  /** Points to [[person.personphone.PersonphoneRow.phonenumber]] */
+  /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
   phonenumber: Option[Phone],
-  /** Points to [[person.phonenumbertype.PhonenumbertypeRow.name]] */
+  /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
   phonenumbertype: Option[Name],
-  /** Points to [[person.emailaddress.EmailaddressRow.emailaddress]] */
+  /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
-  /** Points to [[person.person.PersonRow.emailpromotion]] */
+  /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int,
-  /** Points to [[person.addresstype.AddresstypeRow.name]] */
+  /** Points to [[adventureworks.person.addresstype.AddresstypeRow.name]] */
   addresstype: Name,
-  /** Points to [[person.address.AddressRow.addressline1]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
   addressline1: /* max 60 chars */ String,
-  /** Points to [[person.address.AddressRow.addressline2]] */
+  /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
   addressline2: Option[/* max 60 chars */ String],
-  /** Points to [[person.address.AddressRow.city]] */
+  /** Points to [[adventureworks.person.address.AddressRow.city]] */
   city: /* max 30 chars */ String,
-  /** Points to [[person.stateprovince.StateprovinceRow.name]] */
+  /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   stateprovincename: Name,
-  /** Points to [[person.address.AddressRow.postalcode]] */
+  /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
   postalcode: /* max 15 chars */ String,
-  /** Points to [[person.countryregion.CountryregionRow.name]] */
+  /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name,
-  /** Points to [[person.person.PersonRow.demographics]] */
+  /** Points to [[adventureworks.person.person.PersonRow.demographics]] */
   demographics: Option[TypoXml]
 )
 

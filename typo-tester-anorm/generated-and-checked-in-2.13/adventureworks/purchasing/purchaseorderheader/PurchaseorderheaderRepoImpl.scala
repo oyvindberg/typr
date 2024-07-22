@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderheader
+package adventureworks.purchasing.purchaseorderheader
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.purchasing.shipmethod.ShipmethodId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -37,7 +36,7 @@ class PurchaseorderheaderRepoImpl extends PurchaseorderheaderRepo {
   override def deleteByIds(purchaseorderids: Array[PurchaseorderheaderId])(implicit c: Connection): Int = {
     SQL"""delete
           from "purchasing"."purchaseorderheader"
-          where "purchaseorderid" = ANY(${purchaseorderids})
+          where "purchaseorderid" = ANY(${ParameterValue(purchaseorderids, null, PurchaseorderheaderId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -128,7 +127,7 @@ class PurchaseorderheaderRepoImpl extends PurchaseorderheaderRepo {
   override def selectByIds(purchaseorderids: Array[PurchaseorderheaderId])(implicit c: Connection): List[PurchaseorderheaderRow] = {
     SQL"""select "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate"::text, "shipdate"::text, "subtotal", "taxamt", "freight", "modifieddate"::text
           from "purchasing"."purchaseorderheader"
-          where "purchaseorderid" = ANY(${purchaseorderids})
+          where "purchaseorderid" = ANY(${ParameterValue(purchaseorderids, null, PurchaseorderheaderId.arrayToStatement)})
        """.as(PurchaseorderheaderRow.rowParser(1).*)
     
   }

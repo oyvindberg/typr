@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sa
-package cu
+package adventureworks.sa.cu
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
@@ -25,7 +23,7 @@ trait CuViewFields {
 object CuViewFields {
   lazy val structure: Relation[CuViewFields, CuViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[CuViewFields, CuViewRow] {
   

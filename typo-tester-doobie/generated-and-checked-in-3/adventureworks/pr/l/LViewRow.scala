@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package l
+package adventureworks.pr.l
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.location.LocationId
@@ -17,17 +15,17 @@ import io.circe.Encoder
 
 /** View: pr.l */
 case class LViewRow(
-  /** Points to [[production.location.LocationRow.locationid]] */
+  /** Points to [[adventureworks.production.location.LocationRow.locationid]] */
   id: LocationId,
-  /** Points to [[production.location.LocationRow.locationid]] */
+  /** Points to [[adventureworks.production.location.LocationRow.locationid]] */
   locationid: LocationId,
-  /** Points to [[production.location.LocationRow.name]] */
+  /** Points to [[adventureworks.production.location.LocationRow.name]] */
   name: Name,
-  /** Points to [[production.location.LocationRow.costrate]] */
+  /** Points to [[adventureworks.production.location.LocationRow.costrate]] */
   costrate: BigDecimal,
-  /** Points to [[production.location.LocationRow.availability]] */
+  /** Points to [[adventureworks.production.location.LocationRow.availability]] */
   availability: BigDecimal,
-  /** Points to [[production.location.LocationRow.modifieddate]] */
+  /** Points to [[adventureworks.production.location.LocationRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

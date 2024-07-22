@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package shoppingcartitem
+package adventureworks.sales.shoppingcartitem
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class ShoppingcartitemRepoImpl extends ShoppingcartitemRepo {
     sql"""delete from "sales"."shoppingcartitem" where "shoppingcartitemid" = ${Segment.paramSegment(shoppingcartitemid)(using ShoppingcartitemId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(shoppingcartitemids: Array[ShoppingcartitemId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."shoppingcartitem" where "shoppingcartitemid" = ANY(${shoppingcartitemids})""".delete
+    sql"""delete from "sales"."shoppingcartitem" where "shoppingcartitemid" = ANY(${Segment.paramSegment(shoppingcartitemids)(using ShoppingcartitemId.arraySetter)})""".delete
   }
   override def insert(unsaved: ShoppingcartitemRow): ZIO[ZConnection, Throwable, ShoppingcartitemRow] = {
     sql"""insert into "sales"."shoppingcartitem"("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")

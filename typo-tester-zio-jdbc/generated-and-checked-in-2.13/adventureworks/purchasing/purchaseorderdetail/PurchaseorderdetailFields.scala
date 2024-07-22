@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderdetail
+package adventureworks.purchasing.purchaseorderdetail
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -16,11 +14,13 @@ import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderFields
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -45,14 +45,14 @@ trait PurchaseorderdetailFields {
   def compositeIdIs(compositeId: PurchaseorderdetailId): SqlExpr[Boolean, Required] =
     purchaseorderid.isEqual(compositeId.purchaseorderid).and(purchaseorderdetailid.isEqual(compositeId.purchaseorderdetailid))
   def compositeIdIn(compositeIds: Array[PurchaseorderdetailId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(purchaseorderid)(_.purchaseorderid), TuplePart(purchaseorderdetailid)(_.purchaseorderdetailid))
+    new CompositeIn(compositeIds)(TuplePart[PurchaseorderdetailId](purchaseorderid)(_.purchaseorderid)(using as[Array[PurchaseorderheaderId], Required](PurchaseorderheaderId.arrayJdbcEncoder, PGType.forArray(PurchaseorderheaderId.pgType)), implicitly), TuplePart[PurchaseorderdetailId](purchaseorderdetailid)(_.purchaseorderdetailid)(using as[Array[Int], Required](adventureworks.IntArrayEncoder, PGType.forArray(PGType.PGTypeInt)), implicitly))
   
 }
 
 object PurchaseorderdetailFields {
   lazy val structure: Relation[PurchaseorderdetailFields, PurchaseorderdetailRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[PurchaseorderdetailFields, PurchaseorderdetailRow] {
   

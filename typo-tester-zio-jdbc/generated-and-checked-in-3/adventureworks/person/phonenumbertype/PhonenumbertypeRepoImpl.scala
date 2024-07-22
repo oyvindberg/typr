@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package phonenumbertype
+package adventureworks.person.phonenumbertype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class PhonenumbertypeRepoImpl extends PhonenumbertypeRepo {
     sql"""delete from "person"."phonenumbertype" where "phonenumbertypeid" = ${Segment.paramSegment(phonenumbertypeid)(using PhonenumbertypeId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(phonenumbertypeids: Array[PhonenumbertypeId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "person"."phonenumbertype" where "phonenumbertypeid" = ANY(${phonenumbertypeids})""".delete
+    sql"""delete from "person"."phonenumbertype" where "phonenumbertypeid" = ANY(${Segment.paramSegment(phonenumbertypeids)(using PhonenumbertypeId.arraySetter)})""".delete
   }
   override def insert(unsaved: PhonenumbertypeRow): ZIO[ZConnection, Throwable, PhonenumbertypeRow] = {
     sql"""insert into "person"."phonenumbertype"("phonenumbertypeid", "name", "modifieddate")

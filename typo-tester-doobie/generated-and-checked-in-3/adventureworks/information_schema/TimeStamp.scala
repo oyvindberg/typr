@@ -3,8 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package information_schema
+package adventureworks.information_schema
 
 import adventureworks.customtypes.TypoInstant
 import doobie.postgres.Text
@@ -22,8 +21,8 @@ object TimeStamp {
   given arrayGet: Get[Array[TimeStamp]] = TypoInstant.arrayGet.map(_.map(TimeStamp.apply))
   given arrayPut: Put[Array[TimeStamp]] = TypoInstant.arrayPut.contramap(_.map(_.value))
   given bijection: Bijection[TimeStamp, TypoInstant] = Bijection[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
-  given decoder: Decoder[TimeStamp] = summon[Decoder[TypoInstant]].map(TimeStamp.apply)
-  given encoder: Encoder[TimeStamp] = summon[Encoder[TypoInstant]].contramap(_.value)
+  given decoder: Decoder[TimeStamp] = TypoInstant.decoder.map(TimeStamp.apply)
+  given encoder: Encoder[TimeStamp] = TypoInstant.encoder.contramap(_.value)
   given get: Get[TimeStamp] = TypoInstant.get.map(TimeStamp.apply)
   given ordering(using O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   given put: Put[TimeStamp] = TypoInstant.put.contramap(_.value)

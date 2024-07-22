@@ -3,10 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN
  */
-package testdb
-package hardcoded
-package myschema
-package football_club
+package testdb.hardcoded.myschema.football_club
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
@@ -22,7 +19,7 @@ trait FootballClubFields {
 object FootballClubFields {
   lazy val structure: Relation[FootballClubFields, FootballClubRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[FootballClubFields, FootballClubRow] {
   

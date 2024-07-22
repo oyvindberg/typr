@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesperson
+package adventureworks.sales.salesperson
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
@@ -38,7 +37,7 @@ class SalespersonRepoImpl extends SalespersonRepo {
   override def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = {
     SQL"""delete
           from "sales"."salesperson"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -120,7 +119,7 @@ class SalespersonRepoImpl extends SalespersonRepo {
   override def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[SalespersonRow] = {
     SQL"""select "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text
           from "sales"."salesperson"
-          where "businessentityid" = ANY(${businessentityids})
+          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
        """.as(SalespersonRow.rowParser(1).*)
     
   }

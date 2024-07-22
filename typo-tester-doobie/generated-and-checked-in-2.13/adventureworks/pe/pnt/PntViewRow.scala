@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package pnt
+package adventureworks.pe.pnt
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
@@ -16,13 +14,13 @@ import io.circe.Encoder
 
 /** View: pe.pnt */
 case class PntViewRow(
-  /** Points to [[person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]] */
+  /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]] */
   id: PhonenumbertypeId,
-  /** Points to [[person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]] */
+  /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]] */
   phonenumbertypeid: PhonenumbertypeId,
-  /** Points to [[person.phonenumbertype.PhonenumbertypeRow.name]] */
+  /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
   name: Name,
-  /** Points to [[person.phonenumbertype.PhonenumbertypeRow.modifieddate]] */
+  /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package purchasing
-package purchaseorderdetail
+package adventureworks.purchasing.purchaseorderdetail
 
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import typo.dsl.SelectBuilder
@@ -33,7 +31,7 @@ class PurchaseorderdetailRepoImpl extends PurchaseorderdetailRepo {
     sql"""select "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text
           from "purchasing"."purchaseorderdetail"
           where ("purchaseorderid", "purchaseorderdetailid")
-          in (select unnest(${purchaseorderid}), unnest(${purchaseorderdetailid}))
+          in (select unnest(${Segment.paramSegment(purchaseorderid)(PurchaseorderheaderId.arraySetter)}), unnest(${Segment.paramSegment(purchaseorderdetailid)(adventureworks.IntArraySetter)}))
        """.query(PurchaseorderdetailRow.jdbcDecoder).selectStream()
     
   }

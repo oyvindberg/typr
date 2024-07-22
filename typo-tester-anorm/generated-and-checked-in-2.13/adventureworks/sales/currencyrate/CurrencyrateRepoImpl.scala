@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currencyrate
+package adventureworks.sales.currencyrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -35,7 +34,7 @@ class CurrencyrateRepoImpl extends CurrencyrateRepo {
   override def deleteByIds(currencyrateids: Array[CurrencyrateId])(implicit c: Connection): Int = {
     SQL"""delete
           from "sales"."currencyrate"
-          where "currencyrateid" = ANY(${currencyrateids})
+          where "currencyrateid" = ANY(${ParameterValue(currencyrateids, null, CurrencyrateId.arrayToStatement)})
        """.executeUpdate()
     
   }
@@ -103,7 +102,7 @@ class CurrencyrateRepoImpl extends CurrencyrateRepo {
   override def selectByIds(currencyrateids: Array[CurrencyrateId])(implicit c: Connection): List[CurrencyrateRow] = {
     SQL"""select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
           from "sales"."currencyrate"
-          where "currencyrateid" = ANY(${currencyrateids})
+          where "currencyrateid" = ANY(${ParameterValue(currencyrateids, null, CurrencyrateId.arrayToStatement)})
        """.as(CurrencyrateRow.rowParser(1).*)
     
   }

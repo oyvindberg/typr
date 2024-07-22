@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pr
-package c
+package adventureworks.pr.c
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
@@ -22,13 +20,13 @@ import scala.util.Try
 
 /** View: pr.c */
 case class CViewRow(
-  /** Points to [[production.culture.CultureRow.cultureid]] */
+  /** Points to [[adventureworks.production.culture.CultureRow.cultureid]] */
   id: CultureId,
-  /** Points to [[production.culture.CultureRow.cultureid]] */
+  /** Points to [[adventureworks.production.culture.CultureRow.cultureid]] */
   cultureid: CultureId,
-  /** Points to [[production.culture.CultureRow.name]] */
+  /** Points to [[adventureworks.production.culture.CultureRow.name]] */
   name: Name,
-  /** Points to [[production.culture.CultureRow.modifieddate]] */
+  /** Points to [[adventureworks.production.culture.CultureRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

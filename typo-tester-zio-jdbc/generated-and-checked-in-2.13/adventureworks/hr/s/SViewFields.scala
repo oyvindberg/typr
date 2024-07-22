@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package hr
-package s
+package adventureworks.hr.s
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
@@ -28,7 +26,7 @@ trait SViewFields {
 object SViewFields {
   lazy val structure: Relation[SViewFields, SViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[SViewFields, SViewRow] {
   

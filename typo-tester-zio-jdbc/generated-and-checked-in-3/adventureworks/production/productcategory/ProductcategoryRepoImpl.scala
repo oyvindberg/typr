@@ -3,14 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productcategory
+package adventureworks.production.productcategory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -31,7 +30,7 @@ class ProductcategoryRepoImpl extends ProductcategoryRepo {
     sql"""delete from "production"."productcategory" where "productcategoryid" = ${Segment.paramSegment(productcategoryid)(using ProductcategoryId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(productcategoryids: Array[ProductcategoryId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."productcategory" where "productcategoryid" = ANY(${productcategoryids})""".delete
+    sql"""delete from "production"."productcategory" where "productcategoryid" = ANY(${Segment.paramSegment(productcategoryids)(using ProductcategoryId.arraySetter)})""".delete
   }
   override def insert(unsaved: ProductcategoryRow): ZIO[ZConnection, Throwable, ProductcategoryRow] = {
     sql"""insert into "production"."productcategory"("productcategoryid", "name", "rowguid", "modifieddate")

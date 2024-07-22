@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package store
+package adventureworks.sales.store
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -25,12 +24,12 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.store` which has not been persisted yet */
 case class StoreRowUnsaved(
   /** Primary key. Foreign key to Customer.BusinessEntityID.
-      Points to [[person.businessentity.BusinessentityRow.businessentityid]] */
+      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Name of the store. */
   name: Name,
   /** ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[salesperson.SalespersonRow.businessentityid]] */
+      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   salespersonid: Option[BusinessentityId],
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
   demographics: Option[TypoXml],

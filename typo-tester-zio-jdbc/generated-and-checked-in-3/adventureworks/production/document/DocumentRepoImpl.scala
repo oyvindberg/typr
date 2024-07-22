@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package document
+package adventureworks.production.document
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoBytea
@@ -14,6 +12,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -35,7 +34,7 @@ class DocumentRepoImpl extends DocumentRepo {
     sql"""delete from "production"."document" where "documentnode" = ${Segment.paramSegment(documentnode)(using DocumentId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(documentnodes: Array[DocumentId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "production"."document" where "documentnode" = ANY(${documentnodes})""".delete
+    sql"""delete from "production"."document" where "documentnode" = ANY(${Segment.paramSegment(documentnodes)(using DocumentId.arraySetter)})""".delete
   }
   override def insert(unsaved: DocumentRow): ZIO[ZConnection, Throwable, DocumentRow] = {
     sql"""insert into "production"."document"("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")

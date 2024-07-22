@@ -3,13 +3,13 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_sak_soknadsalternativ
+package adventureworks.public.test_sak_soknadsalternativ
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
+import anorm.ParameterMetaData
 import anorm.ParameterValue
 import anorm.SqlStringInterpolation
 import anorm.ToStatement
@@ -33,7 +33,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     SQL"""delete
           from "public"."test_sak_soknadsalternativ"
           where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskodeSaksbehandler}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${ParameterValue(organisasjonskodeSaksbehandler, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
        """.executeUpdate()
     
   }
@@ -68,7 +68,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     SQL"""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
           from "public"."test_sak_soknadsalternativ"
           where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskodeSaksbehandler}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${ParameterValue(organisasjonskodeSaksbehandler, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
        """.as(TestSakSoknadsalternativRow.rowParser(1).*)
     
   }

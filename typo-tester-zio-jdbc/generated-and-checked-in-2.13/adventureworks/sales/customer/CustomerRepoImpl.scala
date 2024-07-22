@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package customer
+package adventureworks.sales.customer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -33,7 +32,7 @@ class CustomerRepoImpl extends CustomerRepo {
     sql"""delete from "sales"."customer" where "customerid" = ${Segment.paramSegment(customerid)(CustomerId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(customerids: Array[CustomerId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."customer" where "customerid" = ANY(${customerids})""".delete
+    sql"""delete from "sales"."customer" where "customerid" = ANY(${Segment.paramSegment(customerids)(CustomerId.arraySetter)})""".delete
   }
   override def insert(unsaved: CustomerRow): ZIO[ZConnection, Throwable, CustomerRow] = {
     sql"""insert into "sales"."customer"("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")

@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package be
+package adventureworks.pe.be
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -22,13 +20,13 @@ import scala.util.Try
 
 /** View: pe.be */
 case class BeViewRow(
-  /** Points to [[person.businessentity.BusinessentityRow.businessentityid]] */
+  /** Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[person.businessentity.BusinessentityRow.businessentityid]] */
+  /** Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.businessentity.BusinessentityRow.rowguid]] */
+  /** Points to [[adventureworks.person.businessentity.BusinessentityRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.businessentity.BusinessentityRow.modifieddate]] */
+  /** Points to [[adventureworks.person.businessentity.BusinessentityRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

@@ -3,13 +3,12 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesreason
+package adventureworks.sales.salesreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderSql
@@ -30,7 +29,7 @@ class SalesreasonRepoImpl extends SalesreasonRepo {
     sql"""delete from "sales"."salesreason" where "salesreasonid" = ${Segment.paramSegment(salesreasonid)(using SalesreasonId.setter)}""".delete.map(_ > 0)
   }
   override def deleteByIds(salesreasonids: Array[SalesreasonId]): ZIO[ZConnection, Throwable, Long] = {
-    sql"""delete from "sales"."salesreason" where "salesreasonid" = ANY(${salesreasonids})""".delete
+    sql"""delete from "sales"."salesreason" where "salesreasonid" = ANY(${Segment.paramSegment(salesreasonids)(using SalesreasonId.arraySetter)})""".delete
   }
   override def insert(unsaved: SalesreasonRow): ZIO[ZConnection, Throwable, SalesreasonRow] = {
     sql"""insert into "sales"."salesreason"("salesreasonid", "name", "reasontype", "modifieddate")

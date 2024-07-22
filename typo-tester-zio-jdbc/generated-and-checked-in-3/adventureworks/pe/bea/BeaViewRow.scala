@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package pe
-package bea
+package adventureworks.pe.bea
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -21,17 +19,17 @@ import zio.json.internal.Write
 
 /** View: pe.bea */
 case class BeaViewRow(
-  /** Points to [[person.businessentityaddress.BusinessentityaddressRow.businessentityid]] */
+  /** Points to [[adventureworks.person.businessentityaddress.BusinessentityaddressRow.businessentityid]] */
   id: BusinessentityId,
-  /** Points to [[person.businessentityaddress.BusinessentityaddressRow.businessentityid]] */
+  /** Points to [[adventureworks.person.businessentityaddress.BusinessentityaddressRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  /** Points to [[person.businessentityaddress.BusinessentityaddressRow.addressid]] */
+  /** Points to [[adventureworks.person.businessentityaddress.BusinessentityaddressRow.addressid]] */
   addressid: AddressId,
-  /** Points to [[person.businessentityaddress.BusinessentityaddressRow.addresstypeid]] */
+  /** Points to [[adventureworks.person.businessentityaddress.BusinessentityaddressRow.addresstypeid]] */
   addresstypeid: AddresstypeId,
-  /** Points to [[person.businessentityaddress.BusinessentityaddressRow.rowguid]] */
+  /** Points to [[adventureworks.person.businessentityaddress.BusinessentityaddressRow.rowguid]] */
   rowguid: TypoUUID,
-  /** Points to [[person.businessentityaddress.BusinessentityaddressRow.modifieddate]] */
+  /** Points to [[adventureworks.person.businessentityaddress.BusinessentityaddressRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 

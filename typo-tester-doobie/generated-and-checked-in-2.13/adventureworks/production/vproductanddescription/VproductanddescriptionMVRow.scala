@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package vproductanddescription
+package adventureworks.production.vproductanddescription
 
 import adventureworks.production.culture.CultureId
 import adventureworks.production.product.ProductId
@@ -17,15 +15,15 @@ import io.circe.Encoder
 
 /** Materialized View: production.vproductanddescription */
 case class VproductanddescriptionMVRow(
-  /** Points to [[product.ProductRow.productid]] */
+  /** Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
-  /** Points to [[product.ProductRow.name]] */
+  /** Points to [[adventureworks.production.product.ProductRow.name]] */
   name: Name,
-  /** Points to [[productmodel.ProductmodelRow.name]] */
+  /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   productmodel: Name,
-  /** Points to [[productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid]] */
+  /** Points to [[adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid]] */
   cultureid: CultureId,
-  /** Points to [[productdescription.ProductdescriptionRow.description]] */
+  /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.description]] */
   description: /* max 400 chars */ String
 )
 

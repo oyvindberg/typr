@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productinventory
+package adventureworks.production.productinventory
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -25,10 +24,10 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productinventory` which has not been persisted yet */
 case class ProductinventoryRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[product.ProductRow.productid]] */
+      Points to [[adventureworks.production.product.ProductRow.productid]] */
   productid: ProductId,
   /** Inventory location identification number. Foreign key to Location.LocationID.
-      Points to [[location.LocationRow.locationid]] */
+      Points to [[adventureworks.production.location.LocationRow.locationid]] */
   locationid: LocationId,
   /** Storage compartment within an inventory location. */
   shelf: /* max 10 chars */ String,

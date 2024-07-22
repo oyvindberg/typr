@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package humanresources
-package vemployee
+package adventureworks.humanresources.vemployee
 
 import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
@@ -42,7 +40,7 @@ trait VemployeeViewFields {
 object VemployeeViewFields {
   lazy val structure: Relation[VemployeeViewFields, VemployeeViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VemployeeViewFields, VemployeeViewRow] {
   

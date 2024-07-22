@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package currency
+package adventureworks.sales.currency
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -32,7 +30,7 @@ class CurrencyRepoImpl extends CurrencyRepo {
     sql"""delete from "sales"."currency" where "currencycode" = ${fromWrite(currencycode)(new Write.Single(CurrencyId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(currencycodes: Array[CurrencyId]): ConnectionIO[Int] = {
-    sql"""delete from "sales"."currency" where "currencycode" = ANY(${currencycodes})""".update.run
+    sql"""delete from "sales"."currency" where "currencycode" = ANY(${fromWrite(currencycodes)(new Write.Single(CurrencyId.arrayPut))})""".update.run
   }
   override def insert(unsaved: CurrencyRow): ConnectionIO[CurrencyRow] = {
     sql"""insert into "sales"."currency"("currencycode", "name", "modifieddate")
@@ -81,7 +79,7 @@ class CurrencyRepoImpl extends CurrencyRepo {
     sql"""select "currencycode", "name", "modifieddate"::text from "sales"."currency" where "currencycode" = ${fromWrite(currencycode)(new Write.Single(CurrencyId.put))}""".query(CurrencyRow.read).option
   }
   override def selectByIds(currencycodes: Array[CurrencyId]): Stream[ConnectionIO, CurrencyRow] = {
-    sql"""select "currencycode", "name", "modifieddate"::text from "sales"."currency" where "currencycode" = ANY(${currencycodes})""".query(CurrencyRow.read).stream
+    sql"""select "currencycode", "name", "modifieddate"::text from "sales"."currency" where "currencycode" = ANY(${fromWrite(currencycodes)(new Write.Single(CurrencyId.arrayPut))})""".query(CurrencyRow.read).stream
   }
   override def selectByIdsTracked(currencycodes: Array[CurrencyId]): ConnectionIO[Map[CurrencyId, CurrencyRow]] = {
     selectByIds(currencycodes).compile.toList.map { rows =>

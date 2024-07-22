@@ -3,10 +3,9 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package sales
-package salesorderheader
+package adventureworks.sales.salesorderheader
 
+import adventureworks.Text
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -61,30 +60,30 @@ case class SalesorderheaderRow(
   /** Financial accounting number reference. */
   accountnumber: Option[AccountNumber],
   /** Customer identification number. Foreign key to Customer.BusinessEntityID.
-      Points to [[customer.CustomerRow.customerid]] */
+      Points to [[adventureworks.sales.customer.CustomerRow.customerid]] */
   customerid: CustomerId,
   /** Sales person who created the sales order. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[salesperson.SalespersonRow.businessentityid]] */
+      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   salespersonid: Option[BusinessentityId],
   /** Territory in which the sale was made. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[salesterritory.SalesterritoryRow.territoryid]] */
+      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
   territoryid: Option[SalesterritoryId],
   /** Customer billing address. Foreign key to Address.AddressID.
-      Points to [[person.address.AddressRow.addressid]] */
+      Points to [[adventureworks.person.address.AddressRow.addressid]] */
   billtoaddressid: AddressId,
   /** Customer shipping address. Foreign key to Address.AddressID.
-      Points to [[person.address.AddressRow.addressid]] */
+      Points to [[adventureworks.person.address.AddressRow.addressid]] */
   shiptoaddressid: AddressId,
   /** Shipping method. Foreign key to ShipMethod.ShipMethodID.
-      Points to [[purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
+      Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
   shipmethodid: ShipmethodId,
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
-      Points to [[creditcard.CreditcardRow.creditcardid]] */
+      Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
   creditcardid: Option[/* user-picked */ CustomCreditcardId],
   /** Approval code provided by the credit card company. */
   creditcardapprovalcode: Option[/* max 15 chars */ String],
   /** Currency exchange rate used. Foreign key to CurrencyRate.CurrencyRateID.
-      Points to [[currencyrate.CurrencyrateRow.currencyrateid]] */
+      Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.currencyrateid]] */
   currencyrateid: Option[CurrencyrateId],
   /** Sales subtotal. Computed as SUM(SalesOrderDetail.LineTotal)for the appropriate SalesOrderID.
       Default: 0.00

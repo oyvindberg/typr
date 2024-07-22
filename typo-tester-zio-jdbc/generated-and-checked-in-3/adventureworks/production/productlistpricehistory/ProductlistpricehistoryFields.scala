@@ -3,20 +3,20 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productlistpricehistory
+package adventureworks.production.productlistpricehistory
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
 import typo.dsl.ForeignKey
+import typo.dsl.PGType
 import typo.dsl.Path
 import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
+import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLikeNoHkt
 import typo.dsl.SqlExpr.IdField
@@ -35,14 +35,14 @@ trait ProductlistpricehistoryFields {
   def compositeIdIs(compositeId: ProductlistpricehistoryId): SqlExpr[Boolean, Required] =
     productid.isEqual(compositeId.productid).and(startdate.isEqual(compositeId.startdate))
   def compositeIdIn(compositeIds: Array[ProductlistpricehistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart(productid)(_.productid), TuplePart(startdate)(_.startdate))
+    new CompositeIn(compositeIds)(TuplePart[ProductlistpricehistoryId](productid)(_.productid)(using as[Array[ProductId], Required](using ProductId.arrayJdbcEncoder, PGType.forArray(using ProductId.pgType)), implicitly), TuplePart[ProductlistpricehistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDateTime], Required](using TypoLocalDateTime.arrayJdbcEncoder, PGType.forArray(using TypoLocalDateTime.pgType)), implicitly))
   
 }
 
 object ProductlistpricehistoryFields {
   lazy val structure: Relation[ProductlistpricehistoryFields, ProductlistpricehistoryRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[ProductlistpricehistoryFields, ProductlistpricehistoryRow] {
   

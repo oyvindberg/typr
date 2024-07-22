@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package public
-package test_sak_soknadsalternativ
+package adventureworks.public.test_sak_soknadsalternativ
 
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import cats.instances.list.catsStdInstancesForList
@@ -35,7 +33,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     sql"""delete
           from "public"."test_sak_soknadsalternativ"
           where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskodeSaksbehandler}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${fromWrite(organisasjonskodeSaksbehandler)(new Write.Single(adventureworks.StringArrayMeta.put))}), unnest(${fromWrite(utdanningsmulighetKode)(new Write.Single(adventureworks.StringArrayMeta.put))}))
        """.update.run
     
   }
@@ -63,7 +61,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     sql"""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
           from "public"."test_sak_soknadsalternativ"
           where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${organisasjonskodeSaksbehandler}), unnest(${utdanningsmulighetKode}))
+          in (select unnest(${fromWrite(organisasjonskodeSaksbehandler)(new Write.Single(adventureworks.StringArrayMeta.put))}), unnest(${fromWrite(utdanningsmulighetKode)(new Write.Single(adventureworks.StringArrayMeta.put))}))
        """.query(TestSakSoknadsalternativRow.read).stream
     
   }

@@ -3,15 +3,14 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package billofmaterials
+package adventureworks.production.billofmaterials
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
+import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
@@ -37,7 +36,7 @@ class BillofmaterialsRepoImpl extends BillofmaterialsRepo {
   override def deleteByIds(billofmaterialsids: Array[Int])(using c: Connection): Int = {
     SQL"""delete
           from "production"."billofmaterials"
-          where "billofmaterialsid" = ANY(${billofmaterialsids})
+          where "billofmaterialsid" = ANY(${ParameterValue(billofmaterialsids, null, adventureworks.IntArrayToStatement)})
        """.executeUpdate()
     
   }
@@ -113,7 +112,7 @@ class BillofmaterialsRepoImpl extends BillofmaterialsRepo {
   override def selectByIds(billofmaterialsids: Array[Int])(using c: Connection): List[BillofmaterialsRow] = {
     SQL"""select "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text
           from "production"."billofmaterials"
-          where "billofmaterialsid" = ANY(${billofmaterialsids})
+          where "billofmaterialsid" = ANY(${ParameterValue(billofmaterialsids, null, adventureworks.IntArrayToStatement)})
        """.as(BillofmaterialsRow.rowParser(1).*)
     
   }

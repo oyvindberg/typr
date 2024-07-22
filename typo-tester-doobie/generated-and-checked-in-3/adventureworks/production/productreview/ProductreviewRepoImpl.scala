@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package productreview
+package adventureworks.production.productreview
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -34,7 +32,7 @@ class ProductreviewRepoImpl extends ProductreviewRepo {
     sql"""delete from "production"."productreview" where "productreviewid" = ${fromWrite(productreviewid)(using new Write.Single(ProductreviewId.put))}""".update.run.map(_ > 0)
   }
   override def deleteByIds(productreviewids: Array[ProductreviewId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."productreview" where "productreviewid" = ANY(${productreviewids})""".update.run
+    sql"""delete from "production"."productreview" where "productreviewid" = ANY(${fromWrite(productreviewids)(using new Write.Single(ProductreviewId.arrayPut))})""".update.run
   }
   override def insert(unsaved: ProductreviewRow): ConnectionIO[ProductreviewRow] = {
     sql"""insert into "production"."productreview"("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")
@@ -94,7 +92,7 @@ class ProductreviewRepoImpl extends ProductreviewRepo {
     sql"""select "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text from "production"."productreview" where "productreviewid" = ${fromWrite(productreviewid)(using new Write.Single(ProductreviewId.put))}""".query(using ProductreviewRow.read).option
   }
   override def selectByIds(productreviewids: Array[ProductreviewId]): Stream[ConnectionIO, ProductreviewRow] = {
-    sql"""select "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text from "production"."productreview" where "productreviewid" = ANY(${productreviewids})""".query(using ProductreviewRow.read).stream
+    sql"""select "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text from "production"."productreview" where "productreviewid" = ANY(${fromWrite(productreviewids)(using new Write.Single(ProductreviewId.arrayPut))})""".query(using ProductreviewRow.read).stream
   }
   override def selectByIdsTracked(productreviewids: Array[ProductreviewId]): ConnectionIO[Map[ProductreviewId, ProductreviewRow]] = {
     selectByIds(productreviewids).compile.toList.map { rows =>

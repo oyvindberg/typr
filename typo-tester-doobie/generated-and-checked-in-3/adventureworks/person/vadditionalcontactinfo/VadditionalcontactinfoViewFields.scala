@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package person
-package vadditionalcontactinfo
+package adventureworks.person.vadditionalcontactinfo
 
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -42,7 +40,7 @@ trait VadditionalcontactinfoViewFields {
 object VadditionalcontactinfoViewFields {
   lazy val structure: Relation[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] =
     new Impl(Nil)
-    
+
   private final class Impl(val _path: List[Path])
     extends Relation[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] {
   

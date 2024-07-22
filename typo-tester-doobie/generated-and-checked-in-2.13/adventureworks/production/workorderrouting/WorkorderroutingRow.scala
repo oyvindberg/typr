@@ -3,9 +3,7 @@
  *
  * IF YOU CHANGE THIS FILE YOUR CHANGES WILL BE OVERWRITTEN.
  */
-package adventureworks
-package production
-package workorderrouting
+package adventureworks.production.workorderrouting
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.TypoLocalDateTime
@@ -24,14 +22,14 @@ import io.circe.Encoder
     Composite primary key: workorderid, productid, operationsequence */
 case class WorkorderroutingRow(
   /** Primary key. Foreign key to WorkOrder.WorkOrderID.
-      Points to [[workorder.WorkorderRow.workorderid]] */
+      Points to [[adventureworks.production.workorder.WorkorderRow.workorderid]] */
   workorderid: WorkorderId,
   /** Primary key. Foreign key to Product.ProductID. */
   productid: Int,
   /** Primary key. Indicates the manufacturing process sequence. */
   operationsequence: TypoShort,
   /** Manufacturing location where the part is processed. Foreign key to Location.LocationID.
-      Points to [[location.LocationRow.locationid]] */
+      Points to [[adventureworks.production.location.LocationRow.locationid]] */
   locationid: LocationId,
   /** Planned manufacturing start date.
       Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate: ((scheduledenddate >= scheduledstartdate)) */
