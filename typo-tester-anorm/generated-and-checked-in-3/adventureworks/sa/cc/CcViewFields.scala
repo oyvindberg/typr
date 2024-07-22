@@ -10,7 +10,7 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.userdefined.CustomCreditcardId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.Structure.Relation
 
 trait CcViewFields {
@@ -40,8 +40,8 @@ object CcViewFields {
       override def modifieddate = Field[TypoLocalDateTime, CcViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, CcViewRow]] =
-      List[FieldLikeNoHkt[?, CcViewRow]](fields.id, fields.creditcardid, fields.cardtype, fields.cardnumber, fields.expmonth, fields.expyear, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, CcViewRow]] =
+      List[FieldLike[?, CcViewRow]](fields.id, fields.creditcardid, fields.cardtype, fields.cardnumber, fields.expmonth, fields.expyear, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

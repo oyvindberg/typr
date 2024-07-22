@@ -5,14 +5,14 @@ import typo.dsl.Fragment.FragmentStringInterpolator
 import java.util.concurrent.atomic.AtomicInteger
 
 final case class SelectParams[Fields, Row](
-    where: List[Fields => SqlExpr[Boolean, Option]],
+    where: List[Fields => SqlExpr[Boolean]],
     orderBy: List[OrderByOrSeek[Fields, ?]],
     offset: Option[Int],
     limit: Option[Int]
 ) {
-  def where(f: Fields => SqlExpr[Boolean, Option]): SelectParams[Fields, Row] = copy(where = where :+ f)
-  def orderBy[T, N[_]](f: Fields => SortOrder[T, N]): SelectParams[Fields, Row] = copy(orderBy = orderBy :+ OrderByOrSeek.OrderBy(f))
-  def seek[T, N[_]](f: Fields => SortOrder[T, N], value: SqlExpr.Const[T, N]): SelectParams[Fields, Row] = copy(orderBy = orderBy :+ OrderByOrSeek.Seek(f, value))
+  def where(f: Fields => SqlExpr[Boolean]): SelectParams[Fields, Row] = copy(where = where :+ f)
+  def orderBy[T](f: Fields => SortOrder[T]): SelectParams[Fields, Row] = copy(orderBy = orderBy :+ OrderByOrSeek.OrderBy(f))
+  def seek[T](f: Fields => SortOrder[T], value: SqlExpr.Const[T]): SelectParams[Fields, Row] = copy(orderBy = orderBy :+ OrderByOrSeek.Seek(f, value))
   def offset(v: Int): SelectParams[Fields, Row] = copy(offset = Some(v))
   def limit(v: Int): SelectParams[Fields, Row] = copy(limit = Some(v))
 }

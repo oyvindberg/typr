@@ -3,12 +3,12 @@ package typo.dsl
 import zio.Chunk
 import zio.jdbc.*
 
-sealed trait SortOrderNoHkt[NT] {
-  val expr: SqlExpr.SqlExprNoHkt[NT]
+sealed trait SortOrderNoHkt[T] {
+  val expr: SqlExpr[T]
   val ascending: Boolean
   val nullsFirst: Boolean
 
-  def withNullsFirst: SortOrderNoHkt[NT]
+  def withNullsFirst: SortOrderNoHkt[T]
 
   final def render(ctx: RenderCtx): SqlFragment = {
     Chunk(
@@ -20,6 +20,6 @@ sealed trait SortOrderNoHkt[NT] {
 }
 
 // sort by a field
-final case class SortOrder[T, N[_]](expr: SqlExpr[T, N], ascending: Boolean, nullsFirst: Boolean)(implicit val nullability: Nullability[N]) extends SortOrderNoHkt[N[T]] {
-  def withNullsFirst: SortOrder[T, N] = copy(nullsFirst = true)(nullability)
+final case class SortOrder[T](expr: SqlExpr[T], ascending: Boolean, nullsFirst: Boolean) extends SortOrderNoHkt[T] {
+  def withNullsFirst: SortOrder[T] = copy(nullsFirst = true)
 }

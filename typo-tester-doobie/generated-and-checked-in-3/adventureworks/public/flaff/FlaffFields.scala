@@ -6,15 +6,13 @@
 package adventureworks.public.flaff
 
 import adventureworks.public.ShortText
-import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
@@ -31,10 +29,10 @@ trait FlaffFields {
       .withColumnPair(anotherCode, _.anotherCode)
       .withColumnPair(someNumber, _.someNumber)
       .withColumnPair(parentspecifier, _.specifier)
-  def compositeIdIs(compositeId: FlaffId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: FlaffId): SqlExpr[Boolean] =
     code.isEqual(compositeId.code).and(anotherCode.isEqual(compositeId.anotherCode)).and(someNumber.isEqual(compositeId.someNumber)).and(specifier.isEqual(compositeId.specifier))
-  def compositeIdIn(compositeIds: Array[FlaffId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[FlaffId](code)(_.code)(using as[Array[ShortText], Required](using ShortText.arrayPut, Write.fromPut(using ShortText.arrayPut)), implicitly), TuplePart[FlaffId](anotherCode)(_.anotherCode)(using as[Array[/* max 20 chars */ String], Required](using adventureworks.StringArrayMeta.put, Write.fromPut(using adventureworks.StringArrayMeta.put)), implicitly), TuplePart[FlaffId](someNumber)(_.someNumber)(using as[Array[Int], Required](using adventureworks.IntegerArrayMeta.put, Write.fromPut(using adventureworks.IntegerArrayMeta.put)), implicitly), TuplePart[FlaffId](specifier)(_.specifier)(using as[Array[ShortText], Required](using ShortText.arrayPut, Write.fromPut(using ShortText.arrayPut)), implicitly))
+  def compositeIdIn(compositeIds: Array[FlaffId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[FlaffId](code)(_.code)(using as[Array[ShortText]](using ShortText.arrayPut), implicitly), TuplePart[FlaffId](anotherCode)(_.anotherCode)(using as[Array[/* max 20 chars */ String]](using adventureworks.StringArrayMeta.put), implicitly), TuplePart[FlaffId](someNumber)(_.someNumber)(using as[Array[Int]](using adventureworks.IntegerArrayMeta.put), implicitly), TuplePart[FlaffId](specifier)(_.specifier)(using as[Array[ShortText]](using ShortText.arrayPut), implicitly))
   
 }
 
@@ -53,8 +51,8 @@ object FlaffFields {
       override def parentspecifier = OptField[ShortText, FlaffRow](_path, "parentspecifier", None, Some("text"), x => x.parentspecifier, (row, value) => row.copy(parentspecifier = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, FlaffRow]] =
-      List[FieldLikeNoHkt[?, FlaffRow]](fields.code, fields.anotherCode, fields.someNumber, fields.specifier, fields.parentspecifier)
+    override lazy val columns: List[FieldLike[?, FlaffRow]] =
+      List[FieldLike[?, FlaffRow]](fields.code, fields.anotherCode, fields.someNumber, fields.specifier, fields.parentspecifier)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

@@ -187,7 +187,7 @@ case class FilesTable(table: ComputedTable, fkAnalysis: FkAnalysis, options: Int
 
         val instances = List(
           options.dbLib.toList.flatMap(_.stringEnumInstances(x.tpe, x.underlying, sqlType, openEnum = true)),
-          options.jsonLibs.flatMap(_.stringEnumInstances(x.tpe, x.underlying, openEnum = true)),
+          options.jsonLibs.flatMap(_.stringEnumInstances(x.tpe, x.underlying, openEnum = true))
         ).flatten
 
         val obj = genObject.withBody(x.tpe.value, instances)(

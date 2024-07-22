@@ -10,7 +10,7 @@ import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.Structure.Relation
 
 trait PdocViewFields {
@@ -34,8 +34,8 @@ object PdocViewFields {
       override def documentnode = Field[DocumentId, PdocViewRow](_path, "documentnode", None, None, x => x.documentnode, (row, value) => row.copy(documentnode = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PdocViewRow]] =
-      List[FieldLikeNoHkt[?, PdocViewRow]](fields.id, fields.productid, fields.modifieddate, fields.documentnode)
+    override lazy val columns: List[FieldLike[?, PdocViewRow]] =
+      List[FieldLike[?, PdocViewRow]](fields.id, fields.productid, fields.modifieddate, fields.documentnode)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

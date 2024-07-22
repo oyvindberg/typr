@@ -14,7 +14,7 @@ import adventureworks.public.title_domain.TitleDomainRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.Structure.Relation
 
 trait TitledpersonFields {
@@ -42,8 +42,8 @@ object TitledpersonFields {
       override def name = Field[String, TitledpersonRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, TitledpersonRow]] =
-      List[FieldLikeNoHkt[?, TitledpersonRow]](fields.titleShort, fields.title, fields.name)
+    override lazy val columns: List[FieldLike[?, TitledpersonRow]] =
+      List[FieldLike[?, TitledpersonRow]](fields.titleShort, fields.title, fields.name)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

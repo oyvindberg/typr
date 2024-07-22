@@ -10,7 +10,7 @@ import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -59,8 +59,8 @@ object VjobcandidateViewFields {
       override def modifieddate = Field[TypoLocalDateTime, VjobcandidateViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VjobcandidateViewRow]] =
-      List[FieldLikeNoHkt[?, VjobcandidateViewRow]](fields.jobcandidateid, fields.businessentityid, fields.namePrefix, fields.nameFirst, fields.nameMiddle, fields.nameLast, fields.nameSuffix, fields.skills, fields.addrType, fields.addrLocCountryRegion, fields.addrLocState, fields.addrLocCity, fields.addrPostalCode, fields.eMail, fields.webSite, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, VjobcandidateViewRow]] =
+      List[FieldLike[?, VjobcandidateViewRow]](fields.jobcandidateid, fields.businessentityid, fields.namePrefix, fields.nameFirst, fields.nameMiddle, fields.nameLast, fields.nameSuffix, fields.skills, fields.addrType, fields.addrLocCountryRegion, fields.addrLocState, fields.addrLocCity, fields.addrPostalCode, fields.eMail, fields.webSite, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

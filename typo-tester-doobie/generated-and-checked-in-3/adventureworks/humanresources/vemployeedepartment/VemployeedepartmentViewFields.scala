@@ -11,7 +11,7 @@ import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -48,8 +48,8 @@ object VemployeedepartmentViewFields {
       override def startdate = Field[TypoLocalDate, VemployeedepartmentViewRow](_path, "startdate", Some("text"), None, x => x.startdate, (row, value) => row.copy(startdate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VemployeedepartmentViewRow]] =
-      List[FieldLikeNoHkt[?, VemployeedepartmentViewRow]](fields.businessentityid, fields.title, fields.firstname, fields.middlename, fields.lastname, fields.suffix, fields.jobtitle, fields.department, fields.groupname, fields.startdate)
+    override lazy val columns: List[FieldLike[?, VemployeedepartmentViewRow]] =
+      List[FieldLike[?, VemployeedepartmentViewRow]](fields.businessentityid, fields.title, fields.firstname, fields.middlename, fields.lastname, fields.suffix, fields.jobtitle, fields.department, fields.groupname, fields.startdate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

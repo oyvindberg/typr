@@ -13,7 +13,7 @@ import adventureworks.person.person.PersonRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -43,8 +43,8 @@ object PasswordFields {
       override def modifieddate = Field[TypoLocalDateTime, PasswordRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PasswordRow]] =
-      List[FieldLikeNoHkt[?, PasswordRow]](fields.businessentityid, fields.passwordhash, fields.passwordsalt, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, PasswordRow]] =
+      List[FieldLike[?, PasswordRow]](fields.businessentityid, fields.passwordhash, fields.passwordsalt, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

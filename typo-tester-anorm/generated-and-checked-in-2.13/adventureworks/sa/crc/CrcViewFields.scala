@@ -10,7 +10,7 @@ import adventureworks.person.countryregion.CountryregionId
 import adventureworks.sales.currency.CurrencyId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.Structure.Relation
 
 trait CrcViewFields {
@@ -32,8 +32,8 @@ object CrcViewFields {
       override def modifieddate = Field[TypoLocalDateTime, CrcViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, CrcViewRow]] =
-      List[FieldLikeNoHkt[?, CrcViewRow]](fields.countryregioncode, fields.currencycode, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, CrcViewRow]] =
+      List[FieldLike[?, CrcViewRow]](fields.countryregioncode, fields.currencycode, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

@@ -7,7 +7,7 @@ package adventureworks.public.table_with_generated_columns
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -28,8 +28,8 @@ object TableWithGeneratedColumnsFields {
       override def nameTypeAlways = Field[String, TableWithGeneratedColumnsRow](_path, "name-type-always", None, None, x => x.nameTypeAlways, (row, value) => row.copy(nameTypeAlways = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, TableWithGeneratedColumnsRow]] =
-      List[FieldLikeNoHkt[?, TableWithGeneratedColumnsRow]](fields.name, fields.nameTypeAlways)
+    override lazy val columns: List[FieldLike[?, TableWithGeneratedColumnsRow]] =
+      List[FieldLike[?, TableWithGeneratedColumnsRow]](fields.name, fields.nameTypeAlways)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

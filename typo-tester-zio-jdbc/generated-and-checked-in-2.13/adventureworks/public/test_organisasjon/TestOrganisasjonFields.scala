@@ -6,7 +6,7 @@
 package adventureworks.public.test_organisasjon
 
 import typo.dsl.Path
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -25,8 +25,8 @@ object TestOrganisasjonFields {
       override def organisasjonskode = IdField[TestOrganisasjonId, TestOrganisasjonRow](_path, "organisasjonskode", None, None, x => x.organisasjonskode, (row, value) => row.copy(organisasjonskode = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, TestOrganisasjonRow]] =
-      List[FieldLikeNoHkt[?, TestOrganisasjonRow]](fields.organisasjonskode)
+    override lazy val columns: List[FieldLike[?, TestOrganisasjonRow]] =
+      List[FieldLike[?, TestOrganisasjonRow]](fields.organisasjonskode)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

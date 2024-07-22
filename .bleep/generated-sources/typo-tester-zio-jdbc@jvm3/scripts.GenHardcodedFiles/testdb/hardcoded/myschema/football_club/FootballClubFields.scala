@@ -7,7 +7,7 @@ package testdb.hardcoded.myschema.football_club
 
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -28,8 +28,8 @@ object FootballClubFields {
       override def name = Field[/* max 100 chars */ String, FootballClubRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, FootballClubRow]] =
-      List[FieldLikeNoHkt[?, FootballClubRow]](fields.id, fields.name)
+    override lazy val columns: List[FieldLike[?, FootballClubRow]] =
+      List[FieldLike[?, FootballClubRow]](fields.id, fields.name)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

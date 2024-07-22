@@ -11,7 +11,7 @@ import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -38,8 +38,8 @@ object JcViewFields {
       override def modifieddate = Field[TypoLocalDateTime, JcViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, JcViewRow]] =
-      List[FieldLikeNoHkt[?, JcViewRow]](fields.id, fields.jobcandidateid, fields.businessentityid, fields.resume, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, JcViewRow]] =
+      List[FieldLike[?, JcViewRow]](fields.id, fields.jobcandidateid, fields.businessentityid, fields.resume, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

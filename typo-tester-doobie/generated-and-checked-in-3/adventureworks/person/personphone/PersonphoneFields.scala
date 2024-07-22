@@ -13,16 +13,14 @@ import adventureworks.person.phonenumbertype.PhonenumbertypeFields
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.person.phonenumbertype.PhonenumbertypeRow
 import adventureworks.public.Phone
-import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -37,10 +35,10 @@ trait PersonphoneFields {
   def fkPhonenumbertype: ForeignKey[PhonenumbertypeFields, PhonenumbertypeRow] =
     ForeignKey[PhonenumbertypeFields, PhonenumbertypeRow]("person.FK_PersonPhone_PhoneNumberType_PhoneNumberTypeID", Nil)
       .withColumnPair(phonenumbertypeid, _.phonenumbertypeid)
-  def compositeIdIs(compositeId: PersonphoneId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: PersonphoneId): SqlExpr[Boolean] =
     businessentityid.isEqual(compositeId.businessentityid).and(phonenumber.isEqual(compositeId.phonenumber)).and(phonenumbertypeid.isEqual(compositeId.phonenumbertypeid))
-  def compositeIdIn(compositeIds: Array[PersonphoneId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[PersonphoneId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](using BusinessentityId.arrayPut, Write.fromPut(using BusinessentityId.arrayPut)), implicitly), TuplePart[PersonphoneId](phonenumber)(_.phonenumber)(using as[Array[Phone], Required](using Phone.arrayPut, Write.fromPut(using Phone.arrayPut)), implicitly), TuplePart[PersonphoneId](phonenumbertypeid)(_.phonenumbertypeid)(using as[Array[PhonenumbertypeId], Required](using PhonenumbertypeId.arrayPut, Write.fromPut(using PhonenumbertypeId.arrayPut)), implicitly))
+  def compositeIdIn(compositeIds: Array[PersonphoneId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[PersonphoneId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](using BusinessentityId.arrayPut), implicitly), TuplePart[PersonphoneId](phonenumber)(_.phonenumber)(using as[Array[Phone]](using Phone.arrayPut), implicitly), TuplePart[PersonphoneId](phonenumbertypeid)(_.phonenumbertypeid)(using as[Array[PhonenumbertypeId]](using PhonenumbertypeId.arrayPut), implicitly))
   
 }
 
@@ -58,8 +56,8 @@ object PersonphoneFields {
       override def modifieddate = Field[TypoLocalDateTime, PersonphoneRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PersonphoneRow]] =
-      List[FieldLikeNoHkt[?, PersonphoneRow]](fields.businessentityid, fields.phonenumber, fields.phonenumbertypeid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, PersonphoneRow]] =
+      List[FieldLike[?, PersonphoneRow]](fields.businessentityid, fields.phonenumber, fields.phonenumbertypeid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

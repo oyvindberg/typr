@@ -9,7 +9,7 @@ class SeekTest extends SnapshotTest {
   test("uniform ascending") {
     val query = productRepo.select
       .seek(_.name.asc)(Name("foo"))
-      .seek(_.weight.asc)(Some(BigDecimal(22.2)))
+      .seek(_.weight.asc)(Option(BigDecimal(22.2)))
       .seek(_.listprice.asc)(BigDecimal(33.3))
     compareFragment("uniform-ascending")(query.sql)
   }
@@ -17,7 +17,7 @@ class SeekTest extends SnapshotTest {
   test("uniform descending") {
     val query = productRepo.select
       .seek(_.name.desc)(Name("foo"))
-      .seek(_.weight.desc)(Some(BigDecimal(22.2)))
+      .seek(_.weight.desc)(Option(BigDecimal(22.2)))
       .seek(_.listprice.desc)(BigDecimal(33.3))
     compareFragment("uniform-descending")(query.sql)
   }
@@ -25,7 +25,7 @@ class SeekTest extends SnapshotTest {
   test("complex") {
     val query = productRepo.select
       .seek(_.name.asc)(Name("foo"))
-      .seek(_.weight.desc)(Some(BigDecimal(22.2)))
+      .seek(_.weight.desc)(Option(BigDecimal(22.2)))
       .seek(_.listprice.desc)(BigDecimal(33.3))
     compareFragment("complex")(query.sql)
   }

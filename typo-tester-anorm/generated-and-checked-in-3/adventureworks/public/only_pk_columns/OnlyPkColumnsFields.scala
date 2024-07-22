@@ -9,22 +9,21 @@ import anorm.ParameterMetaData
 import anorm.ToParameterValue
 import anorm.ToStatement
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
 trait OnlyPkColumnsFields {
   def keyColumn1: IdField[String, OnlyPkColumnsRow]
   def keyColumn2: IdField[Int, OnlyPkColumnsRow]
-  def compositeIdIs(compositeId: OnlyPkColumnsId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: OnlyPkColumnsId): SqlExpr[Boolean] =
     keyColumn1.isEqual(compositeId.keyColumn1).and(keyColumn2.isEqual(compositeId.keyColumn2))
-  def compositeIdIn(compositeIds: Array[OnlyPkColumnsId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[OnlyPkColumnsId](keyColumn1)(_.keyColumn1)(using as[Array[String], Required](using ToParameterValue(null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(using ParameterMetaData.StringParameterMetaData)), implicitly), TuplePart[OnlyPkColumnsId](keyColumn2)(_.keyColumn2)(using as[Array[Int], Required](using ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(using ParameterMetaData.IntParameterMetaData)), implicitly))
+  def compositeIdIn(compositeIds: Array[OnlyPkColumnsId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[OnlyPkColumnsId](keyColumn1)(_.keyColumn1)(using as[Array[String]](using ToParameterValue(null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(using ParameterMetaData.StringParameterMetaData)), implicitly), TuplePart[OnlyPkColumnsId](keyColumn2)(_.keyColumn2)(using as[Array[Int]](using ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(using ParameterMetaData.IntParameterMetaData)), implicitly))
   
 }
 
@@ -40,8 +39,8 @@ object OnlyPkColumnsFields {
       override def keyColumn2 = IdField[Int, OnlyPkColumnsRow](_path, "key_column_2", None, Some("int4"), x => x.keyColumn2, (row, value) => row.copy(keyColumn2 = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, OnlyPkColumnsRow]] =
-      List[FieldLikeNoHkt[?, OnlyPkColumnsRow]](fields.keyColumn1, fields.keyColumn2)
+    override lazy val columns: List[FieldLike[?, OnlyPkColumnsRow]] =
+      List[FieldLike[?, OnlyPkColumnsRow]](fields.keyColumn1, fields.keyColumn2)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

@@ -10,7 +10,7 @@ import zio.jdbc.SqlFragment
 case class SortOrderRepr(expr: String) extends AnyVal
 
 object SortOrderRepr {
-  def from[NT](x: SortOrderNoHkt[NT], ctx: RenderCtx): SortOrderRepr = {
+  def from[T](x: SortOrderNoHkt[T], ctx: RenderCtx): SortOrderRepr = {
     val sql = new StringBuilder()
 
     // no usable way to just get the sql without parameters in zio-jdbc :(

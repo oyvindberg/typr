@@ -11,7 +11,7 @@ import adventureworks.public.Phone
 import adventureworks.userdefined.FirstName
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -72,8 +72,8 @@ object VsalespersonViewFields {
       override def saleslastyear = Field[BigDecimal, VsalespersonViewRow](_path, "saleslastyear", None, None, x => x.saleslastyear, (row, value) => row.copy(saleslastyear = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VsalespersonViewRow]] =
-      List[FieldLikeNoHkt[?, VsalespersonViewRow]](fields.businessentityid, fields.title, fields.firstname, fields.middlename, fields.lastname, fields.suffix, fields.jobtitle, fields.phonenumber, fields.phonenumbertype, fields.emailaddress, fields.emailpromotion, fields.addressline1, fields.addressline2, fields.city, fields.stateprovincename, fields.postalcode, fields.countryregionname, fields.territoryname, fields.territorygroup, fields.salesquota, fields.salesytd, fields.saleslastyear)
+    override lazy val columns: List[FieldLike[?, VsalespersonViewRow]] =
+      List[FieldLike[?, VsalespersonViewRow]](fields.businessentityid, fields.title, fields.firstname, fields.middlename, fields.lastname, fields.suffix, fields.jobtitle, fields.phonenumber, fields.phonenumbertype, fields.emailaddress, fields.emailpromotion, fields.addressline1, fields.addressline2, fields.city, fields.stateprovincename, fields.postalcode, fields.countryregionname, fields.territoryname, fields.territorygroup, fields.salesquota, fields.salesytd, fields.saleslastyear)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

@@ -13,7 +13,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -62,8 +62,8 @@ object EViewFields {
       override def organizationnode = OptField[String, EViewRow](_path, "organizationnode", None, None, x => x.organizationnode, (row, value) => row.copy(organizationnode = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, EViewRow]] =
-      List[FieldLikeNoHkt[?, EViewRow]](fields.id, fields.businessentityid, fields.nationalidnumber, fields.loginid, fields.jobtitle, fields.birthdate, fields.maritalstatus, fields.gender, fields.hiredate, fields.salariedflag, fields.vacationhours, fields.sickleavehours, fields.currentflag, fields.rowguid, fields.modifieddate, fields.organizationnode)
+    override lazy val columns: List[FieldLike[?, EViewRow]] =
+      List[FieldLike[?, EViewRow]](fields.id, fields.businessentityid, fields.nationalidnumber, fields.loginid, fields.jobtitle, fields.birthdate, fields.maritalstatus, fields.gender, fields.hiredate, fields.salariedflag, fields.vacationhours, fields.sickleavehours, fields.currentflag, fields.rowguid, fields.modifieddate, fields.organizationnode)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

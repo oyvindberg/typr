@@ -182,13 +182,13 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         code"${composite.cols.map(cc => code"${cc.dbName} = ${runtimeInterpolateValue(code"${composite.paramName}.${cc.name}", cc.tpe)}").mkCode(" AND ")}"
     }
 
-  override def resolveConstAs(tpe: sc.Type): sc.Code = {
-    val optionality = tpe match {
-      case TypesScala.Optional(_) => TypesScala.Option
-      case _                      => sc.Type.dsl.Required
+  override def resolveConstAs(tpe: sc.Type): sc.Code =
+    tpe match {
+      case TypesScala.Optional(underlying) =>
+        code"${sc.Type.dsl.ConstAsAs}[$underlying](${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
+      case _ =>
+        code"${sc.Type.dsl.ConstAsAs}[$tpe](${dialect.usingCall}${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
     }
-    code"${sc.Type.dsl.ConstAsAs}[$tpe, $optionality](${dialect.usingCall}${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
-  }
 
   override def repoSig(repoMethod: RepoMethod): Either[DbLib.NotImplementedFor, sc.Code] = {
     val name = repoMethod.methodName

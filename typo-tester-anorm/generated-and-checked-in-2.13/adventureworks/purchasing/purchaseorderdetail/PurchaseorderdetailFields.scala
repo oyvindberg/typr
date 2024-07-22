@@ -17,13 +17,12 @@ import anorm.ParameterMetaData
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -43,10 +42,10 @@ trait PurchaseorderdetailFields {
   def fkPurchaseorderheader: ForeignKey[PurchaseorderheaderFields, PurchaseorderheaderRow] =
     ForeignKey[PurchaseorderheaderFields, PurchaseorderheaderRow]("purchasing.FK_PurchaseOrderDetail_PurchaseOrderHeader_PurchaseOrderID", Nil)
       .withColumnPair(purchaseorderid, _.purchaseorderid)
-  def compositeIdIs(compositeId: PurchaseorderdetailId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: PurchaseorderdetailId): SqlExpr[Boolean] =
     purchaseorderid.isEqual(compositeId.purchaseorderid).and(purchaseorderdetailid.isEqual(compositeId.purchaseorderdetailid))
-  def compositeIdIn(compositeIds: Array[PurchaseorderdetailId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[PurchaseorderdetailId](purchaseorderid)(_.purchaseorderid)(using as[Array[PurchaseorderheaderId], Required](ToParameterValue(null, PurchaseorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(PurchaseorderheaderId.parameterMetadata)), implicitly), TuplePart[PurchaseorderdetailId](purchaseorderdetailid)(_.purchaseorderdetailid)(using as[Array[Int], Required](ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(ParameterMetaData.IntParameterMetaData)), implicitly))
+  def compositeIdIn(compositeIds: Array[PurchaseorderdetailId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[PurchaseorderdetailId](purchaseorderid)(_.purchaseorderid)(using as[Array[PurchaseorderheaderId]](ToParameterValue(null, PurchaseorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(PurchaseorderheaderId.parameterMetadata)), implicitly), TuplePart[PurchaseorderdetailId](purchaseorderdetailid)(_.purchaseorderdetailid)(using as[Array[Int]](ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(ParameterMetaData.IntParameterMetaData)), implicitly))
   
 }
 
@@ -69,8 +68,8 @@ object PurchaseorderdetailFields {
       override def modifieddate = Field[TypoLocalDateTime, PurchaseorderdetailRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PurchaseorderdetailRow]] =
-      List[FieldLikeNoHkt[?, PurchaseorderdetailRow]](fields.purchaseorderid, fields.purchaseorderdetailid, fields.duedate, fields.orderqty, fields.productid, fields.unitprice, fields.receivedqty, fields.rejectedqty, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, PurchaseorderdetailRow]] =
+      List[FieldLike[?, PurchaseorderdetailRow]](fields.purchaseorderid, fields.purchaseorderdetailid, fields.duedate, fields.orderqty, fields.productid, fields.unitprice, fields.receivedqty, fields.rejectedqty, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

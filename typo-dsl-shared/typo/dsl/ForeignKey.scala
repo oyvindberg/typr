@@ -5,19 +5,19 @@ case class ForeignKey[Fields2, Row2](
     columnPairs: List[ForeignKey.ColumnPair[?, Fields2]]
 ) {
 
-  def withColumnPair[T, ThisN[_]: Nullability, ThatN[_]: Nullability](
-      field: SqlExpr.FieldLike[T, ThisN, ?],
-      thatField: Fields2 => SqlExpr.FieldLike[T, ThatN, Row2]
+  def withColumnPair[T](
+      field: SqlExpr.FieldLike[T, ?],
+      thatField: Fields2 => SqlExpr.FieldLike[T, Row2]
   ): ForeignKey[Fields2, Row2] =
     new ForeignKey[Fields2, Row2](
       name,
-      columnPairs :+ ForeignKey.ColumnPair[T, Fields2](field.?, f => thatField(f).?)
+      columnPairs :+ ForeignKey.ColumnPair[T, Fields2](field, f => thatField(f))
     )
 }
 
 object ForeignKey {
   case class ColumnPair[T, Fields2](
-      thisField: SqlExpr[T, Option],
-      thatField: Fields2 => SqlExpr[T, Option],
+      thisField: SqlExpr[T],
+      thatField: Fields2 => SqlExpr[T]
   )
 }

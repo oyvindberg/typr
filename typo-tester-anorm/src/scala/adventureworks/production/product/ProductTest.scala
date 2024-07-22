@@ -146,9 +146,9 @@ class ProductTest extends SnapshotTest {
           .on { case (p, um) => p.sizeunitmeasurecode === um.unitmeasurecode }
           .join(projectModelRepo.select)
           .leftOn { case ((product, _), productModel) => product.productmodelid === productModel.productmodelid }
-          .where { case ((product, _), productModel) => product.productmodelid === productModel(_.productmodelid) }
+          .where { case ((product, _), productModel) => product.productmodelid === productModel.productmodelid }
           .orderBy { case ((product, _), _) => product.productmodelid.asc }
-          .orderBy { case ((_, _), productModel) => productModel(_.name).desc.withNullsFirst }
+          .orderBy { case ((_, _), productModel) => productModel.name.desc.withNullsFirst }
 
       compareFragment("query")(query.sql)
       println(query.toList)
@@ -165,7 +165,7 @@ class ProductTest extends SnapshotTest {
         .setComputedValue(_.name)(p => (p.reverse.upper || Name("flaff")).substring(2, 4))
         .setValue(_.listprice)(BigDecimal(2))
         .setComputedValue(_.reorderpoint)(_ + TypoShort(22))
-        .setComputedValue(_.sizeunitmeasurecode)(_ => Some(unitmeasure.unitmeasurecode))
+        .setComputedValue(_.sizeunitmeasurecode)(_ => Option(unitmeasure.unitmeasurecode))
         .setComputedValue(_.sellstartdate)(_ => sellStartDate)
         .where(_.productid === saved1.productid)
 
@@ -196,7 +196,7 @@ class ProductTest extends SnapshotTest {
         // concatenate two strings (one of which is a wrapped type in scala) and compare result
         .where(p => !(p.name.underlying || p.color).like("foo%"))
         // tracks nullability
-        .whereStrict(p => p.color.coalesce("yellow") !== "blue")
+        .where(p => p.color.coalesce("yellow") !== "blue")
         // compare dates
         .where(p => p.modifieddate < TypoLocalDateTime.now)
         // join, filter table we join with as well
@@ -210,7 +210,7 @@ class ProductTest extends SnapshotTest {
           (p.productmodelid === pm2.productmodelid).and(false)
         }
         // order by
-        .orderBy { case (_, pm2) => pm2(_.name).asc }
+        .orderBy { case (_, pm2) => pm2.name.asc }
         .orderBy { case ((p, _), _) => p.color.desc.withNullsFirst }
 
       compareFragment("q2")(q2.sql)

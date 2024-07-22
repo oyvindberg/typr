@@ -15,13 +15,12 @@ import adventureworks.sales.currency.CurrencyRow
 import typo.dsl.ForeignKey
 import typo.dsl.PGType
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -35,10 +34,10 @@ trait CountryregioncurrencyFields {
   def fkCurrency: ForeignKey[CurrencyFields, CurrencyRow] =
     ForeignKey[CurrencyFields, CurrencyRow]("sales.FK_CountryRegionCurrency_Currency_CurrencyCode", Nil)
       .withColumnPair(currencycode, _.currencycode)
-  def compositeIdIs(compositeId: CountryregioncurrencyId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: CountryregioncurrencyId): SqlExpr[Boolean] =
     countryregioncode.isEqual(compositeId.countryregioncode).and(currencycode.isEqual(compositeId.currencycode))
-  def compositeIdIn(compositeIds: Array[CountryregioncurrencyId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[CountryregioncurrencyId](countryregioncode)(_.countryregioncode)(using as[Array[CountryregionId], Required](CountryregionId.arrayJdbcEncoder, PGType.forArray(CountryregionId.pgType)), implicitly), TuplePart[CountryregioncurrencyId](currencycode)(_.currencycode)(using as[Array[CurrencyId], Required](CurrencyId.arrayJdbcEncoder, PGType.forArray(CurrencyId.pgType)), implicitly))
+  def compositeIdIn(compositeIds: Array[CountryregioncurrencyId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[CountryregioncurrencyId](countryregioncode)(_.countryregioncode)(using as[Array[CountryregionId]](CountryregionId.arrayJdbcEncoder, PGType.forArray(CountryregionId.pgType)), implicitly), TuplePart[CountryregioncurrencyId](currencycode)(_.currencycode)(using as[Array[CurrencyId]](CurrencyId.arrayJdbcEncoder, PGType.forArray(CurrencyId.pgType)), implicitly))
   
 }
 
@@ -55,8 +54,8 @@ object CountryregioncurrencyFields {
       override def modifieddate = Field[TypoLocalDateTime, CountryregioncurrencyRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, CountryregioncurrencyRow]] =
-      List[FieldLikeNoHkt[?, CountryregioncurrencyRow]](fields.countryregioncode, fields.currencycode, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, CountryregioncurrencyRow]] =
+      List[FieldLike[?, CountryregioncurrencyRow]](fields.countryregioncode, fields.currencycode, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

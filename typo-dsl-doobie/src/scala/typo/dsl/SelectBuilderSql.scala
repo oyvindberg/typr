@@ -37,16 +37,16 @@ sealed trait SelectBuilderSql[Fields, Row] extends SelectBuilder[Fields, Row] {
 
   override lazy val sql: Option[Fragment] = Some(sqlAndRowParser._1)
 
-  final override def joinOn[Fields2, N[_]: Nullability, Row2](other: SelectBuilder[Fields2, Row2])(pred: Fields ~ Fields2 => SqlExpr[Boolean, N]): SelectBuilder[Fields ~ Fields2, Row ~ Row2] =
+  final override def joinOn[Fields2, Row2](other: SelectBuilder[Fields2, Row2])(pred: Fields ~ Fields2 => SqlExpr[Boolean]): SelectBuilder[Fields ~ Fields2, Row ~ Row2] =
     other match {
       case otherSql: SelectBuilderSql[Fields2, Row2] =>
-        new SelectBuilderSql.TableJoin[Fields, Fields2, N, Row, Row2](this.withPath(Path.LeftInJoin), otherSql.withPath(Path.RightInJoin), pred, SelectParams.empty)
+        new SelectBuilderSql.TableJoin[Fields, Fields2, Row, Row2](this.withPath(Path.LeftInJoin), otherSql.withPath(Path.RightInJoin), pred, SelectParams.empty)
       case _ => sys.error("you cannot mix mock and sql repos")
     }
 
-  final override def leftJoinOn[Fields2, N[_]: Nullability, Row2](
+  final override def leftJoinOn[Fields2, Row2](
       other: SelectBuilder[Fields2, Row2]
-  )(pred: Fields ~ Fields2 => SqlExpr[Boolean, N]): SelectBuilder[Fields ~ OuterJoined[Fields2], Row ~ Option[Row2]] =
+  )(pred: Fields ~ Fields2 => SqlExpr[Boolean]): SelectBuilder[Fields ~ Fields2, Row ~ Option[Row2]] =
     other match {
       case otherSql: SelectBuilderSql[Fields2, Row2] =>
         SelectBuilderSql.TableLeftJoin(this.withPath(Path.LeftInJoin), otherSql.withPath(Path.RightInJoin), pred, SelectParams.empty)
@@ -99,10 +99,10 @@ object SelectBuilderSql {
     }
   }
 
-  final case class TableJoin[Fields1, Fields2, N[_]: Nullability, Row1, Row2](
+  final case class TableJoin[Fields1, Fields2, Row1, Row2](
       left: SelectBuilderSql[Fields1, Row1],
       right: SelectBuilderSql[Fields2, Row2],
-      pred: Fields1 ~ Fields2 => SqlExpr[Boolean, N],
+      pred: Fields1 ~ Fields2 => SqlExpr[Boolean],
       params: SelectParams[Fields1 ~ Fields2, Row1 ~ Row2]
   ) extends SelectBuilderSql[Fields1 ~ Fields2, Row1 ~ Row2] {
     override lazy val structure: Structure[(Fields1, Fields2), Row1 ~ Row2] =
@@ -138,22 +138,22 @@ object SelectBuilderSql {
     }
   }
 
-  final case class TableLeftJoin[Fields1, Fields2, N[_]: Nullability, Row1, Row2](
+  final case class TableLeftJoin[Fields1, Fields2, Row1, Row2](
       left: SelectBuilderSql[Fields1, Row1],
       right: SelectBuilderSql[Fields2, Row2],
-      pred: Fields1 ~ Fields2 => SqlExpr[Boolean, N],
-      params: SelectParams[Fields1 ~ OuterJoined[Fields2], Row1 ~ Option[Row2]]
-  ) extends SelectBuilderSql[Fields1 ~ OuterJoined[Fields2], Row1 ~ Option[Row2]] {
-    override lazy val structure: Structure[Fields1 ~ OuterJoined[Fields2], Row1 ~ Option[Row2]] =
+      pred: Fields1 ~ Fields2 => SqlExpr[Boolean],
+      params: SelectParams[Fields1 ~ Fields2, Row1 ~ Option[Row2]]
+  ) extends SelectBuilderSql[Fields1 ~ Fields2, Row1 ~ Option[Row2]] {
+    override lazy val structure: Structure[Fields1 ~ Fields2, Row1 ~ Option[Row2]] =
       left.structure.leftJoin(right.structure)
 
-    override def withPath(path: Path): SelectBuilderSql[Fields1 ~ OuterJoined[Fields2], Row1 ~ Option[Row2]] =
+    override def withPath(path: Path): SelectBuilderSql[Fields1 ~ Fields2, Row1 ~ Option[Row2]] =
       copy(left = left.withPath(path), right = right.withPath(path))
 
-    override def withParams(sqlParams: SelectParams[Fields1 ~ OuterJoined[Fields2], Row1 ~ Option[Row2]]): SelectBuilder[Fields1 ~ OuterJoined[Fields2], Row1 ~ Option[Row2]] =
+    override def withParams(sqlParams: SelectParams[Fields1 ~ Fields2, Row1 ~ Option[Row2]]): SelectBuilder[Fields1 ~ Fields2, Row1 ~ Option[Row2]] =
       copy(params = sqlParams)
 
-    override def instantiate(ctx: RenderCtx): Instantiated[Fields1 ~ OuterJoined[Fields2], Row1 ~ Option[Row2]] = {
+    override def instantiate(ctx: RenderCtx): Instantiated[Fields1 ~ Fields2, Row1 ~ Option[Row2]] = {
       val alias = ctx.alias(structure._path)
       val leftInstance = left.instantiate(ctx)
       val rightInstance = right.instantiate(ctx)
@@ -186,7 +186,7 @@ object SelectBuilderSql {
   final case class Instantiated[Fields, Row](
       alias: String,
       isJoin: Boolean,
-      columns: List[(String, SqlExpr.FieldLikeNoHkt[?, ?])],
+      columns: List[(String, SqlExpr.FieldLike[?, ?])],
       sqlFrag: Fragment,
       upstreamCTEs: List[CTE],
       structure: Structure[Fields, Row],

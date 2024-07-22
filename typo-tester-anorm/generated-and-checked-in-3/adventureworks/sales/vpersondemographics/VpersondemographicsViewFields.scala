@@ -10,7 +10,7 @@ import adventureworks.customtypes.TypoMoney
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -53,8 +53,8 @@ object VpersondemographicsViewFields {
       override def numbercarsowned = OptField[Int, VpersondemographicsViewRow](_path, "numbercarsowned", None, None, x => x.numbercarsowned, (row, value) => row.copy(numbercarsowned = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VpersondemographicsViewRow]] =
-      List[FieldLikeNoHkt[?, VpersondemographicsViewRow]](fields.businessentityid, fields.totalpurchaseytd, fields.datefirstpurchase, fields.birthdate, fields.maritalstatus, fields.yearlyincome, fields.gender, fields.totalchildren, fields.numberchildrenathome, fields.education, fields.occupation, fields.homeownerflag, fields.numbercarsowned)
+    override lazy val columns: List[FieldLike[?, VpersondemographicsViewRow]] =
+      List[FieldLike[?, VpersondemographicsViewRow]](fields.businessentityid, fields.totalpurchaseytd, fields.datefirstpurchase, fields.birthdate, fields.maritalstatus, fields.yearlyincome, fields.gender, fields.totalchildren, fields.numberchildrenathome, fields.education, fields.occupation, fields.homeownerflag, fields.numbercarsowned)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

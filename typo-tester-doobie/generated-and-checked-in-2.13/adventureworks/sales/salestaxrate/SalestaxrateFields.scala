@@ -15,7 +15,7 @@ import adventureworks.public.Name
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -49,8 +49,8 @@ object SalestaxrateFields {
       override def modifieddate = Field[TypoLocalDateTime, SalestaxrateRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, SalestaxrateRow]] =
-      List[FieldLikeNoHkt[?, SalestaxrateRow]](fields.salestaxrateid, fields.stateprovinceid, fields.taxtype, fields.taxrate, fields.name, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, SalestaxrateRow]] =
+      List[FieldLike[?, SalestaxrateRow]](fields.salestaxrateid, fields.stateprovinceid, fields.taxtype, fields.taxrate, fields.name, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

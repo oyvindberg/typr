@@ -15,13 +15,12 @@ import adventureworks.sales.salesreason.SalesreasonRow
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -35,10 +34,10 @@ trait SalesorderheadersalesreasonFields {
   def fkSalesreason: ForeignKey[SalesreasonFields, SalesreasonRow] =
     ForeignKey[SalesreasonFields, SalesreasonRow]("sales.FK_SalesOrderHeaderSalesReason_SalesReason_SalesReasonID", Nil)
       .withColumnPair(salesreasonid, _.salesreasonid)
-  def compositeIdIs(compositeId: SalesorderheadersalesreasonId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: SalesorderheadersalesreasonId): SqlExpr[Boolean] =
     salesorderid.isEqual(compositeId.salesorderid).and(salesreasonid.isEqual(compositeId.salesreasonid))
-  def compositeIdIn(compositeIds: Array[SalesorderheadersalesreasonId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[SalesorderheadersalesreasonId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId], Required](ToParameterValue(null, SalesorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(SalesorderheaderId.parameterMetadata)), implicitly), TuplePart[SalesorderheadersalesreasonId](salesreasonid)(_.salesreasonid)(using as[Array[SalesreasonId], Required](ToParameterValue(null, SalesreasonId.arrayToStatement), adventureworks.arrayParameterMetaData(SalesreasonId.parameterMetadata)), implicitly))
+  def compositeIdIn(compositeIds: Array[SalesorderheadersalesreasonId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[SalesorderheadersalesreasonId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId]](ToParameterValue(null, SalesorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(SalesorderheaderId.parameterMetadata)), implicitly), TuplePart[SalesorderheadersalesreasonId](salesreasonid)(_.salesreasonid)(using as[Array[SalesreasonId]](ToParameterValue(null, SalesreasonId.arrayToStatement), adventureworks.arrayParameterMetaData(SalesreasonId.parameterMetadata)), implicitly))
   
 }
 
@@ -55,8 +54,8 @@ object SalesorderheadersalesreasonFields {
       override def modifieddate = Field[TypoLocalDateTime, SalesorderheadersalesreasonRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, SalesorderheadersalesreasonRow]] =
-      List[FieldLikeNoHkt[?, SalesorderheadersalesreasonRow]](fields.salesorderid, fields.salesreasonid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, SalesorderheadersalesreasonRow]] =
+      List[FieldLike[?, SalesorderheadersalesreasonRow]](fields.salesorderid, fields.salesreasonid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

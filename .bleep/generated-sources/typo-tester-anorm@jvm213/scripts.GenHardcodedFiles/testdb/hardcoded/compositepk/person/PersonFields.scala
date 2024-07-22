@@ -6,7 +6,7 @@
 package testdb.hardcoded.compositepk.person
 
 import typo.dsl.Path
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
@@ -30,8 +30,8 @@ object PersonFields {
       override def name = OptField[String, PersonRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PersonRow]] =
-      List[FieldLikeNoHkt[?, PersonRow]](fields.one, fields.two, fields.name)
+    override lazy val columns: List[FieldLike[?, PersonRow]] =
+      List[FieldLike[?, PersonRow]](fields.one, fields.two, fields.name)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

@@ -13,12 +13,11 @@ import anorm.ToParameterValue
 import anorm.ToStatement
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -28,10 +27,10 @@ trait TestUtdanningstilbudFields {
   def fkTestOrganisasjon: ForeignKey[TestOrganisasjonFields, TestOrganisasjonRow] =
     ForeignKey[TestOrganisasjonFields, TestOrganisasjonRow]("public.test_utdanningstilbud_organisasjonskode_fkey", Nil)
       .withColumnPair(organisasjonskode, _.organisasjonskode)
-  def compositeIdIs(compositeId: TestUtdanningstilbudId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: TestUtdanningstilbudId): SqlExpr[Boolean] =
     organisasjonskode.isEqual(compositeId.organisasjonskode).and(utdanningsmulighetKode.isEqual(compositeId.utdanningsmulighetKode))
-  def compositeIdIn(compositeIds: Array[TestUtdanningstilbudId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[TestUtdanningstilbudId](organisasjonskode)(_.organisasjonskode)(using as[Array[TestOrganisasjonId], Required](ToParameterValue(null, TestOrganisasjonId.arrayToStatement), adventureworks.arrayParameterMetaData(TestOrganisasjonId.parameterMetadata)), implicitly), TuplePart[TestUtdanningstilbudId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String], Required](ToParameterValue(null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(ParameterMetaData.StringParameterMetaData)), implicitly))
+  def compositeIdIn(compositeIds: Array[TestUtdanningstilbudId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[TestUtdanningstilbudId](organisasjonskode)(_.organisasjonskode)(using as[Array[TestOrganisasjonId]](ToParameterValue(null, TestOrganisasjonId.arrayToStatement), adventureworks.arrayParameterMetaData(TestOrganisasjonId.parameterMetadata)), implicitly), TuplePart[TestUtdanningstilbudId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String]](ToParameterValue(null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(ParameterMetaData.StringParameterMetaData)), implicitly))
   
 }
 
@@ -47,8 +46,8 @@ object TestUtdanningstilbudFields {
       override def utdanningsmulighetKode = IdField[String, TestUtdanningstilbudRow](_path, "utdanningsmulighet_kode", None, None, x => x.utdanningsmulighetKode, (row, value) => row.copy(utdanningsmulighetKode = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, TestUtdanningstilbudRow]] =
-      List[FieldLikeNoHkt[?, TestUtdanningstilbudRow]](fields.organisasjonskode, fields.utdanningsmulighetKode)
+    override lazy val columns: List[FieldLike[?, TestUtdanningstilbudRow]] =
+      List[FieldLike[?, TestUtdanningstilbudRow]](fields.organisasjonskode, fields.utdanningsmulighetKode)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

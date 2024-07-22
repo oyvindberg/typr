@@ -10,7 +10,7 @@ import adventureworks.public.issue142.Issue142Id
 import adventureworks.public.issue142.Issue142Row
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -32,8 +32,8 @@ object Issue1422Fields {
       override def tabellkode = IdField[Issue142Id, Issue1422Row](_path, "tabellkode", None, None, x => x.tabellkode, (row, value) => row.copy(tabellkode = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, Issue1422Row]] =
-      List[FieldLikeNoHkt[?, Issue1422Row]](fields.tabellkode)
+    override lazy val columns: List[FieldLike[?, Issue1422Row]] =
+      List[FieldLike[?, Issue1422Row]](fields.tabellkode)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

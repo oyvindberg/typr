@@ -18,13 +18,12 @@ import adventureworks.purchasing.vendor.VendorRow
 import typo.dsl.ForeignKey
 import typo.dsl.PGType
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
@@ -50,10 +49,10 @@ trait ProductvendorFields {
   def fkVendor: ForeignKey[VendorFields, VendorRow] =
     ForeignKey[VendorFields, VendorRow]("purchasing.FK_ProductVendor_Vendor_BusinessEntityID", Nil)
       .withColumnPair(businessentityid, _.businessentityid)
-  def compositeIdIs(compositeId: ProductvendorId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: ProductvendorId): SqlExpr[Boolean] =
     productid.isEqual(compositeId.productid).and(businessentityid.isEqual(compositeId.businessentityid))
-  def compositeIdIn(compositeIds: Array[ProductvendorId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[ProductvendorId](productid)(_.productid)(using as[Array[ProductId], Required](ProductId.arrayJdbcEncoder, PGType.forArray(ProductId.pgType)), implicitly), TuplePart[ProductvendorId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly))
+  def compositeIdIn(compositeIds: Array[ProductvendorId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[ProductvendorId](productid)(_.productid)(using as[Array[ProductId]](ProductId.arrayJdbcEncoder, PGType.forArray(ProductId.pgType)), implicitly), TuplePart[ProductvendorId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly))
   
 }
 
@@ -78,8 +77,8 @@ object ProductvendorFields {
       override def modifieddate = Field[TypoLocalDateTime, ProductvendorRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, ProductvendorRow]] =
-      List[FieldLikeNoHkt[?, ProductvendorRow]](fields.productid, fields.businessentityid, fields.averageleadtime, fields.standardprice, fields.lastreceiptcost, fields.lastreceiptdate, fields.minorderqty, fields.maxorderqty, fields.onorderqty, fields.unitmeasurecode, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, ProductvendorRow]] =
+      List[FieldLike[?, ProductvendorRow]](fields.productid, fields.businessentityid, fields.averageleadtime, fields.standardprice, fields.lastreceiptcost, fields.lastreceiptdate, fields.minorderqty, fields.maxorderqty, fields.onorderqty, fields.unitmeasurecode, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

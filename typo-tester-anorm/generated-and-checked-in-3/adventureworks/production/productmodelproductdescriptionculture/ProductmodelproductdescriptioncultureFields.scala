@@ -18,13 +18,12 @@ import adventureworks.production.productmodel.ProductmodelRow
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -42,10 +41,10 @@ trait ProductmodelproductdescriptioncultureFields {
   def fkProductmodel: ForeignKey[ProductmodelFields, ProductmodelRow] =
     ForeignKey[ProductmodelFields, ProductmodelRow]("production.FK_ProductModelProductDescriptionCulture_ProductModel_ProductMo", Nil)
       .withColumnPair(productmodelid, _.productmodelid)
-  def compositeIdIs(compositeId: ProductmodelproductdescriptioncultureId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: ProductmodelproductdescriptioncultureId): SqlExpr[Boolean] =
     productmodelid.isEqual(compositeId.productmodelid).and(productdescriptionid.isEqual(compositeId.productdescriptionid)).and(cultureid.isEqual(compositeId.cultureid))
-  def compositeIdIn(compositeIds: Array[ProductmodelproductdescriptioncultureId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[ProductmodelproductdescriptioncultureId](productmodelid)(_.productmodelid)(using as[Array[ProductmodelId], Required](using ToParameterValue(null, ProductmodelId.arrayToStatement), adventureworks.arrayParameterMetaData(using ProductmodelId.parameterMetadata)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](productdescriptionid)(_.productdescriptionid)(using as[Array[ProductdescriptionId], Required](using ToParameterValue(null, ProductdescriptionId.arrayToStatement), adventureworks.arrayParameterMetaData(using ProductdescriptionId.parameterMetadata)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](cultureid)(_.cultureid)(using as[Array[CultureId], Required](using ToParameterValue(null, CultureId.arrayToStatement), adventureworks.arrayParameterMetaData(using CultureId.parameterMetadata)), implicitly))
+  def compositeIdIn(compositeIds: Array[ProductmodelproductdescriptioncultureId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[ProductmodelproductdescriptioncultureId](productmodelid)(_.productmodelid)(using as[Array[ProductmodelId]](using ToParameterValue(null, ProductmodelId.arrayToStatement), adventureworks.arrayParameterMetaData(using ProductmodelId.parameterMetadata)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](productdescriptionid)(_.productdescriptionid)(using as[Array[ProductdescriptionId]](using ToParameterValue(null, ProductdescriptionId.arrayToStatement), adventureworks.arrayParameterMetaData(using ProductdescriptionId.parameterMetadata)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](cultureid)(_.cultureid)(using as[Array[CultureId]](using ToParameterValue(null, CultureId.arrayToStatement), adventureworks.arrayParameterMetaData(using CultureId.parameterMetadata)), implicitly))
   
 }
 
@@ -63,8 +62,8 @@ object ProductmodelproductdescriptioncultureFields {
       override def modifieddate = Field[TypoLocalDateTime, ProductmodelproductdescriptioncultureRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, ProductmodelproductdescriptioncultureRow]] =
-      List[FieldLikeNoHkt[?, ProductmodelproductdescriptioncultureRow]](fields.productmodelid, fields.productdescriptionid, fields.cultureid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, ProductmodelproductdescriptioncultureRow]] =
+      List[FieldLike[?, ProductmodelproductdescriptioncultureRow]](fields.productmodelid, fields.productdescriptionid, fields.cultureid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

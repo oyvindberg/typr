@@ -9,7 +9,7 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -34,8 +34,8 @@ object DepartmentFields {
       override def modifieddate = Field[TypoLocalDateTime, DepartmentRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, DepartmentRow]] =
-      List[FieldLikeNoHkt[?, DepartmentRow]](fields.departmentid, fields.name, fields.groupname, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, DepartmentRow]] =
+      List[FieldLike[?, DepartmentRow]](fields.departmentid, fields.name, fields.groupname, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

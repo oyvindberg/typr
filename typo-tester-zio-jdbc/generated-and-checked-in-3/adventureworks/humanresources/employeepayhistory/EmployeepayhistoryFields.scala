@@ -13,13 +13,12 @@ import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.ForeignKey
 import typo.dsl.PGType
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -32,10 +31,10 @@ trait EmployeepayhistoryFields {
   def fkEmployee: ForeignKey[EmployeeFields, EmployeeRow] =
     ForeignKey[EmployeeFields, EmployeeRow]("humanresources.FK_EmployeePayHistory_Employee_BusinessEntityID", Nil)
       .withColumnPair(businessentityid, _.businessentityid)
-  def compositeIdIs(compositeId: EmployeepayhistoryId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: EmployeepayhistoryId): SqlExpr[Boolean] =
     businessentityid.isEqual(compositeId.businessentityid).and(ratechangedate.isEqual(compositeId.ratechangedate))
-  def compositeIdIn(compositeIds: Array[EmployeepayhistoryId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[EmployeepayhistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](using BusinessentityId.arrayJdbcEncoder, PGType.forArray(using BusinessentityId.pgType)), implicitly), TuplePart[EmployeepayhistoryId](ratechangedate)(_.ratechangedate)(using as[Array[TypoLocalDateTime], Required](using TypoLocalDateTime.arrayJdbcEncoder, PGType.forArray(using TypoLocalDateTime.pgType)), implicitly))
+  def compositeIdIn(compositeIds: Array[EmployeepayhistoryId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[EmployeepayhistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](using BusinessentityId.arrayJdbcEncoder, PGType.forArray(using BusinessentityId.pgType)), implicitly), TuplePart[EmployeepayhistoryId](ratechangedate)(_.ratechangedate)(using as[Array[TypoLocalDateTime]](using TypoLocalDateTime.arrayJdbcEncoder, PGType.forArray(using TypoLocalDateTime.pgType)), implicitly))
   
 }
 
@@ -54,8 +53,8 @@ object EmployeepayhistoryFields {
       override def modifieddate = Field[TypoLocalDateTime, EmployeepayhistoryRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, EmployeepayhistoryRow]] =
-      List[FieldLikeNoHkt[?, EmployeepayhistoryRow]](fields.businessentityid, fields.ratechangedate, fields.rate, fields.payfrequency, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, EmployeepayhistoryRow]] =
+      List[FieldLike[?, EmployeepayhistoryRow]](fields.businessentityid, fields.ratechangedate, fields.rate, fields.payfrequency, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

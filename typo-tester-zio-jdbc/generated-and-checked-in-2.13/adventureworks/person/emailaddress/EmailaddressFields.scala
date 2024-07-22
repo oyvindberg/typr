@@ -13,13 +13,12 @@ import adventureworks.person.person.PersonRow
 import typo.dsl.ForeignKey
 import typo.dsl.PGType
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
@@ -33,10 +32,10 @@ trait EmailaddressFields {
   def fkPerson: ForeignKey[PersonFields, PersonRow] =
     ForeignKey[PersonFields, PersonRow]("person.FK_EmailAddress_Person_BusinessEntityID", Nil)
       .withColumnPair(businessentityid, _.businessentityid)
-  def compositeIdIs(compositeId: EmailaddressId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: EmailaddressId): SqlExpr[Boolean] =
     businessentityid.isEqual(compositeId.businessentityid).and(emailaddressid.isEqual(compositeId.emailaddressid))
-  def compositeIdIn(compositeIds: Array[EmailaddressId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[EmailaddressId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly), TuplePart[EmailaddressId](emailaddressid)(_.emailaddressid)(using as[Array[Int], Required](adventureworks.IntArrayEncoder, PGType.forArray(PGType.PGTypeInt)), implicitly))
+  def compositeIdIn(compositeIds: Array[EmailaddressId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[EmailaddressId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly), TuplePart[EmailaddressId](emailaddressid)(_.emailaddressid)(using as[Array[Int]](adventureworks.IntArrayEncoder, PGType.forArray(PGType.PGTypeInt)), implicitly))
   
 }
 
@@ -55,8 +54,8 @@ object EmailaddressFields {
       override def modifieddate = Field[TypoLocalDateTime, EmailaddressRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, EmailaddressRow]] =
-      List[FieldLikeNoHkt[?, EmailaddressRow]](fields.businessentityid, fields.emailaddressid, fields.emailaddress, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, EmailaddressRow]] =
+      List[FieldLike[?, EmailaddressRow]](fields.businessentityid, fields.emailaddressid, fields.emailaddress, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

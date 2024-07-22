@@ -4,217 +4,204 @@ import zio.jdbc.*
 
 import scala.reflect.ClassTag
 
-sealed trait SqlExpr[T, N[_]] extends SqlExpr.SqlExprNoHkt[N[T]] {
-  final def customBinaryOp[T2, N2[_], NC[_]](op: String, right: SqlExpr[T2, N2])(f: (T, T2) => Boolean)(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-    SqlExpr.Binary[T, T2, Boolean, N, N2, NC](this, new SqlOperator(op, f), right, N)
+sealed trait SqlExpr[T] {
+  final def customBinaryOp[T2](op: String, right: SqlExpr[T2])(f: (T, T2) => Boolean): SqlExpr[Boolean] =
+    SqlExpr.Binary[T, T2, Boolean](this, new SqlOperator(op, f), right)
 
-  final def isEqual[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def isEqual(t: SqlExpr[T]): SqlExpr[Boolean] =
     this === t
 
-  final def isNotEqual[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def isNotEqual(t: SqlExpr[T]): SqlExpr[Boolean] =
     this !== t
 
-  final def ===[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-    SqlExpr.Binary(this, SqlOperator.eq, t, N)
+  final def ===(t: SqlExpr[T]): SqlExpr[Boolean] =
+    SqlExpr.Binary(this, SqlOperator.eq[T], t)
 
-  final def !==[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-    SqlExpr.Binary(this, SqlOperator.neq, t, N)
+  final def !==(t: SqlExpr[T]): SqlExpr[Boolean] =
+    SqlExpr.Binary(this, SqlOperator.neq[T], t)
 
-  final def >[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-    SqlExpr.Binary(this, SqlOperator.gt, t, N)
+  final def >(t: SqlExpr[T]): SqlExpr[Boolean] =
+    SqlExpr.Binary(this, SqlOperator.gt[T], t)
 
-  final def >=[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-    SqlExpr.Binary(this, SqlOperator.gte, t, N)
+  final def >=(t: SqlExpr[T]): SqlExpr[Boolean] =
+    SqlExpr.Binary(this, SqlOperator.gte[T], t)
 
-  final def <[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-    SqlExpr.Binary(this, SqlOperator.lt, t, N)
+  final def <(t: SqlExpr[T]): SqlExpr[Boolean] =
+    SqlExpr.Binary(this, SqlOperator.lt[T], t)
 
-  final def <=[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-    SqlExpr.Binary(this, SqlOperator.lte, t, N)
+  final def <=(t: SqlExpr[T]): SqlExpr[Boolean] =
+    SqlExpr.Binary(this, SqlOperator.lte[T], t)
 
-  final infix def or[N2[_], NC[_]](other: SqlExpr[T, N2])(implicit B: Bijection[T, Boolean], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
-    SqlExpr.Binary(this, SqlOperator.or[T], other, N)
+  final infix def or(other: SqlExpr[T])(implicit B: Bijection[T, Boolean]): SqlExpr[T] =
+    SqlExpr.Binary(this, SqlOperator.or[T], other)
 
-  final infix def and[N2[_], NC[_]](other: SqlExpr[T, N2])(implicit B: Bijection[T, Boolean], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
-    SqlExpr.Binary(this, SqlOperator.and[T], other, N)
+  final infix def and(other: SqlExpr[T])(implicit B: Bijection[T, Boolean]): SqlExpr[T] =
+    SqlExpr.Binary(this, SqlOperator.and[T], other)
 
-  def unary_!(implicit B: Bijection[T, Boolean], N: Nullability[N]): SqlExpr[T, N] =
-    SqlExpr.Not(this, B, N)
+  def unary_!(implicit B: Bijection[T, Boolean]): SqlExpr[T] =
+    SqlExpr.Not(this, B)
 
-  final def +[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit Num: Numeric[T], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
+  final def +(t: SqlExpr[T])(implicit Num: Numeric[T]): SqlExpr[T] =
     plus(t)
-  final def plus[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit Num: Numeric[T], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
-    SqlExpr.Binary(this, SqlOperator.plus, t, N)
+  final def plus(t: SqlExpr[T])(implicit Num: Numeric[T]): SqlExpr[T] =
+    SqlExpr.Binary(this, SqlOperator.plus, t)
 
-  final def -[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit Num: Numeric[T], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
+  final def -(t: SqlExpr[T])(implicit Num: Numeric[T]): SqlExpr[T] =
     sub(t)
-  final def sub[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit Num: Numeric[T], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
-    SqlExpr.Binary(this, SqlOperator.minus, t, N)
+  final def sub(t: SqlExpr[T])(implicit Num: Numeric[T]): SqlExpr[T] =
+    SqlExpr.Binary(this, SqlOperator.minus, t)
 
-  final def *[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit Num: Numeric[T], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
+  final def *(t: SqlExpr[T])(implicit Num: Numeric[T]): SqlExpr[T] =
     mul(t)
-  final def mul[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit Num: Numeric[T], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
-    SqlExpr.Binary(this, SqlOperator.mul, t, N)
+  final def mul(t: SqlExpr[T])(implicit Num: Numeric[T]): SqlExpr[T] =
+    SqlExpr.Binary(this, SqlOperator.mul, t)
 
-  final def underlying[TT](implicit B: Bijection[T, TT], N: Nullability[N]): SqlExpr[TT, N] =
-    SqlExpr.Underlying(this, B, N)
+  final def underlying[TT](implicit B: Bijection[T, TT]): SqlExpr[TT] =
+    SqlExpr.Underlying(this, B)
 
-  final def like(str: String)(implicit B: Bijection[T, String], N: Nullability[N]): SqlExpr[Boolean, N] =
-    SqlExpr.Binary(this, SqlOperator.like, SqlExpr.asConstRequired(str), N.withRequired)
+  final def like(str: String)(implicit B: Bijection[T, String]): SqlExpr[Boolean] =
+    SqlExpr.Binary(this, SqlOperator.like, str)
 
-  final def ||[N2[_], NC[_]](other: SqlExpr[T, N2])(implicit B: Bijection[T, String], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
+  final def ||(other: SqlExpr[T])(implicit B: Bijection[T, String]): SqlExpr[T] =
     stringAppend(other)
-  final def stringAppend[N2[_], NC[_]](other: SqlExpr[T, N2])(implicit B: Bijection[T, String], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
-    SqlExpr.Binary(this, SqlOperator.strAdd, other, N)
+  final def stringAppend(other: SqlExpr[T])(implicit B: Bijection[T, String]): SqlExpr[T] =
+    SqlExpr.Binary(this, SqlOperator.strAdd, other)
 
-  final def lower(implicit B: Bijection[T, String], N: Nullability[N]): SqlExpr[T, N] =
-    SqlExpr.Apply1(SqlFunction1.lower, this, N)
+  final def lower(implicit B: Bijection[T, String]): SqlExpr[T] =
+    SqlExpr.Apply1(SqlFunction1.lower, this)
 
-  final def reverse(implicit B: Bijection[T, String], N: Nullability[N]): SqlExpr[T, N] =
-    SqlExpr.Apply1(SqlFunction1.reverse, this, N)
+  final def reverse(implicit B: Bijection[T, String]): SqlExpr[T] =
+    SqlExpr.Apply1(SqlFunction1.reverse, this)
 
-  final def upper(implicit B: Bijection[T, String], N: Nullability[N]): SqlExpr[T, N] =
-    SqlExpr.Apply1(SqlFunction1.upper, this, N)
+  final def upper(implicit B: Bijection[T, String]): SqlExpr[T] =
+    SqlExpr.Apply1(SqlFunction1.upper, this)
 
-  final def strpos[N2[_], NC[_]](substring: SqlExpr[String, N2])(implicit B: Bijection[T, String], N: Nullability2[N, N2, NC]): SqlExpr[Int, NC] =
-    SqlExpr.Apply2(SqlFunction2.strpos, this, substring, N)
+  final def strpos(substring: SqlExpr[String])(implicit B: Bijection[T, String]): SqlExpr[Int] =
+    SqlExpr.Apply2(SqlFunction2.strpos, this, substring)
 
-  final def strLength(implicit B: Bijection[T, String], N: Nullability[N]): SqlExpr[Int, N] =
-    SqlExpr.Apply1(SqlFunction1.length, this, N)
+  final def strLength(implicit B: Bijection[T, String]): SqlExpr[Int] =
+    SqlExpr.Apply1(SqlFunction1.length, this)
 
-  final def substring[N2[_], N3[_], NC[_]](from: SqlExpr[Int, N2], count: SqlExpr[Int, N3])(implicit
-      B: Bijection[T, String],
-      N: Nullability3[N, N2, N3, NC]
-  ): SqlExpr[T, NC] =
-    SqlExpr.Apply3(SqlFunction3.substring[T](), this, from, count, N)
+  final def substring(from: SqlExpr[Int], count: SqlExpr[Int])(implicit
+      B: Bijection[T, String]
+  ): SqlExpr[T] =
+    SqlExpr.Apply3(SqlFunction3.substring[T](), this, from, count)
 
-  final infix def in(ts: Array[T])(implicit ev: JdbcEncoder[Array[T]], N: Nullability[N]): SqlExpr[Boolean, N] =
-    SqlExpr.In(this, ts, ev, N)
+  final infix def in(ts: Array[T])(implicit ev: JdbcEncoder[Array[T]]): SqlExpr[Boolean] =
+    SqlExpr.In(this, ts, ev)
 
-  final def ?(implicit N: Nullability[N]): SqlExpr[T, Option] = opt
-  final def opt(implicit N: Nullability[N]): SqlExpr[T, Option] = SqlExpr.ToNullable(this, N)
+  def render(ctx: RenderCtx): SqlFragment
 }
 
 object SqlExpr {
-  sealed trait SqlExprNoHkt[NT] {
-    def render(ctx: RenderCtx): SqlFragment
-  }
-
-  sealed trait FieldLikeNoHkt[NT, R] extends SqlExprNoHkt[NT] {
+  sealed trait FieldLike[T, R] extends SqlExpr[T] {
     val path: List[Path]
     val name: String
-    val get: R => NT
-    val set: (R, NT) => R
+    val get: R => Option[T]
+    val set: (R, Option[T]) => Either[String, R]
     val sqlReadCast: Option[String]
     val sqlWriteCast: Option[String]
+
     final def value(ctx: RenderCtx): String = ctx.alias.get(path).fold("")(alias => s"($alias).") + name
     final def render(ctx: RenderCtx): SqlFragment = SqlFragment(value(ctx)) ++ SqlFragment(" ")
   }
 
-  sealed trait FieldLikeNotIdNoHkt[NT, R] extends FieldLikeNoHkt[NT, R]
-
-  sealed trait FieldLike[T, N[_], R] extends SqlExpr[T, N] with FieldLikeNoHkt[N[T], R] with Product
-
-  sealed trait FieldLikeNotId[T, N[_], R] extends FieldLike[T, N, R] with FieldLikeNotIdNoHkt[N[T], R]
+  sealed trait FieldLikeNotId[T, R] extends FieldLike[T, R]
 
   // connect a field `name` to a type `T` for a relation `R`
-  case class Field[T, R](path: List[Path], name: String, sqlReadCast: Option[String], sqlWriteCast: Option[String], get: R => T, set: (R, T) => R) extends FieldLikeNotId[T, Required, R]
+  case class Field[T, R](path: List[Path], name: String, sqlReadCast: Option[String], sqlWriteCast: Option[String], getRaw: R => T, setRaw: (R, T) => R) extends FieldLikeNotId[T, R] {
+    override val get: R => Option[T] =
+      row => Some(getRaw(row))
+    override val set: (R, Option[T]) => Either[String, R] = {
+      case (row, Some(t)) => Right(setRaw(row, t))
+      case (_, None)      => Left(s"Expected non-null value for ${name}")
+    }
+  }
 
-  case class IdField[T, R](path: List[Path], name: String, sqlReadCast: Option[String], sqlWriteCast: Option[String], get: R => T, set: (R, T) => R) extends FieldLike[T, Required, R]
+  case class IdField[T, R](path: List[Path], name: String, sqlReadCast: Option[String], sqlWriteCast: Option[String], getRaw: R => T, setRaw: (R, T) => R) extends FieldLike[T, R] {
+    override val get: R => Option[T] =
+      row => Some(getRaw(row))
+    override val set: (R, Option[T]) => Either[String, R] = {
+      case (row, Some(t)) => Right(setRaw(row, t))
+      case (_, None)      => Left(s"Expected non-null value for ${name}")
+    }
+  }
 
-  case class OptField[T, R](path: List[Path], name: String, sqlReadCast: Option[String], sqlWriteCast: Option[String], get: R => Option[T], set: (R, Option[T]) => R)
-      extends FieldLikeNotId[T, Option, R]
+  case class OptField[T, R](path: List[Path], name: String, sqlReadCast: Option[String], sqlWriteCast: Option[String], get: R => Option[T], setRaw: (R, Option[T]) => R) extends FieldLikeNotId[T, R] {
+    override val set: (R, Option[T]) => Either[String, R] = (row, ot) => Right(setRaw(row, ot))
+  }
 
-  case class Const[T, N[_]](value: N[T], E: JdbcEncoder[N[T]], P: PGType[T]) extends SqlExpr[T, N] {
+  sealed trait Const[T] extends SqlExpr[T]
+
+  case class ConstReq[T](value: T, E: JdbcEncoder[T], P: PGType[T]) extends Const[T] {
+    override def render(ctx: RenderCtx): SqlFragment = sql"${E.encode(value)}" ++ s"::${P.sqlType}"
+  }
+  case class ConstOpt[T](value: Option[T], E: JdbcEncoder[Option[T]], P: PGType[T]) extends Const[T] {
     override def render(ctx: RenderCtx): SqlFragment = sql"${E.encode(value)}" ++ s"::${P.sqlType}"
   }
 
   object Const {
-    trait As[T, N[_]] {
-      def apply(value: N[T]): SqlExpr.Const[T, N]
+    trait As[I, O] {
+      def apply(value: I): SqlExpr.Const[O]
     }
 
-    object As {
-      implicit def as[T, N[_]](implicit E: JdbcEncoder[N[T]], P: PGType[T]): As[T, N] =
-        (value: N[T]) => SqlExpr.Const(value, E, P)
+    trait As0 {
+      implicit def as[T](implicit E: JdbcEncoder[T], P: PGType[T]): As[T, T] =
+        (value: T) => SqlExpr.ConstReq(value, E, P)
+    }
+
+    object As extends As0 {
+      implicit def asOpt[T](implicit E: JdbcEncoder[Option[T]], P: PGType[T]): As[Option[T], T] =
+        (value: Option[T]) => SqlExpr.ConstOpt(value, E, P)
     }
   }
 
-  case class ArrayIndex[T, N1[_], N2[_]](arr: SqlExpr[Array[T], N1], idx: SqlExpr[Int, N2], N: Nullability2[N1, N2, Option]) extends SqlExpr[T, Option] {
+  case class ArrayIndex[T](arr: SqlExpr[Array[T]], idx: SqlExpr[Int]) extends SqlExpr[T] {
     override def render(ctx: RenderCtx): SqlFragment =
       sql"${arr.render(ctx)}[${idx.render(ctx)}]"
   }
 
-  case class Apply1[T1, O, N[_]](f: SqlFunction1[T1, O], arg1: SqlExpr[T1, N], N: Nullability[N]) extends SqlExpr[O, N] {
+  case class Apply1[T1, O](f: SqlFunction1[T1, O], arg1: SqlExpr[T1]) extends SqlExpr[O] {
     override def render(ctx: RenderCtx): SqlFragment =
       sql"${SqlFragment(f.name)}(${arg1.render(ctx)})"
   }
 
-  case class Apply2[T1, T2, O, N1[_], N2[_], N[_]](f: SqlFunction2[T1, T2, O], arg1: SqlExpr[T1, N1], arg2: SqlExpr[T2, N2], N: Nullability2[N1, N2, N]) extends SqlExpr[O, N] {
+  case class Apply2[T1, T2, O](f: SqlFunction2[T1, T2, O], arg1: SqlExpr[T1], arg2: SqlExpr[T2]) extends SqlExpr[O] {
     override def render(ctx: RenderCtx): SqlFragment =
       sql"${SqlFragment(f.name)}(${arg1.render(ctx)}, ${arg2.render(ctx)})"
   }
 
-  case class Apply3[T1, T2, T3, N1[_], N2[_], N3[_], N[_], O](
+  case class Apply3[T1, T2, T3, O](
       f: SqlFunction3[T1, T2, T3, O],
-      arg1: SqlExpr[T1, N1],
-      arg2: SqlExpr[T2, N2],
-      arg3: SqlExpr[T3, N3],
-      N: Nullability3[N1, N2, N3, N]
-  ) extends SqlExpr[O, N] {
+      arg1: SqlExpr[T1],
+      arg2: SqlExpr[T2],
+      arg3: SqlExpr[T3]
+  ) extends SqlExpr[O] {
     override def render(ctx: RenderCtx): SqlFragment =
       sql"${SqlFragment(f.name)}(${arg1.render(ctx)}, ${arg2.render(ctx)}, ${arg3.render(ctx)})"
   }
 
-  case class Binary[T1, T2, O, N1[_], N2[_], N[_]](left: SqlExpr[T1, N1], op: SqlOperator[T1, T2, O], right: SqlExpr[T2, N2], N: Nullability2[N1, N2, N]) extends SqlExpr[O, N] {
+  case class Binary[T1, T2, O](left: SqlExpr[T1], op: SqlOperator[T1, T2, O], right: SqlExpr[T2]) extends SqlExpr[O] {
     override def render(ctx: RenderCtx): SqlFragment =
       sql"(${left.render(ctx)} ${SqlFragment(op.name)} ${right.render(ctx)})"
   }
 
-  case class Underlying[T, TT, N[_]](expr: SqlExpr[T, N], bijection: Bijection[T, TT], N: Nullability[N]) extends SqlExpr[TT, N] {
+  case class Underlying[T, TT](expr: SqlExpr[T], bijection: Bijection[T, TT]) extends SqlExpr[TT] {
     override def render(ctx: RenderCtx): SqlFragment =
       expr.render(ctx)
   }
 
-  case class Coalesce[T](expr: SqlExpr[T, Option], getOrElse: SqlExpr[T, Required]) extends SqlExpr[T, Required] {
+  case class Coalesce[T](expr: SqlExpr[T], getOrElse: SqlExpr[T]) extends SqlExpr[T] {
     override def render(ctx: RenderCtx): SqlFragment =
       sql"coalesce(${expr.render(ctx)}, ${getOrElse.render(ctx)})"
   }
 
-  case class In[T, N[_]](expr: SqlExpr[T, N], values: Array[T], ev: JdbcEncoder[Array[T]], N: Nullability[N]) extends SqlExpr[Boolean, N] {
+  case class In[T](expr: SqlExpr[T], values: Array[T], ev: JdbcEncoder[Array[T]]) extends SqlExpr[Boolean] {
     override def render(ctx: RenderCtx): SqlFragment =
       sql"${expr.render(ctx)} = ANY(${ev.encode(values)})"
   }
 
-  case class IsNull[T](expr: SqlExpr[T, Option]) extends SqlExpr[Boolean, Required] {
-    override def render(ctx: RenderCtx): SqlFragment =
-      sql"${expr.render(ctx)} IS NULL"
-  }
-
-  case class Not[T, N[_]](expr: SqlExpr[T, N], B: Bijection[T, Boolean], N: Nullability[N]) extends SqlExpr[T, N] {
-    override def render(ctx: RenderCtx): SqlFragment =
-      sql"NOT ${expr.render(ctx)}"
-  }
-
-  case class ToNullable[T, N[_]](expr: SqlExpr[T, N], N: Nullability[N]) extends SqlExpr[T, Option] {
-    override def render(ctx: RenderCtx): SqlFragment =
-      expr.render(ctx)
-  }
-
-  // automatically put values in a constant expression
-  implicit def asConstOpt[T](t: Option[T])(implicit E: JdbcEncoder[Option[T]], P: PGType[T]): SqlExpr.Const[T, Option] =
-    Const(t, E, P)
-
-  implicit def asConstRequired[T: JdbcEncoder: PGType](t: T): SqlExpr.Const[T, Required] =
-    Const[T, Required](t, implicitly, implicitly)
-
-  // some syntax to construct field sort order
-  implicit class SqlExprSortSyntax[T, N[_]](private val expr: SqlExpr[T, N]) extends AnyVal {
-    def asc(implicit N: Nullability[N]): SortOrder[T, N] = SortOrder(expr, ascending = true, nullsFirst = false)
-    def desc(implicit N: Nullability[N]): SortOrder[T, N] = SortOrder(expr, ascending = false, nullsFirst = false)
-  }
-
-  case class CompositeIn[Tuple, Row](tuples: Array[Tuple])(val parts: CompositeIn.TuplePart[Tuple, ?, Row]*) extends SqlExpr[Boolean, Required] {
+  case class CompositeIn[Tuple, Row](tuples: Array[Tuple])(val parts: CompositeIn.TuplePart[Tuple, ?, Row]*) extends SqlExpr[Boolean] {
     override def render(ctx: RenderCtx): SqlFragment = {
       val fieldNames: Seq[SqlFragment] =
         parts.map(part => sql"${part.field.render(ctx)}")
@@ -222,7 +209,7 @@ object SqlExpr {
       val unnests: Seq[SqlFragment] =
         parts
           .map { case part: CompositeIn.TuplePart[Tuple, t, Row] =>
-            val partExpr: Const[Array[t], Required] = part.asConst(tuples.map(part.extract)(part.CT))
+            val partExpr: Const[Array[t]] = part.asConst(tuples.map(part.extract)(part.CT))
             sql"unnest(${partExpr.render(ctx)})"
           }
 
@@ -236,7 +223,7 @@ object SqlExpr {
       *   not used. must have a value to write an `AnyVal`
       */
     class TuplePart0[Tuple](private val ev: Boolean) extends AnyVal {
-      def apply[T, Row](field: FieldLike[T, Required, Row])(extract: Tuple => T)(implicit asConst: Const.As[Array[T], Required], CT: ClassTag[T]) =
+      def apply[T, Row](field: FieldLike[T, Row])(extract: Tuple => T)(implicit asConst: Const.As[Array[T], Array[T]], CT: ClassTag[T]) =
         new TuplePart[Tuple, T, Row](field, extract, asConst, CT)
     }
 
@@ -244,32 +231,52 @@ object SqlExpr {
       def apply[Tuple] = new TuplePart0[Tuple](false)
     }
 
-    class TuplePart[Tuple, T, Row](val field: FieldLike[T, Required, Row], val extract: Tuple => T, val asConst: Const.As[Array[T], Required], val CT: ClassTag[T])
+    class TuplePart[Tuple, T, Row](val field: FieldLike[T, Row], val extract: Tuple => T, val asConst: Const.As[Array[T], Array[T]], val CT: ClassTag[T])
   }
 
-  case class RowExpr(exprs: List[SqlExpr.SqlExprNoHkt[?]]) extends SqlExpr[List[?], Required] {
+  case class RowExpr(exprs: List[SqlExpr[?]]) extends SqlExpr[List[?]] {
     override def render(ctx: RenderCtx): SqlFragment = exprs.map(_.render(ctx)).mkFragment(sql"(", sql",", sql")")
   }
 
-  implicit class SqlExprArraySyntax[T, N[_]](private val expr: SqlExpr[Array[T], N]) extends AnyVal {
-
-    /** look up an element in an array at index `idx` */
-    def arrayIndex[N2[_]](idx: SqlExpr[Int, N2])(implicit N: Nullability2[N, N2, Option]): SqlExpr[T, Option] =
-      SqlExpr.ArrayIndex[T, N, N2](expr, idx, N)
-
-    /** concatenate two arrays */
-    def arrayConcat[N2[_], NC[_]](other: SqlExpr[Array[T], N2])(implicit C: ClassTag[T], N: Nullability2[N, N2, NC]): SqlExpr[Array[T], NC] =
-      SqlExpr.Binary(expr, SqlOperator.arrayConcat, other, N)
-
-    /** does arrays have elements in common */
-    def arrayOverlaps[N2[_], NC[_]](other: SqlExpr[Array[T], N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
-      SqlExpr.Binary(expr, SqlOperator.arrayOverlaps[Array[T], T], other, N)
+  case class IsNull[T](expr: SqlExpr[T]) extends SqlExpr[Boolean] {
+    override def render(ctx: RenderCtx): SqlFragment =
+      sql"${expr.render(ctx)} IS NULL"
   }
 
-  implicit class SqlExprOptionalSyntax[T](private val expr: SqlExpr[T, Option]) extends AnyVal {
-    def isNull: SqlExpr[Boolean, Required] =
+  case class Not[T](expr: SqlExpr[T], B: Bijection[T, Boolean]) extends SqlExpr[T] {
+    override def render(ctx: RenderCtx): SqlFragment =
+      sql"NOT ${expr.render(ctx)}"
+  }
+
+  // automatically put values in a constant expression
+  implicit def asConst[I, O](t: I)(implicit C: Const.As[I, O]): SqlExpr.Const[O] =
+    C(t)
+
+  // some syntax to construct field sort order
+  implicit class SqlExprSortSyntax[T](private val expr: SqlExpr[T]) extends AnyVal {
+    def asc: SortOrder[T] = SortOrder(expr, ascending = true, nullsFirst = false)
+    def desc: SortOrder[T] = SortOrder(expr, ascending = false, nullsFirst = false)
+  }
+
+  implicit class SqlExprArraySyntax[T](private val expr: SqlExpr[Array[T]]) extends AnyVal {
+
+    /** look up an element in an array at index `idx` */
+    def arrayIndex(idx: SqlExpr[Int]): SqlExpr[T] =
+      SqlExpr.ArrayIndex[T](expr, idx)
+
+    /** concatenate two arrays */
+    def arrayConcat(other: SqlExpr[Array[T]])(implicit C: ClassTag[T]): SqlExpr[Array[T]] =
+      SqlExpr.Binary(expr, SqlOperator.arrayConcat, other)
+
+    /** does arrays have elements in common */
+    def arrayOverlaps(other: SqlExpr[Array[T]]): SqlExpr[Boolean] =
+      SqlExpr.Binary(expr, SqlOperator.arrayOverlaps[Array[T], T], other)
+  }
+
+  implicit class SqlExprOptionalSyntax[T](private val expr: SqlExpr[T]) extends AnyVal {
+    def isNull: SqlExpr[Boolean] =
       SqlExpr.IsNull(expr)
-    def coalesce(orElse: SqlExpr[T, Required]): SqlExpr[T, Required] =
+    def coalesce(orElse: SqlExpr[T]): SqlExpr[T] =
       SqlExpr.Coalesce(expr, orElse)
   }
 }

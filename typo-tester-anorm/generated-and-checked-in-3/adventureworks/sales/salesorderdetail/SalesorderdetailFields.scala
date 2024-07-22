@@ -20,13 +20,12 @@ import anorm.ParameterMetaData
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
@@ -49,15 +48,15 @@ trait SalesorderdetailFields {
     ForeignKey[SpecialofferproductFields, SpecialofferproductRow]("sales.FK_SalesOrderDetail_SpecialOfferProduct_SpecialOfferIDProductID", Nil)
       .withColumnPair(specialofferid, _.specialofferid)
       .withColumnPair(productid, _.productid)
-  def compositeIdIs(compositeId: SalesorderdetailId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: SalesorderdetailId): SqlExpr[Boolean] =
     salesorderid.isEqual(compositeId.salesorderid).and(salesorderdetailid.isEqual(compositeId.salesorderdetailid))
-  def compositeIdIn(compositeIds: Array[SalesorderdetailId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[SalesorderdetailId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId], Required](using ToParameterValue(null, SalesorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(using SalesorderheaderId.parameterMetadata)), implicitly), TuplePart[SalesorderdetailId](salesorderdetailid)(_.salesorderdetailid)(using as[Array[Int], Required](using ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(using ParameterMetaData.IntParameterMetaData)), implicitly))
+  def compositeIdIn(compositeIds: Array[SalesorderdetailId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[SalesorderdetailId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId]](using ToParameterValue(null, SalesorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(using SalesorderheaderId.parameterMetadata)), implicitly), TuplePart[SalesorderdetailId](salesorderdetailid)(_.salesorderdetailid)(using as[Array[Int]](using ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(using ParameterMetaData.IntParameterMetaData)), implicitly))
   
-  def extractSpecialofferproductIdIs(id: SpecialofferproductId): SqlExpr[Boolean, Required] =
+  def extractSpecialofferproductIdIs(id: SpecialofferproductId): SqlExpr[Boolean] =
     specialofferid.isEqual(id.specialofferid).and(productid.isEqual(id.productid))
-  def extractSpecialofferproductIdIn(ids: Array[SpecialofferproductId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(ids)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId], Required](using ToParameterValue(null, SpecialofferId.arrayToStatement), adventureworks.arrayParameterMetaData(using SpecialofferId.parameterMetadata)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId], Required](using ToParameterValue(null, ProductId.arrayToStatement), adventureworks.arrayParameterMetaData(using ProductId.parameterMetadata)), implicitly))
+  def extractSpecialofferproductIdIn(ids: Array[SpecialofferproductId]): SqlExpr[Boolean] =
+    new CompositeIn(ids)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId]](using ToParameterValue(null, SpecialofferId.arrayToStatement), adventureworks.arrayParameterMetaData(using SpecialofferId.parameterMetadata)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId]](using ToParameterValue(null, ProductId.arrayToStatement), adventureworks.arrayParameterMetaData(using ProductId.parameterMetadata)), implicitly))
   
 }
 
@@ -81,8 +80,8 @@ object SalesorderdetailFields {
       override def modifieddate = Field[TypoLocalDateTime, SalesorderdetailRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, SalesorderdetailRow]] =
-      List[FieldLikeNoHkt[?, SalesorderdetailRow]](fields.salesorderid, fields.salesorderdetailid, fields.carriertrackingnumber, fields.orderqty, fields.productid, fields.specialofferid, fields.unitprice, fields.unitpricediscount, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, SalesorderdetailRow]] =
+      List[FieldLike[?, SalesorderdetailRow]](fields.salesorderid, fields.salesorderdetailid, fields.carriertrackingnumber, fields.orderqty, fields.productid, fields.specialofferid, fields.unitprice, fields.unitpricediscount, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

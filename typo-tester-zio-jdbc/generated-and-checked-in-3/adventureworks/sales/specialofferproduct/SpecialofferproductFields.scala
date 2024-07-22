@@ -16,13 +16,12 @@ import adventureworks.sales.specialoffer.SpecialofferRow
 import typo.dsl.ForeignKey
 import typo.dsl.PGType
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -37,10 +36,10 @@ trait SpecialofferproductFields {
   def fkSpecialoffer: ForeignKey[SpecialofferFields, SpecialofferRow] =
     ForeignKey[SpecialofferFields, SpecialofferRow]("sales.FK_SpecialOfferProduct_SpecialOffer_SpecialOfferID", Nil)
       .withColumnPair(specialofferid, _.specialofferid)
-  def compositeIdIs(compositeId: SpecialofferproductId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: SpecialofferproductId): SqlExpr[Boolean] =
     specialofferid.isEqual(compositeId.specialofferid).and(productid.isEqual(compositeId.productid))
-  def compositeIdIn(compositeIds: Array[SpecialofferproductId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId], Required](using SpecialofferId.arrayJdbcEncoder, PGType.forArray(using SpecialofferId.pgType)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId], Required](using ProductId.arrayJdbcEncoder, PGType.forArray(using ProductId.pgType)), implicitly))
+  def compositeIdIn(compositeIds: Array[SpecialofferproductId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId]](using SpecialofferId.arrayJdbcEncoder, PGType.forArray(using SpecialofferId.pgType)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId]](using ProductId.arrayJdbcEncoder, PGType.forArray(using ProductId.pgType)), implicitly))
   
 }
 
@@ -58,8 +57,8 @@ object SpecialofferproductFields {
       override def modifieddate = Field[TypoLocalDateTime, SpecialofferproductRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, SpecialofferproductRow]] =
-      List[FieldLikeNoHkt[?, SpecialofferproductRow]](fields.specialofferid, fields.productid, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, SpecialofferproductRow]] =
+      List[FieldLike[?, SpecialofferproductRow]](fields.specialofferid, fields.productid, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

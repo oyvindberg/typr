@@ -12,16 +12,14 @@ import adventureworks.production.document.DocumentRow
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
-import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -35,10 +33,10 @@ trait ProductdocumentFields {
   def fkProduct: ForeignKey[ProductFields, ProductRow] =
     ForeignKey[ProductFields, ProductRow]("production.FK_ProductDocument_Product_ProductID", Nil)
       .withColumnPair(productid, _.productid)
-  def compositeIdIs(compositeId: ProductdocumentId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: ProductdocumentId): SqlExpr[Boolean] =
     productid.isEqual(compositeId.productid).and(documentnode.isEqual(compositeId.documentnode))
-  def compositeIdIn(compositeIds: Array[ProductdocumentId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[ProductdocumentId](productid)(_.productid)(using as[Array[ProductId], Required](ProductId.arrayPut, Write.fromPut(ProductId.arrayPut)), implicitly), TuplePart[ProductdocumentId](documentnode)(_.documentnode)(using as[Array[DocumentId], Required](DocumentId.arrayPut, Write.fromPut(DocumentId.arrayPut)), implicitly))
+  def compositeIdIn(compositeIds: Array[ProductdocumentId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[ProductdocumentId](productid)(_.productid)(using as[Array[ProductId]](ProductId.arrayPut), implicitly), TuplePart[ProductdocumentId](documentnode)(_.documentnode)(using as[Array[DocumentId]](DocumentId.arrayPut), implicitly))
   
 }
 
@@ -55,8 +53,8 @@ object ProductdocumentFields {
       override def documentnode = IdField[DocumentId, ProductdocumentRow](_path, "documentnode", None, None, x => x.documentnode, (row, value) => row.copy(documentnode = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, ProductdocumentRow]] =
-      List[FieldLikeNoHkt[?, ProductdocumentRow]](fields.productid, fields.modifieddate, fields.documentnode)
+    override lazy val columns: List[FieldLike[?, ProductdocumentRow]] =
+      List[FieldLike[?, ProductdocumentRow]](fields.productid, fields.modifieddate, fields.documentnode)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

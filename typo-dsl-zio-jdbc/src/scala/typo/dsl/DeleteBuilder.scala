@@ -9,10 +9,7 @@ trait DeleteBuilder[Fields, Row] {
   protected def params: DeleteParams[Fields]
   protected def withParams(sqlParams: DeleteParams[Fields]): DeleteBuilder[Fields, Row]
 
-  final def where[N[_]: Nullability](v: Fields => SqlExpr[Boolean, N]): DeleteBuilder[Fields, Row] =
-    whereStrict(f => v(f).?.coalesce(false))
-
-  final def whereStrict(v: Fields => SqlExpr[Boolean, Required]): DeleteBuilder[Fields, Row] =
+  final def where(v: Fields => SqlExpr[Boolean]): DeleteBuilder[Fields, Row] =
     withParams(params.where(v))
 
   def sql: Option[SqlFragment]
@@ -61,7 +58,7 @@ object DeleteBuilder {
     override def execute: ZIO[ZConnection, Throwable, Long] = ZIO.succeed {
       var changed: Long = 0L
       map.foreach { case (id, row) =>
-        if (params.where.forall(w => structure.untypedEval(w(structure.fields), row))) {
+        if (params.where.forall(w => structure.untypedEval(w(structure.fields), row).getOrElse(false))) {
           map.remove(id): @nowarn
           changed += 1
         }

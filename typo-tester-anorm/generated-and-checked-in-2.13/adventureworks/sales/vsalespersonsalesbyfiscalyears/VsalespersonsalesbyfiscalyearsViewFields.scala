@@ -6,7 +6,7 @@
 package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import typo.dsl.Path
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -37,8 +37,8 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       override def `2014` = OptField[BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](_path, "2014", None, None, x => x.`2014`, (row, value) => row.copy(`2014` = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VsalespersonsalesbyfiscalyearsViewRow]] =
-      List[FieldLikeNoHkt[?, VsalespersonsalesbyfiscalyearsViewRow]](fields.salesPersonID, fields.fullName, fields.jobTitle, fields.salesTerritory, fields.`2012`, fields.`2013`, fields.`2014`)
+    override lazy val columns: List[FieldLike[?, VsalespersonsalesbyfiscalyearsViewRow]] =
+      List[FieldLike[?, VsalespersonsalesbyfiscalyearsViewRow]](fields.salesPersonID, fields.fullName, fields.jobTitle, fields.salesTerritory, fields.`2012`, fields.`2013`, fields.`2014`)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

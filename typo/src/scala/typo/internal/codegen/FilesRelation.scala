@@ -190,7 +190,7 @@ case class FilesRelation(
 
       val extractFkMember: List[sc.Code] =
         maybeFkAnalysis.toList.flatMap(_.extractFksIdsFromRow).flatMap { (x: FkAnalysis.ExtractFkId) =>
-          val predicateType = sc.Type.dsl.SqlExpr.of(TypesScala.Boolean, sc.Type.dsl.Required)
+          val predicateType = sc.Type.dsl.SqlExpr.of(TypesScala.Boolean)
           val is = {
             val expr = x.colPairs
               .map { case (otherCol, thisCol) => code"${thisCol.name}.isEqual(id.${otherCol.name})" }
@@ -215,7 +215,7 @@ case class FilesRelation(
         names.maybeId
           .collect {
             case x: IdComputed.Composite if x.cols.forall(_.dbCol.nullability == Nullability.NoNulls) =>
-              val predicateType = sc.Type.dsl.SqlExpr.of(TypesScala.Boolean, sc.Type.dsl.Required)
+              val predicateType = sc.Type.dsl.SqlExpr.of(TypesScala.Boolean)
               val is = {
                 val id = x.paramName
                 val expr = x.cols

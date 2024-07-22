@@ -9,7 +9,7 @@ import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -48,8 +48,8 @@ object VjobcandidateemploymentViewFields {
       override def empLocCity = OptField[String, VjobcandidateemploymentViewRow](_path, "Emp.Loc.City", None, None, x => x.empLocCity, (row, value) => row.copy(empLocCity = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VjobcandidateemploymentViewRow]] =
-      List[FieldLikeNoHkt[?, VjobcandidateemploymentViewRow]](fields.jobcandidateid, fields.empStartDate, fields.empEndDate, fields.empOrgName, fields.empJobTitle, fields.empResponsibility, fields.empFunctionCategory, fields.empIndustryCategory, fields.empLocCountryRegion, fields.empLocState, fields.empLocCity)
+    override lazy val columns: List[FieldLike[?, VjobcandidateemploymentViewRow]] =
+      List[FieldLike[?, VjobcandidateemploymentViewRow]](fields.jobcandidateid, fields.empStartDate, fields.empEndDate, fields.empOrgName, fields.empJobTitle, fields.empResponsibility, fields.empFunctionCategory, fields.empIndustryCategory, fields.empLocCountryRegion, fields.empLocState, fields.empLocCity)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

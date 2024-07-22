@@ -11,7 +11,7 @@ import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -78,8 +78,8 @@ object VproductmodelcatalogdescriptionViewFields {
       override def modifieddate = Field[TypoLocalDateTime, VproductmodelcatalogdescriptionViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VproductmodelcatalogdescriptionViewRow]] =
-      List[FieldLikeNoHkt[?, VproductmodelcatalogdescriptionViewRow]](fields.productmodelid, fields.name, fields.summary, fields.manufacturer, fields.copyright, fields.producturl, fields.warrantyperiod, fields.warrantydescription, fields.noofyears, fields.maintenancedescription, fields.wheel, fields.saddle, fields.pedal, fields.bikeframe, fields.crankset, fields.pictureangle, fields.picturesize, fields.productphotoid, fields.material, fields.color, fields.productline, fields.style, fields.riderexperience, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, VproductmodelcatalogdescriptionViewRow]] =
+      List[FieldLike[?, VproductmodelcatalogdescriptionViewRow]](fields.productmodelid, fields.name, fields.summary, fields.manufacturer, fields.copyright, fields.producturl, fields.warrantyperiod, fields.warrantydescription, fields.noofyears, fields.maintenancedescription, fields.wheel, fields.saddle, fields.pedal, fields.bikeframe, fields.crankset, fields.pictureangle, fields.picturesize, fields.productphotoid, fields.material, fields.color, fields.productline, fields.style, fields.riderexperience, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

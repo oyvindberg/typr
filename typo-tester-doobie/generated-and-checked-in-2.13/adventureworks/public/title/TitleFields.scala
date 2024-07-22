@@ -6,7 +6,7 @@
 package adventureworks.public.title
 
 import typo.dsl.Path
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -25,8 +25,8 @@ object TitleFields {
       override def code = IdField[TitleId, TitleRow](_path, "code", None, None, x => x.code, (row, value) => row.copy(code = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, TitleRow]] =
-      List[FieldLikeNoHkt[?, TitleRow]](fields.code)
+    override lazy val columns: List[FieldLike[?, TitleRow]] =
+      List[FieldLike[?, TitleRow]](fields.code)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

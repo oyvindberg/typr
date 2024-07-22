@@ -1,6 +1,6 @@
 package typo.dsl
 
-import anorm.{ParameterMetaData, RowParser, SQL, SimpleSql, ToParameterValue}
+import anorm.{RowParser, SQL, SimpleSql}
 import typo.dsl.Fragment.FragmentStringInterpolator
 
 import java.sql.Connection
@@ -11,19 +11,19 @@ trait UpdateBuilder[Fields, Row] {
   protected def params: UpdateParams[Fields, Row]
   protected def withParams(sqlParams: UpdateParams[Fields, Row]): UpdateBuilder[Fields, Row]
 
-  final def whereStrict(v: Fields => SqlExpr[Boolean, Required]): UpdateBuilder[Fields, Row] =
+  final def whereStrict(v: Fields => SqlExpr[Boolean]): UpdateBuilder[Fields, Row] =
     withParams(params.where(v))
 
-  final def where[N[_]: Nullability](v: Fields => SqlExpr[Boolean, N]): UpdateBuilder[Fields, Row] =
-    withParams(params.where(f => v(f).?.coalesce(false)))
+  final def where(v: Fields => SqlExpr[Boolean]): UpdateBuilder[Fields, Row] =
+    withParams(params.where(f => v(f).coalesce(false)))
 
-  final def setValue[N[_], T](col: Fields => SqlExpr.FieldLikeNotId[T, N, Row])(value: N[T])(implicit T: ToParameterValue[N[T]], P: ParameterMetaData[T]): UpdateBuilder[Fields, Row] =
-    withParams(params.set(col, _ => SqlExpr.Const[T, N](value, T, P)))
+  final def setValue[N[_], T](col: Fields => SqlExpr.FieldLikeNotId[T, Row])(value: T)(implicit C: SqlExpr.Const.As[T, T]): UpdateBuilder[Fields, Row] =
+    withParams(params.set(col, _ => C(value)))
 
-  final def setComputedValue[T, N[_]](col: Fields => SqlExpr.FieldLikeNotId[T, N, Row])(value: SqlExpr.FieldLikeNotId[T, N, Row] => SqlExpr[T, N]): UpdateBuilder[Fields, Row] =
+  final def setComputedValue[T](col: Fields => SqlExpr.FieldLikeNotId[T, Row])(value: SqlExpr.FieldLike[T, Row] => SqlExpr[T]): UpdateBuilder[Fields, Row] =
     withParams(params.set(col, fields => value(col(fields))))
 
-  final def setComputedValueFromRow[T, N[_]](col: Fields => SqlExpr.FieldLikeNotId[T, N, Row])(value: Fields => SqlExpr[T, N]): UpdateBuilder[Fields, Row] =
+  final def setComputedValueFromRow[T](col: Fields => SqlExpr.FieldLikeNotId[T, Row])(value: Fields => SqlExpr[T]): UpdateBuilder[Fields, Row] =
     withParams(params.set(col, value))
 
   def sql(returning: Boolean): Option[Fragment]
@@ -105,11 +105,14 @@ object UpdateBuilder {
     override def executeReturnChanged()(implicit @nowarn c: Connection): List[Row] = {
       val changed = List.newBuilder[Row]
       map.foreach { case (id, row) =>
-        if (params.where.forall(w => structure.untypedEval(w(structure.fields), row))) {
-          val newRow = params.setters.foldLeft(row) { case (row, set: UpdateParams.Setter[Fields, nt, Row]) =>
-            val field: SqlExpr.FieldLikeNotIdNoHkt[nt, Row] = set.col(structure.fields)
-            val newValue: nt = structure.untypedEval(set.value(structure.fields), row)
-            field.set(row, newValue)
+        if (params.where.forall(w => structure.untypedEval(w(structure.fields), row).getOrElse(false))) {
+          val newRow = params.setters.foldLeft(row) { case (row, set: UpdateParams.Setter[Fields, t, Row]) =>
+            val field: SqlExpr.FieldLike[t, Row] = set.col(structure.fields)
+            val newValue: Option[t] = structure.untypedEval(set.value(structure.fields), row)
+            field.set(row, newValue) match {
+              case Left(msg)    => sys.error(msg)
+              case Right(value) => value
+            }
           }
           map.update(id, newRow)
           changed += newRow

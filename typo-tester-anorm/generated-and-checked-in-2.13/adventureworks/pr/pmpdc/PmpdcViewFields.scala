@@ -11,7 +11,7 @@ import adventureworks.production.productdescription.ProductdescriptionId
 import adventureworks.production.productmodel.ProductmodelId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.Structure.Relation
 
 trait PmpdcViewFields {
@@ -35,8 +35,8 @@ object PmpdcViewFields {
       override def modifieddate = Field[TypoLocalDateTime, PmpdcViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PmpdcViewRow]] =
-      List[FieldLikeNoHkt[?, PmpdcViewRow]](fields.productmodelid, fields.productdescriptionid, fields.cultureid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, PmpdcViewRow]] =
+      List[FieldLike[?, PmpdcViewRow]](fields.productmodelid, fields.productdescriptionid, fields.cultureid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

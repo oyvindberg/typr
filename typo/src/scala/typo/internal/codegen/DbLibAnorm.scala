@@ -193,13 +193,13 @@ class DbLibAnorm(pkg: sc.QIdent, inlineImplicits: Boolean, default: ComputedDefa
         case other => sc.Summon(ToStatement.of(other)).code
       }
 
-  override def resolveConstAs(tpe: sc.Type): sc.Code = {
-    val optionality = tpe match {
-      case TypesScala.Optional(_) => TypesScala.Option
-      case _                      => sc.Type.dsl.Required
+  override def resolveConstAs(tpe: sc.Type): sc.Code =
+    tpe match {
+      case TypesScala.Optional(underlying) =>
+        code"${sc.Type.dsl.ConstAsAsOpt}[$underlying]($ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
+      case _ =>
+        code"${sc.Type.dsl.ConstAsAs}[$tpe](${dialect.usingCall}$ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
     }
-    code"${sc.Type.dsl.ConstAsAs}[$tpe, $optionality](${dialect.usingCall}$ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
-  }
 
   override def repoSig(repoMethod: RepoMethod): Right[Nothing, sc.Code] = {
     val name = repoMethod.methodName

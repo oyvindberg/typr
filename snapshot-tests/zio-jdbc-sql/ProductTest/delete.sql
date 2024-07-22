@@ -1,1 +1,1 @@
-DELETE FROM "production"."product" where coalesce((productid  = ?::int4), ?::boolean)
+DELETE FROM "production"."product" where (productid  = ?::int4)

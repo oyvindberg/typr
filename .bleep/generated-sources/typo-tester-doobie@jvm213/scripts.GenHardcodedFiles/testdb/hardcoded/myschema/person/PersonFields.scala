@@ -16,7 +16,7 @@ import testdb.hardcoded.myschema.marital_status.MaritalStatusRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
@@ -64,8 +64,8 @@ object PersonFields {
       override def favoriteNumber = Field[Number, PersonRow](_path, "favorite_number", None, Some("myschema.number"), x => x.favoriteNumber, (row, value) => row.copy(favoriteNumber = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PersonRow]] =
-      List[FieldLikeNoHkt[?, PersonRow]](fields.id, fields.favouriteFootballClubId, fields.name, fields.nickName, fields.blogUrl, fields.email, fields.phone, fields.likesPizza, fields.maritalStatusId, fields.workEmail, fields.sector, fields.favoriteNumber)
+    override lazy val columns: List[FieldLike[?, PersonRow]] =
+      List[FieldLike[?, PersonRow]](fields.id, fields.favouriteFootballClubId, fields.name, fields.nickName, fields.blogUrl, fields.email, fields.phone, fields.likesPizza, fields.maritalStatusId, fields.workEmail, fields.sector, fields.favoriteNumber)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

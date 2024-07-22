@@ -11,7 +11,7 @@ import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -50,8 +50,8 @@ object VproductmodelinstructionsViewFields {
       override def modifieddate = Field[TypoLocalDateTime, VproductmodelinstructionsViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VproductmodelinstructionsViewRow]] =
-      List[FieldLikeNoHkt[?, VproductmodelinstructionsViewRow]](fields.productmodelid, fields.name, fields.instructions, fields.locationID, fields.setupHours, fields.machineHours, fields.laborHours, fields.lotSize, fields.step, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, VproductmodelinstructionsViewRow]] =
+      List[FieldLike[?, VproductmodelinstructionsViewRow]](fields.productmodelid, fields.name, fields.instructions, fields.locationID, fields.setupHours, fields.machineHours, fields.laborHours, fields.lotSize, fields.step, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

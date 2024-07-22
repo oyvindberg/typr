@@ -23,7 +23,7 @@ final case class SelectBuilderMock[Fields, Row](
   override def count: ConnectionIO[Int] =
     all.map(all => SelectBuilderMock.applyParams(structure, all, params)).map(_.length)
 
-  override def joinOn[Fields2, N[_]: Nullability, Row2](other: SelectBuilder[Fields2, Row2])(pred: Fields ~ Fields2 => SqlExpr[Boolean, N]): SelectBuilderMock[Fields ~ Fields2, Row ~ Row2] = {
+  override def joinOn[Fields2, Row2](other: SelectBuilder[Fields2, Row2])(pred: Fields ~ Fields2 => SqlExpr[Boolean]): SelectBuilderMock[Fields ~ Fields2, Row ~ Row2] = {
     val otherMock: SelectBuilderMock[Fields2, Row2] = other match {
       case x: SelectBuilderMock[Fields2, Row2] => x.withPath(Path.RightInJoin)
       case _                                   => sys.error("you cannot mix mock and sql repos")
@@ -40,14 +40,14 @@ final case class SelectBuilderMock[Fields, Row](
         left <- lefts
         right <- rights
         newRow = (left, right)
-        if Nullability[N].toOpt(newStructure.untypedEval(pred(newStructure.fields), newRow)).getOrElse(false)
+        if newStructure.untypedEval(pred(newStructure.fields), newRow).getOrElse(false)
       } yield newRow
 
     SelectBuilderMock[Fields ~ Fields2, Row ~ Row2](newStructure, newRows, SelectParams.empty)
   }
-  override def leftJoinOn[Fields2, N[_]: Nullability, Row2](
+  override def leftJoinOn[Fields2, Row2](
       other: SelectBuilder[Fields2, Row2]
-  )(pred: Fields ~ Fields2 => SqlExpr[Boolean, N]): SelectBuilder[Fields ~ OuterJoined[Fields2], Row ~ Option[Row2]] = {
+  )(pred: Fields ~ Fields2 => SqlExpr[Boolean]): SelectBuilder[Fields ~ Fields2, Row ~ Option[Row2]] = {
     val otherMock: SelectBuilderMock[Fields2, Row2] = other match {
       case x: SelectBuilderMock[Fields2, Row2] => x.withPath(Path.RightInJoin)
       case _                                   => sys.error("you cannot mix mock and sql repos")
@@ -62,13 +62,13 @@ final case class SelectBuilderMock[Fields, Row](
         lefts.map { left =>
           val maybeRight = rights.find { right =>
             val newStructure = structure.join(otherMock.structure)
-            Nullability[N].toOpt(newStructure.untypedEval(pred(newStructure.fields), (left, right))).getOrElse(false)
+            newStructure.untypedEval(pred(newStructure.fields), (left, right)).getOrElse(false)
           }
           (left, maybeRight)
         }
       }
     }
-    SelectBuilderMock[Fields ~ OuterJoined[Fields2], Row ~ Option[Row2]](self.structure.leftJoin(otherMock.structure), newRows, SelectParams.empty)
+    SelectBuilderMock[Fields ~ Fields2, Row ~ Option[Row2]](self.structure.leftJoin(otherMock.structure), newRows, SelectParams.empty)
   }
 
   override def sql: Option[Fragment] = None

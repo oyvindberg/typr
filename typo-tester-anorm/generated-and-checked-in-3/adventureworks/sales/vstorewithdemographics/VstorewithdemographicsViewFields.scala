@@ -10,7 +10,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -51,8 +51,8 @@ object VstorewithdemographicsViewFields {
       override def numberEmployees = OptField[Int, VstorewithdemographicsViewRow](_path, "NumberEmployees", None, None, x => x.numberEmployees, (row, value) => row.copy(numberEmployees = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, VstorewithdemographicsViewRow]] =
-      List[FieldLikeNoHkt[?, VstorewithdemographicsViewRow]](fields.businessentityid, fields.name, fields.annualSales, fields.annualRevenue, fields.bankName, fields.businessType, fields.yearOpened, fields.specialty, fields.squareFeet, fields.brands, fields.internet, fields.numberEmployees)
+    override lazy val columns: List[FieldLike[?, VstorewithdemographicsViewRow]] =
+      List[FieldLike[?, VstorewithdemographicsViewRow]](fields.businessentityid, fields.name, fields.annualSales, fields.annualRevenue, fields.bankName, fields.businessType, fields.yearOpened, fields.specialty, fields.squareFeet, fields.brands, fields.internet, fields.numberEmployees)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

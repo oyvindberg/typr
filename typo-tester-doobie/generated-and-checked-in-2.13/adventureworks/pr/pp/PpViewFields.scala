@@ -10,7 +10,7 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.productphoto.ProductphotoId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 
@@ -41,8 +41,8 @@ object PpViewFields {
       override def modifieddate = Field[TypoLocalDateTime, PpViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, PpViewRow]] =
-      List[FieldLikeNoHkt[?, PpViewRow]](fields.id, fields.productphotoid, fields.thumbnailphoto, fields.thumbnailphotofilename, fields.largephoto, fields.largephotofilename, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, PpViewRow]] =
+      List[FieldLike[?, PpViewRow]](fields.id, fields.productphotoid, fields.thumbnailphoto, fields.thumbnailphotofilename, fields.largephoto, fields.largephotofilename, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

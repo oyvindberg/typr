@@ -12,7 +12,7 @@ import adventureworks.production.product.ProductRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -44,8 +44,8 @@ object ShoppingcartitemFields {
       override def modifieddate = Field[TypoLocalDateTime, ShoppingcartitemRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, ShoppingcartitemRow]] =
-      List[FieldLikeNoHkt[?, ShoppingcartitemRow]](fields.shoppingcartitemid, fields.shoppingcartid, fields.quantity, fields.productid, fields.datecreated, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, ShoppingcartitemRow]] =
+      List[FieldLike[?, ShoppingcartitemRow]](fields.shoppingcartitemid, fields.shoppingcartid, fields.quantity, fields.productid, fields.datecreated, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

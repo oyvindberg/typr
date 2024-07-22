@@ -14,7 +14,7 @@ object FileStringEnum {
 
     val instances = List(
       options.dbLib.toList.flatMap(_.stringEnumInstances(enm.tpe, TypesJava.String, enm.dbEnum.name.value, openEnum = false)),
-      options.jsonLibs.flatMap(_.stringEnumInstances(enm.tpe, TypesJava.String, openEnum = false)),
+      options.jsonLibs.flatMap(_.stringEnumInstances(enm.tpe, TypesJava.String, openEnum = false))
     ).flatten
 
     val obj = genObject.withBody(enm.tpe.value, instances)(

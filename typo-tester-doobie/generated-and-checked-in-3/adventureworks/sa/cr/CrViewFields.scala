@@ -10,7 +10,7 @@ import adventureworks.sales.currency.CurrencyId
 import adventureworks.sales.currencyrate.CurrencyrateId
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.Structure.Relation
 
 trait CrViewFields {
@@ -40,8 +40,8 @@ object CrViewFields {
       override def modifieddate = Field[TypoLocalDateTime, CrViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, CrViewRow]] =
-      List[FieldLikeNoHkt[?, CrViewRow]](fields.currencyrateid, fields.currencyratedate, fields.fromcurrencycode, fields.tocurrencycode, fields.averagerate, fields.endofdayrate, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, CrViewRow]] =
+      List[FieldLike[?, CrViewRow]](fields.currencyrateid, fields.currencyratedate, fields.fromcurrencycode, fields.tocurrencycode, fields.averagerate, fields.endofdayrate, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

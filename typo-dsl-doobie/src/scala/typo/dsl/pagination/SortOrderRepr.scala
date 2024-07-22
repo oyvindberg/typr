@@ -9,7 +9,7 @@ import typo.dsl.{RenderCtx, SortOrderNoHkt}
 case class SortOrderRepr(expr: String) extends AnyVal
 
 object SortOrderRepr {
-  def from[NT](x: SortOrderNoHkt[NT], ctx: RenderCtx): SortOrderRepr = {
+  def from[T](x: SortOrderNoHkt[T], ctx: RenderCtx): SortOrderRepr = {
     val internals = x.expr.render(ctx).internals
     // todo: deconstructing the sql string and replacing `?` with the value would yield a more readable result
     val sql = internals.elements match {

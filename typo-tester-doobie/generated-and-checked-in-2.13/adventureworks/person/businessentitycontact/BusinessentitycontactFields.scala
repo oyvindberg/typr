@@ -15,16 +15,14 @@ import adventureworks.person.contacttype.ContacttypeId
 import adventureworks.person.contacttype.ContacttypeRow
 import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
-import doobie.util.Write
 import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.Required
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
-import typo.dsl.SqlExpr.FieldLikeNoHkt
+import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.Structure.Relation
 
@@ -43,10 +41,10 @@ trait BusinessentitycontactFields {
   def fkPerson: ForeignKey[PersonFields, PersonRow] =
     ForeignKey[PersonFields, PersonRow]("person.FK_BusinessEntityContact_Person_PersonID", Nil)
       .withColumnPair(personid, _.businessentityid)
-  def compositeIdIs(compositeId: BusinessentitycontactId): SqlExpr[Boolean, Required] =
+  def compositeIdIs(compositeId: BusinessentitycontactId): SqlExpr[Boolean] =
     businessentityid.isEqual(compositeId.businessentityid).and(personid.isEqual(compositeId.personid)).and(contacttypeid.isEqual(compositeId.contacttypeid))
-  def compositeIdIn(compositeIds: Array[BusinessentitycontactId]): SqlExpr[Boolean, Required] =
-    new CompositeIn(compositeIds)(TuplePart[BusinessentitycontactId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayPut, Write.fromPut(BusinessentityId.arrayPut)), implicitly), TuplePart[BusinessentitycontactId](personid)(_.personid)(using as[Array[BusinessentityId], Required](BusinessentityId.arrayPut, Write.fromPut(BusinessentityId.arrayPut)), implicitly), TuplePart[BusinessentitycontactId](contacttypeid)(_.contacttypeid)(using as[Array[ContacttypeId], Required](ContacttypeId.arrayPut, Write.fromPut(ContacttypeId.arrayPut)), implicitly))
+  def compositeIdIn(compositeIds: Array[BusinessentitycontactId]): SqlExpr[Boolean] =
+    new CompositeIn(compositeIds)(TuplePart[BusinessentitycontactId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](BusinessentityId.arrayPut), implicitly), TuplePart[BusinessentitycontactId](personid)(_.personid)(using as[Array[BusinessentityId]](BusinessentityId.arrayPut), implicitly), TuplePart[BusinessentitycontactId](contacttypeid)(_.contacttypeid)(using as[Array[ContacttypeId]](ContacttypeId.arrayPut), implicitly))
   
 }
 
@@ -65,8 +63,8 @@ object BusinessentitycontactFields {
       override def modifieddate = Field[TypoLocalDateTime, BusinessentitycontactRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
   
-    override lazy val columns: List[FieldLikeNoHkt[?, BusinessentitycontactRow]] =
-      List[FieldLikeNoHkt[?, BusinessentitycontactRow]](fields.businessentityid, fields.personid, fields.contacttypeid, fields.rowguid, fields.modifieddate)
+    override lazy val columns: List[FieldLike[?, BusinessentitycontactRow]] =
+      List[FieldLike[?, BusinessentitycontactRow]](fields.businessentityid, fields.personid, fields.contacttypeid, fields.rowguid, fields.modifieddate)
   
     override def copy(path: List[Path]): Impl =
       new Impl(path)

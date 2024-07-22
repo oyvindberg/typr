@@ -21,7 +21,7 @@ class SeekDbTest extends AnyFunSuite with TypeCheckedTripleEquals {
     }
 
     // same as sql below
-    val List(group1, group2) = rows.sortBy(x => (x.modifieddate, x.businessentityid.value)).grouped(limit).toList: @unchecked
+    val List(group1, group2) = rows.sortBy(x => (x.modifieddate.value, x.businessentityid.value)).grouped(limit).toList: @unchecked
 
     withConnection { implicit c =>
       // batch insert some rows
@@ -62,7 +62,7 @@ class SeekDbTest extends AnyFunSuite with TypeCheckedTripleEquals {
     }
 
     // same as sql below
-    val List(group1, group2) = rows.sortBy(x => (Reverse(x.modifieddate), x.businessentityid.value)).grouped(limit).toList: @unchecked
+    val List(group1, group2) = rows.sortBy(x => (Reverse(x.modifieddate.value), x.businessentityid.value)).grouped(limit).toList: @unchecked
 
     withConnection { implicit c =>
       // batch insert some rows

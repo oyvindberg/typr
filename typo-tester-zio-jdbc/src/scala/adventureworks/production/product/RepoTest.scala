@@ -15,12 +15,12 @@ class RepoTest extends SnapshotTest {
       val um2 = UnitmeasureRow(unitmeasurecode = UnitmeasureId("kg2"), name = Name("name2"), TypoLocalDateTime.now)
       for {
         _ <- unitmeasureRepo.upsertStreaming(ZStream(um1, um2))
-        _ <- unitmeasureRepo.selectAll.runCollect.map(all => assert(List(um1, um2) == all.sortBy(_.name)))
+        _ <- unitmeasureRepo.selectAll.runCollect.map(all => assert(List(um1, um2) == all.sortBy(_.name.value)))
         um1a = um1.copy(name = Name("name1a"))
         um2a = um2.copy(name = Name("name2a"))
         _ <- unitmeasureRepo.upsertStreaming(ZStream(um1a, um2a))
         all <- unitmeasureRepo.selectAll.runCollect
-      } yield assert(Chunk(um1a, um2a) == all.sortBy(_.name))
+      } yield assert(Chunk(um1a, um2a) == all.sortBy(_.name.value))
     }
 
   test("in-memory") {
