@@ -39,7 +39,6 @@ object TypoUnknownCitext {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoUnknownCitext] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoUnknownCitext] = new ParameterMetaData[TypoUnknownCitext] {
     override def sqlType: String = "citext"
     override def jdbcType: Int = Types.OTHER

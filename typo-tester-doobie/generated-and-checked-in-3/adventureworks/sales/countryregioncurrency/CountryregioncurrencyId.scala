@@ -18,5 +18,4 @@ case class CountryregioncurrencyId(
 object CountryregioncurrencyId {
   given decoder: Decoder[CountryregioncurrencyId] = Decoder.forProduct2[CountryregioncurrencyId, CountryregionId, CurrencyId]("countryregioncode", "currencycode")(CountryregioncurrencyId.apply)(using CountryregionId.decoder, CurrencyId.decoder)
   given encoder: Encoder[CountryregioncurrencyId] = Encoder.forProduct2[CountryregioncurrencyId, CountryregionId, CurrencyId]("countryregioncode", "currencycode")(x => (x.countryregioncode, x.currencycode))(using CountryregionId.encoder, CurrencyId.encoder)
-  given ordering: Ordering[CountryregioncurrencyId] = Ordering.by(x => (x.countryregioncode, x.currencycode))
 }

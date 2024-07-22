@@ -53,7 +53,6 @@ object TypoPolygon {
   given jdbcEncoder: JdbcEncoder[TypoPolygon] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoPolygon] = JsonDecoder[List[TypoPoint]].map(TypoPolygon.apply)
   given jsonEncoder: JsonEncoder[TypoPolygon] = JsonEncoder[List[TypoPoint]].contramap(_.points)
-  given ordering(using O0: Ordering[List[TypoPoint]]): Ordering[TypoPolygon] = Ordering.by(_.points)
   given pgType: PGType[TypoPolygon] = PGType.instance[TypoPolygon]("polygon", Types.OTHER)
   given setter: Setter[TypoPolygon] = Setter.other(
     (ps, i, v) => {

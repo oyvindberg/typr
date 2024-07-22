@@ -57,7 +57,6 @@ object TypoJson {
   given jdbcEncoder: JdbcEncoder[TypoJson] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoJson] = JsonDecoder.string.map(TypoJson.apply)
   given jsonEncoder: JsonEncoder[TypoJson] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TypoJson] = Ordering.by(_.value)
   given pgType: PGType[TypoJson] = PGType.instance[TypoJson]("json", Types.OTHER)
   given setter: Setter[TypoJson] = Setter.other(
     (ps, i, v) => {

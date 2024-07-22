@@ -25,7 +25,6 @@ object CustomerId {
   implicit lazy val jdbcEncoder: JdbcEncoder[CustomerId] = JdbcEncoder.intEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[CustomerId] = JsonDecoder.int.map(CustomerId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[CustomerId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val ordering: Ordering[CustomerId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[CustomerId] = PGType.PGTypeInt.as
   implicit lazy val setter: Setter[CustomerId] = Setter.intSetter.contramap(_.value)
   implicit lazy val text: Text[CustomerId] = new Text[CustomerId] {

@@ -23,7 +23,6 @@ case class ProductmodelproductdescriptioncultureId(
   cultureid: CultureId
 )
 object ProductmodelproductdescriptioncultureId {
-  implicit lazy val ordering: Ordering[ProductmodelproductdescriptioncultureId] = Ordering.by(x => (x.productmodelid, x.productdescriptionid, x.cultureid))
   implicit lazy val reads: Reads[ProductmodelproductdescriptioncultureId] = Reads[ProductmodelproductdescriptioncultureId](json => JsResult.fromTry(
       Try(
         ProductmodelproductdescriptioncultureId(

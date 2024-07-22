@@ -26,7 +26,6 @@ object TypoUnknownCitext {
   given encoder: Encoder[TypoUnknownCitext] = Encoder.encodeString.contramap(_.value)
   given get: Get[TypoUnknownCitext] = Get.Advanced.other[String](NonEmptyList.one("citext"))
     .map(v => TypoUnknownCitext(v))
-  given ordering: Ordering[TypoUnknownCitext] = Ordering.by(_.value)
   given put: Put[TypoUnknownCitext] = Put.Advanced.other[String](NonEmptyList.one("citext")).contramap(v => v.value)
   given text: Text[TypoUnknownCitext] = new Text[TypoUnknownCitext] {
     override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

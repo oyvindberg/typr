@@ -25,7 +25,6 @@ object PersonId {
   given jdbcEncoder: JdbcEncoder[PersonId] = JdbcEncoder.longEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[PersonId] = JsonDecoder.long.map(PersonId.apply)
   given jsonEncoder: JsonEncoder[PersonId] = JsonEncoder.long.contramap(_.value)
-  given ordering: Ordering[PersonId] = Ordering.by(_.value)
   given pgType: PGType[PersonId] = PGType.PGTypeLong.as
   given setter: Setter[PersonId] = Setter.longSetter.contramap(_.value)
   given text: Text[PersonId] = new Text[PersonId] {

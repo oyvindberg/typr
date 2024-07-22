@@ -25,7 +25,6 @@ object SpecialofferId {
   given jdbcEncoder: JdbcEncoder[SpecialofferId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[SpecialofferId] = JsonDecoder.int.map(SpecialofferId.apply)
   given jsonEncoder: JsonEncoder[SpecialofferId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[SpecialofferId] = Ordering.by(_.value)
   given pgType: PGType[SpecialofferId] = PGType.PGTypeInt.as
   given setter: Setter[SpecialofferId] = Setter.intSetter.contramap(_.value)
   given text: Text[SpecialofferId] = new Text[SpecialofferId] {

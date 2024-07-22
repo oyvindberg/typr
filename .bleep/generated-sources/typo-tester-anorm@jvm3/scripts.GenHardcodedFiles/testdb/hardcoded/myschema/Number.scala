@@ -42,7 +42,6 @@ object Number {
   given arrayColumn: Column[Array[Number]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(Number.force))
   given arrayToStatement: ToStatement[Array[Number]] = ToStatement[Array[Number]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.number", arr.map[AnyRef](_.value))))
   given column: Column[Number] = Column.columnToString.mapResult(str => Number(str).left.map(SqlMappingError.apply))
-  given ordering: Ordering[Number] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[Number] = new ParameterMetaData[Number] {
     override def sqlType: String = "myschema.number"
     override def jdbcType: Int = Types.OTHER

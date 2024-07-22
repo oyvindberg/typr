@@ -75,7 +75,6 @@ trait SelectBuilder[Fields, Row] {
 
       fk.columnPairs
         .map { case columnPair: ForeignKey.ColumnPair[t, Fields2] =>
-          implicit val ord: Ordering[t] = columnPair.ordering
           val left: SqlExpr[t, Option] = columnPair.thisField
           val right: SqlExpr[t, Option] = columnPair.thatField(thatFields)
           left === right

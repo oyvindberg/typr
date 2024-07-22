@@ -22,7 +22,6 @@ object CurrencyrateId {
   implicit lazy val decoder: Decoder[CurrencyrateId] = Decoder.decodeInt.map(CurrencyrateId.apply)
   implicit lazy val encoder: Encoder[CurrencyrateId] = Encoder.encodeInt.contramap(_.value)
   implicit lazy val get: Get[CurrencyrateId] = Meta.IntMeta.get.map(CurrencyrateId.apply)
-  implicit lazy val ordering: Ordering[CurrencyrateId] = Ordering.by(_.value)
   implicit lazy val put: Put[CurrencyrateId] = Meta.IntMeta.put.contramap(_.value)
   implicit lazy val text: Text[CurrencyrateId] = new Text[CurrencyrateId] {
     override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

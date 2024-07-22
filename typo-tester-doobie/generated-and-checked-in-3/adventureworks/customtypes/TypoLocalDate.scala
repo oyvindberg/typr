@@ -29,7 +29,6 @@ object TypoLocalDate {
   given encoder: Encoder[TypoLocalDate] = Encoder.encodeLocalDate.contramap(_.value)
   given get: Get[TypoLocalDate] = Get.Advanced.other[String](NonEmptyList.one("date"))
     .map(v => TypoLocalDate(LocalDate.parse(v)))
-  given ordering: Ordering[TypoLocalDate] = Ordering.by(_.value)
   given put: Put[TypoLocalDate] = Put.Advanced.other[String](NonEmptyList.one("date")).contramap(v => v.value.toString)
   given text: Text[TypoLocalDate] = new Text[TypoLocalDate] {
     override def unsafeEncode(v: TypoLocalDate, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

@@ -64,7 +64,6 @@ object TypoShort {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoShort] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoShort] = JsonDecoder[Short].map(TypoShort.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoShort] = JsonEncoder[Short].contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoShort] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoShort] = PGType.instance[TypoShort]("int2", Types.OTHER)
   implicit lazy val setter: Setter[TypoShort] = Setter.other(
     (ps, i, v) => {

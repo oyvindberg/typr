@@ -51,7 +51,6 @@ object TypoMoney {
   given jdbcEncoder: JdbcEncoder[TypoMoney] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoMoney] = JsonDecoder.scalaBigDecimal.map(TypoMoney.apply)
   given jsonEncoder: JsonEncoder[TypoMoney] = JsonEncoder.scalaBigDecimal.contramap(_.value)
-  given ordering: Ordering[TypoMoney] = Ordering.by(_.value)
   given pgType: PGType[TypoMoney] = PGType.instance[TypoMoney]("money", Types.OTHER)
   given setter: Setter[TypoMoney] = Setter.other(
     (ps, i, v) => {

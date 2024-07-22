@@ -36,5 +36,4 @@ object ProductdocumentId {
       out.write("}")
     }
   }
-  given ordering: Ordering[ProductdocumentId] = Ordering.by(x => (x.productid, x.documentnode))
 }

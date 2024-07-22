@@ -17,5 +17,4 @@ case class EmailaddressId(
 object EmailaddressId {
   given decoder: Decoder[EmailaddressId] = Decoder.forProduct2[EmailaddressId, BusinessentityId, Int]("businessentityid", "emailaddressid")(EmailaddressId.apply)(using BusinessentityId.decoder, Decoder.decodeInt)
   given encoder: Encoder[EmailaddressId] = Encoder.forProduct2[EmailaddressId, BusinessentityId, Int]("businessentityid", "emailaddressid")(x => (x.businessentityid, x.emailaddressid))(using BusinessentityId.encoder, Encoder.encodeInt)
-  given ordering: Ordering[EmailaddressId] = Ordering.by(x => (x.businessentityid, x.emailaddressid))
 }

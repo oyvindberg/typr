@@ -21,7 +21,6 @@ case class PersoncreditcardId(
   creditcardid: /* user-picked */ CustomCreditcardId
 )
 object PersoncreditcardId {
-  implicit lazy val ordering: Ordering[PersoncreditcardId] = Ordering.by(x => (x.businessentityid, x.creditcardid))
   implicit lazy val reads: Reads[PersoncreditcardId] = Reads[PersoncreditcardId](json => JsResult.fromTry(
       Try(
         PersoncreditcardId(

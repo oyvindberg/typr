@@ -21,7 +21,6 @@ case class ProductlistpricehistoryId(
   startdate: TypoLocalDateTime
 )
 object ProductlistpricehistoryId {
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[ProductlistpricehistoryId] = Ordering.by(x => (x.productid, x.startdate))
   given reads: Reads[ProductlistpricehistoryId] = Reads[ProductlistpricehistoryId](json => JsResult.fromTry(
       Try(
         ProductlistpricehistoryId(

@@ -24,7 +24,6 @@ object TimeStamp {
   given decoder: Decoder[TimeStamp] = TypoInstant.decoder.map(TimeStamp.apply)
   given encoder: Encoder[TimeStamp] = TypoInstant.encoder.contramap(_.value)
   given get: Get[TimeStamp] = TypoInstant.get.map(TimeStamp.apply)
-  given ordering(using O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   given put: Put[TimeStamp] = TypoInstant.put.contramap(_.value)
   given text: Text[TimeStamp] = new Text[TimeStamp] {
     override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeEncode(v.value, sb)

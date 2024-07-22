@@ -28,7 +28,6 @@ object SqlIdentifier {
   given jdbcEncoder: JdbcEncoder[SqlIdentifier] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[SqlIdentifier] = JsonDecoder.string.map(SqlIdentifier.apply)
   given jsonEncoder: JsonEncoder[SqlIdentifier] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[SqlIdentifier] = Ordering.by(_.value)
   given pgType: PGType[SqlIdentifier] = PGType.instance(""""information_schema"."sql_identifier"""", Types.OTHER)
   given setter: Setter[SqlIdentifier] = Setter.stringSetter.contramap(_.value)
   given text: Text[SqlIdentifier] = new Text[SqlIdentifier] {

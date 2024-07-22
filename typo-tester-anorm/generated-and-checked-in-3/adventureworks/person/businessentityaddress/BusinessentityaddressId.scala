@@ -23,7 +23,6 @@ case class BusinessentityaddressId(
   addresstypeid: AddresstypeId
 )
 object BusinessentityaddressId {
-  given ordering: Ordering[BusinessentityaddressId] = Ordering.by(x => (x.businessentityid, x.addressid, x.addresstypeid))
   given reads: Reads[BusinessentityaddressId] = Reads[BusinessentityaddressId](json => JsResult.fromTry(
       Try(
         BusinessentityaddressId(

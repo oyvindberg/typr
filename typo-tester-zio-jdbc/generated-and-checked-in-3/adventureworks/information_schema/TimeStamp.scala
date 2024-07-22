@@ -29,7 +29,6 @@ object TimeStamp {
   given jdbcEncoder: JdbcEncoder[TimeStamp] = TypoInstant.jdbcEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[TimeStamp] = TypoInstant.jsonDecoder.map(TimeStamp.apply)
   given jsonEncoder: JsonEncoder[TimeStamp] = TypoInstant.jsonEncoder.contramap(_.value)
-  given ordering(using O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   given pgType: PGType[TimeStamp] = PGType.instance(""""information_schema"."time_stamp"""", Types.OTHER)
   given setter: Setter[TimeStamp] = TypoInstant.setter.contramap(_.value)
   given text: Text[TimeStamp] = new Text[TimeStamp] {

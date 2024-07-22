@@ -25,7 +25,6 @@ object TypesScala {
   val None = sc.Type.Qualified("scala.None")
   val Numeric = sc.Type.Qualified("scala.math.Numeric")
   val Option = sc.Type.Qualified("scala.Option")
-  val Ordering = sc.Type.Qualified("scala.math.Ordering")
   val Random = sc.Type.Qualified("scala.util.Random")
   val Right = sc.Type.Qualified("scala.Right")
   val Short = sc.Type.Qualified("scala.Short")

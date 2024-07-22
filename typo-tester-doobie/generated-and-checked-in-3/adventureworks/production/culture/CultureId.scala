@@ -22,7 +22,6 @@ object CultureId {
   given decoder: Decoder[CultureId] = Decoder.decodeString.map(CultureId.apply)
   given encoder: Encoder[CultureId] = Encoder.encodeString.contramap(_.value)
   given get: Get[CultureId] = Meta.StringMeta.get.map(CultureId.apply)
-  given ordering: Ordering[CultureId] = Ordering.by(_.value)
   given put: Put[CultureId] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[CultureId] = new Text[CultureId] {
     override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

@@ -36,5 +36,4 @@ object SalespersonquotahistoryId {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[SalespersonquotahistoryId] = Ordering.by(x => (x.businessentityid, x.quotadate))
 }

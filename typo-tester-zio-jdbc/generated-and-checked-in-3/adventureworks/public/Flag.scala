@@ -28,7 +28,6 @@ object Flag {
   given jdbcEncoder: JdbcEncoder[Flag] = JdbcEncoder.booleanEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[Flag] = JsonDecoder.boolean.map(Flag.apply)
   given jsonEncoder: JsonEncoder[Flag] = JsonEncoder.boolean.contramap(_.value)
-  given ordering: Ordering[Flag] = Ordering.by(_.value)
   given pgType: PGType[Flag] = PGType.instance(""""public"."Flag"""", Types.OTHER)
   given setter: Setter[Flag] = Setter.booleanSetter.contramap(_.value)
   given text: Text[Flag] = new Text[Flag] {

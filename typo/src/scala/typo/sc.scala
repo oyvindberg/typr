@@ -155,7 +155,6 @@ object sc {
         TypesScala.Nil,
         TypesScala.Numeric,
         TypesScala.Option,
-        TypesScala.Ordering,
         TypesScala.Right,
         TypesScala.Short,
         TypesScala.Some,

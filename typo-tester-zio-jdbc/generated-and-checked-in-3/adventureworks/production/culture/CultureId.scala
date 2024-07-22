@@ -25,7 +25,6 @@ object CultureId {
   given jdbcEncoder: JdbcEncoder[CultureId] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[CultureId] = JsonDecoder.string.map(CultureId.apply)
   given jsonEncoder: JsonEncoder[CultureId] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[CultureId] = Ordering.by(_.value)
   given pgType: PGType[CultureId] = PGType.PGTypeString.as
   given setter: Setter[CultureId] = Setter.stringSetter.contramap(_.value)
   given text: Text[CultureId] = new Text[CultureId] {

@@ -32,7 +32,6 @@ object TypoInt2Vector {
   given encoder: Encoder[TypoInt2Vector] = Encoder.encodeString.contramap(_.value)
   given get: Get[TypoInt2Vector] = Get.Advanced.other[PGobject](NonEmptyList.one("int2vector"))
     .map(v => TypoInt2Vector(v.getValue))
-  given ordering: Ordering[TypoInt2Vector] = Ordering.by(_.value)
   given put: Put[TypoInt2Vector] = Put.Advanced.other[PGobject](NonEmptyList.one("int2vector")).contramap(v => {
                                                                                 val obj = new PGobject
                                                                                 obj.setType("int2vector")

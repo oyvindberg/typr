@@ -28,7 +28,6 @@ object OrderNumber {
   given jdbcEncoder: JdbcEncoder[OrderNumber] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[OrderNumber] = JsonDecoder.string.map(OrderNumber.apply)
   given jsonEncoder: JsonEncoder[OrderNumber] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[OrderNumber] = Ordering.by(_.value)
   given pgType: PGType[OrderNumber] = PGType.instance(""""public"."OrderNumber"""", Types.OTHER)
   given setter: Setter[OrderNumber] = Setter.stringSetter.contramap(_.value)
   given text: Text[OrderNumber] = new Text[OrderNumber] {

@@ -43,7 +43,6 @@ object Number {
   given decoder: Decoder[Number] = Decoder.decodeString.emap(Number.apply)
   given encoder: Encoder[Number] = Encoder.encodeString.contramap(_.value)
   given get: Get[Number] = Meta.StringMeta.get.temap(Number.apply)
-  given ordering: Ordering[Number] = Ordering.by(_.value)
   given put: Put[Number] = Put.Advanced.one[Number](JdbcType.Other, NonEmptyList.one("myschema.number"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
   given read: Read[Number] = new Read.Single(get)
   given text: Text[Number] = new Text[Number] {

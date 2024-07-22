@@ -24,7 +24,6 @@ object YesOrNo {
   implicit lazy val decoder: Decoder[YesOrNo] = Decoder.decodeString.map(YesOrNo.apply)
   implicit lazy val encoder: Encoder[YesOrNo] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[YesOrNo] = Meta.StringMeta.get.map(YesOrNo.apply)
-  implicit lazy val ordering: Ordering[YesOrNo] = Ordering.by(_.value)
   implicit lazy val put: Put[YesOrNo] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[YesOrNo] = new Text[YesOrNo] {
     override def unsafeEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

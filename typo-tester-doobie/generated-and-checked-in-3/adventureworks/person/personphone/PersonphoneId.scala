@@ -20,5 +20,4 @@ case class PersonphoneId(
 object PersonphoneId {
   given decoder: Decoder[PersonphoneId] = Decoder.forProduct3[PersonphoneId, BusinessentityId, Phone, PhonenumbertypeId]("businessentityid", "phonenumber", "phonenumbertypeid")(PersonphoneId.apply)(using BusinessentityId.decoder, Phone.decoder, PhonenumbertypeId.decoder)
   given encoder: Encoder[PersonphoneId] = Encoder.forProduct3[PersonphoneId, BusinessentityId, Phone, PhonenumbertypeId]("businessentityid", "phonenumber", "phonenumbertypeid")(x => (x.businessentityid, x.phonenumber, x.phonenumbertypeid))(using BusinessentityId.encoder, Phone.encoder, PhonenumbertypeId.encoder)
-  given ordering: Ordering[PersonphoneId] = Ordering.by(x => (x.businessentityid, x.phonenumber, x.phonenumbertypeid))
 }

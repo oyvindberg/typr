@@ -35,7 +35,6 @@ object TypoLocalDateTime {
   given encoder: Encoder[TypoLocalDateTime] = Encoder.encodeLocalDateTime.contramap(_.value)
   given get: Get[TypoLocalDateTime] = Get.Advanced.other[String](NonEmptyList.one("timestamp"))
     .map(v => TypoLocalDateTime(LocalDateTime.parse(v, parser)))
-  given ordering: Ordering[TypoLocalDateTime] = Ordering.by(_.value)
   given put: Put[TypoLocalDateTime] = Put.Advanced.other[String](NonEmptyList.one("timestamp")).contramap(v => v.value.toString)
   given text: Text[TypoLocalDateTime] = new Text[TypoLocalDateTime] {
     override def unsafeEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

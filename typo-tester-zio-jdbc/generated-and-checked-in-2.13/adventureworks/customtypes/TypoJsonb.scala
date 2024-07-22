@@ -57,7 +57,6 @@ object TypoJsonb {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoJsonb] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoJsonb] = JsonDecoder.string.map(TypoJsonb.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoJsonb] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoJsonb] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoJsonb] = PGType.instance[TypoJsonb]("jsonb", Types.OTHER)
   implicit lazy val setter: Setter[TypoJsonb] = Setter.other(
     (ps, i, v) => {

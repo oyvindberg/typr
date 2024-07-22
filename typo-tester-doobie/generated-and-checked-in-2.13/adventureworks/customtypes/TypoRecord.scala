@@ -32,7 +32,6 @@ object TypoRecord {
   implicit lazy val encoder: Encoder[TypoRecord] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[TypoRecord] = Get.Advanced.other[PGobject](NonEmptyList.one("record"))
     .map(v => TypoRecord(v.getValue))
-  implicit lazy val ordering: Ordering[TypoRecord] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoRecord] = Put.Advanced.other[PGobject](NonEmptyList.one("record")).contramap(v => {
                                                                             val obj = new PGobject
                                                                             obj.setType("record")

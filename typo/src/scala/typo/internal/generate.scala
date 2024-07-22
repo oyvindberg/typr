@@ -56,7 +56,6 @@ object generate {
       dialect = publicOptions.dialect
     )
     val customTypes = new CustomTypes(customTypesPackage, publicOptions.dialect)
-    val genOrdering = new GenOrdering(customTypes, options.pkg)
     val scalaTypeMapper = TypeMapperScala(options.typeOverride, publicOptions.nullabilityOverride, naming, customTypes)
     val enums = metaDb.enums.map(ComputedStringEnum(naming))
     val domains = metaDb.domains.map(ComputedDomain(naming, scalaTypeMapper))
@@ -102,19 +101,19 @@ object generate {
           case viewComputed: ComputedView => FilesView(viewComputed, options).all.map(x => (viewComputed.view.name, x))
           case tableComputed: ComputedTable =>
             val fkAnalysis = FkAnalysis(computedRelationsByName, tableComputed, options.dialect)
-            FilesTable(tableComputed, fkAnalysis, options, genOrdering, domainsByName).all.map(x => (tableComputed.dbTable.name, x))
+            FilesTable(tableComputed, fkAnalysis, options, domainsByName).all.map(x => (tableComputed.dbTable.name, x))
           case _ => Nil
         }
 
-        val domainFiles = domains.map(d => FileDomain(d, options, genOrdering))
+        val domainFiles = domains.map(d => FileDomain(d, options))
 
         val mostFiles: List[sc.File] =
           List(
             options.dbLib.toList.flatMap(_.additionalFiles),
             List(FileDefault(default, options.jsonLibs, options.dbLib).file),
-            enums.map(enm => FileStringEnum(options, enm, genOrdering)),
+            enums.map(enm => FileStringEnum(options, enm)),
             domainFiles,
-            customTypes.All.values.map(FileCustomType(options, genOrdering)),
+            customTypes.All.values.map(FileCustomType(options)),
             relationFilesByName.map { case (_, f) => f },
             sqlFileFiles
           ).flatten

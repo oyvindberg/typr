@@ -21,7 +21,6 @@ case class CountryregioncurrencyId(
   currencycode: CurrencyId
 )
 object CountryregioncurrencyId {
-  implicit lazy val ordering: Ordering[CountryregioncurrencyId] = Ordering.by(x => (x.countryregioncode, x.currencycode))
   implicit lazy val reads: Reads[CountryregioncurrencyId] = Reads[CountryregioncurrencyId](json => JsResult.fromTry(
       Try(
         CountryregioncurrencyId(

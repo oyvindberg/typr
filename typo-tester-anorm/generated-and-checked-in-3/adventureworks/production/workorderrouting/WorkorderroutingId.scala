@@ -23,7 +23,6 @@ case class WorkorderroutingId(
   operationsequence: TypoShort
 )
 object WorkorderroutingId {
-  given ordering(using O0: Ordering[TypoShort]): Ordering[WorkorderroutingId] = Ordering.by(x => (x.workorderid, x.productid, x.operationsequence))
   given reads: Reads[WorkorderroutingId] = Reads[WorkorderroutingId](json => JsResult.fromTry(
       Try(
         WorkorderroutingId(

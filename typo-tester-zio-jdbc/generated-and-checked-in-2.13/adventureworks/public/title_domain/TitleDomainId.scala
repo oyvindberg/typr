@@ -42,7 +42,6 @@ object TitleDomainId {
   implicit lazy val jdbcEncoder: JdbcEncoder[TitleDomainId] = ShortText.jdbcEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[TitleDomainId] = ShortText.jsonDecoder.map(TitleDomainId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TitleDomainId] = ShortText.jsonEncoder.contramap(_.value)
-  implicit lazy val ordering: Ordering[TitleDomainId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TitleDomainId] = PGType.instance[TitleDomainId](""""public"."short_text"""", Types.OTHER)
   implicit lazy val setter: Setter[TitleDomainId] = ShortText.setter.contramap(_.value)
   implicit lazy val text: Text[TitleDomainId] = new Text[TitleDomainId] {

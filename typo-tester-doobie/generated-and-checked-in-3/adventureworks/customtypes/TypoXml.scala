@@ -33,7 +33,6 @@ object TypoXml {
   given encoder: Encoder[TypoXml] = Encoder.encodeString.contramap(_.value)
   given get: Get[TypoXml] = Get.Advanced.other[PgSQLXML](NonEmptyList.one("xml"))
     .map(v => TypoXml(v.getString))
-  given ordering: Ordering[TypoXml] = Ordering.by(_.value)
   given put: Put[TypoXml] = Put.Advanced.other[String](NonEmptyList.one("xml")).contramap(v => v.value)
   given text: Text[TypoXml] = new Text[TypoXml] {
     override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

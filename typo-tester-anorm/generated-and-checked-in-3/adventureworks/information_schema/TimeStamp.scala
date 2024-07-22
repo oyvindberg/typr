@@ -24,7 +24,6 @@ object TimeStamp {
   given arrayToStatement: ToStatement[Array[TimeStamp]] = TypoInstant.arrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[TimeStamp, TypoInstant] = Bijection[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
   given column: Column[TimeStamp] = TypoInstant.column.map(TimeStamp.apply)
-  given ordering(using O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TimeStamp] = new ParameterMetaData[TimeStamp] {
     override def sqlType: String = """"information_schema"."time_stamp""""
     override def jdbcType: Int = Types.OTHER

@@ -18,5 +18,4 @@ case class SpecialofferproductId(
 object SpecialofferproductId {
   given decoder: Decoder[SpecialofferproductId] = Decoder.forProduct2[SpecialofferproductId, SpecialofferId, ProductId]("specialofferid", "productid")(SpecialofferproductId.apply)(using SpecialofferId.decoder, ProductId.decoder)
   given encoder: Encoder[SpecialofferproductId] = Encoder.forProduct2[SpecialofferproductId, SpecialofferId, ProductId]("specialofferid", "productid")(x => (x.specialofferid, x.productid))(using SpecialofferId.encoder, ProductId.encoder)
-  given ordering: Ordering[SpecialofferproductId] = Ordering.by(x => (x.specialofferid, x.productid))
 }

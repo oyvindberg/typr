@@ -24,7 +24,6 @@ object AccountNumber {
   given decoder: Decoder[AccountNumber] = Decoder.decodeString.map(AccountNumber.apply)
   given encoder: Encoder[AccountNumber] = Encoder.encodeString.contramap(_.value)
   given get: Get[AccountNumber] = Meta.StringMeta.get.map(AccountNumber.apply)
-  given ordering: Ordering[AccountNumber] = Ordering.by(_.value)
   given put: Put[AccountNumber] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[AccountNumber] = new Text[AccountNumber] {
     override def unsafeEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

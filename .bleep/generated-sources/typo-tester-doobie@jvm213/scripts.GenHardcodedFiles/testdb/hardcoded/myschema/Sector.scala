@@ -43,7 +43,6 @@ object Sector {
   implicit lazy val decoder: Decoder[Sector] = Decoder.decodeString.emap(Sector.apply)
   implicit lazy val encoder: Encoder[Sector] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[Sector] = Meta.StringMeta.get.temap(Sector.apply)
-  implicit lazy val ordering: Ordering[Sector] = Ordering.by(_.value)
   implicit lazy val put: Put[Sector] = Put.Advanced.one[Sector](JdbcType.Other, NonEmptyList.one("myschema.sector"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
   implicit lazy val read: Read[Sector] = new Read.Single(get)
   implicit lazy val text: Text[Sector] = new Text[Sector] {

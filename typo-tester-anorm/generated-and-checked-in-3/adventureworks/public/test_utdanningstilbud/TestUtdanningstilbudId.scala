@@ -21,7 +21,6 @@ case class TestUtdanningstilbudId(
   utdanningsmulighetKode: String
 )
 object TestUtdanningstilbudId {
-  given ordering: Ordering[TestUtdanningstilbudId] = Ordering.by(x => (x.organisasjonskode, x.utdanningsmulighetKode))
   given reads: Reads[TestUtdanningstilbudId] = Reads[TestUtdanningstilbudId](json => JsResult.fromTry(
       Try(
         TestUtdanningstilbudId(

@@ -42,5 +42,4 @@ object SalesterritoryhistoryId {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[SalesterritoryhistoryId] = Ordering.by(x => (x.businessentityid, x.startdate, x.territoryid))
 }

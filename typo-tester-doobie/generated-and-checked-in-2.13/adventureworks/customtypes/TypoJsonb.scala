@@ -32,7 +32,6 @@ object TypoJsonb {
   implicit lazy val encoder: Encoder[TypoJsonb] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[TypoJsonb] = Get.Advanced.other[PGobject](NonEmptyList.one("jsonb"))
     .map(v => TypoJsonb(v.getValue))
-  implicit lazy val ordering: Ordering[TypoJsonb] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoJsonb] = Put.Advanced.other[PGobject](NonEmptyList.one("jsonb")).contramap(v => {
                                                                            val obj = new PGobject
                                                                            obj.setType("jsonb")

@@ -25,7 +25,6 @@ object ShipmethodId {
   given jdbcEncoder: JdbcEncoder[ShipmethodId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[ShipmethodId] = JsonDecoder.int.map(ShipmethodId.apply)
   given jsonEncoder: JsonEncoder[ShipmethodId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[ShipmethodId] = Ordering.by(_.value)
   given pgType: PGType[ShipmethodId] = PGType.PGTypeInt.as
   given setter: Setter[ShipmethodId] = Setter.intSetter.contramap(_.value)
   given text: Text[ShipmethodId] = new Text[ShipmethodId] {

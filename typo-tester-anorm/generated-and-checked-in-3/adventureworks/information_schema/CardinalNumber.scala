@@ -23,7 +23,6 @@ object CardinalNumber {
   given arrayToStatement: ToStatement[Array[CardinalNumber]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[CardinalNumber, Int] = Bijection[CardinalNumber, Int](_.value)(CardinalNumber.apply)
   given column: Column[CardinalNumber] = Column.columnToInt.map(CardinalNumber.apply)
-  given ordering: Ordering[CardinalNumber] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[CardinalNumber] = new ParameterMetaData[CardinalNumber] {
     override def sqlType: String = """"information_schema"."cardinal_number""""
     override def jdbcType: Int = Types.OTHER

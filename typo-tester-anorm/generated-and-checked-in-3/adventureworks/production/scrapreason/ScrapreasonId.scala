@@ -20,7 +20,6 @@ object ScrapreasonId {
   given arrayToStatement: ToStatement[Array[ScrapreasonId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[ScrapreasonId, Int] = Bijection[ScrapreasonId, Int](_.value)(ScrapreasonId.apply)
   given column: Column[ScrapreasonId] = Column.columnToInt.map(ScrapreasonId.apply)
-  given ordering: Ordering[ScrapreasonId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[ScrapreasonId] = new ParameterMetaData[ScrapreasonId] {
     override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType

@@ -28,7 +28,6 @@ object AccountNumber {
   given jdbcEncoder: JdbcEncoder[AccountNumber] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[AccountNumber] = JsonDecoder.string.map(AccountNumber.apply)
   given jsonEncoder: JsonEncoder[AccountNumber] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[AccountNumber] = Ordering.by(_.value)
   given pgType: PGType[AccountNumber] = PGType.instance(""""public"."AccountNumber"""", Types.OTHER)
   given setter: Setter[AccountNumber] = Setter.stringSetter.contramap(_.value)
   given text: Text[AccountNumber] = new Text[AccountNumber] {

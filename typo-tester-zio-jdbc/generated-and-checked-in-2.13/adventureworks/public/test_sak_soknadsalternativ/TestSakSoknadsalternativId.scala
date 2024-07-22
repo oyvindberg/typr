@@ -39,5 +39,4 @@ object TestSakSoknadsalternativId {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[TestSakSoknadsalternativId] = Ordering.by(x => (x.organisasjonskodeSaksbehandler, x.utdanningsmulighetKode))
 }

@@ -36,7 +36,6 @@ object Issue142Id {
   implicit lazy val jdbcEncoder: JdbcEncoder[Issue142Id] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[Issue142Id] = JsonDecoder.string.map(Issue142Id.apply)
   implicit lazy val jsonEncoder: JsonEncoder[Issue142Id] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[Issue142Id] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[Issue142Id] = PGType.instance[Issue142Id]("text", Types.OTHER)
   implicit lazy val setter: Setter[Issue142Id] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[Issue142Id] = new Text[Issue142Id] {

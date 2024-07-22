@@ -22,7 +22,6 @@ object UsersId {
   given decoder: Decoder[UsersId] = TypoUUID.decoder.map(UsersId.apply)
   given encoder: Encoder[UsersId] = TypoUUID.encoder.contramap(_.value)
   given get: Get[UsersId] = TypoUUID.get.map(UsersId.apply)
-  given ordering(using O0: Ordering[TypoUUID]): Ordering[UsersId] = Ordering.by(_.value)
   given put: Put[UsersId] = TypoUUID.put.contramap(_.value)
   given text: Text[UsersId] = new Text[UsersId] {
     override def unsafeEncode(v: UsersId, sb: StringBuilder): Unit = TypoUUID.text.unsafeEncode(v.value, sb)

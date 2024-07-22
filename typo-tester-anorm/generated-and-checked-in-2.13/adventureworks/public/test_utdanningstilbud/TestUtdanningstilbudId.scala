@@ -21,7 +21,6 @@ case class TestUtdanningstilbudId(
   utdanningsmulighetKode: String
 )
 object TestUtdanningstilbudId {
-  implicit lazy val ordering: Ordering[TestUtdanningstilbudId] = Ordering.by(x => (x.organisasjonskode, x.utdanningsmulighetKode))
   implicit lazy val reads: Reads[TestUtdanningstilbudId] = Reads[TestUtdanningstilbudId](json => JsResult.fromTry(
       Try(
         TestUtdanningstilbudId(

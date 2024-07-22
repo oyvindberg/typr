@@ -32,7 +32,6 @@ object TypoVector {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoVector] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoVector] = JsonDecoder.array[Float](JsonDecoder.float, implicitly).map(TypoVector.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoVector] = JsonEncoder.array[Float](JsonEncoder.float, implicitly).contramap(_.value)
-  implicit def ordering(implicit O0: Ordering[Array[Float]]): Ordering[TypoVector] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoVector] = PGType.instance[TypoVector]("vector", Types.OTHER)
   implicit lazy val setter: Setter[TypoVector] = Setter.other(
     (ps, i, v) => {

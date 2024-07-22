@@ -24,7 +24,6 @@ object CardinalNumber {
   implicit lazy val decoder: Decoder[CardinalNumber] = Decoder.decodeInt.map(CardinalNumber.apply)
   implicit lazy val encoder: Encoder[CardinalNumber] = Encoder.encodeInt.contramap(_.value)
   implicit lazy val get: Get[CardinalNumber] = Meta.IntMeta.get.map(CardinalNumber.apply)
-  implicit lazy val ordering: Ordering[CardinalNumber] = Ordering.by(_.value)
   implicit lazy val put: Put[CardinalNumber] = Meta.IntMeta.put.contramap(_.value)
   implicit lazy val text: Text[CardinalNumber] = new Text[CardinalNumber] {
     override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

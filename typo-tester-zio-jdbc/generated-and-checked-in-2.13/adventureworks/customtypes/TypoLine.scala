@@ -72,7 +72,6 @@ object TypoLine {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[TypoLine] = Ordering.by(x => (x.a, x.b, x.c))
   implicit lazy val pgType: PGType[TypoLine] = PGType.instance[TypoLine]("line", Types.OTHER)
   implicit lazy val setter: Setter[TypoLine] = Setter.other(
     (ps, i, v) => {

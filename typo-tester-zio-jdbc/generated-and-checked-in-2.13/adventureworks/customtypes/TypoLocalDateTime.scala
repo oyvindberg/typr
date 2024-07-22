@@ -60,7 +60,6 @@ object TypoLocalDateTime {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoLocalDateTime] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoLocalDateTime] = JsonDecoder.localDateTime.map(TypoLocalDateTime.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoLocalDateTime] = JsonEncoder.localDateTime.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoLocalDateTime] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoLocalDateTime] = PGType.instance[TypoLocalDateTime]("timestamp", Types.OTHER)
   implicit lazy val setter: Setter[TypoLocalDateTime] = Setter.other(
     (ps, i, v) => {

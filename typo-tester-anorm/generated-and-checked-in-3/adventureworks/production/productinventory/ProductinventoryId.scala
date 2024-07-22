@@ -21,7 +21,6 @@ case class ProductinventoryId(
   locationid: LocationId
 )
 object ProductinventoryId {
-  given ordering: Ordering[ProductinventoryId] = Ordering.by(x => (x.productid, x.locationid))
   given reads: Reads[ProductinventoryId] = Reads[ProductinventoryId](json => JsResult.fromTry(
       Try(
         ProductinventoryId(

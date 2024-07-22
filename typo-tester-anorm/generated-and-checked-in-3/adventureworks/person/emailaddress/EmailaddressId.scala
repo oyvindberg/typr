@@ -21,7 +21,6 @@ case class EmailaddressId(
   emailaddressid: Int
 )
 object EmailaddressId {
-  given ordering: Ordering[EmailaddressId] = Ordering.by(x => (x.businessentityid, x.emailaddressid))
   given reads: Reads[EmailaddressId] = Reads[EmailaddressId](json => JsResult.fromTry(
       Try(
         EmailaddressId(

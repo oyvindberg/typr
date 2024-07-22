@@ -34,5 +34,4 @@ object OnlyPkColumnsId {
       out.write("}")
     }
   }
-  given ordering: Ordering[OnlyPkColumnsId] = Ordering.by(x => (x.keyColumn1, x.keyColumn2))
 }

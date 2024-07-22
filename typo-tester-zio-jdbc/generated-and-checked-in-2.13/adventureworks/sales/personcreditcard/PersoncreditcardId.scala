@@ -36,5 +36,4 @@ object PersoncreditcardId {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[PersoncreditcardId] = Ordering.by(x => (x.businessentityid, x.creditcardid))
 }

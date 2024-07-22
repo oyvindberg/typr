@@ -23,7 +23,6 @@ object Mydomain {
   given arrayToStatement: ToStatement[Array[Mydomain]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[Mydomain, String] = Bijection[Mydomain, String](_.value)(Mydomain.apply)
   given column: Column[Mydomain] = Column.columnToString.map(Mydomain.apply)
-  given ordering: Ordering[Mydomain] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[Mydomain] = new ParameterMetaData[Mydomain] {
     override def sqlType: String = """"public"."mydomain""""
     override def jdbcType: Int = Types.OTHER

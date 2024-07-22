@@ -32,7 +32,6 @@ object Issue142Id {
   implicit lazy val arrayColumn: Column[Array[Issue142Id]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Issue142Id.apply))
   implicit lazy val arrayToStatement: ToStatement[Array[Issue142Id]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val column: Column[Issue142Id] = Column.columnToString.map(Issue142Id.apply)
-  implicit lazy val ordering: Ordering[Issue142Id] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Issue142Id] = new ParameterMetaData[Issue142Id] {
     override def sqlType: String = "text"
     override def jdbcType: Int = Types.OTHER

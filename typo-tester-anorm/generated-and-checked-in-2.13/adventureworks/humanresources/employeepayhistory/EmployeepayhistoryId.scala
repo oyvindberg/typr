@@ -21,7 +21,6 @@ case class EmployeepayhistoryId(
   ratechangedate: TypoLocalDateTime
 )
 object EmployeepayhistoryId {
-  implicit def ordering(implicit O0: Ordering[TypoLocalDateTime]): Ordering[EmployeepayhistoryId] = Ordering.by(x => (x.businessentityid, x.ratechangedate))
   implicit lazy val reads: Reads[EmployeepayhistoryId] = Reads[EmployeepayhistoryId](json => JsResult.fromTry(
       Try(
         EmployeepayhistoryId(

@@ -57,7 +57,6 @@ object TypoJsonb {
   given jdbcEncoder: JdbcEncoder[TypoJsonb] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoJsonb] = JsonDecoder.string.map(TypoJsonb.apply)
   given jsonEncoder: JsonEncoder[TypoJsonb] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TypoJsonb] = Ordering.by(_.value)
   given pgType: PGType[TypoJsonb] = PGType.instance[TypoJsonb]("jsonb", Types.OTHER)
   given setter: Setter[TypoJsonb] = Setter.other(
     (ps, i, v) => {

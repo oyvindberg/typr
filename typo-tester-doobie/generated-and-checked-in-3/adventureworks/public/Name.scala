@@ -24,7 +24,6 @@ object Name {
   given decoder: Decoder[Name] = Decoder.decodeString.map(Name.apply)
   given encoder: Encoder[Name] = Encoder.encodeString.contramap(_.value)
   given get: Get[Name] = Meta.StringMeta.get.map(Name.apply)
-  given ordering: Ordering[Name] = Ordering.by(_.value)
   given put: Put[Name] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[Name] = new Text[Name] {
     override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

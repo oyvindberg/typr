@@ -23,7 +23,6 @@ object Flag {
   implicit lazy val arrayToStatement: ToStatement[Array[Flag]] = adventureworks.BooleanArrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[Flag, Boolean] = Bijection[Flag, Boolean](_.value)(Flag.apply)
   implicit lazy val column: Column[Flag] = Column.columnToBoolean.map(Flag.apply)
-  implicit lazy val ordering: Ordering[Flag] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Flag] = new ParameterMetaData[Flag] {
     override def sqlType: String = """"public"."Flag""""
     override def jdbcType: Int = Types.OTHER

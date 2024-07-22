@@ -22,7 +22,6 @@ object TransactionhistoryarchiveId {
   given decoder: Decoder[TransactionhistoryarchiveId] = Decoder.decodeInt.map(TransactionhistoryarchiveId.apply)
   given encoder: Encoder[TransactionhistoryarchiveId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[TransactionhistoryarchiveId] = Meta.IntMeta.get.map(TransactionhistoryarchiveId.apply)
-  given ordering: Ordering[TransactionhistoryarchiveId] = Ordering.by(_.value)
   given put: Put[TransactionhistoryarchiveId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[TransactionhistoryarchiveId] = new Text[TransactionhistoryarchiveId] {
     override def unsafeEncode(v: TransactionhistoryarchiveId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

@@ -22,7 +22,6 @@ object ScrapreasonId {
   implicit lazy val decoder: Decoder[ScrapreasonId] = Decoder.decodeInt.map(ScrapreasonId.apply)
   implicit lazy val encoder: Encoder[ScrapreasonId] = Encoder.encodeInt.contramap(_.value)
   implicit lazy val get: Get[ScrapreasonId] = Meta.IntMeta.get.map(ScrapreasonId.apply)
-  implicit lazy val ordering: Ordering[ScrapreasonId] = Ordering.by(_.value)
   implicit lazy val put: Put[ScrapreasonId] = Meta.IntMeta.put.contramap(_.value)
   implicit lazy val text: Text[ScrapreasonId] = new Text[ScrapreasonId] {
     override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

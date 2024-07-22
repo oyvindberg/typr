@@ -24,7 +24,6 @@ object Flag {
   implicit lazy val decoder: Decoder[Flag] = Decoder.decodeBoolean.map(Flag.apply)
   implicit lazy val encoder: Encoder[Flag] = Encoder.encodeBoolean.contramap(_.value)
   implicit lazy val get: Get[Flag] = Meta.BooleanMeta.get.map(Flag.apply)
-  implicit lazy val ordering: Ordering[Flag] = Ordering.by(_.value)
   implicit lazy val put: Put[Flag] = Meta.BooleanMeta.put.contramap(_.value)
   implicit lazy val text: Text[Flag] = new Text[Flag] {
     override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)

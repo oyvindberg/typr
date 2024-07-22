@@ -23,7 +23,6 @@ object Phone {
   given arrayToStatement: ToStatement[Array[Phone]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[Phone, String] = Bijection[Phone, String](_.value)(Phone.apply)
   given column: Column[Phone] = Column.columnToString.map(Phone.apply)
-  given ordering: Ordering[Phone] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[Phone] = new ParameterMetaData[Phone] {
     override def sqlType: String = """"public"."Phone""""
     override def jdbcType: Int = Types.OTHER

@@ -22,7 +22,6 @@ object CountryregionId {
   implicit lazy val decoder: Decoder[CountryregionId] = Decoder.decodeString.map(CountryregionId.apply)
   implicit lazy val encoder: Encoder[CountryregionId] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[CountryregionId] = Meta.StringMeta.get.map(CountryregionId.apply)
-  implicit lazy val ordering: Ordering[CountryregionId] = Ordering.by(_.value)
   implicit lazy val put: Put[CountryregionId] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[CountryregionId] = new Text[CountryregionId] {
     override def unsafeEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

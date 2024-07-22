@@ -26,7 +26,6 @@ object TypoUnknownCitext {
   implicit lazy val encoder: Encoder[TypoUnknownCitext] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[TypoUnknownCitext] = Get.Advanced.other[String](NonEmptyList.one("citext"))
     .map(v => TypoUnknownCitext(v))
-  implicit lazy val ordering: Ordering[TypoUnknownCitext] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoUnknownCitext] = Put.Advanced.other[String](NonEmptyList.one("citext")).contramap(v => v.value)
   implicit lazy val text: Text[TypoUnknownCitext] = new Text[TypoUnknownCitext] {
     override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

@@ -23,7 +23,6 @@ object CharacterData {
   given arrayToStatement: ToStatement[Array[CharacterData]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[CharacterData, String] = Bijection[CharacterData, String](_.value)(CharacterData.apply)
   given column: Column[CharacterData] = Column.columnToString.map(CharacterData.apply)
-  given ordering: Ordering[CharacterData] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[CharacterData] = new ParameterMetaData[CharacterData] {
     override def sqlType: String = """"information_schema"."character_data""""
     override def jdbcType: Int = Types.OTHER

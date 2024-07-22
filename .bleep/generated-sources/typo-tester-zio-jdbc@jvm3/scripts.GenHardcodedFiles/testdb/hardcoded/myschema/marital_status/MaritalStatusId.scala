@@ -25,7 +25,6 @@ object MaritalStatusId {
   given jdbcEncoder: JdbcEncoder[MaritalStatusId] = JdbcEncoder.longEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[MaritalStatusId] = JsonDecoder.long.map(MaritalStatusId.apply)
   given jsonEncoder: JsonEncoder[MaritalStatusId] = JsonEncoder.long.contramap(_.value)
-  given ordering: Ordering[MaritalStatusId] = Ordering.by(_.value)
   given pgType: PGType[MaritalStatusId] = PGType.PGTypeLong.as
   given setter: Setter[MaritalStatusId] = Setter.longSetter.contramap(_.value)
   given text: Text[MaritalStatusId] = new Text[MaritalStatusId] {

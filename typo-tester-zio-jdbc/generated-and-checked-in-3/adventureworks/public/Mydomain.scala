@@ -28,7 +28,6 @@ object Mydomain {
   given jdbcEncoder: JdbcEncoder[Mydomain] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[Mydomain] = JsonDecoder.string.map(Mydomain.apply)
   given jsonEncoder: JsonEncoder[Mydomain] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[Mydomain] = Ordering.by(_.value)
   given pgType: PGType[Mydomain] = PGType.instance(""""public"."mydomain"""", Types.OTHER)
   given setter: Setter[Mydomain] = Setter.stringSetter.contramap(_.value)
   given text: Text[Mydomain] = new Text[Mydomain] {

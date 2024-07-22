@@ -58,7 +58,6 @@ object TypoXml {
   given jdbcEncoder: JdbcEncoder[TypoXml] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoXml] = JsonDecoder.string.map(TypoXml.apply)
   given jsonEncoder: JsonEncoder[TypoXml] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TypoXml] = Ordering.by(_.value)
   given pgType: PGType[TypoXml] = PGType.instance[TypoXml]("xml", Types.OTHER)
   given setter: Setter[TypoXml] = Setter.other(
     (ps, i, v) => {

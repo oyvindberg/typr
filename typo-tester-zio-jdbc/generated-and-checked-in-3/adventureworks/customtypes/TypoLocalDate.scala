@@ -54,7 +54,6 @@ object TypoLocalDate {
   given jdbcEncoder: JdbcEncoder[TypoLocalDate] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoLocalDate] = JsonDecoder.localDate.map(TypoLocalDate.apply)
   given jsonEncoder: JsonEncoder[TypoLocalDate] = JsonEncoder.localDate.contramap(_.value)
-  given ordering: Ordering[TypoLocalDate] = Ordering.by(_.value)
   given pgType: PGType[TypoLocalDate] = PGType.instance[TypoLocalDate]("date", Types.OTHER)
   given setter: Setter[TypoLocalDate] = Setter.other(
     (ps, i, v) => {

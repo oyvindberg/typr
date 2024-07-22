@@ -22,7 +22,6 @@ object CurrencyrateId {
   given decoder: Decoder[CurrencyrateId] = Decoder.decodeInt.map(CurrencyrateId.apply)
   given encoder: Encoder[CurrencyrateId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[CurrencyrateId] = Meta.IntMeta.get.map(CurrencyrateId.apply)
-  given ordering: Ordering[CurrencyrateId] = Ordering.by(_.value)
   given put: Put[CurrencyrateId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[CurrencyrateId] = new Text[CurrencyrateId] {
     override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

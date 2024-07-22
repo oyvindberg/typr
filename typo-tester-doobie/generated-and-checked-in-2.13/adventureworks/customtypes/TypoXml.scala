@@ -33,7 +33,6 @@ object TypoXml {
   implicit lazy val encoder: Encoder[TypoXml] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[TypoXml] = Get.Advanced.other[PgSQLXML](NonEmptyList.one("xml"))
     .map(v => TypoXml(v.getString))
-  implicit lazy val ordering: Ordering[TypoXml] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoXml] = Put.Advanced.other[String](NonEmptyList.one("xml")).contramap(v => v.value)
   implicit lazy val text: Text[TypoXml] = new Text[TypoXml] {
     override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

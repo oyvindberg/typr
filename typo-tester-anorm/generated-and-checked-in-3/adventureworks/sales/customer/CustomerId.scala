@@ -20,7 +20,6 @@ object CustomerId {
   given arrayToStatement: ToStatement[Array[CustomerId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[CustomerId, Int] = Bijection[CustomerId, Int](_.value)(CustomerId.apply)
   given column: Column[CustomerId] = Column.columnToInt.map(CustomerId.apply)
-  given ordering: Ordering[CustomerId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[CustomerId] = new ParameterMetaData[CustomerId] {
     override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType

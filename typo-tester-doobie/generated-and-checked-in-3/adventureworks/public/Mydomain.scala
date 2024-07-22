@@ -24,7 +24,6 @@ object Mydomain {
   given decoder: Decoder[Mydomain] = Decoder.decodeString.map(Mydomain.apply)
   given encoder: Encoder[Mydomain] = Encoder.encodeString.contramap(_.value)
   given get: Get[Mydomain] = Meta.StringMeta.get.map(Mydomain.apply)
-  given ordering: Ordering[Mydomain] = Ordering.by(_.value)
   given put: Put[Mydomain] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[Mydomain] = new Text[Mydomain] {
     override def unsafeEncode(v: Mydomain, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

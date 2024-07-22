@@ -20,7 +20,6 @@ object TableWithGeneratedColumnsId {
   given arrayToStatement: ToStatement[Array[TableWithGeneratedColumnsId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
   given column: Column[TableWithGeneratedColumnsId] = Column.columnToString.map(TableWithGeneratedColumnsId.apply)
-  given ordering: Ordering[TableWithGeneratedColumnsId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TableWithGeneratedColumnsId] = new ParameterMetaData[TableWithGeneratedColumnsId] {
     override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType

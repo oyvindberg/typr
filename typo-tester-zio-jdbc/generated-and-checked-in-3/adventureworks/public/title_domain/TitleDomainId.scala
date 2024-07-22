@@ -42,7 +42,6 @@ object TitleDomainId {
   given jdbcEncoder: JdbcEncoder[TitleDomainId] = ShortText.jdbcEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[TitleDomainId] = ShortText.jsonDecoder.map(TitleDomainId.apply)
   given jsonEncoder: JsonEncoder[TitleDomainId] = ShortText.jsonEncoder.contramap(_.value)
-  given ordering: Ordering[TitleDomainId] = Ordering.by(_.value)
   given pgType: PGType[TitleDomainId] = PGType.instance[TitleDomainId](""""public"."short_text"""", Types.OTHER)
   given setter: Setter[TitleDomainId] = ShortText.setter.contramap(_.value)
   given text: Text[TitleDomainId] = new Text[TitleDomainId] {

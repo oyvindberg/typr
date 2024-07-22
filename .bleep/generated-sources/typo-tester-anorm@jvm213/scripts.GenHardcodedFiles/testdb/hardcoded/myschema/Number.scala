@@ -42,7 +42,6 @@ object Number {
   implicit lazy val arrayColumn: Column[Array[Number]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Number.force))
   implicit lazy val arrayToStatement: ToStatement[Array[Number]] = ToStatement[Array[Number]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.number", arr.map[AnyRef](_.value))))
   implicit lazy val column: Column[Number] = Column.columnToString.mapResult(str => Number(str).left.map(SqlMappingError.apply))
-  implicit lazy val ordering: Ordering[Number] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Number] = new ParameterMetaData[Number] {
     override def sqlType: String = "myschema.number"
     override def jdbcType: Int = Types.OTHER

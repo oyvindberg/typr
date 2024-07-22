@@ -22,7 +22,6 @@ object FootballClubId {
   implicit lazy val decoder: Decoder[FootballClubId] = Decoder.decodeLong.map(FootballClubId.apply)
   implicit lazy val encoder: Encoder[FootballClubId] = Encoder.encodeLong.contramap(_.value)
   implicit lazy val get: Get[FootballClubId] = Meta.LongMeta.get.map(FootballClubId.apply)
-  implicit lazy val ordering: Ordering[FootballClubId] = Ordering.by(_.value)
   implicit lazy val put: Put[FootballClubId] = Meta.LongMeta.put.contramap(_.value)
   implicit lazy val text: Text[FootballClubId] = new Text[FootballClubId] {
     override def unsafeEncode(v: FootballClubId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)

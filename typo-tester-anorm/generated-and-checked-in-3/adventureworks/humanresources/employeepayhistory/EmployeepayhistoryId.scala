@@ -21,7 +21,6 @@ case class EmployeepayhistoryId(
   ratechangedate: TypoLocalDateTime
 )
 object EmployeepayhistoryId {
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[EmployeepayhistoryId] = Ordering.by(x => (x.businessentityid, x.ratechangedate))
   given reads: Reads[EmployeepayhistoryId] = Reads[EmployeepayhistoryId](json => JsResult.fromTry(
       Try(
         EmployeepayhistoryId(

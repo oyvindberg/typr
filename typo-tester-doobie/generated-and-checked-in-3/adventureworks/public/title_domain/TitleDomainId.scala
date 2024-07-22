@@ -39,7 +39,6 @@ object TitleDomainId {
   given decoder: Decoder[TitleDomainId] = ShortText.decoder.map(TitleDomainId.apply)
   given encoder: Encoder[TitleDomainId] = ShortText.encoder.contramap(_.value)
   given get: Get[TitleDomainId] = ShortText.get.map(TitleDomainId.apply)
-  given ordering: Ordering[TitleDomainId] = Ordering.by(_.value)
   given put: Put[TitleDomainId] = ShortText.put.contramap(_.value)
   given read: Read[TitleDomainId] = new Read.Single(get)
   given text: Text[TitleDomainId] = new Text[TitleDomainId] {

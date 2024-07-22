@@ -18,5 +18,4 @@ case class EmployeepayhistoryId(
 object EmployeepayhistoryId {
   implicit lazy val decoder: Decoder[EmployeepayhistoryId] = Decoder.forProduct2[EmployeepayhistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "ratechangedate")(EmployeepayhistoryId.apply)(BusinessentityId.decoder, TypoLocalDateTime.decoder)
   implicit lazy val encoder: Encoder[EmployeepayhistoryId] = Encoder.forProduct2[EmployeepayhistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "ratechangedate")(x => (x.businessentityid, x.ratechangedate))(BusinessentityId.encoder, TypoLocalDateTime.encoder)
-  implicit def ordering(implicit O0: Ordering[TypoLocalDateTime]): Ordering[EmployeepayhistoryId] = Ordering.by(x => (x.businessentityid, x.ratechangedate))
 }

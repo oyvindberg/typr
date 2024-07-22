@@ -20,7 +20,6 @@ object FootballClubId {
   implicit lazy val arrayToStatement: ToStatement[Array[FootballClubId]] = testdb.hardcoded.LongArrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[FootballClubId, Long] = Bijection[FootballClubId, Long](_.value)(FootballClubId.apply)
   implicit lazy val column: Column[FootballClubId] = Column.columnToLong.map(FootballClubId.apply)
-  implicit lazy val ordering: Ordering[FootballClubId] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[FootballClubId] = new ParameterMetaData[FootballClubId] {
     override def sqlType: String = ParameterMetaData.LongParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.LongParameterMetaData.jdbcType

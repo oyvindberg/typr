@@ -39,7 +39,6 @@ object TypoMoney {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.math.BigDecimal, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoMoney] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoMoney] = new ParameterMetaData[TypoMoney] {
     override def sqlType: String = "money"
     override def jdbcType: Int = Types.OTHER

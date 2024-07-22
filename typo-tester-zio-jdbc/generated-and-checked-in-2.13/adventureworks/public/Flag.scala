@@ -28,7 +28,6 @@ object Flag {
   implicit lazy val jdbcEncoder: JdbcEncoder[Flag] = JdbcEncoder.booleanEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[Flag] = JsonDecoder.boolean.map(Flag.apply)
   implicit lazy val jsonEncoder: JsonEncoder[Flag] = JsonEncoder.boolean.contramap(_.value)
-  implicit lazy val ordering: Ordering[Flag] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[Flag] = PGType.instance(""""public"."Flag"""", Types.OTHER)
   implicit lazy val setter: Setter[Flag] = Setter.booleanSetter.contramap(_.value)
   implicit lazy val text: Text[Flag] = new Text[Flag] {

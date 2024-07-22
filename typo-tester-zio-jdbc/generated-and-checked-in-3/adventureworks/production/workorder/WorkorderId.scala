@@ -25,7 +25,6 @@ object WorkorderId {
   given jdbcEncoder: JdbcEncoder[WorkorderId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[WorkorderId] = JsonDecoder.int.map(WorkorderId.apply)
   given jsonEncoder: JsonEncoder[WorkorderId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[WorkorderId] = Ordering.by(_.value)
   given pgType: PGType[WorkorderId] = PGType.PGTypeInt.as
   given setter: Setter[WorkorderId] = Setter.intSetter.contramap(_.value)
   given text: Text[WorkorderId] = new Text[WorkorderId] {

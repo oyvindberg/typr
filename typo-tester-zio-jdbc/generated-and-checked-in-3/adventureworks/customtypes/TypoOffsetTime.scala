@@ -60,7 +60,6 @@ object TypoOffsetTime {
   given jdbcEncoder: JdbcEncoder[TypoOffsetTime] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoOffsetTime] = JsonDecoder.offsetTime.map(TypoOffsetTime.apply)
   given jsonEncoder: JsonEncoder[TypoOffsetTime] = JsonEncoder.offsetTime.contramap(_.value)
-  given ordering: Ordering[TypoOffsetTime] = Ordering.by(_.value)
   given pgType: PGType[TypoOffsetTime] = PGType.instance[TypoOffsetTime]("timetz", Types.OTHER)
   given setter: Setter[TypoOffsetTime] = Setter.other(
     (ps, i, v) => {

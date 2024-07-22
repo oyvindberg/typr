@@ -25,7 +25,6 @@ object CountryregionId {
   given jdbcEncoder: JdbcEncoder[CountryregionId] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[CountryregionId] = JsonDecoder.string.map(CountryregionId.apply)
   given jsonEncoder: JsonEncoder[CountryregionId] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[CountryregionId] = Ordering.by(_.value)
   given pgType: PGType[CountryregionId] = PGType.PGTypeString.as
   given setter: Setter[CountryregionId] = Setter.stringSetter.contramap(_.value)
   given text: Text[CountryregionId] = new Text[CountryregionId] {

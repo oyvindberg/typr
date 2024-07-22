@@ -23,7 +23,6 @@ object NameStyle {
   implicit lazy val arrayToStatement: ToStatement[Array[NameStyle]] = adventureworks.BooleanArrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[NameStyle, Boolean] = Bijection[NameStyle, Boolean](_.value)(NameStyle.apply)
   implicit lazy val column: Column[NameStyle] = Column.columnToBoolean.map(NameStyle.apply)
-  implicit lazy val ordering: Ordering[NameStyle] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[NameStyle] = new ParameterMetaData[NameStyle] {
     override def sqlType: String = """"public"."NameStyle""""
     override def jdbcType: Int = Types.OTHER

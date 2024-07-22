@@ -36,5 +36,4 @@ object EmployeepayhistoryId {
       out.write("}")
     }
   }
-  implicit def ordering(implicit O0: Ordering[TypoLocalDateTime]): Ordering[EmployeepayhistoryId] = Ordering.by(x => (x.businessentityid, x.ratechangedate))
 }

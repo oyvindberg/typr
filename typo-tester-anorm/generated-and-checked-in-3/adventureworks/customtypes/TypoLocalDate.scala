@@ -42,7 +42,6 @@ object TypoLocalDate {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoLocalDate] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoLocalDate] = new ParameterMetaData[TypoLocalDate] {
     override def sqlType: String = "date"
     override def jdbcType: Int = Types.OTHER

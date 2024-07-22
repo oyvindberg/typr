@@ -57,7 +57,6 @@ object TypoInet {
   given jdbcEncoder: JdbcEncoder[TypoInet] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoInet] = JsonDecoder.string.map(TypoInet.apply)
   given jsonEncoder: JsonEncoder[TypoInet] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TypoInet] = Ordering.by(_.value)
   given pgType: PGType[TypoInet] = PGType.instance[TypoInet]("inet", Types.OTHER)
   given setter: Setter[TypoInet] = Setter.other(
     (ps, i, v) => {

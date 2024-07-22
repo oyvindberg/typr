@@ -28,7 +28,6 @@ object YesOrNo {
   given jdbcEncoder: JdbcEncoder[YesOrNo] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[YesOrNo] = JsonDecoder.string.map(YesOrNo.apply)
   given jsonEncoder: JsonEncoder[YesOrNo] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[YesOrNo] = Ordering.by(_.value)
   given pgType: PGType[YesOrNo] = PGType.instance(""""information_schema"."yes_or_no"""", Types.OTHER)
   given setter: Setter[YesOrNo] = Setter.stringSetter.contramap(_.value)
   given text: Text[YesOrNo] = new Text[YesOrNo] {

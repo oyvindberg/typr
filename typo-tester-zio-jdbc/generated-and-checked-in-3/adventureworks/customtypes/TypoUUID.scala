@@ -54,7 +54,6 @@ object TypoUUID {
   given jdbcEncoder: JdbcEncoder[TypoUUID] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoUUID] = JsonDecoder.uuid.map(TypoUUID.apply)
   given jsonEncoder: JsonEncoder[TypoUUID] = JsonEncoder.uuid.contramap(_.value)
-  given ordering: Ordering[TypoUUID] = Ordering.by(_.value)
   given pgType: PGType[TypoUUID] = PGType.instance[TypoUUID]("uuid", Types.OTHER)
   given setter: Setter[TypoUUID] = Setter.other(
     (ps, i, v) => {

@@ -28,7 +28,6 @@ object CharacterData {
   given jdbcEncoder: JdbcEncoder[CharacterData] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[CharacterData] = JsonDecoder.string.map(CharacterData.apply)
   given jsonEncoder: JsonEncoder[CharacterData] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[CharacterData] = Ordering.by(_.value)
   given pgType: PGType[CharacterData] = PGType.instance(""""information_schema"."character_data"""", Types.OTHER)
   given setter: Setter[CharacterData] = Setter.stringSetter.contramap(_.value)
   given text: Text[CharacterData] = new Text[CharacterData] {

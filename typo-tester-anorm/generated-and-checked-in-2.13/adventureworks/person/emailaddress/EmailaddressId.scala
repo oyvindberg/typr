@@ -21,7 +21,6 @@ case class EmailaddressId(
   emailaddressid: Int
 )
 object EmailaddressId {
-  implicit lazy val ordering: Ordering[EmailaddressId] = Ordering.by(x => (x.businessentityid, x.emailaddressid))
   implicit lazy val reads: Reads[EmailaddressId] = Reads[EmailaddressId](json => JsResult.fromTry(
       Try(
         EmailaddressId(

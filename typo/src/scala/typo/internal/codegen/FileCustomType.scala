@@ -3,7 +3,7 @@ package internal
 package codegen
 
 object FileCustomType {
-  def apply(options: InternalOptions, genOrdering: GenOrdering)(ct: CustomType): sc.File = {
+  def apply(options: InternalOptions)(ct: CustomType): sc.File = {
 
     val comments = scaladoc(ct.comment)(Nil)
 
@@ -19,7 +19,6 @@ object FileCustomType {
 
     val instances =
       maybeBijection.toList ++
-        List(genOrdering.ordering(ct.typoType, ct.params)) ++
         options.jsonLibs.flatMap(_.customTypeInstances(ct)) ++
         options.dbLib.toList.flatMap(_.customTypeInstances(ct))
 

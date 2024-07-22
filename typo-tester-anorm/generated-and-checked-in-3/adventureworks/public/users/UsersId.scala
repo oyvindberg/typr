@@ -21,7 +21,6 @@ object UsersId {
   given arrayToStatement: ToStatement[Array[UsersId]] = TypoUUID.arrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[UsersId, TypoUUID] = Bijection[UsersId, TypoUUID](_.value)(UsersId.apply)
   given column: Column[UsersId] = TypoUUID.column.map(UsersId.apply)
-  given ordering(using O0: Ordering[TypoUUID]): Ordering[UsersId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[UsersId] = new ParameterMetaData[UsersId] {
     override def sqlType: String = TypoUUID.parameterMetadata.sqlType
     override def jdbcType: Int = TypoUUID.parameterMetadata.jdbcType

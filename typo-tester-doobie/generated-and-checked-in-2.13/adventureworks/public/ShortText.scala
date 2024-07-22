@@ -24,7 +24,6 @@ object ShortText {
   implicit lazy val decoder: Decoder[ShortText] = Decoder.decodeString.map(ShortText.apply)
   implicit lazy val encoder: Encoder[ShortText] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[ShortText] = Meta.StringMeta.get.map(ShortText.apply)
-  implicit lazy val ordering: Ordering[ShortText] = Ordering.by(_.value)
   implicit lazy val put: Put[ShortText] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[ShortText] = new Text[ShortText] {
     override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

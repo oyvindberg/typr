@@ -62,7 +62,6 @@ object Myenum {
   implicit lazy val jdbcEncoder: JdbcEncoder[Myenum] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[Myenum] = JsonDecoder.string.mapOrFail(Myenum.apply)
   implicit lazy val jsonEncoder: JsonEncoder[Myenum] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[Myenum] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[Myenum] = PGType.instance[Myenum]("public.myenum", Types.OTHER)
   implicit lazy val setter: Setter[Myenum] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[Myenum] = new Text[Myenum] {

@@ -25,7 +25,6 @@ object TypoLine {
   given encoder: Encoder[TypoLine] = Encoder.forProduct3[TypoLine, Double, Double, Double]("a", "b", "c")(x => (x.a, x.b, x.c))(using Encoder.encodeDouble, Encoder.encodeDouble, Encoder.encodeDouble)
   given get: Get[TypoLine] = Get.Advanced.other[PGline](NonEmptyList.one("line"))
     .map(v => TypoLine(v.a, v.b, v.c))
-  given ordering: Ordering[TypoLine] = Ordering.by(x => (x.a, x.b, x.c))
   given put: Put[TypoLine] = Put.Advanced.other[PGline](NonEmptyList.one("line")).contramap(v => new PGline(v.a, v.b, v.c))
   given text: Text[TypoLine] = new Text[TypoLine] {
     override def unsafeEncode(v: TypoLine, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"{${v.a},${v.b},${v.c}}", sb)

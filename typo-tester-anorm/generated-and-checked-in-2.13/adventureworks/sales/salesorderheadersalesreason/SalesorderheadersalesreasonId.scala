@@ -21,7 +21,6 @@ case class SalesorderheadersalesreasonId(
   salesreasonid: SalesreasonId
 )
 object SalesorderheadersalesreasonId {
-  implicit lazy val ordering: Ordering[SalesorderheadersalesreasonId] = Ordering.by(x => (x.salesorderid, x.salesreasonid))
   implicit lazy val reads: Reads[SalesorderheadersalesreasonId] = Reads[SalesorderheadersalesreasonId](json => JsResult.fromTry(
       Try(
         SalesorderheadersalesreasonId(

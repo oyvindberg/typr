@@ -28,7 +28,6 @@ object CardinalNumber {
   given jdbcEncoder: JdbcEncoder[CardinalNumber] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[CardinalNumber] = JsonDecoder.int.map(CardinalNumber.apply)
   given jsonEncoder: JsonEncoder[CardinalNumber] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[CardinalNumber] = Ordering.by(_.value)
   given pgType: PGType[CardinalNumber] = PGType.instance(""""information_schema"."cardinal_number"""", Types.OTHER)
   given setter: Setter[CardinalNumber] = Setter.intSetter.contramap(_.value)
   given text: Text[CardinalNumber] = new Text[CardinalNumber] {

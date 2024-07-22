@@ -23,7 +23,6 @@ object SqlIdentifier {
   implicit lazy val arrayToStatement: ToStatement[Array[SqlIdentifier]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[SqlIdentifier, String] = Bijection[SqlIdentifier, String](_.value)(SqlIdentifier.apply)
   implicit lazy val column: Column[SqlIdentifier] = Column.columnToString.map(SqlIdentifier.apply)
-  implicit lazy val ordering: Ordering[SqlIdentifier] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[SqlIdentifier] = new ParameterMetaData[SqlIdentifier] {
     override def sqlType: String = """"information_schema"."sql_identifier""""
     override def jdbcType: Int = Types.OTHER

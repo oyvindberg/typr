@@ -42,7 +42,6 @@ object Sector {
   given arrayColumn: Column[Array[Sector]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(Sector.force))
   given arrayToStatement: ToStatement[Array[Sector]] = ToStatement[Array[Sector]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.sector", arr.map[AnyRef](_.value))))
   given column: Column[Sector] = Column.columnToString.mapResult(str => Sector(str).left.map(SqlMappingError.apply))
-  given ordering: Ordering[Sector] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[Sector] = new ParameterMetaData[Sector] {
     override def sqlType: String = "myschema.sector"
     override def jdbcType: Int = Types.OTHER

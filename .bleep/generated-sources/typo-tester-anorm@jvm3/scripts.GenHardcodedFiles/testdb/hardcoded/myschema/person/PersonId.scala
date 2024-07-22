@@ -20,7 +20,6 @@ object PersonId {
   given arrayToStatement: ToStatement[Array[PersonId]] = testdb.hardcoded.LongArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[PersonId, Long] = Bijection[PersonId, Long](_.value)(PersonId.apply)
   given column: Column[PersonId] = Column.columnToLong.map(PersonId.apply)
-  given ordering: Ordering[PersonId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[PersonId] = new ParameterMetaData[PersonId] {
     override def sqlType: String = ParameterMetaData.LongParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.LongParameterMetaData.jdbcType

@@ -36,7 +36,6 @@ object TypoInstant {
   given encoder: Encoder[TypoInstant] = Encoder.encodeInstant.contramap(_.value)
   given get: Get[TypoInstant] = Get.Advanced.other[String](NonEmptyList.one("timestamptz"))
     .map(v => TypoInstant(v))
-  given ordering: Ordering[TypoInstant] = Ordering.by(_.value)
   given put: Put[TypoInstant] = Put.Advanced.other[String](NonEmptyList.one("timestamptz")).contramap(v => v.value.toString)
   given text: Text[TypoInstant] = new Text[TypoInstant] {
     override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

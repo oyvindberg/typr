@@ -18,5 +18,4 @@ case class ProductproductphotoId(
 object ProductproductphotoId {
   given decoder: Decoder[ProductproductphotoId] = Decoder.forProduct2[ProductproductphotoId, ProductId, ProductphotoId]("productid", "productphotoid")(ProductproductphotoId.apply)(using ProductId.decoder, ProductphotoId.decoder)
   given encoder: Encoder[ProductproductphotoId] = Encoder.forProduct2[ProductproductphotoId, ProductId, ProductphotoId]("productid", "productphotoid")(x => (x.productid, x.productphotoid))(using ProductId.encoder, ProductphotoId.encoder)
-  given ordering: Ordering[ProductproductphotoId] = Ordering.by(x => (x.productid, x.productphotoid))
 }

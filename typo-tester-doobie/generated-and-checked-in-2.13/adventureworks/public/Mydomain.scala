@@ -24,7 +24,6 @@ object Mydomain {
   implicit lazy val decoder: Decoder[Mydomain] = Decoder.decodeString.map(Mydomain.apply)
   implicit lazy val encoder: Encoder[Mydomain] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[Mydomain] = Meta.StringMeta.get.map(Mydomain.apply)
-  implicit lazy val ordering: Ordering[Mydomain] = Ordering.by(_.value)
   implicit lazy val put: Put[Mydomain] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[Mydomain] = new Text[Mydomain] {
     override def unsafeEncode(v: Mydomain, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

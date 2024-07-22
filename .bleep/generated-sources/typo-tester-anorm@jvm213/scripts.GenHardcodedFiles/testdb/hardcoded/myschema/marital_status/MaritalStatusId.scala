@@ -20,7 +20,6 @@ object MaritalStatusId {
   implicit lazy val arrayToStatement: ToStatement[Array[MaritalStatusId]] = testdb.hardcoded.LongArrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[MaritalStatusId, Long] = Bijection[MaritalStatusId, Long](_.value)(MaritalStatusId.apply)
   implicit lazy val column: Column[MaritalStatusId] = Column.columnToLong.map(MaritalStatusId.apply)
-  implicit lazy val ordering: Ordering[MaritalStatusId] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[MaritalStatusId] = new ParameterMetaData[MaritalStatusId] {
     override def sqlType: String = ParameterMetaData.LongParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.LongParameterMetaData.jdbcType

@@ -57,7 +57,6 @@ object TypoRecord {
   given jdbcEncoder: JdbcEncoder[TypoRecord] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoRecord] = JsonDecoder.string.map(TypoRecord.apply)
   given jsonEncoder: JsonEncoder[TypoRecord] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TypoRecord] = Ordering.by(_.value)
   given pgType: PGType[TypoRecord] = PGType.instance[TypoRecord]("record", Types.OTHER)
   given setter: Setter[TypoRecord] = Setter.other(
     (ps, i, v) => {

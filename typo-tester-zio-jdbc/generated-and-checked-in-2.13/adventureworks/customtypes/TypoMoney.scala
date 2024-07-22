@@ -51,7 +51,6 @@ object TypoMoney {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoMoney] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoMoney] = JsonDecoder.scalaBigDecimal.map(TypoMoney.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoMoney] = JsonEncoder.scalaBigDecimal.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoMoney] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoMoney] = PGType.instance[TypoMoney]("money", Types.OTHER)
   implicit lazy val setter: Setter[TypoMoney] = Setter.other(
     (ps, i, v) => {

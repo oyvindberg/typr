@@ -45,7 +45,6 @@ object TypoInet {
       case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.util.PGobject, got ${other.getClass.getName}"))
     }
   )
-  implicit lazy val ordering: Ordering[TypoInet] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TypoInet] = new ParameterMetaData[TypoInet] {
     override def sqlType: String = "inet"
     override def jdbcType: Int = Types.OTHER

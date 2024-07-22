@@ -23,7 +23,6 @@ object YesOrNo {
   given arrayToStatement: ToStatement[Array[YesOrNo]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[YesOrNo, String] = Bijection[YesOrNo, String](_.value)(YesOrNo.apply)
   given column: Column[YesOrNo] = Column.columnToString.map(YesOrNo.apply)
-  given ordering: Ordering[YesOrNo] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[YesOrNo] = new ParameterMetaData[YesOrNo] {
     override def sqlType: String = """"information_schema"."yes_or_no""""
     override def jdbcType: Int = Types.OTHER

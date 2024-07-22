@@ -29,7 +29,6 @@ object TimeStamp {
   implicit lazy val jdbcEncoder: JdbcEncoder[TimeStamp] = TypoInstant.jdbcEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[TimeStamp] = TypoInstant.jsonDecoder.map(TimeStamp.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TimeStamp] = TypoInstant.jsonEncoder.contramap(_.value)
-  implicit def ordering(implicit O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TimeStamp] = PGType.instance(""""information_schema"."time_stamp"""", Types.OTHER)
   implicit lazy val setter: Setter[TimeStamp] = TypoInstant.setter.contramap(_.value)
   implicit lazy val text: Text[TimeStamp] = new Text[TimeStamp] {

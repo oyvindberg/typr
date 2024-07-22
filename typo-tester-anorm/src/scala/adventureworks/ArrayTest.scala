@@ -56,7 +56,6 @@ class ArrayTest extends AnyFunSuite with JsonEquals {
 
   test("can query pgtestnull with DSL") {
     withConnection { implicit c =>
-      implicit def ordering[T]: Ordering[T] = null
       val row = pgtestnullRepo.insert(ArrayTestData.pgtestnullRowWithValues)
       assertJsonEquals(row.bool, pgtestnullRepo.select.where(_.bool === row.bool).toList.head.bool): @nowarn
       assertJsonEquals(row.box, pgtestnullRepo.select.where(_.box === row.box).toList.head.box): @nowarn
@@ -133,7 +132,6 @@ class ArrayTest extends AnyFunSuite with JsonEquals {
 
   test("can query pgtest with DSL") {
     withConnection { implicit c =>
-      implicit def ordering[T]: Ordering[T] = null
       val row = pgtestRepo.insert(ArrayTestData.pgTestRow)
       pgtestRepo.update.setValue(_.bool)(row.bool).where(_.uuid === row.uuid).execute(): @nowarn
       pgtestRepo.update.setValue(_.box)(row.box).where(_.uuid === row.uuid).execute(): @nowarn

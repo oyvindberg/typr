@@ -22,7 +22,6 @@ object TableWithGeneratedColumnsId {
   given decoder: Decoder[TableWithGeneratedColumnsId] = Decoder.decodeString.map(TableWithGeneratedColumnsId.apply)
   given encoder: Encoder[TableWithGeneratedColumnsId] = Encoder.encodeString.contramap(_.value)
   given get: Get[TableWithGeneratedColumnsId] = Meta.StringMeta.get.map(TableWithGeneratedColumnsId.apply)
-  given ordering: Ordering[TableWithGeneratedColumnsId] = Ordering.by(_.value)
   given put: Put[TableWithGeneratedColumnsId] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {
     override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

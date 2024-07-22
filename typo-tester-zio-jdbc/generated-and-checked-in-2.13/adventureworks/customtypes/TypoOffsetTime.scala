@@ -60,7 +60,6 @@ object TypoOffsetTime {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoOffsetTime] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoOffsetTime] = JsonDecoder.offsetTime.map(TypoOffsetTime.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoOffsetTime] = JsonEncoder.offsetTime.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoOffsetTime] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoOffsetTime] = PGType.instance[TypoOffsetTime]("timetz", Types.OTHER)
   implicit lazy val setter: Setter[TypoOffsetTime] = Setter.other(
     (ps, i, v) => {

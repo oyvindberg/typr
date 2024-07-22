@@ -25,7 +25,6 @@ object DocumentId {
   given jdbcEncoder: JdbcEncoder[DocumentId] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[DocumentId] = JsonDecoder.string.map(DocumentId.apply)
   given jsonEncoder: JsonEncoder[DocumentId] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[DocumentId] = Ordering.by(_.value)
   given pgType: PGType[DocumentId] = PGType.PGTypeString.as
   given setter: Setter[DocumentId] = Setter.stringSetter.contramap(_.value)
   given text: Text[DocumentId] = new Text[DocumentId] {

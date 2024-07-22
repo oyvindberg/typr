@@ -68,7 +68,6 @@ object TypoCircle {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[TypoPoint]): Ordering[TypoCircle] = Ordering.by(x => (x.center, x.radius))
   given pgType: PGType[TypoCircle] = PGType.instance[TypoCircle]("circle", Types.OTHER)
   given setter: Setter[TypoCircle] = Setter.other(
     (ps, i, v) => {

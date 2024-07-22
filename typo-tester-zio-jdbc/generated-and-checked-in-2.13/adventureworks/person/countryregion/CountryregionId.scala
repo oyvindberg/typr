@@ -25,7 +25,6 @@ object CountryregionId {
   implicit lazy val jdbcEncoder: JdbcEncoder[CountryregionId] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[CountryregionId] = JsonDecoder.string.map(CountryregionId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[CountryregionId] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[CountryregionId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[CountryregionId] = PGType.PGTypeString.as
   implicit lazy val setter: Setter[CountryregionId] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[CountryregionId] = new Text[CountryregionId] {

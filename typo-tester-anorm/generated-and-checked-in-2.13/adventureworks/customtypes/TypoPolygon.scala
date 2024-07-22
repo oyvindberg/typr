@@ -41,7 +41,6 @@ object TypoPolygon {
       case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGpolygon, got ${other.getClass.getName}"))
     }
   )
-  implicit def ordering(implicit O0: Ordering[List[TypoPoint]]): Ordering[TypoPolygon] = Ordering.by(_.points)
   implicit lazy val parameterMetadata: ParameterMetaData[TypoPolygon] = new ParameterMetaData[TypoPolygon] {
     override def sqlType: String = "polygon"
     override def jdbcType: Int = Types.OTHER

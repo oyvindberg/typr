@@ -20,7 +20,6 @@ object TestOrganisasjonId {
   given arrayToStatement: ToStatement[Array[TestOrganisasjonId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[TestOrganisasjonId, String] = Bijection[TestOrganisasjonId, String](_.value)(TestOrganisasjonId.apply)
   given column: Column[TestOrganisasjonId] = Column.columnToString.map(TestOrganisasjonId.apply)
-  given ordering: Ordering[TestOrganisasjonId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TestOrganisasjonId] = new ParameterMetaData[TestOrganisasjonId] {
     override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType

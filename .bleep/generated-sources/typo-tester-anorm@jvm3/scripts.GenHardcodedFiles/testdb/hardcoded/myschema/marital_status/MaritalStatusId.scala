@@ -20,7 +20,6 @@ object MaritalStatusId {
   given arrayToStatement: ToStatement[Array[MaritalStatusId]] = testdb.hardcoded.LongArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[MaritalStatusId, Long] = Bijection[MaritalStatusId, Long](_.value)(MaritalStatusId.apply)
   given column: Column[MaritalStatusId] = Column.columnToLong.map(MaritalStatusId.apply)
-  given ordering: Ordering[MaritalStatusId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[MaritalStatusId] = new ParameterMetaData[MaritalStatusId] {
     override def sqlType: String = ParameterMetaData.LongParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.LongParameterMetaData.jdbcType

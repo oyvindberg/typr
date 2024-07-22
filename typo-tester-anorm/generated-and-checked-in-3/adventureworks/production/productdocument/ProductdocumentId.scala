@@ -21,7 +21,6 @@ case class ProductdocumentId(
   documentnode: DocumentId
 )
 object ProductdocumentId {
-  given ordering: Ordering[ProductdocumentId] = Ordering.by(x => (x.productid, x.documentnode))
   given reads: Reads[ProductdocumentId] = Reads[ProductdocumentId](json => JsResult.fromTry(
       Try(
         ProductdocumentId(

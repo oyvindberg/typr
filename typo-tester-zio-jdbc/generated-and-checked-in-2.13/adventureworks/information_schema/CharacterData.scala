@@ -28,7 +28,6 @@ object CharacterData {
   implicit lazy val jdbcEncoder: JdbcEncoder[CharacterData] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[CharacterData] = JsonDecoder.string.map(CharacterData.apply)
   implicit lazy val jsonEncoder: JsonEncoder[CharacterData] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[CharacterData] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[CharacterData] = PGType.instance(""""information_schema"."character_data"""", Types.OTHER)
   implicit lazy val setter: Setter[CharacterData] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[CharacterData] = new Text[CharacterData] {

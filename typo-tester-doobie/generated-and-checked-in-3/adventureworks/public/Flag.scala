@@ -24,7 +24,6 @@ object Flag {
   given decoder: Decoder[Flag] = Decoder.decodeBoolean.map(Flag.apply)
   given encoder: Encoder[Flag] = Encoder.encodeBoolean.contramap(_.value)
   given get: Get[Flag] = Meta.BooleanMeta.get.map(Flag.apply)
-  given ordering: Ordering[Flag] = Ordering.by(_.value)
   given put: Put[Flag] = Meta.BooleanMeta.put.contramap(_.value)
   given text: Text[Flag] = new Text[Flag] {
     override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)

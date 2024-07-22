@@ -28,7 +28,6 @@ object Name {
   given jdbcEncoder: JdbcEncoder[Name] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[Name] = JsonDecoder.string.map(Name.apply)
   given jsonEncoder: JsonEncoder[Name] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[Name] = Ordering.by(_.value)
   given pgType: PGType[Name] = PGType.instance(""""public"."Name"""", Types.OTHER)
   given setter: Setter[Name] = Setter.stringSetter.contramap(_.value)
   given text: Text[Name] = new Text[Name] {

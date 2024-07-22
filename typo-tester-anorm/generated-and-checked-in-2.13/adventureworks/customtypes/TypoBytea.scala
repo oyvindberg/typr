@@ -26,7 +26,6 @@ object TypoBytea {
       case other => Left(TypeDoesNotMatch(s"Expected instance of Array[scala.Byte], got ${other.getClass.getName}"))
     }
   )
-  implicit def ordering(implicit O0: Ordering[Array[Byte]]): Ordering[TypoBytea] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TypoBytea] = new ParameterMetaData[TypoBytea] {
     override def sqlType: String = "bytea"
     override def jdbcType: Int = Types.OTHER

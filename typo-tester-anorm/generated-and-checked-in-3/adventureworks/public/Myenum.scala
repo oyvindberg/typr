@@ -42,7 +42,6 @@ object Myenum {
   given arrayColumn: Column[Array[Myenum]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(Myenum.force))
   given arrayToStatement: ToStatement[Array[Myenum]] = ToStatement[Array[Myenum]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("public.myenum", arr.map[AnyRef](_.value))))
   given column: Column[Myenum] = Column.columnToString.mapResult(str => Myenum(str).left.map(SqlMappingError.apply))
-  given ordering: Ordering[Myenum] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[Myenum] = new ParameterMetaData[Myenum] {
     override def sqlType: String = "public.myenum"
     override def jdbcType: Int = Types.OTHER

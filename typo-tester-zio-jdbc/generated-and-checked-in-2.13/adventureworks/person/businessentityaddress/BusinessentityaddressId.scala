@@ -42,5 +42,4 @@ object BusinessentityaddressId {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[BusinessentityaddressId] = Ordering.by(x => (x.businessentityid, x.addressid, x.addresstypeid))
 }

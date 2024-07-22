@@ -28,7 +28,6 @@ object ShortText {
   given jdbcEncoder: JdbcEncoder[ShortText] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[ShortText] = JsonDecoder.string.map(ShortText.apply)
   given jsonEncoder: JsonEncoder[ShortText] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[ShortText] = Ordering.by(_.value)
   given pgType: PGType[ShortText] = PGType.instance(""""public"."short_text"""", Types.OTHER)
   given setter: Setter[ShortText] = Setter.stringSetter.contramap(_.value)
   given text: Text[ShortText] = new Text[ShortText] {

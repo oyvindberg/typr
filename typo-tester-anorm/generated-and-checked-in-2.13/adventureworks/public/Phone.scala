@@ -23,7 +23,6 @@ object Phone {
   implicit lazy val arrayToStatement: ToStatement[Array[Phone]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[Phone, String] = Bijection[Phone, String](_.value)(Phone.apply)
   implicit lazy val column: Column[Phone] = Column.columnToString.map(Phone.apply)
-  implicit lazy val ordering: Ordering[Phone] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Phone] = new ParameterMetaData[Phone] {
     override def sqlType: String = """"public"."Phone""""
     override def jdbcType: Int = Types.OTHER

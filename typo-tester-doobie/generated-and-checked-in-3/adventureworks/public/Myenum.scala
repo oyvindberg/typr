@@ -43,7 +43,6 @@ object Myenum {
   given decoder: Decoder[Myenum] = Decoder.decodeString.emap(Myenum.apply)
   given encoder: Encoder[Myenum] = Encoder.encodeString.contramap(_.value)
   given get: Get[Myenum] = Meta.StringMeta.get.temap(Myenum.apply)
-  given ordering: Ordering[Myenum] = Ordering.by(_.value)
   given put: Put[Myenum] = Put.Advanced.one[Myenum](JdbcType.Other, NonEmptyList.one("public.myenum"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
   given read: Read[Myenum] = new Read.Single(get)
   given text: Text[Myenum] = new Text[Myenum] {

@@ -53,7 +53,6 @@ object TypoPolygon {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoPolygon] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoPolygon] = JsonDecoder[List[TypoPoint]].map(TypoPolygon.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoPolygon] = JsonEncoder[List[TypoPoint]].contramap(_.points)
-  implicit def ordering(implicit O0: Ordering[List[TypoPoint]]): Ordering[TypoPolygon] = Ordering.by(_.points)
   implicit lazy val pgType: PGType[TypoPolygon] = PGType.instance[TypoPolygon]("polygon", Types.OTHER)
   implicit lazy val setter: Setter[TypoPolygon] = Setter.other(
     (ps, i, v) => {

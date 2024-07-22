@@ -28,7 +28,6 @@ object Mydomain {
   implicit lazy val jdbcEncoder: JdbcEncoder[Mydomain] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[Mydomain] = JsonDecoder.string.map(Mydomain.apply)
   implicit lazy val jsonEncoder: JsonEncoder[Mydomain] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[Mydomain] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[Mydomain] = PGType.instance(""""public"."mydomain"""", Types.OTHER)
   implicit lazy val setter: Setter[Mydomain] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[Mydomain] = new Text[Mydomain] {

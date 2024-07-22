@@ -60,7 +60,6 @@ object TypoLocalDateTime {
   given jdbcEncoder: JdbcEncoder[TypoLocalDateTime] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoLocalDateTime] = JsonDecoder.localDateTime.map(TypoLocalDateTime.apply)
   given jsonEncoder: JsonEncoder[TypoLocalDateTime] = JsonEncoder.localDateTime.contramap(_.value)
-  given ordering: Ordering[TypoLocalDateTime] = Ordering.by(_.value)
   given pgType: PGType[TypoLocalDateTime] = PGType.instance[TypoLocalDateTime]("timestamp", Types.OTHER)
   given setter: Setter[TypoLocalDateTime] = Setter.other(
     (ps, i, v) => {

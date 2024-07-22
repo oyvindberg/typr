@@ -1,5 +1,7 @@
 package typo.dsl
 
+import typo.dsl.internal.DummyOrdering
+
 sealed trait OrderByOrSeek[Fields, NT] {
   val f: Fields => SortOrderNoHkt[NT]
 }
@@ -30,7 +32,7 @@ object OrderByOrSeek {
                   .zip(rightRow.iterator)
                   .zip(seekOrderBys.iterator)
                   .map { case ((left, right), so: SortOrder[t, n] @unchecked) /* for 2.13*/ =>
-                    val ordering: Ordering[Option[t]] = Ordering.Option(if (so.ascending) so.ordering else so.ordering.reverse)
+                    val ordering: Ordering[Option[t]] = Ordering.Option(if (so.ascending) DummyOrdering.ord[t] else DummyOrdering.ord[t].reverse)
                     ordering.compare(so.nullability.toOpt(left.asInstanceOf[n[t]]), so.nullability.toOpt(right.asInstanceOf[n[t]]))
                   }
                   .find(_ != 0)
@@ -44,7 +46,6 @@ object OrderByOrSeek {
                     nonEmpty.take(i).map { case seek: Seek[Fields, t, n] @unchecked /* for 2.13*/ =>
                       val so: SortOrder[t, n] = seek.f(fields)
                       implicit val n: Nullability2[n, n, Option] = Nullability2.opt(using so.nullability, so.nullability)
-                      implicit val ordering: Ordering[t] = so.ordering
                       so.expr === seek.value
                     }
 
@@ -52,7 +53,6 @@ object OrderByOrSeek {
                     case seek: Seek[Fields, t, n] @unchecked /* for 2.13*/ =>
                       val so: SortOrder[t, n] = seek.f(fields)
                       implicit val n: Nullability2[n, n, Option] = Nullability2.opt(using so.nullability, so.nullability)
-                      implicit val ordering: Ordering[t] = so.ordering
                       val predicate: SqlExpr[Boolean, Option] =
                         if (so.ascending) so.expr > seek.value else so.expr < seek.value
                       (equals :+ predicate).reduce(_ and _)

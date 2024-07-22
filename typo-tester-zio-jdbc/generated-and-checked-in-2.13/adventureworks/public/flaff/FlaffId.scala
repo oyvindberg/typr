@@ -45,5 +45,4 @@ object FlaffId {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[FlaffId] = Ordering.by(x => (x.code, x.anotherCode, x.someNumber, x.specifier))
 }

@@ -22,7 +22,6 @@ object AddressId {
   given decoder: Decoder[AddressId] = Decoder.decodeInt.map(AddressId.apply)
   given encoder: Encoder[AddressId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[AddressId] = Meta.IntMeta.get.map(AddressId.apply)
-  given ordering: Ordering[AddressId] = Ordering.by(_.value)
   given put: Put[AddressId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[AddressId] = new Text[AddressId] {
     override def unsafeEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

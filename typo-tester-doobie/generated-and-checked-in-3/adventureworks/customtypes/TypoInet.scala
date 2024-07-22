@@ -32,7 +32,6 @@ object TypoInet {
   given encoder: Encoder[TypoInet] = Encoder.encodeString.contramap(_.value)
   given get: Get[TypoInet] = Get.Advanced.other[PGobject](NonEmptyList.one("inet"))
     .map(v => TypoInet(v.getValue))
-  given ordering: Ordering[TypoInet] = Ordering.by(_.value)
   given put: Put[TypoInet] = Put.Advanced.other[PGobject](NonEmptyList.one("inet")).contramap(v => {
                                                                           val obj = new PGobject
                                                                           obj.setType("inet")

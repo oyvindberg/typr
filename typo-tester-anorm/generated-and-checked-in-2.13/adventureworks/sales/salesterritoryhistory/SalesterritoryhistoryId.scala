@@ -23,7 +23,6 @@ case class SalesterritoryhistoryId(
   territoryid: SalesterritoryId
 )
 object SalesterritoryhistoryId {
-  implicit def ordering(implicit O0: Ordering[TypoLocalDateTime]): Ordering[SalesterritoryhistoryId] = Ordering.by(x => (x.businessentityid, x.startdate, x.territoryid))
   implicit lazy val reads: Reads[SalesterritoryhistoryId] = Reads[SalesterritoryhistoryId](json => JsResult.fromTry(
       Try(
         SalesterritoryhistoryId(

@@ -25,7 +25,6 @@ object TypoCircle {
   given encoder: Encoder[TypoCircle] = Encoder.forProduct2[TypoCircle, TypoPoint, Double]("center", "radius")(x => (x.center, x.radius))(using TypoPoint.encoder, Encoder.encodeDouble)
   given get: Get[TypoCircle] = Get.Advanced.other[PGcircle](NonEmptyList.one("circle"))
     .map(v => TypoCircle(TypoPoint(v.center.x, v.center.y), v.radius))
-  given ordering(using O0: Ordering[TypoPoint]): Ordering[TypoCircle] = Ordering.by(x => (x.center, x.radius))
   given put: Put[TypoCircle] = Put.Advanced.other[PGcircle](NonEmptyList.one("circle")).contramap(v => new PGcircle(v.center.x, v.center.y, v.radius))
   given text: Text[TypoCircle] = new Text[TypoCircle] {
     override def unsafeEncode(v: TypoCircle, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"<(${v.center.x},${v.center.y}),${v.radius}>", sb)

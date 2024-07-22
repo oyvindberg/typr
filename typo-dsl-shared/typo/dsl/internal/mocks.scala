@@ -9,7 +9,7 @@ object mocks {
         .map { case so: SortOrder[t, n] @unchecked /* for 2.13*/ =>
           val left = structure.untypedEval(so.expr, leftRow)
           val right = structure.untypedEval(so.expr, rightRow)
-          val ordering: Ordering[Option[t]] = Ordering.Option(if (so.ascending) so.ordering else so.ordering.reverse)
+          val ordering: Ordering[Option[t]] = Ordering.Option(if (so.ascending) DummyOrdering.ord[t] else DummyOrdering.ord[t].reverse)
           ordering.compare(so.nullability.toOpt(left), so.nullability.toOpt(right))
         }
         .find(_ != 0)

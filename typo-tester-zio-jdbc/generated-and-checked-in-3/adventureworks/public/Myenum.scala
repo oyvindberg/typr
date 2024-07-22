@@ -62,7 +62,6 @@ object Myenum {
   given jdbcEncoder: JdbcEncoder[Myenum] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[Myenum] = JsonDecoder.string.mapOrFail(Myenum.apply)
   given jsonEncoder: JsonEncoder[Myenum] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[Myenum] = Ordering.by(_.value)
   given pgType: PGType[Myenum] = PGType.instance[Myenum]("public.myenum", Types.OTHER)
   given setter: Setter[Myenum] = Setter.stringSetter.contramap(_.value)
   given text: Text[Myenum] = new Text[Myenum] {

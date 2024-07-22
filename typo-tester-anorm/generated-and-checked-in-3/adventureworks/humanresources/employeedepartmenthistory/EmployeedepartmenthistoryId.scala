@@ -25,7 +25,6 @@ case class EmployeedepartmenthistoryId(
   shiftid: ShiftId
 )
 object EmployeedepartmenthistoryId {
-  given ordering(using O0: Ordering[TypoLocalDate]): Ordering[EmployeedepartmenthistoryId] = Ordering.by(x => (x.businessentityid, x.startdate, x.departmentid, x.shiftid))
   given reads: Reads[EmployeedepartmenthistoryId] = Reads[EmployeedepartmenthistoryId](json => JsResult.fromTry(
       Try(
         EmployeedepartmenthistoryId(

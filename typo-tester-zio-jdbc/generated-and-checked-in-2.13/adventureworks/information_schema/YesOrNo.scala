@@ -28,7 +28,6 @@ object YesOrNo {
   implicit lazy val jdbcEncoder: JdbcEncoder[YesOrNo] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[YesOrNo] = JsonDecoder.string.map(YesOrNo.apply)
   implicit lazy val jsonEncoder: JsonEncoder[YesOrNo] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[YesOrNo] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[YesOrNo] = PGType.instance(""""information_schema"."yes_or_no"""", Types.OTHER)
   implicit lazy val setter: Setter[YesOrNo] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[YesOrNo] = new Text[YesOrNo] {

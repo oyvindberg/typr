@@ -28,7 +28,6 @@ object NameStyle {
   given jdbcEncoder: JdbcEncoder[NameStyle] = JdbcEncoder.booleanEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[NameStyle] = JsonDecoder.boolean.map(NameStyle.apply)
   given jsonEncoder: JsonEncoder[NameStyle] = JsonEncoder.boolean.contramap(_.value)
-  given ordering: Ordering[NameStyle] = Ordering.by(_.value)
   given pgType: PGType[NameStyle] = PGType.instance(""""public"."NameStyle"""", Types.OTHER)
   given setter: Setter[NameStyle] = Setter.booleanSetter.contramap(_.value)
   given text: Text[NameStyle] = new Text[NameStyle] {

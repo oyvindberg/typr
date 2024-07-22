@@ -69,7 +69,6 @@ object TypoLineSegment {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[TypoPoint]): Ordering[TypoLineSegment] = Ordering.by(x => (x.p1, x.p2))
   given pgType: PGType[TypoLineSegment] = PGType.instance[TypoLineSegment]("lseg", Types.OTHER)
   given setter: Setter[TypoLineSegment] = Setter.other(
     (ps, i, v) => {

@@ -68,7 +68,6 @@ object TypoCircle {
       out.write("}")
     }
   }
-  implicit def ordering(implicit O0: Ordering[TypoPoint]): Ordering[TypoCircle] = Ordering.by(x => (x.center, x.radius))
   implicit lazy val pgType: PGType[TypoCircle] = PGType.instance[TypoCircle]("circle", Types.OTHER)
   implicit lazy val setter: Setter[TypoCircle] = Setter.other(
     (ps, i, v) => {

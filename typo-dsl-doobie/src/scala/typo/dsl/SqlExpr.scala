@@ -12,28 +12,28 @@ sealed trait SqlExpr[T, N[_]] extends SqlExpr.SqlExprNoHkt[N[T]] {
   final def customBinaryOp[T2, N2[_], NC[_]](op: String, right: SqlExpr[T2, N2])(f: (T, T2) => Boolean)(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     SqlExpr.Binary[T, T2, Boolean, N, N2, NC](this, new SqlOperator(op, f), right, N)
 
-  final def isEqual[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def isEqual[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     this === t
 
-  final def isNotEqual[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def isNotEqual[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     this !== t
 
-  final def ===[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def ===[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     SqlExpr.Binary(this, SqlOperator.eq, t, N)
 
-  final def !==[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def !==[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     SqlExpr.Binary(this, SqlOperator.neq, t, N)
 
-  final def >[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def >[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     SqlExpr.Binary(this, SqlOperator.gt, t, N)
 
-  final def >=[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def >=[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     SqlExpr.Binary(this, SqlOperator.gte, t, N)
 
-  final def <[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def <[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     SqlExpr.Binary(this, SqlOperator.lt, t, N)
 
-  final def <=[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit O: Ordering[T], N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
+  final def <=[N2[_], NC[_]](t: SqlExpr[T, N2])(implicit N: Nullability2[N, N2, NC]): SqlExpr[Boolean, NC] =
     SqlExpr.Binary(this, SqlOperator.lte, t, N)
 
   final infix def or[N2[_], NC[_]](other: SqlExpr[T, N2])(implicit B: Bijection[T, Boolean], N: Nullability2[N, N2, NC]): SqlExpr[T, NC] =
@@ -263,8 +263,8 @@ object SqlExpr {
 
   // some syntax to construct field sort order
   implicit class SqlExprSortSyntax[T, N[_]](private val expr: SqlExpr[T, N]) extends AnyVal {
-    def asc(implicit O: Ordering[T], N: Nullability[N]): SortOrder[T, N] = SortOrder(expr, ascending = true, nullsFirst = false)
-    def desc(implicit O: Ordering[T], N: Nullability[N]): SortOrder[T, N] = SortOrder(expr, ascending = false, nullsFirst = false)
+    def asc(implicit N: Nullability[N]): SortOrder[T, N] = SortOrder(expr, ascending = true, nullsFirst = false)
+    def desc(implicit N: Nullability[N]): SortOrder[T, N] = SortOrder(expr, ascending = false, nullsFirst = false)
   }
 
   implicit class SqlExprArraySyntax[T, N[_]](private val expr: SqlExpr[Array[T], N]) extends AnyVal {

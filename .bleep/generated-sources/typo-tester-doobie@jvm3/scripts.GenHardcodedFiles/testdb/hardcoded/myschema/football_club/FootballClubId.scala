@@ -22,7 +22,6 @@ object FootballClubId {
   given decoder: Decoder[FootballClubId] = Decoder.decodeLong.map(FootballClubId.apply)
   given encoder: Encoder[FootballClubId] = Encoder.encodeLong.contramap(_.value)
   given get: Get[FootballClubId] = Meta.LongMeta.get.map(FootballClubId.apply)
-  given ordering: Ordering[FootballClubId] = Ordering.by(_.value)
   given put: Put[FootballClubId] = Meta.LongMeta.put.contramap(_.value)
   given text: Text[FootballClubId] = new Text[FootballClubId] {
     override def unsafeEncode(v: FootballClubId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)

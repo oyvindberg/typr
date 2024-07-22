@@ -17,5 +17,4 @@ case class TestUtdanningstilbudId(
 object TestUtdanningstilbudId {
   given decoder: Decoder[TestUtdanningstilbudId] = Decoder.forProduct2[TestUtdanningstilbudId, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(TestUtdanningstilbudId.apply)(using TestOrganisasjonId.decoder, Decoder.decodeString)
   given encoder: Encoder[TestUtdanningstilbudId] = Encoder.forProduct2[TestUtdanningstilbudId, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(x => (x.organisasjonskode, x.utdanningsmulighetKode))(using TestOrganisasjonId.encoder, Encoder.encodeString)
-  given ordering: Ordering[TestUtdanningstilbudId] = Ordering.by(x => (x.organisasjonskode, x.utdanningsmulighetKode))
 }

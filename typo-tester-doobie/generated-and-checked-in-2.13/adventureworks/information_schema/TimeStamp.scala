@@ -24,7 +24,6 @@ object TimeStamp {
   implicit lazy val decoder: Decoder[TimeStamp] = TypoInstant.decoder.map(TimeStamp.apply)
   implicit lazy val encoder: Encoder[TimeStamp] = TypoInstant.encoder.contramap(_.value)
   implicit lazy val get: Get[TimeStamp] = TypoInstant.get.map(TimeStamp.apply)
-  implicit def ordering(implicit O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   implicit lazy val put: Put[TimeStamp] = TypoInstant.put.contramap(_.value)
   implicit lazy val text: Text[TimeStamp] = new Text[TimeStamp] {
     override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeEncode(v.value, sb)

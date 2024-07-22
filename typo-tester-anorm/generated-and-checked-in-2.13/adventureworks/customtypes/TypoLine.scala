@@ -44,7 +44,6 @@ object TypoLine {
       case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGline, got ${other.getClass.getName}"))
     }
   )
-  implicit lazy val ordering: Ordering[TypoLine] = Ordering.by(x => (x.a, x.b, x.c))
   implicit lazy val parameterMetadata: ParameterMetaData[TypoLine] = new ParameterMetaData[TypoLine] {
     override def sqlType: String = "line"
     override def jdbcType: Int = Types.OTHER

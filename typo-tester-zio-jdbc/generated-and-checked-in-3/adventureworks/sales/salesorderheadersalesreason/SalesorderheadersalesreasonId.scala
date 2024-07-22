@@ -36,5 +36,4 @@ object SalesorderheadersalesreasonId {
       out.write("}")
     }
   }
-  given ordering: Ordering[SalesorderheadersalesreasonId] = Ordering.by(x => (x.salesorderid, x.salesreasonid))
 }

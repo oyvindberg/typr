@@ -20,7 +20,6 @@ object CountryregionId {
   given arrayToStatement: ToStatement[Array[CountryregionId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
   given column: Column[CountryregionId] = Column.columnToString.map(CountryregionId.apply)
-  given ordering: Ordering[CountryregionId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[CountryregionId] = new ParameterMetaData[CountryregionId] {
     override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType

@@ -40,7 +40,6 @@ object TitleId {
   given jdbcEncoder: JdbcEncoder[TitleId] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[TitleId] = JsonDecoder.string.map(TitleId.apply)
   given jsonEncoder: JsonEncoder[TitleId] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TitleId] = Ordering.by(_.value)
   given pgType: PGType[TitleId] = PGType.instance[TitleId]("text", Types.OTHER)
   given setter: Setter[TitleId] = Setter.stringSetter.contramap(_.value)
   given text: Text[TitleId] = new Text[TitleId] {

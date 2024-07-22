@@ -24,7 +24,6 @@ object ShortText {
   given decoder: Decoder[ShortText] = Decoder.decodeString.map(ShortText.apply)
   given encoder: Encoder[ShortText] = Encoder.encodeString.contramap(_.value)
   given get: Get[ShortText] = Meta.StringMeta.get.map(ShortText.apply)
-  given ordering: Ordering[ShortText] = Ordering.by(_.value)
   given put: Put[ShortText] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[ShortText] = new Text[ShortText] {
     override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

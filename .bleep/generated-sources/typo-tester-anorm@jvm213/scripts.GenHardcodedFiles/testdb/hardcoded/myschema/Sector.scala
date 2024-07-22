@@ -42,7 +42,6 @@ object Sector {
   implicit lazy val arrayColumn: Column[Array[Sector]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Sector.force))
   implicit lazy val arrayToStatement: ToStatement[Array[Sector]] = ToStatement[Array[Sector]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.sector", arr.map[AnyRef](_.value))))
   implicit lazy val column: Column[Sector] = Column.columnToString.mapResult(str => Sector(str).left.map(SqlMappingError.apply))
-  implicit lazy val ordering: Ordering[Sector] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Sector] = new ParameterMetaData[Sector] {
     override def sqlType: String = "myschema.sector"
     override def jdbcType: Int = Types.OTHER

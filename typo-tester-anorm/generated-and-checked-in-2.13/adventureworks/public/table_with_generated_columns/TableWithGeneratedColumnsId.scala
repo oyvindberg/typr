@@ -20,7 +20,6 @@ object TableWithGeneratedColumnsId {
   implicit lazy val arrayToStatement: ToStatement[Array[TableWithGeneratedColumnsId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
   implicit lazy val column: Column[TableWithGeneratedColumnsId] = Column.columnToString.map(TableWithGeneratedColumnsId.apply)
-  implicit lazy val ordering: Ordering[TableWithGeneratedColumnsId] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TableWithGeneratedColumnsId] = new ParameterMetaData[TableWithGeneratedColumnsId] {
     override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType

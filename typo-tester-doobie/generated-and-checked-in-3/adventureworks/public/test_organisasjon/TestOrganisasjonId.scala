@@ -22,7 +22,6 @@ object TestOrganisasjonId {
   given decoder: Decoder[TestOrganisasjonId] = Decoder.decodeString.map(TestOrganisasjonId.apply)
   given encoder: Encoder[TestOrganisasjonId] = Encoder.encodeString.contramap(_.value)
   given get: Get[TestOrganisasjonId] = Meta.StringMeta.get.map(TestOrganisasjonId.apply)
-  given ordering: Ordering[TestOrganisasjonId] = Ordering.by(_.value)
   given put: Put[TestOrganisasjonId] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[TestOrganisasjonId] = new Text[TestOrganisasjonId] {
     override def unsafeEncode(v: TestOrganisasjonId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

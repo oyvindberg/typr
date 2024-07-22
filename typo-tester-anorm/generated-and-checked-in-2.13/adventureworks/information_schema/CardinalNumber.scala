@@ -23,7 +23,6 @@ object CardinalNumber {
   implicit lazy val arrayToStatement: ToStatement[Array[CardinalNumber]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[CardinalNumber, Int] = Bijection[CardinalNumber, Int](_.value)(CardinalNumber.apply)
   implicit lazy val column: Column[CardinalNumber] = Column.columnToInt.map(CardinalNumber.apply)
-  implicit lazy val ordering: Ordering[CardinalNumber] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[CardinalNumber] = new ParameterMetaData[CardinalNumber] {
     override def sqlType: String = """"information_schema"."cardinal_number""""
     override def jdbcType: Int = Types.OTHER

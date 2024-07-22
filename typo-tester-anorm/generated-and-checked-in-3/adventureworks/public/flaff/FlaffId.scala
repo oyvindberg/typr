@@ -23,7 +23,6 @@ case class FlaffId(
   specifier: ShortText
 )
 object FlaffId {
-  given ordering: Ordering[FlaffId] = Ordering.by(x => (x.code, x.anotherCode, x.someNumber, x.specifier))
   given reads: Reads[FlaffId] = Reads[FlaffId](json => JsResult.fromTry(
       Try(
         FlaffId(

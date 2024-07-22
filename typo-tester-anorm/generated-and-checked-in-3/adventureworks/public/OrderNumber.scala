@@ -23,7 +23,6 @@ object OrderNumber {
   given arrayToStatement: ToStatement[Array[OrderNumber]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[OrderNumber, String] = Bijection[OrderNumber, String](_.value)(OrderNumber.apply)
   given column: Column[OrderNumber] = Column.columnToString.map(OrderNumber.apply)
-  given ordering: Ordering[OrderNumber] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[OrderNumber] = new ParameterMetaData[OrderNumber] {
     override def sqlType: String = """"public"."OrderNumber""""
     override def jdbcType: Int = Types.OTHER

@@ -36,7 +36,6 @@ object Issue142Id {
   given jdbcEncoder: JdbcEncoder[Issue142Id] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[Issue142Id] = JsonDecoder.string.map(Issue142Id.apply)
   given jsonEncoder: JsonEncoder[Issue142Id] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[Issue142Id] = Ordering.by(_.value)
   given pgType: PGType[Issue142Id] = PGType.instance[Issue142Id]("text", Types.OTHER)
   given setter: Setter[Issue142Id] = Setter.stringSetter.contramap(_.value)
   given text: Text[Issue142Id] = new Text[Issue142Id] {

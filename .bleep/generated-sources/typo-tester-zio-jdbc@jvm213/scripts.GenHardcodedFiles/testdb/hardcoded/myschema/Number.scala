@@ -62,7 +62,6 @@ object Number {
   implicit lazy val jdbcEncoder: JdbcEncoder[Number] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[Number] = JsonDecoder.string.mapOrFail(Number.apply)
   implicit lazy val jsonEncoder: JsonEncoder[Number] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[Number] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[Number] = PGType.instance[Number]("myschema.number", Types.OTHER)
   implicit lazy val setter: Setter[Number] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[Number] = new Text[Number] {

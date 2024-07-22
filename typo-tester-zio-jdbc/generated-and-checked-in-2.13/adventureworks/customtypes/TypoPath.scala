@@ -69,7 +69,6 @@ object TypoPath {
       out.write("}")
     }
   }
-  implicit def ordering(implicit O0: Ordering[List[TypoPoint]]): Ordering[TypoPath] = Ordering.by(x => (x.open, x.points))
   implicit lazy val pgType: PGType[TypoPath] = PGType.instance[TypoPath]("path", Types.OTHER)
   implicit lazy val setter: Setter[TypoPath] = Setter.other(
     (ps, i, v) => {

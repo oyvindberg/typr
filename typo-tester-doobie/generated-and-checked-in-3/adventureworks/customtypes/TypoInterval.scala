@@ -25,7 +25,6 @@ object TypoInterval {
   given encoder: Encoder[TypoInterval] = Encoder.forProduct6[TypoInterval, Int, Int, Int, Int, Int, Double]("years", "months", "days", "hours", "minutes", "seconds")(x => (x.years, x.months, x.days, x.hours, x.minutes, x.seconds))(using Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeDouble)
   given get: Get[TypoInterval] = Get.Advanced.other[PGInterval](NonEmptyList.one("interval"))
     .map(v => TypoInterval(v.getYears, v.getMonths, v.getDays, v.getHours, v.getMinutes, v.getSeconds))
-  given ordering: Ordering[TypoInterval] = Ordering.by(x => (x.years, x.months, x.days, x.hours, x.minutes, x.seconds))
   given put: Put[TypoInterval] = Put.Advanced.other[PGInterval](NonEmptyList.one("interval")).contramap(v => new PGInterval(v.years, v.months, v.days, v.hours, v.minutes, v.seconds))
   given text: Text[TypoInterval] = new Text[TypoInterval] {
     override def unsafeEncode(v: TypoInterval, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"P${v.years}Y${v.months}M${v.days}DT${v.hours}H${v.minutes}M${v.seconds}S", sb)

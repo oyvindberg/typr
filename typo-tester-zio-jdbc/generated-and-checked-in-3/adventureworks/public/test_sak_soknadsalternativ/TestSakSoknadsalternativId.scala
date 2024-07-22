@@ -39,5 +39,4 @@ object TestSakSoknadsalternativId {
       out.write("}")
     }
   }
-  given ordering: Ordering[TestSakSoknadsalternativId] = Ordering.by(x => (x.organisasjonskodeSaksbehandler, x.utdanningsmulighetKode))
 }

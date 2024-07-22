@@ -31,7 +31,6 @@ object TypoBytea {
   given jdbcEncoder: JdbcEncoder[TypoBytea] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoBytea] = JsonDecoder.array[Byte](using JsonDecoder.byte, implicitly).map(TypoBytea.apply)
   given jsonEncoder: JsonEncoder[TypoBytea] = JsonEncoder.array[Byte](using JsonEncoder.byte, implicitly).contramap(_.value)
-  given ordering(using O0: Ordering[Array[Byte]]): Ordering[TypoBytea] = Ordering.by(_.value)
   given pgType: PGType[TypoBytea] = PGType.instance[TypoBytea]("bytea", Types.OTHER)
   given setter: Setter[TypoBytea] = Setter.other(
     (ps, i, v) => {

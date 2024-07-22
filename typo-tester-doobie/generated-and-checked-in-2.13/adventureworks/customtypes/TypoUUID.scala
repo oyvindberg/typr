@@ -29,7 +29,6 @@ object TypoUUID {
   implicit lazy val encoder: Encoder[TypoUUID] = Encoder.encodeUUID.contramap(_.value)
   implicit lazy val get: Get[TypoUUID] = Get.Advanced.other[UUID](NonEmptyList.one("uuid"))
     .map(v => TypoUUID(v))
-  implicit lazy val ordering: Ordering[TypoUUID] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoUUID] = Put.Advanced.other[UUID](NonEmptyList.one("uuid")).contramap(v => v.value)
   implicit lazy val text: Text[TypoUUID] = new Text[TypoUUID] {
     override def unsafeEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

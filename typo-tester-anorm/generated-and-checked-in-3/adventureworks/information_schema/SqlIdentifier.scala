@@ -23,7 +23,6 @@ object SqlIdentifier {
   given arrayToStatement: ToStatement[Array[SqlIdentifier]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[SqlIdentifier, String] = Bijection[SqlIdentifier, String](_.value)(SqlIdentifier.apply)
   given column: Column[SqlIdentifier] = Column.columnToString.map(SqlIdentifier.apply)
-  given ordering: Ordering[SqlIdentifier] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[SqlIdentifier] = new ParameterMetaData[SqlIdentifier] {
     override def sqlType: String = """"information_schema"."sql_identifier""""
     override def jdbcType: Int = Types.OTHER

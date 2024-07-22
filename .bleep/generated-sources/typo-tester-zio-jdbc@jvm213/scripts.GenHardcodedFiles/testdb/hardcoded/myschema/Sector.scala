@@ -62,7 +62,6 @@ object Sector {
   implicit lazy val jdbcEncoder: JdbcEncoder[Sector] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[Sector] = JsonDecoder.string.mapOrFail(Sector.apply)
   implicit lazy val jsonEncoder: JsonEncoder[Sector] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[Sector] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[Sector] = PGType.instance[Sector]("myschema.sector", Types.OTHER)
   implicit lazy val setter: Setter[Sector] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[Sector] = new Text[Sector] {

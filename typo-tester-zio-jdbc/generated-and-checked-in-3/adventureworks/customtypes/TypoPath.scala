@@ -69,7 +69,6 @@ object TypoPath {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[List[TypoPoint]]): Ordering[TypoPath] = Ordering.by(x => (x.open, x.points))
   given pgType: PGType[TypoPath] = PGType.instance[TypoPath]("path", Types.OTHER)
   given setter: Setter[TypoPath] = Setter.other(
     (ps, i, v) => {

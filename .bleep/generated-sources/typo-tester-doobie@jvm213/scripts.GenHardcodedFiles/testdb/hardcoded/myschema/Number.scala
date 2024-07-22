@@ -43,7 +43,6 @@ object Number {
   implicit lazy val decoder: Decoder[Number] = Decoder.decodeString.emap(Number.apply)
   implicit lazy val encoder: Encoder[Number] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[Number] = Meta.StringMeta.get.temap(Number.apply)
-  implicit lazy val ordering: Ordering[Number] = Ordering.by(_.value)
   implicit lazy val put: Put[Number] = Put.Advanced.one[Number](JdbcType.Other, NonEmptyList.one("myschema.number"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
   implicit lazy val read: Read[Number] = new Read.Single(get)
   implicit lazy val text: Text[Number] = new Text[Number] {

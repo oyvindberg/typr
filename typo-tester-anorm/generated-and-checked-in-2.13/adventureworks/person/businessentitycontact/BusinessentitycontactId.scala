@@ -22,7 +22,6 @@ case class BusinessentitycontactId(
   contacttypeid: ContacttypeId
 )
 object BusinessentitycontactId {
-  implicit lazy val ordering: Ordering[BusinessentitycontactId] = Ordering.by(x => (x.businessentityid, x.personid, x.contacttypeid))
   implicit lazy val reads: Reads[BusinessentitycontactId] = Reads[BusinessentitycontactId](json => JsResult.fromTry(
       Try(
         BusinessentitycontactId(

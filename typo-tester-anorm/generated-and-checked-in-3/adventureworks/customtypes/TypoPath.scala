@@ -45,7 +45,6 @@ object TypoPath {
       case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGpath, got ${other.getClass.getName}"))
     }
   )
-  given ordering(using O0: Ordering[List[TypoPoint]]): Ordering[TypoPath] = Ordering.by(x => (x.open, x.points))
   given parameterMetadata: ParameterMetaData[TypoPath] = new ParameterMetaData[TypoPath] {
     override def sqlType: String = "path"
     override def jdbcType: Int = Types.OTHER

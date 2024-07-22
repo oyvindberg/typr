@@ -68,7 +68,6 @@ object TypoPoint {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[TypoPoint] = Ordering.by(x => (x.x, x.y))
   implicit lazy val pgType: PGType[TypoPoint] = PGType.instance[TypoPoint]("point", Types.OTHER)
   implicit lazy val setter: Setter[TypoPoint] = Setter.other(
     (ps, i, v) => {

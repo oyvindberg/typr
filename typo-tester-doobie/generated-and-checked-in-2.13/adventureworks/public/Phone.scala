@@ -24,7 +24,6 @@ object Phone {
   implicit lazy val decoder: Decoder[Phone] = Decoder.decodeString.map(Phone.apply)
   implicit lazy val encoder: Encoder[Phone] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[Phone] = Meta.StringMeta.get.map(Phone.apply)
-  implicit lazy val ordering: Ordering[Phone] = Ordering.by(_.value)
   implicit lazy val put: Put[Phone] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[Phone] = new Text[Phone] {
     override def unsafeEncode(v: Phone, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

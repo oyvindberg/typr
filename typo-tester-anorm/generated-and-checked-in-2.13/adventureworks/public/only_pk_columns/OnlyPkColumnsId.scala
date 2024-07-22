@@ -20,7 +20,6 @@ case class OnlyPkColumnsId(
   keyColumn2: Int
 )
 object OnlyPkColumnsId {
-  implicit lazy val ordering: Ordering[OnlyPkColumnsId] = Ordering.by(x => (x.keyColumn1, x.keyColumn2))
   implicit lazy val reads: Reads[OnlyPkColumnsId] = Reads[OnlyPkColumnsId](json => JsResult.fromTry(
       Try(
         OnlyPkColumnsId(

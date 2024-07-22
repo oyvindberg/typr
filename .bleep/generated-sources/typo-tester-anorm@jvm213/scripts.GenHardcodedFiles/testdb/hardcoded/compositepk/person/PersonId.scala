@@ -20,7 +20,6 @@ case class PersonId(
   two: Option[String]
 )
 object PersonId {
-  implicit def ordering(implicit O0: Ordering[Option[String]]): Ordering[PersonId] = Ordering.by(x => (x.one, x.two))
   implicit lazy val reads: Reads[PersonId] = Reads[PersonId](json => JsResult.fromTry(
       Try(
         PersonId(

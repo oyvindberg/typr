@@ -21,7 +21,6 @@ case class SalesorderheadersalesreasonId(
   salesreasonid: SalesreasonId
 )
 object SalesorderheadersalesreasonId {
-  given ordering: Ordering[SalesorderheadersalesreasonId] = Ordering.by(x => (x.salesorderid, x.salesreasonid))
   given reads: Reads[SalesorderheadersalesreasonId] = Reads[SalesorderheadersalesreasonId](json => JsResult.fromTry(
       Try(
         SalesorderheadersalesreasonId(

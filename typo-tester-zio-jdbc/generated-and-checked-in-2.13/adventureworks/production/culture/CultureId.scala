@@ -25,7 +25,6 @@ object CultureId {
   implicit lazy val jdbcEncoder: JdbcEncoder[CultureId] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[CultureId] = JsonDecoder.string.map(CultureId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[CultureId] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[CultureId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[CultureId] = PGType.PGTypeString.as
   implicit lazy val setter: Setter[CultureId] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[CultureId] = new Text[CultureId] {

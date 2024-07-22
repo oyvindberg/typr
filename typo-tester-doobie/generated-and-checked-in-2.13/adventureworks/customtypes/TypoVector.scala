@@ -23,7 +23,6 @@ object TypoVector {
   implicit lazy val encoder: Encoder[TypoVector] = Encoder.encodeIterable[Float, Array](Encoder.encodeFloat, implicitly).contramap(_.value)
   implicit lazy val get: Get[TypoVector] = Get.Advanced.other[PgArray](NonEmptyList.one("vector"))
     .map(v => TypoVector(v.getArray.asInstanceOf[Array[java.lang.Float]].map(Float2float)))
-  implicit def ordering(implicit O0: Ordering[Array[Float]]): Ordering[TypoVector] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoVector] = Put.Advanced.other[Array[java.lang.Float]](NonEmptyList.one("vector")).contramap(v => v.value.map(x => x: java.lang.Float))
   implicit lazy val text: Text[TypoVector] = new Text[TypoVector] {
     override def unsafeEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.mkString("[", ",", "]"), sb)

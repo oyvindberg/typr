@@ -39,7 +39,6 @@ object TypoShort {
   given encoder: Encoder[TypoShort] = Encoder[Short].contramap(_.value)
   given get: Get[TypoShort] = Get.Advanced.other[Integer](NonEmptyList.one("int2"))
     .map(v => TypoShort(v.toShort))
-  given ordering: Ordering[TypoShort] = Ordering.by(_.value)
   given put: Put[TypoShort] = Put.Advanced.other[Integer](NonEmptyList.one("int2")).contramap(v => v.value.toInt)
   given text: Text[TypoShort] = new Text[TypoShort] {
     override def unsafeEncode(v: TypoShort, sb: StringBuilder): Unit = Text[Short].unsafeEncode(v.value, sb)

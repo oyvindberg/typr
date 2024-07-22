@@ -24,7 +24,6 @@ object AccountNumber {
   implicit lazy val decoder: Decoder[AccountNumber] = Decoder.decodeString.map(AccountNumber.apply)
   implicit lazy val encoder: Encoder[AccountNumber] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[AccountNumber] = Meta.StringMeta.get.map(AccountNumber.apply)
-  implicit lazy val ordering: Ordering[AccountNumber] = Ordering.by(_.value)
   implicit lazy val put: Put[AccountNumber] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[AccountNumber] = new Text[AccountNumber] {
     override def unsafeEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

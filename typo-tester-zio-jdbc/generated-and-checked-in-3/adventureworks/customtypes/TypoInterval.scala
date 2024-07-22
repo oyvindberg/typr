@@ -84,7 +84,6 @@ object TypoInterval {
       out.write("}")
     }
   }
-  given ordering: Ordering[TypoInterval] = Ordering.by(x => (x.years, x.months, x.days, x.hours, x.minutes, x.seconds))
   given pgType: PGType[TypoInterval] = PGType.instance[TypoInterval]("interval", Types.OTHER)
   given setter: Setter[TypoInterval] = Setter.other(
     (ps, i, v) => {

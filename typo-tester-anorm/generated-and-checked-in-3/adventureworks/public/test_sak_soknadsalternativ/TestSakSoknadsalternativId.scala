@@ -25,7 +25,6 @@ object TestSakSoknadsalternativId {
     organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler,
     utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode
   )
-  given ordering: Ordering[TestSakSoknadsalternativId] = Ordering.by(x => (x.organisasjonskodeSaksbehandler, x.utdanningsmulighetKode))
   given reads: Reads[TestSakSoknadsalternativId] = Reads[TestSakSoknadsalternativId](json => JsResult.fromTry(
       Try(
         TestSakSoknadsalternativId(

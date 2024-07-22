@@ -44,7 +44,6 @@ object TypoLine {
       case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGline, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoLine] = Ordering.by(x => (x.a, x.b, x.c))
   given parameterMetadata: ParameterMetaData[TypoLine] = new ParameterMetaData[TypoLine] {
     override def sqlType: String = "line"
     override def jdbcType: Int = Types.OTHER

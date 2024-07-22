@@ -21,7 +21,6 @@ case class ProductproductphotoId(
   productphotoid: ProductphotoId
 )
 object ProductproductphotoId {
-  given ordering: Ordering[ProductproductphotoId] = Ordering.by(x => (x.productid, x.productphotoid))
   given reads: Reads[ProductproductphotoId] = Reads[ProductproductphotoId](json => JsResult.fromTry(
       Try(
         ProductproductphotoId(

@@ -32,7 +32,6 @@ object TypoInet {
   implicit lazy val encoder: Encoder[TypoInet] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[TypoInet] = Get.Advanced.other[PGobject](NonEmptyList.one("inet"))
     .map(v => TypoInet(v.getValue))
-  implicit lazy val ordering: Ordering[TypoInet] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoInet] = Put.Advanced.other[PGobject](NonEmptyList.one("inet")).contramap(v => {
                                                                           val obj = new PGobject
                                                                           obj.setType("inet")

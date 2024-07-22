@@ -27,7 +27,6 @@ object TypoVector {
       case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
     }
   )
-  implicit def ordering(implicit O0: Ordering[Array[Float]]): Ordering[TypoVector] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TypoVector] = new ParameterMetaData[TypoVector] {
     override def sqlType: String = "vector"
     override def jdbcType: Int = Types.OTHER

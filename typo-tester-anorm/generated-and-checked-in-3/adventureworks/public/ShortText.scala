@@ -23,7 +23,6 @@ object ShortText {
   given arrayToStatement: ToStatement[Array[ShortText]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given bijection: Bijection[ShortText, String] = Bijection[ShortText, String](_.value)(ShortText.apply)
   given column: Column[ShortText] = Column.columnToString.map(ShortText.apply)
-  given ordering: Ordering[ShortText] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[ShortText] = new ParameterMetaData[ShortText] {
     override def sqlType: String = """"public"."short_text""""
     override def jdbcType: Int = Types.OTHER

@@ -25,7 +25,6 @@ object AddressId {
   given jdbcEncoder: JdbcEncoder[AddressId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[AddressId] = JsonDecoder.int.map(AddressId.apply)
   given jsonEncoder: JsonEncoder[AddressId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[AddressId] = Ordering.by(_.value)
   given pgType: PGType[AddressId] = PGType.PGTypeInt.as
   given setter: Setter[AddressId] = Setter.intSetter.contramap(_.value)
   given text: Text[AddressId] = new Text[AddressId] {

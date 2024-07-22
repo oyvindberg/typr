@@ -26,7 +26,6 @@ object TypoMoney {
   given encoder: Encoder[TypoMoney] = Encoder.encodeBigDecimal.contramap(_.value)
   given get: Get[TypoMoney] = Get.Advanced.other[java.math.BigDecimal](NonEmptyList.one("money"))
     .map(v => TypoMoney(BigDecimal(v)))
-  given ordering: Ordering[TypoMoney] = Ordering.by(_.value)
   given put: Put[TypoMoney] = Put.Advanced.other[java.math.BigDecimal](NonEmptyList.one("money")).contramap(v => v.value.bigDecimal)
   given text: Text[TypoMoney] = new Text[TypoMoney] {
     override def unsafeEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeEncode(v.value, sb)

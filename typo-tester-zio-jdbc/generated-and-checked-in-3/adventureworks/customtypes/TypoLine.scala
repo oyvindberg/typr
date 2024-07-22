@@ -72,7 +72,6 @@ object TypoLine {
       out.write("}")
     }
   }
-  given ordering: Ordering[TypoLine] = Ordering.by(x => (x.a, x.b, x.c))
   given pgType: PGType[TypoLine] = PGType.instance[TypoLine]("line", Types.OTHER)
   given setter: Setter[TypoLine] = Setter.other(
     (ps, i, v) => {

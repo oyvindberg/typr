@@ -42,7 +42,6 @@ object TypoUUID {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.util.UUID, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoUUID] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoUUID] = new ParameterMetaData[TypoUUID] {
     override def sqlType: String = "uuid"
     override def jdbcType: Int = Types.OTHER

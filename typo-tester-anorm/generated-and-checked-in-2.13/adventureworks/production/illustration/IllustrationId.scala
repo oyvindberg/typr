@@ -20,7 +20,6 @@ object IllustrationId {
   implicit lazy val arrayToStatement: ToStatement[Array[IllustrationId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[IllustrationId, Int] = Bijection[IllustrationId, Int](_.value)(IllustrationId.apply)
   implicit lazy val column: Column[IllustrationId] = Column.columnToInt.map(IllustrationId.apply)
-  implicit lazy val ordering: Ordering[IllustrationId] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[IllustrationId] = new ParameterMetaData[IllustrationId] {
     override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType

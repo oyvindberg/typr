@@ -24,7 +24,6 @@ object NameStyle {
   implicit lazy val decoder: Decoder[NameStyle] = Decoder.decodeBoolean.map(NameStyle.apply)
   implicit lazy val encoder: Encoder[NameStyle] = Encoder.encodeBoolean.contramap(_.value)
   implicit lazy val get: Get[NameStyle] = Meta.BooleanMeta.get.map(NameStyle.apply)
-  implicit lazy val ordering: Ordering[NameStyle] = Ordering.by(_.value)
   implicit lazy val put: Put[NameStyle] = Meta.BooleanMeta.put.contramap(_.value)
   implicit lazy val text: Text[NameStyle] = new Text[NameStyle] {
     override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)

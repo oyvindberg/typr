@@ -57,7 +57,6 @@ object TypoInt2Vector {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoInt2Vector] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoInt2Vector] = JsonDecoder.string.map(TypoInt2Vector.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoInt2Vector] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoInt2Vector] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoInt2Vector] = PGType.instance[TypoInt2Vector]("int2vector", Types.OTHER)
   implicit lazy val setter: Setter[TypoInt2Vector] = Setter.other(
     (ps, i, v) => {

@@ -62,7 +62,6 @@ object Number {
   given jdbcEncoder: JdbcEncoder[Number] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[Number] = JsonDecoder.string.mapOrFail(Number.apply)
   given jsonEncoder: JsonEncoder[Number] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[Number] = Ordering.by(_.value)
   given pgType: PGType[Number] = PGType.instance[Number]("myschema.number", Types.OTHER)
   given setter: Setter[Number] = Setter.stringSetter.contramap(_.value)
   given text: Text[Number] = new Text[Number] {

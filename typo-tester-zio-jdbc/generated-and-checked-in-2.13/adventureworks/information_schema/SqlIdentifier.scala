@@ -28,7 +28,6 @@ object SqlIdentifier {
   implicit lazy val jdbcEncoder: JdbcEncoder[SqlIdentifier] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[SqlIdentifier] = JsonDecoder.string.map(SqlIdentifier.apply)
   implicit lazy val jsonEncoder: JsonEncoder[SqlIdentifier] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[SqlIdentifier] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[SqlIdentifier] = PGType.instance(""""information_schema"."sql_identifier"""", Types.OTHER)
   implicit lazy val setter: Setter[SqlIdentifier] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[SqlIdentifier] = new Text[SqlIdentifier] {

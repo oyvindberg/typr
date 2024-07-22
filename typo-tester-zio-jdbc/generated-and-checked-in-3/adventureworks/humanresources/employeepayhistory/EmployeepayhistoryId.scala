@@ -36,5 +36,4 @@ object EmployeepayhistoryId {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[EmployeepayhistoryId] = Ordering.by(x => (x.businessentityid, x.ratechangedate))
 }

@@ -18,5 +18,4 @@ case class SalespersonquotahistoryId(
 object SalespersonquotahistoryId {
   given decoder: Decoder[SalespersonquotahistoryId] = Decoder.forProduct2[SalespersonquotahistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "quotadate")(SalespersonquotahistoryId.apply)(using BusinessentityId.decoder, TypoLocalDateTime.decoder)
   given encoder: Encoder[SalespersonquotahistoryId] = Encoder.forProduct2[SalespersonquotahistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "quotadate")(x => (x.businessentityid, x.quotadate))(using BusinessentityId.encoder, TypoLocalDateTime.encoder)
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[SalespersonquotahistoryId] = Ordering.by(x => (x.businessentityid, x.quotadate))
 }

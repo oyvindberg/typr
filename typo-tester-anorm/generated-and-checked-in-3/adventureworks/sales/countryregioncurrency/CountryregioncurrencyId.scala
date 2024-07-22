@@ -21,7 +21,6 @@ case class CountryregioncurrencyId(
   currencycode: CurrencyId
 )
 object CountryregioncurrencyId {
-  given ordering: Ordering[CountryregioncurrencyId] = Ordering.by(x => (x.countryregioncode, x.currencycode))
   given reads: Reads[CountryregioncurrencyId] = Reads[CountryregioncurrencyId](json => JsResult.fromTry(
       Try(
         CountryregioncurrencyId(

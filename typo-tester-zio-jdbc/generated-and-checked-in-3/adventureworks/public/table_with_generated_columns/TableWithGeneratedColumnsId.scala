@@ -25,7 +25,6 @@ object TableWithGeneratedColumnsId {
   given jdbcEncoder: JdbcEncoder[TableWithGeneratedColumnsId] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[TableWithGeneratedColumnsId] = JsonDecoder.string.map(TableWithGeneratedColumnsId.apply)
   given jsonEncoder: JsonEncoder[TableWithGeneratedColumnsId] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TableWithGeneratedColumnsId] = Ordering.by(_.value)
   given pgType: PGType[TableWithGeneratedColumnsId] = PGType.PGTypeString.as
   given setter: Setter[TableWithGeneratedColumnsId] = Setter.stringSetter.contramap(_.value)
   given text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {

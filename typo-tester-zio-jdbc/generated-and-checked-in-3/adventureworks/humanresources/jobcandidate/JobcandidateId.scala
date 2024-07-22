@@ -25,7 +25,6 @@ object JobcandidateId {
   given jdbcEncoder: JdbcEncoder[JobcandidateId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[JobcandidateId] = JsonDecoder.int.map(JobcandidateId.apply)
   given jsonEncoder: JsonEncoder[JobcandidateId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[JobcandidateId] = Ordering.by(_.value)
   given pgType: PGType[JobcandidateId] = PGType.PGTypeInt.as
   given setter: Setter[JobcandidateId] = Setter.intSetter.contramap(_.value)
   given text: Text[JobcandidateId] = new Text[JobcandidateId] {

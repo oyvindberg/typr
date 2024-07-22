@@ -24,7 +24,6 @@ object CardinalNumber {
   given decoder: Decoder[CardinalNumber] = Decoder.decodeInt.map(CardinalNumber.apply)
   given encoder: Encoder[CardinalNumber] = Encoder.encodeInt.contramap(_.value)
   given get: Get[CardinalNumber] = Meta.IntMeta.get.map(CardinalNumber.apply)
-  given ordering: Ordering[CardinalNumber] = Ordering.by(_.value)
   given put: Put[CardinalNumber] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[CardinalNumber] = new Text[CardinalNumber] {
     override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

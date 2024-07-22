@@ -31,7 +31,6 @@ object TypoLocalTime {
   implicit lazy val encoder: Encoder[TypoLocalTime] = Encoder.encodeLocalTime.contramap(_.value)
   implicit lazy val get: Get[TypoLocalTime] = Get.Advanced.other[String](NonEmptyList.one("time"))
     .map(v => TypoLocalTime(LocalTime.parse(v)))
-  implicit lazy val ordering: Ordering[TypoLocalTime] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoLocalTime] = Put.Advanced.other[String](NonEmptyList.one("time")).contramap(v => v.value.toString)
   implicit lazy val text: Text[TypoLocalTime] = new Text[TypoLocalTime] {
     override def unsafeEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

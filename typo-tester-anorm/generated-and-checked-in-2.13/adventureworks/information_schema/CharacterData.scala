@@ -23,7 +23,6 @@ object CharacterData {
   implicit lazy val arrayToStatement: ToStatement[Array[CharacterData]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[CharacterData, String] = Bijection[CharacterData, String](_.value)(CharacterData.apply)
   implicit lazy val column: Column[CharacterData] = Column.columnToString.map(CharacterData.apply)
-  implicit lazy val ordering: Ordering[CharacterData] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[CharacterData] = new ParameterMetaData[CharacterData] {
     override def sqlType: String = """"information_schema"."character_data""""
     override def jdbcType: Int = Types.OTHER

@@ -18,5 +18,4 @@ case class PersoncreditcardId(
 object PersoncreditcardId {
   given decoder: Decoder[PersoncreditcardId] = Decoder.forProduct2[PersoncreditcardId, BusinessentityId, /* user-picked */ CustomCreditcardId]("businessentityid", "creditcardid")(PersoncreditcardId.apply)(using BusinessentityId.decoder, CustomCreditcardId.decoder)
   given encoder: Encoder[PersoncreditcardId] = Encoder.forProduct2[PersoncreditcardId, BusinessentityId, /* user-picked */ CustomCreditcardId]("businessentityid", "creditcardid")(x => (x.businessentityid, x.creditcardid))(using BusinessentityId.encoder, CustomCreditcardId.encoder)
-  given ordering: Ordering[PersoncreditcardId] = Ordering.by(x => (x.businessentityid, x.creditcardid))
 }

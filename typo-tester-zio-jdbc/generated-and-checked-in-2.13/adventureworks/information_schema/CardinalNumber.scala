@@ -28,7 +28,6 @@ object CardinalNumber {
   implicit lazy val jdbcEncoder: JdbcEncoder[CardinalNumber] = JdbcEncoder.intEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[CardinalNumber] = JsonDecoder.int.map(CardinalNumber.apply)
   implicit lazy val jsonEncoder: JsonEncoder[CardinalNumber] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val ordering: Ordering[CardinalNumber] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[CardinalNumber] = PGType.instance(""""information_schema"."cardinal_number"""", Types.OTHER)
   implicit lazy val setter: Setter[CardinalNumber] = Setter.intSetter.contramap(_.value)
   implicit lazy val text: Text[CardinalNumber] = new Text[CardinalNumber] {

@@ -40,7 +40,6 @@ object TitleId {
   implicit lazy val jdbcEncoder: JdbcEncoder[TitleId] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[TitleId] = JsonDecoder.string.map(TitleId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TitleId] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[TitleId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TitleId] = PGType.instance[TitleId]("text", Types.OTHER)
   implicit lazy val setter: Setter[TitleId] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[TitleId] = new Text[TitleId] {

@@ -25,7 +25,6 @@ object TypoPoint {
   given encoder: Encoder[TypoPoint] = Encoder.forProduct2[TypoPoint, Double, Double]("x", "y")(x => (x.x, x.y))(using Encoder.encodeDouble, Encoder.encodeDouble)
   given get: Get[TypoPoint] = Get.Advanced.other[PGpoint](NonEmptyList.one("point"))
     .map(v => TypoPoint(v.x, v.y))
-  given ordering: Ordering[TypoPoint] = Ordering.by(x => (x.x, x.y))
   given put: Put[TypoPoint] = Put.Advanced.other[PGpoint](NonEmptyList.one("point")).contramap(v => new PGpoint(v.x, v.y))
   given text: Text[TypoPoint] = new Text[TypoPoint] {
     override def unsafeEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"(${v.x},${v.y})", sb)

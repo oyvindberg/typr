@@ -29,7 +29,6 @@ object TypoLocalDate {
   implicit lazy val encoder: Encoder[TypoLocalDate] = Encoder.encodeLocalDate.contramap(_.value)
   implicit lazy val get: Get[TypoLocalDate] = Get.Advanced.other[String](NonEmptyList.one("date"))
     .map(v => TypoLocalDate(LocalDate.parse(v)))
-  implicit lazy val ordering: Ordering[TypoLocalDate] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoLocalDate] = Put.Advanced.other[String](NonEmptyList.one("date")).contramap(v => v.value.toString)
   implicit lazy val text: Text[TypoLocalDate] = new Text[TypoLocalDate] {
     override def unsafeEncode(v: TypoLocalDate, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

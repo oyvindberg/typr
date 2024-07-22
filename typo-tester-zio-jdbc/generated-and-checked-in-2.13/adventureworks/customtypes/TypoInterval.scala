@@ -84,7 +84,6 @@ object TypoInterval {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[TypoInterval] = Ordering.by(x => (x.years, x.months, x.days, x.hours, x.minutes, x.seconds))
   implicit lazy val pgType: PGType[TypoInterval] = PGType.instance[TypoInterval]("interval", Types.OTHER)
   implicit lazy val setter: Setter[TypoInterval] = Setter.other(
     (ps, i, v) => {

@@ -36,5 +36,4 @@ object CountryregioncurrencyId {
       out.write("}")
     }
   }
-  given ordering: Ordering[CountryregioncurrencyId] = Ordering.by(x => (x.countryregioncode, x.currencycode))
 }

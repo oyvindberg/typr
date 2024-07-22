@@ -39,7 +39,6 @@ object TitleDomainId {
   implicit lazy val decoder: Decoder[TitleDomainId] = ShortText.decoder.map(TitleDomainId.apply)
   implicit lazy val encoder: Encoder[TitleDomainId] = ShortText.encoder.contramap(_.value)
   implicit lazy val get: Get[TitleDomainId] = ShortText.get.map(TitleDomainId.apply)
-  implicit lazy val ordering: Ordering[TitleDomainId] = Ordering.by(_.value)
   implicit lazy val put: Put[TitleDomainId] = ShortText.put.contramap(_.value)
   implicit lazy val read: Read[TitleDomainId] = new Read.Single(get)
   implicit lazy val text: Text[TitleDomainId] = new Text[TitleDomainId] {

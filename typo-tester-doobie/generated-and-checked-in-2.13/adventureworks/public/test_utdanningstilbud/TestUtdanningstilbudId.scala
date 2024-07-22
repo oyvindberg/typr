@@ -17,5 +17,4 @@ case class TestUtdanningstilbudId(
 object TestUtdanningstilbudId {
   implicit lazy val decoder: Decoder[TestUtdanningstilbudId] = Decoder.forProduct2[TestUtdanningstilbudId, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(TestUtdanningstilbudId.apply)(TestOrganisasjonId.decoder, Decoder.decodeString)
   implicit lazy val encoder: Encoder[TestUtdanningstilbudId] = Encoder.forProduct2[TestUtdanningstilbudId, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(x => (x.organisasjonskode, x.utdanningsmulighetKode))(TestOrganisasjonId.encoder, Encoder.encodeString)
-  implicit lazy val ordering: Ordering[TestUtdanningstilbudId] = Ordering.by(x => (x.organisasjonskode, x.utdanningsmulighetKode))
 }

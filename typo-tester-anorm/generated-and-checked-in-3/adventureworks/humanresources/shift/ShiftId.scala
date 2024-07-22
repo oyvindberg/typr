@@ -20,7 +20,6 @@ object ShiftId {
   given arrayToStatement: ToStatement[Array[ShiftId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[ShiftId, Int] = Bijection[ShiftId, Int](_.value)(ShiftId.apply)
   given column: Column[ShiftId] = Column.columnToInt.map(ShiftId.apply)
-  given ordering: Ordering[ShiftId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[ShiftId] = new ParameterMetaData[ShiftId] {
     override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType

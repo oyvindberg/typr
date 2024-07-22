@@ -35,5 +35,4 @@ object TestUtdanningstilbudId {
       out.write("}")
     }
   }
-  given ordering: Ordering[TestUtdanningstilbudId] = Ordering.by(x => (x.organisasjonskode, x.utdanningsmulighetKode))
 }

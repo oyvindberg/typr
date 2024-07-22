@@ -21,7 +21,6 @@ case class SalesorderdetailId(
   salesorderdetailid: Int
 )
 object SalesorderdetailId {
-  given ordering: Ordering[SalesorderdetailId] = Ordering.by(x => (x.salesorderid, x.salesorderdetailid))
   given reads: Reads[SalesorderdetailId] = Reads[SalesorderdetailId](json => JsResult.fromTry(
       Try(
         SalesorderdetailId(

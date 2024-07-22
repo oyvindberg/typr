@@ -24,7 +24,6 @@ object YesOrNo {
   given decoder: Decoder[YesOrNo] = Decoder.decodeString.map(YesOrNo.apply)
   given encoder: Encoder[YesOrNo] = Encoder.encodeString.contramap(_.value)
   given get: Get[YesOrNo] = Meta.StringMeta.get.map(YesOrNo.apply)
-  given ordering: Ordering[YesOrNo] = Ordering.by(_.value)
   given put: Put[YesOrNo] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[YesOrNo] = new Text[YesOrNo] {
     override def unsafeEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

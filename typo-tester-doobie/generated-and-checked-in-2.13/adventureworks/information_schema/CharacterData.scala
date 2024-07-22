@@ -24,7 +24,6 @@ object CharacterData {
   implicit lazy val decoder: Decoder[CharacterData] = Decoder.decodeString.map(CharacterData.apply)
   implicit lazy val encoder: Encoder[CharacterData] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[CharacterData] = Meta.StringMeta.get.map(CharacterData.apply)
-  implicit lazy val ordering: Ordering[CharacterData] = Ordering.by(_.value)
   implicit lazy val put: Put[CharacterData] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[CharacterData] = new Text[CharacterData] {
     override def unsafeEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

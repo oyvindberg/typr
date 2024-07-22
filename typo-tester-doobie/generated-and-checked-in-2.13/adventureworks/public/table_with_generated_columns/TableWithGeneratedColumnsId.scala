@@ -22,7 +22,6 @@ object TableWithGeneratedColumnsId {
   implicit lazy val decoder: Decoder[TableWithGeneratedColumnsId] = Decoder.decodeString.map(TableWithGeneratedColumnsId.apply)
   implicit lazy val encoder: Encoder[TableWithGeneratedColumnsId] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[TableWithGeneratedColumnsId] = Meta.StringMeta.get.map(TableWithGeneratedColumnsId.apply)
-  implicit lazy val ordering: Ordering[TableWithGeneratedColumnsId] = Ordering.by(_.value)
   implicit lazy val put: Put[TableWithGeneratedColumnsId] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {
     override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

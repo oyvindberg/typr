@@ -22,7 +22,6 @@ object PersonId {
   implicit lazy val decoder: Decoder[PersonId] = Decoder.decodeLong.map(PersonId.apply)
   implicit lazy val encoder: Encoder[PersonId] = Encoder.encodeLong.contramap(_.value)
   implicit lazy val get: Get[PersonId] = Meta.LongMeta.get.map(PersonId.apply)
-  implicit lazy val ordering: Ordering[PersonId] = Ordering.by(_.value)
   implicit lazy val put: Put[PersonId] = Meta.LongMeta.put.contramap(_.value)
   implicit lazy val text: Text[PersonId] = new Text[PersonId] {
     override def unsafeEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)

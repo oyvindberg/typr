@@ -24,7 +24,6 @@ object Email {
   implicit lazy val arrayColumn: Column[Array[Email]] = Column.columnToArray(column, implicitly)
   implicit lazy val arrayToStatement: ToStatement[Array[Email]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val column: Column[Email] = Column.columnToString.map(Email.apply)
-  implicit lazy val ordering: Ordering[Email] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Email] = new ParameterMetaData[Email] {
     override def sqlType: String = """"frontpage"."email""""
     override def jdbcType: Int = Types.OTHER

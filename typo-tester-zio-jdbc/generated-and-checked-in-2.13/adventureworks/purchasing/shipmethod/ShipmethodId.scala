@@ -25,7 +25,6 @@ object ShipmethodId {
   implicit lazy val jdbcEncoder: JdbcEncoder[ShipmethodId] = JdbcEncoder.intEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[ShipmethodId] = JsonDecoder.int.map(ShipmethodId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[ShipmethodId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val ordering: Ordering[ShipmethodId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[ShipmethodId] = PGType.PGTypeInt.as
   implicit lazy val setter: Setter[ShipmethodId] = Setter.intSetter.contramap(_.value)
   implicit lazy val text: Text[ShipmethodId] = new Text[ShipmethodId] {

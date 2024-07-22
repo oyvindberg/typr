@@ -26,7 +26,6 @@ object TypoPath {
   given encoder: Encoder[TypoPath] = Encoder.forProduct2[TypoPath, Boolean, List[TypoPoint]]("open", "points")(x => (x.open, x.points))(using Encoder.encodeBoolean, Encoder[List[TypoPoint]])
   given get: Get[TypoPath] = Get.Advanced.other[PGpath](NonEmptyList.one("path"))
     .map(v => TypoPath(v.isOpen, v.points.map(p => TypoPoint(p.x, p.y)).toList))
-  given ordering(using O0: Ordering[List[TypoPoint]]): Ordering[TypoPath] = Ordering.by(x => (x.open, x.points))
   given put: Put[TypoPath] = Put.Advanced.other[PGpath](NonEmptyList.one("path")).contramap(v => new PGpath(v.points.map(p => new PGpoint(p.x, p.y)).toArray, v.open))
   given text: Text[TypoPath] = new Text[TypoPath] {
     override def unsafeEncode(v: TypoPath, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"""${if (v.open) "[" else "("}${v.points.map(p => s"${p.x}, ${p.y}").mkString(",")}${if (v.open) "]" else ")"}""", sb)

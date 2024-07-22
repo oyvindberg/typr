@@ -3,7 +3,7 @@ package internal
 package codegen
 
 object FileDomain {
-  def apply(domain: ComputedDomain, options: InternalOptions, genOrdering: GenOrdering): sc.File = {
+  def apply(domain: ComputedDomain, options: InternalOptions): sc.File = {
     val comments = scaladoc(s"Domain `${domain.underlying.name.value}`")(
       domain.underlying.constraintDefinition match {
         case Some(definition) => List(s"Constraint: $definition")
@@ -20,9 +20,6 @@ object FileDomain {
         }
       else None
     val instances = List(
-      List(
-        genOrdering.ordering(domain.tpe, NonEmptyList(sc.Param(value, domain.underlyingType, None)))
-      ),
       bijection.toList,
       options.jsonLibs.flatMap(_.wrapperTypeInstances(wrapperType = domain.tpe, fieldName = value, underlying = domain.underlyingType)),
       options.dbLib.toList.flatMap(_.wrapperTypeInstances(wrapperType = domain.tpe, underlying = domain.underlyingType, overrideDbType = Some(domain.underlying.name.quotedValue)))

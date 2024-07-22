@@ -36,7 +36,6 @@ object TitleId {
   given arrayColumn: Column[Array[TitleId]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(TitleId.apply))
   given arrayToStatement: ToStatement[Array[TitleId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   given column: Column[TitleId] = Column.columnToString.map(TitleId.apply)
-  given ordering: Ordering[TitleId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TitleId] = new ParameterMetaData[TitleId] {
     override def sqlType: String = "text"
     override def jdbcType: Int = Types.OTHER

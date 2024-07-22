@@ -22,7 +22,6 @@ object SalestaxrateId {
   given decoder: Decoder[SalestaxrateId] = Decoder.decodeInt.map(SalestaxrateId.apply)
   given encoder: Encoder[SalestaxrateId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[SalestaxrateId] = Meta.IntMeta.get.map(SalestaxrateId.apply)
-  given ordering: Ordering[SalestaxrateId] = Ordering.by(_.value)
   given put: Put[SalestaxrateId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[SalestaxrateId] = new Text[SalestaxrateId] {
     override def unsafeEncode(v: SalestaxrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

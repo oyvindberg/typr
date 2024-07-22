@@ -31,7 +31,6 @@ object TypoLocalTime {
   given encoder: Encoder[TypoLocalTime] = Encoder.encodeLocalTime.contramap(_.value)
   given get: Get[TypoLocalTime] = Get.Advanced.other[String](NonEmptyList.one("time"))
     .map(v => TypoLocalTime(LocalTime.parse(v)))
-  given ordering: Ordering[TypoLocalTime] = Ordering.by(_.value)
   given put: Put[TypoLocalTime] = Put.Advanced.other[String](NonEmptyList.one("time")).contramap(v => v.value.toString)
   given text: Text[TypoLocalTime] = new Text[TypoLocalTime] {
     override def unsafeEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

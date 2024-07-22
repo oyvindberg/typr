@@ -25,7 +25,6 @@ object ShiftId {
   given jdbcEncoder: JdbcEncoder[ShiftId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[ShiftId] = JsonDecoder.int.map(ShiftId.apply)
   given jsonEncoder: JsonEncoder[ShiftId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[ShiftId] = Ordering.by(_.value)
   given pgType: PGType[ShiftId] = PGType.PGTypeInt.as
   given setter: Setter[ShiftId] = Setter.intSetter.contramap(_.value)
   given text: Text[ShiftId] = new Text[ShiftId] {

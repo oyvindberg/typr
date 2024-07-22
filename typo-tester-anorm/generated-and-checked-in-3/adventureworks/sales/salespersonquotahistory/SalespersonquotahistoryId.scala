@@ -21,7 +21,6 @@ case class SalespersonquotahistoryId(
   quotadate: TypoLocalDateTime
 )
 object SalespersonquotahistoryId {
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[SalespersonquotahistoryId] = Ordering.by(x => (x.businessentityid, x.quotadate))
   given reads: Reads[SalespersonquotahistoryId] = Reads[SalespersonquotahistoryId](json => JsResult.fromTry(
       Try(
         SalespersonquotahistoryId(

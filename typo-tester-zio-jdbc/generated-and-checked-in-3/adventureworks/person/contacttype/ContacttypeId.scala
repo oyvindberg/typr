@@ -25,7 +25,6 @@ object ContacttypeId {
   given jdbcEncoder: JdbcEncoder[ContacttypeId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[ContacttypeId] = JsonDecoder.int.map(ContacttypeId.apply)
   given jsonEncoder: JsonEncoder[ContacttypeId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[ContacttypeId] = Ordering.by(_.value)
   given pgType: PGType[ContacttypeId] = PGType.PGTypeInt.as
   given setter: Setter[ContacttypeId] = Setter.intSetter.contramap(_.value)
   given text: Text[ContacttypeId] = new Text[ContacttypeId] {

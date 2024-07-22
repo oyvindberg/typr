@@ -20,7 +20,6 @@ object SalestaxrateId {
   given arrayToStatement: ToStatement[Array[SalestaxrateId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[SalestaxrateId, Int] = Bijection[SalestaxrateId, Int](_.value)(SalestaxrateId.apply)
   given column: Column[SalestaxrateId] = Column.columnToInt.map(SalestaxrateId.apply)
-  given ordering: Ordering[SalestaxrateId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[SalestaxrateId] = new ParameterMetaData[SalestaxrateId] {
     override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType

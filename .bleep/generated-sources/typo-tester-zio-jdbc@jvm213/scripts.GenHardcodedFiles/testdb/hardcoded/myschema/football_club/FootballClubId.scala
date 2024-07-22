@@ -25,7 +25,6 @@ object FootballClubId {
   implicit lazy val jdbcEncoder: JdbcEncoder[FootballClubId] = JdbcEncoder.longEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[FootballClubId] = JsonDecoder.long.map(FootballClubId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[FootballClubId] = JsonEncoder.long.contramap(_.value)
-  implicit lazy val ordering: Ordering[FootballClubId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[FootballClubId] = PGType.PGTypeLong.as
   implicit lazy val setter: Setter[FootballClubId] = Setter.longSetter.contramap(_.value)
   implicit lazy val text: Text[FootballClubId] = new Text[FootballClubId] {

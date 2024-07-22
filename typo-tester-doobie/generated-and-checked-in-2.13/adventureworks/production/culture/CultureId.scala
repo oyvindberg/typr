@@ -22,7 +22,6 @@ object CultureId {
   implicit lazy val decoder: Decoder[CultureId] = Decoder.decodeString.map(CultureId.apply)
   implicit lazy val encoder: Encoder[CultureId] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[CultureId] = Meta.StringMeta.get.map(CultureId.apply)
-  implicit lazy val ordering: Ordering[CultureId] = Ordering.by(_.value)
   implicit lazy val put: Put[CultureId] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[CultureId] = new Text[CultureId] {
     override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

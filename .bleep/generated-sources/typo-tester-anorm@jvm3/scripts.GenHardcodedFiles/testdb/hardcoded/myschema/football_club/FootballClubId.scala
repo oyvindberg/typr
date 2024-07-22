@@ -20,7 +20,6 @@ object FootballClubId {
   given arrayToStatement: ToStatement[Array[FootballClubId]] = testdb.hardcoded.LongArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[FootballClubId, Long] = Bijection[FootballClubId, Long](_.value)(FootballClubId.apply)
   given column: Column[FootballClubId] = Column.columnToLong.map(FootballClubId.apply)
-  given ordering: Ordering[FootballClubId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[FootballClubId] = new ParameterMetaData[FootballClubId] {
     override def sqlType: String = ParameterMetaData.LongParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.LongParameterMetaData.jdbcType

@@ -22,7 +22,6 @@ object ShiftId {
   given decoder: Decoder[ShiftId] = Decoder.decodeInt.map(ShiftId.apply)
   given encoder: Encoder[ShiftId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[ShiftId] = Meta.IntMeta.get.map(ShiftId.apply)
-  given ordering: Ordering[ShiftId] = Ordering.by(_.value)
   given put: Put[ShiftId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[ShiftId] = new Text[ShiftId] {
     override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

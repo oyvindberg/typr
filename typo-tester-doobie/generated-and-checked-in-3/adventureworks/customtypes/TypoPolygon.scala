@@ -28,7 +28,6 @@ object TypoPolygon {
   given encoder: Encoder[TypoPolygon] = Encoder[List[TypoPoint]].contramap(_.points)
   given get: Get[TypoPolygon] = Get.Advanced.other[PGpolygon](NonEmptyList.one("polygon"))
     .map(v => TypoPolygon(v.points.map(p => TypoPoint(p.x, p.y)).toList))
-  given ordering(using O0: Ordering[List[TypoPoint]]): Ordering[TypoPolygon] = Ordering.by(_.points)
   given put: Put[TypoPolygon] = Put.Advanced.other[PGpolygon](NonEmptyList.one("polygon")).contramap(v => new PGpolygon(v.points.map(p => new PGpoint(p.x, p.y)).toArray))
   given text: Text[TypoPolygon] = new Text[TypoPolygon] {
     override def unsafeEncode(v: TypoPolygon, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"""(${v.points.map(p => s"${p.x}, ${p.y}").mkString(",")})""", sb)

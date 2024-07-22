@@ -5,22 +5,24 @@ import scala.reflect.ClassTag
 case class SqlOperator[I1, I2, O](name: String, eval: (I1, I2) => O)
 
 object SqlOperator {
+  import typo.dsl.internal.DummyOrdering.ord
+
   def or[T](implicit B: Bijection[T, Boolean]) =
     new SqlOperator[T, T, T]("OR", (i1, i2) => B.map(i1)(b1 => b1 || B.underlying(i2)))
   def and[T](implicit B: Bijection[T, Boolean]) =
     new SqlOperator[T, T, T]("AND", (i1, i2) => B.map(i1)(b1 => b1 && B.underlying(i2)))
-  def eq[T](implicit O: Ordering[T]) =
-    new SqlOperator[T, T, Boolean]("=", O.equiv)
-  def neq[T](implicit O: Ordering[T]) =
-    new SqlOperator[T, T, Boolean]("!=", (i1, i2) => !O.equiv(i1, i2))
-  def gt[T](implicit N: Ordering[T]) =
-    new SqlOperator[T, T, Boolean](">", N.gt)
-  def gte[T](implicit N: Ordering[T]) =
-    new SqlOperator[T, T, Boolean](">=", N.gteq)
-  def lt[T](implicit N: Ordering[T]) =
-    new SqlOperator[T, T, Boolean]("<", N.lt)
-  def lte[T](implicit N: Ordering[T]) =
-    new SqlOperator[T, T, Boolean]("<=", N.lteq)
+  def eq[T] =
+    new SqlOperator[T, T, Boolean]("=", _ == _)
+  def neq[T] =
+    new SqlOperator[T, T, Boolean]("!=", _ != _)
+  def gt[T] =
+    new SqlOperator[T, T, Boolean](">", ord[T].gt)
+  def gte[T] =
+    new SqlOperator[T, T, Boolean](">=", ord[T].gteq)
+  def lt[T] =
+    new SqlOperator[T, T, Boolean]("<", ord[T].lt)
+  def lte[T] =
+    new SqlOperator[T, T, Boolean]("<=", ord[T].lteq)
   def plus[T](implicit N: Numeric[T]) =
     new SqlOperator[T, T, T]("+", N.plus)
   def minus[T](implicit N: Numeric[T]) =

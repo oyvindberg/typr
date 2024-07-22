@@ -36,5 +36,4 @@ object ProductlistpricehistoryId {
       out.write("}")
     }
   }
-  implicit def ordering(implicit O0: Ordering[TypoLocalDateTime]): Ordering[ProductlistpricehistoryId] = Ordering.by(x => (x.productid, x.startdate))
 }

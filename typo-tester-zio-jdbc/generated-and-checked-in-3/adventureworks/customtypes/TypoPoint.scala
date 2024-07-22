@@ -68,7 +68,6 @@ object TypoPoint {
       out.write("}")
     }
   }
-  given ordering: Ordering[TypoPoint] = Ordering.by(x => (x.x, x.y))
   given pgType: PGType[TypoPoint] = PGType.instance[TypoPoint]("point", Types.OTHER)
   given setter: Setter[TypoPoint] = Setter.other(
     (ps, i, v) => {

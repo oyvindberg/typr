@@ -25,7 +25,6 @@ object ScrapreasonId {
   given jdbcEncoder: JdbcEncoder[ScrapreasonId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[ScrapreasonId] = JsonDecoder.int.map(ScrapreasonId.apply)
   given jsonEncoder: JsonEncoder[ScrapreasonId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[ScrapreasonId] = Ordering.by(_.value)
   given pgType: PGType[ScrapreasonId] = PGType.PGTypeInt.as
   given setter: Setter[ScrapreasonId] = Setter.intSetter.contramap(_.value)
   given text: Text[ScrapreasonId] = new Text[ScrapreasonId] {

@@ -52,7 +52,6 @@ object TypoShort {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.Integer, got ${other.getClass.getName}"))
     }
   )
-  implicit lazy val ordering: Ordering[TypoShort] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TypoShort] = new ParameterMetaData[TypoShort] {
     override def sqlType: String = "int2"
     override def jdbcType: Int = Types.OTHER

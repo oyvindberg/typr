@@ -22,7 +22,6 @@ object AddresstypeId {
   implicit lazy val decoder: Decoder[AddresstypeId] = Decoder.decodeInt.map(AddresstypeId.apply)
   implicit lazy val encoder: Encoder[AddresstypeId] = Encoder.encodeInt.contramap(_.value)
   implicit lazy val get: Get[AddresstypeId] = Meta.IntMeta.get.map(AddresstypeId.apply)
-  implicit lazy val ordering: Ordering[AddresstypeId] = Ordering.by(_.value)
   implicit lazy val put: Put[AddresstypeId] = Meta.IntMeta.put.contramap(_.value)
   implicit lazy val text: Text[AddresstypeId] = new Text[AddresstypeId] {
     override def unsafeEncode(v: AddresstypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

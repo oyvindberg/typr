@@ -34,5 +34,4 @@ object PersonId {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[Option[String]]): Ordering[PersonId] = Ordering.by(x => (x.one, x.two))
 }

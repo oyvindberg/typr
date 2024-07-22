@@ -43,7 +43,6 @@ object Sector {
   given decoder: Decoder[Sector] = Decoder.decodeString.emap(Sector.apply)
   given encoder: Encoder[Sector] = Encoder.encodeString.contramap(_.value)
   given get: Get[Sector] = Meta.StringMeta.get.temap(Sector.apply)
-  given ordering: Ordering[Sector] = Ordering.by(_.value)
   given put: Put[Sector] = Put.Advanced.one[Sector](JdbcType.Other, NonEmptyList.one("myschema.sector"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
   given read: Read[Sector] = new Read.Single(get)
   given text: Text[Sector] = new Text[Sector] {

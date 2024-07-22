@@ -20,6 +20,6 @@ sealed trait SortOrderNoHkt[NT] {
 }
 
 // sort by a field
-final case class SortOrder[T, N[_]](expr: SqlExpr[T, N], ascending: Boolean, nullsFirst: Boolean)(implicit val ordering: Ordering[T], val nullability: Nullability[N]) extends SortOrderNoHkt[N[T]] {
-  def withNullsFirst: SortOrder[T, N] = copy(nullsFirst = true)(ordering, nullability)
+final case class SortOrder[T, N[_]](expr: SqlExpr[T, N], ascending: Boolean, nullsFirst: Boolean)(implicit val nullability: Nullability[N]) extends SortOrderNoHkt[N[T]] {
+  def withNullsFirst: SortOrder[T, N] = copy(nullsFirst = true)(nullability)
 }

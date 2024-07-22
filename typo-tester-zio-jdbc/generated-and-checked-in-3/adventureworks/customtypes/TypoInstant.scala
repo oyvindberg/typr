@@ -61,7 +61,6 @@ object TypoInstant {
   given jdbcEncoder: JdbcEncoder[TypoInstant] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoInstant] = JsonDecoder.instant.map(TypoInstant.apply)
   given jsonEncoder: JsonEncoder[TypoInstant] = JsonEncoder.instant.contramap(_.value)
-  given ordering: Ordering[TypoInstant] = Ordering.by(_.value)
   given pgType: PGType[TypoInstant] = PGType.instance[TypoInstant]("timestamptz", Types.OTHER)
   given setter: Setter[TypoInstant] = Setter.other(
     (ps, i, v) => {

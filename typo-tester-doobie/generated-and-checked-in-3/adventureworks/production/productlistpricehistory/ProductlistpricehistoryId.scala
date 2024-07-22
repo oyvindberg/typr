@@ -18,5 +18,4 @@ case class ProductlistpricehistoryId(
 object ProductlistpricehistoryId {
   given decoder: Decoder[ProductlistpricehistoryId] = Decoder.forProduct2[ProductlistpricehistoryId, ProductId, TypoLocalDateTime]("productid", "startdate")(ProductlistpricehistoryId.apply)(using ProductId.decoder, TypoLocalDateTime.decoder)
   given encoder: Encoder[ProductlistpricehistoryId] = Encoder.forProduct2[ProductlistpricehistoryId, ProductId, TypoLocalDateTime]("productid", "startdate")(x => (x.productid, x.startdate))(using ProductId.encoder, TypoLocalDateTime.encoder)
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[ProductlistpricehistoryId] = Ordering.by(x => (x.productid, x.startdate))
 }

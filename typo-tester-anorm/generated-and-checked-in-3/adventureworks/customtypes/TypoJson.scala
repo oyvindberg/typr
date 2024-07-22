@@ -45,7 +45,6 @@ object TypoJson {
       case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.util.PGobject, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoJson] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoJson] = new ParameterMetaData[TypoJson] {
     override def sqlType: String = "json"
     override def jdbcType: Int = Types.OTHER

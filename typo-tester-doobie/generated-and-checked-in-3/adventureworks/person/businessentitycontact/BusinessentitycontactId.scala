@@ -19,5 +19,4 @@ case class BusinessentitycontactId(
 object BusinessentitycontactId {
   given decoder: Decoder[BusinessentitycontactId] = Decoder.forProduct3[BusinessentitycontactId, BusinessentityId, BusinessentityId, ContacttypeId]("businessentityid", "personid", "contacttypeid")(BusinessentitycontactId.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, ContacttypeId.decoder)
   given encoder: Encoder[BusinessentitycontactId] = Encoder.forProduct3[BusinessentitycontactId, BusinessentityId, BusinessentityId, ContacttypeId]("businessentityid", "personid", "contacttypeid")(x => (x.businessentityid, x.personid, x.contacttypeid))(using BusinessentityId.encoder, BusinessentityId.encoder, ContacttypeId.encoder)
-  given ordering: Ordering[BusinessentitycontactId] = Ordering.by(x => (x.businessentityid, x.personid, x.contacttypeid))
 }

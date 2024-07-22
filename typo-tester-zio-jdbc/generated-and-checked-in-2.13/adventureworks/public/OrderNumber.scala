@@ -28,7 +28,6 @@ object OrderNumber {
   implicit lazy val jdbcEncoder: JdbcEncoder[OrderNumber] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[OrderNumber] = JsonDecoder.string.map(OrderNumber.apply)
   implicit lazy val jsonEncoder: JsonEncoder[OrderNumber] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[OrderNumber] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[OrderNumber] = PGType.instance(""""public"."OrderNumber"""", Types.OTHER)
   implicit lazy val setter: Setter[OrderNumber] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[OrderNumber] = new Text[OrderNumber] {

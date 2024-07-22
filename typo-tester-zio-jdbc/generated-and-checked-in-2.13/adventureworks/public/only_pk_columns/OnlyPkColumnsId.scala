@@ -34,5 +34,4 @@ object OnlyPkColumnsId {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[OnlyPkColumnsId] = Ordering.by(x => (x.keyColumn1, x.keyColumn2))
 }

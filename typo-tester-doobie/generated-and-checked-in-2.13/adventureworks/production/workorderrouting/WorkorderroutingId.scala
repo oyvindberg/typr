@@ -19,5 +19,4 @@ case class WorkorderroutingId(
 object WorkorderroutingId {
   implicit lazy val decoder: Decoder[WorkorderroutingId] = Decoder.forProduct3[WorkorderroutingId, WorkorderId, Int, TypoShort]("workorderid", "productid", "operationsequence")(WorkorderroutingId.apply)(WorkorderId.decoder, Decoder.decodeInt, TypoShort.decoder)
   implicit lazy val encoder: Encoder[WorkorderroutingId] = Encoder.forProduct3[WorkorderroutingId, WorkorderId, Int, TypoShort]("workorderid", "productid", "operationsequence")(x => (x.workorderid, x.productid, x.operationsequence))(WorkorderId.encoder, Encoder.encodeInt, TypoShort.encoder)
-  implicit def ordering(implicit O0: Ordering[TypoShort]): Ordering[WorkorderroutingId] = Ordering.by(x => (x.workorderid, x.productid, x.operationsequence))
 }

@@ -23,7 +23,6 @@ object ShortText {
   implicit lazy val arrayToStatement: ToStatement[Array[ShortText]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[ShortText, String] = Bijection[ShortText, String](_.value)(ShortText.apply)
   implicit lazy val column: Column[ShortText] = Column.columnToString.map(ShortText.apply)
-  implicit lazy val ordering: Ordering[ShortText] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[ShortText] = new ParameterMetaData[ShortText] {
     override def sqlType: String = """"public"."short_text""""
     override def jdbcType: Int = Types.OTHER

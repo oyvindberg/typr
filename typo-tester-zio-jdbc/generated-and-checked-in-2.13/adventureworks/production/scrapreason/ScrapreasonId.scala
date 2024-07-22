@@ -25,7 +25,6 @@ object ScrapreasonId {
   implicit lazy val jdbcEncoder: JdbcEncoder[ScrapreasonId] = JdbcEncoder.intEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[ScrapreasonId] = JsonDecoder.int.map(ScrapreasonId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[ScrapreasonId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val ordering: Ordering[ScrapreasonId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[ScrapreasonId] = PGType.PGTypeInt.as
   implicit lazy val setter: Setter[ScrapreasonId] = Setter.intSetter.contramap(_.value)
   implicit lazy val text: Text[ScrapreasonId] = new Text[ScrapreasonId] {

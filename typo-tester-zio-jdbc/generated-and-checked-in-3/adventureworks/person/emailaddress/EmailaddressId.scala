@@ -35,5 +35,4 @@ object EmailaddressId {
       out.write("}")
     }
   }
-  given ordering: Ordering[EmailaddressId] = Ordering.by(x => (x.businessentityid, x.emailaddressid))
 }

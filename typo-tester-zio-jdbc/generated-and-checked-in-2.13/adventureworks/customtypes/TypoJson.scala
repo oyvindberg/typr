@@ -57,7 +57,6 @@ object TypoJson {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoJson] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoJson] = JsonDecoder.string.map(TypoJson.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoJson] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoJson] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoJson] = PGType.instance[TypoJson]("json", Types.OTHER)
   implicit lazy val setter: Setter[TypoJson] = Setter.other(
     (ps, i, v) => {

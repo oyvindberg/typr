@@ -48,7 +48,6 @@ object TypoOffsetTime {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoOffsetTime] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoOffsetTime] = new ParameterMetaData[TypoOffsetTime] {
     override def sqlType: String = "timetz"
     override def jdbcType: Int = Types.OTHER

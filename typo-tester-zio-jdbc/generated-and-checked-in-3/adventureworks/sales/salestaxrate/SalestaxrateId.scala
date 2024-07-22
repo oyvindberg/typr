@@ -25,7 +25,6 @@ object SalestaxrateId {
   given jdbcEncoder: JdbcEncoder[SalestaxrateId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[SalestaxrateId] = JsonDecoder.int.map(SalestaxrateId.apply)
   given jsonEncoder: JsonEncoder[SalestaxrateId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[SalestaxrateId] = Ordering.by(_.value)
   given pgType: PGType[SalestaxrateId] = PGType.PGTypeInt.as
   given setter: Setter[SalestaxrateId] = Setter.intSetter.contramap(_.value)
   given text: Text[SalestaxrateId] = new Text[SalestaxrateId] {

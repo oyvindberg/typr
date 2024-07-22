@@ -25,7 +25,6 @@ object UnitmeasureId {
   given jdbcEncoder: JdbcEncoder[UnitmeasureId] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[UnitmeasureId] = JsonDecoder.string.map(UnitmeasureId.apply)
   given jsonEncoder: JsonEncoder[UnitmeasureId] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[UnitmeasureId] = Ordering.by(_.value)
   given pgType: PGType[UnitmeasureId] = PGType.PGTypeString.as
   given setter: Setter[UnitmeasureId] = Setter.stringSetter.contramap(_.value)
   given text: Text[UnitmeasureId] = new Text[UnitmeasureId] {

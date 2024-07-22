@@ -36,5 +36,4 @@ object SalespersonquotahistoryId {
       out.write("}")
     }
   }
-  implicit def ordering(implicit O0: Ordering[TypoLocalDateTime]): Ordering[SalespersonquotahistoryId] = Ordering.by(x => (x.businessentityid, x.quotadate))
 }

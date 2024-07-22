@@ -24,7 +24,6 @@ object TimeStamp {
   implicit lazy val arrayToStatement: ToStatement[Array[TimeStamp]] = TypoInstant.arrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[TimeStamp, TypoInstant] = Bijection[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
   implicit lazy val column: Column[TimeStamp] = TypoInstant.column.map(TimeStamp.apply)
-  implicit def ordering(implicit O0: Ordering[TypoInstant]): Ordering[TimeStamp] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TimeStamp] = new ParameterMetaData[TimeStamp] {
     override def sqlType: String = """"information_schema"."time_stamp""""
     override def jdbcType: Int = Types.OTHER

@@ -25,7 +25,6 @@ object TransactionhistoryId {
   given jdbcEncoder: JdbcEncoder[TransactionhistoryId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[TransactionhistoryId] = JsonDecoder.int.map(TransactionhistoryId.apply)
   given jsonEncoder: JsonEncoder[TransactionhistoryId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[TransactionhistoryId] = Ordering.by(_.value)
   given pgType: PGType[TransactionhistoryId] = PGType.PGTypeInt.as
   given setter: Setter[TransactionhistoryId] = Setter.intSetter.contramap(_.value)
   given text: Text[TransactionhistoryId] = new Text[TransactionhistoryId] {

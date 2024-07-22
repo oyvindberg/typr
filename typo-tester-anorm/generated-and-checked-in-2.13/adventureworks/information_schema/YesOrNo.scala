@@ -23,7 +23,6 @@ object YesOrNo {
   implicit lazy val arrayToStatement: ToStatement[Array[YesOrNo]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[YesOrNo, String] = Bijection[YesOrNo, String](_.value)(YesOrNo.apply)
   implicit lazy val column: Column[YesOrNo] = Column.columnToString.map(YesOrNo.apply)
-  implicit lazy val ordering: Ordering[YesOrNo] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[YesOrNo] = new ParameterMetaData[YesOrNo] {
     override def sqlType: String = """"information_schema"."yes_or_no""""
     override def jdbcType: Int = Types.OTHER

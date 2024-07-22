@@ -51,7 +51,6 @@ object TypoUnknownCitext {
   given jdbcEncoder: JdbcEncoder[TypoUnknownCitext] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoUnknownCitext] = JsonDecoder.string.map(TypoUnknownCitext.apply)
   given jsonEncoder: JsonEncoder[TypoUnknownCitext] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TypoUnknownCitext] = Ordering.by(_.value)
   given pgType: PGType[TypoUnknownCitext] = PGType.instance[TypoUnknownCitext]("citext", Types.OTHER)
   given setter: Setter[TypoUnknownCitext] = Setter.other(
     (ps, i, v) => {

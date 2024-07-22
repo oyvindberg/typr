@@ -32,7 +32,6 @@ object TypoInt2Vector {
   implicit lazy val encoder: Encoder[TypoInt2Vector] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[TypoInt2Vector] = Get.Advanced.other[PGobject](NonEmptyList.one("int2vector"))
     .map(v => TypoInt2Vector(v.getValue))
-  implicit lazy val ordering: Ordering[TypoInt2Vector] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoInt2Vector] = Put.Advanced.other[PGobject](NonEmptyList.one("int2vector")).contramap(v => {
                                                                                 val obj = new PGobject
                                                                                 obj.setType("int2vector")

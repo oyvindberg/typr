@@ -22,7 +22,6 @@ object BusinessentityId {
   implicit lazy val decoder: Decoder[BusinessentityId] = Decoder.decodeInt.map(BusinessentityId.apply)
   implicit lazy val encoder: Encoder[BusinessentityId] = Encoder.encodeInt.contramap(_.value)
   implicit lazy val get: Get[BusinessentityId] = Meta.IntMeta.get.map(BusinessentityId.apply)
-  implicit lazy val ordering: Ordering[BusinessentityId] = Ordering.by(_.value)
   implicit lazy val put: Put[BusinessentityId] = Meta.IntMeta.put.contramap(_.value)
   implicit lazy val text: Text[BusinessentityId] = new Text[BusinessentityId] {
     override def unsafeEncode(v: BusinessentityId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

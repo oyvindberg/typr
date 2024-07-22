@@ -25,7 +25,6 @@ object TableWithGeneratedColumnsId {
   implicit lazy val jdbcEncoder: JdbcEncoder[TableWithGeneratedColumnsId] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[TableWithGeneratedColumnsId] = JsonDecoder.string.map(TableWithGeneratedColumnsId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TableWithGeneratedColumnsId] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[TableWithGeneratedColumnsId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TableWithGeneratedColumnsId] = PGType.PGTypeString.as
   implicit lazy val setter: Setter[TableWithGeneratedColumnsId] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {

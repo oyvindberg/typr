@@ -23,7 +23,6 @@ object Mydomain {
   implicit lazy val arrayToStatement: ToStatement[Array[Mydomain]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[Mydomain, String] = Bijection[Mydomain, String](_.value)(Mydomain.apply)
   implicit lazy val column: Column[Mydomain] = Column.columnToString.map(Mydomain.apply)
-  implicit lazy val ordering: Ordering[Mydomain] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Mydomain] = new ParameterMetaData[Mydomain] {
     override def sqlType: String = """"public"."mydomain""""
     override def jdbcType: Int = Types.OTHER

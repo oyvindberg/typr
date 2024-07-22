@@ -23,7 +23,6 @@ case class ProductmodelproductdescriptioncultureId(
   cultureid: CultureId
 )
 object ProductmodelproductdescriptioncultureId {
-  given ordering: Ordering[ProductmodelproductdescriptioncultureId] = Ordering.by(x => (x.productmodelid, x.productdescriptionid, x.cultureid))
   given reads: Reads[ProductmodelproductdescriptioncultureId] = Reads[ProductmodelproductdescriptioncultureId](json => JsResult.fromTry(
       Try(
         ProductmodelproductdescriptioncultureId(

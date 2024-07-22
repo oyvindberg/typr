@@ -22,7 +22,6 @@ object TypoBytea {
   given encoder: Encoder[TypoBytea] = Encoder.encodeIterable[Byte, Array](using Encoder.encodeByte, implicitly).contramap(_.value)
   given get: Get[TypoBytea] = Get.Advanced.other[Array[Byte]](NonEmptyList.one("bytea"))
     .map(v => TypoBytea(v))
-  given ordering(using O0: Ordering[Array[Byte]]): Ordering[TypoBytea] = Ordering.by(_.value)
   given put: Put[TypoBytea] = Put.Advanced.other[Array[Byte]](NonEmptyList.one("bytea")).contramap(v => v.value)
   given text: Text[TypoBytea] = new Text[TypoBytea] {
     override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)

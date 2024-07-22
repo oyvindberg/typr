@@ -25,7 +25,6 @@ object CurrencyrateId {
   given jdbcEncoder: JdbcEncoder[CurrencyrateId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[CurrencyrateId] = JsonDecoder.int.map(CurrencyrateId.apply)
   given jsonEncoder: JsonEncoder[CurrencyrateId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[CurrencyrateId] = Ordering.by(_.value)
   given pgType: PGType[CurrencyrateId] = PGType.PGTypeInt.as
   given setter: Setter[CurrencyrateId] = Setter.intSetter.contramap(_.value)
   given text: Text[CurrencyrateId] = new Text[CurrencyrateId] {

@@ -76,7 +76,6 @@ object TypoBox {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[TypoBox] = Ordering.by(x => (x.x1, x.y1, x.x2, x.y2))
   implicit lazy val pgType: PGType[TypoBox] = PGType.instance[TypoBox]("box", Types.OTHER)
   implicit lazy val setter: Setter[TypoBox] = Setter.other(
     (ps, i, v) => {

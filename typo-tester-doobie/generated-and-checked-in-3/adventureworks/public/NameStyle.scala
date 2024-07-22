@@ -24,7 +24,6 @@ object NameStyle {
   given decoder: Decoder[NameStyle] = Decoder.decodeBoolean.map(NameStyle.apply)
   given encoder: Encoder[NameStyle] = Encoder.encodeBoolean.contramap(_.value)
   given get: Get[NameStyle] = Meta.BooleanMeta.get.map(NameStyle.apply)
-  given ordering: Ordering[NameStyle] = Ordering.by(_.value)
   given put: Put[NameStyle] = Meta.BooleanMeta.put.contramap(_.value)
   given text: Text[NameStyle] = new Text[NameStyle] {
     override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)

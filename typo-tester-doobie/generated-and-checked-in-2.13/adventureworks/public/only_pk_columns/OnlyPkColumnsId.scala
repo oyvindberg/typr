@@ -16,5 +16,4 @@ case class OnlyPkColumnsId(
 object OnlyPkColumnsId {
   implicit lazy val decoder: Decoder[OnlyPkColumnsId] = Decoder.forProduct2[OnlyPkColumnsId, String, Int]("key_column_1", "key_column_2")(OnlyPkColumnsId.apply)(Decoder.decodeString, Decoder.decodeInt)
   implicit lazy val encoder: Encoder[OnlyPkColumnsId] = Encoder.forProduct2[OnlyPkColumnsId, String, Int]("key_column_1", "key_column_2")(x => (x.keyColumn1, x.keyColumn2))(Encoder.encodeString, Encoder.encodeInt)
-  implicit lazy val ordering: Ordering[OnlyPkColumnsId] = Ordering.by(x => (x.keyColumn1, x.keyColumn2))
 }

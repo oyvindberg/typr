@@ -61,7 +61,6 @@ object TypoInstant {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoInstant] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoInstant] = JsonDecoder.instant.map(TypoInstant.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoInstant] = JsonEncoder.instant.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoInstant] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoInstant] = PGType.instance[TypoInstant]("timestamptz", Types.OTHER)
   implicit lazy val setter: Setter[TypoInstant] = Setter.other(
     (ps, i, v) => {

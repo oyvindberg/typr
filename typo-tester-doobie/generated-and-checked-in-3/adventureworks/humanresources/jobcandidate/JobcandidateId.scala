@@ -22,7 +22,6 @@ object JobcandidateId {
   given decoder: Decoder[JobcandidateId] = Decoder.decodeInt.map(JobcandidateId.apply)
   given encoder: Encoder[JobcandidateId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[JobcandidateId] = Meta.IntMeta.get.map(JobcandidateId.apply)
-  given ordering: Ordering[JobcandidateId] = Ordering.by(_.value)
   given put: Put[JobcandidateId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[JobcandidateId] = new Text[JobcandidateId] {
     override def unsafeEncode(v: JobcandidateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

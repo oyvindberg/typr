@@ -29,7 +29,6 @@ object TypoUUID {
   given encoder: Encoder[TypoUUID] = Encoder.encodeUUID.contramap(_.value)
   given get: Get[TypoUUID] = Get.Advanced.other[UUID](NonEmptyList.one("uuid"))
     .map(v => TypoUUID(v))
-  given ordering: Ordering[TypoUUID] = Ordering.by(_.value)
   given put: Put[TypoUUID] = Put.Advanced.other[UUID](NonEmptyList.one("uuid")).contramap(v => v.value)
   given text: Text[TypoUUID] = new Text[TypoUUID] {
     override def unsafeEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

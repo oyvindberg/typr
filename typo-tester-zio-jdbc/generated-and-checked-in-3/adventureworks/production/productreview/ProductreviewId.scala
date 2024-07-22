@@ -25,7 +25,6 @@ object ProductreviewId {
   given jdbcEncoder: JdbcEncoder[ProductreviewId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[ProductreviewId] = JsonDecoder.int.map(ProductreviewId.apply)
   given jsonEncoder: JsonEncoder[ProductreviewId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[ProductreviewId] = Ordering.by(_.value)
   given pgType: PGType[ProductreviewId] = PGType.PGTypeInt.as
   given setter: Setter[ProductreviewId] = Setter.intSetter.contramap(_.value)
   given text: Text[ProductreviewId] = new Text[ProductreviewId] {

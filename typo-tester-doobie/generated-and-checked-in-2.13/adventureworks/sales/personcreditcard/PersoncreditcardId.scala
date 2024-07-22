@@ -18,5 +18,4 @@ case class PersoncreditcardId(
 object PersoncreditcardId {
   implicit lazy val decoder: Decoder[PersoncreditcardId] = Decoder.forProduct2[PersoncreditcardId, BusinessentityId, /* user-picked */ CustomCreditcardId]("businessentityid", "creditcardid")(PersoncreditcardId.apply)(BusinessentityId.decoder, CustomCreditcardId.decoder)
   implicit lazy val encoder: Encoder[PersoncreditcardId] = Encoder.forProduct2[PersoncreditcardId, BusinessentityId, /* user-picked */ CustomCreditcardId]("businessentityid", "creditcardid")(x => (x.businessentityid, x.creditcardid))(BusinessentityId.encoder, CustomCreditcardId.encoder)
-  implicit lazy val ordering: Ordering[PersoncreditcardId] = Ordering.by(x => (x.businessentityid, x.creditcardid))
 }

@@ -20,7 +20,6 @@ case class OnlyPkColumnsId(
   keyColumn2: Int
 )
 object OnlyPkColumnsId {
-  given ordering: Ordering[OnlyPkColumnsId] = Ordering.by(x => (x.keyColumn1, x.keyColumn2))
   given reads: Reads[OnlyPkColumnsId] = Reads[OnlyPkColumnsId](json => JsResult.fromTry(
       Try(
         OnlyPkColumnsId(

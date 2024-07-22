@@ -25,7 +25,6 @@ case class EmployeedepartmenthistoryId(
   shiftid: ShiftId
 )
 object EmployeedepartmenthistoryId {
-  implicit def ordering(implicit O0: Ordering[TypoLocalDate]): Ordering[EmployeedepartmenthistoryId] = Ordering.by(x => (x.businessentityid, x.startdate, x.departmentid, x.shiftid))
   implicit lazy val reads: Reads[EmployeedepartmenthistoryId] = Reads[EmployeedepartmenthistoryId](json => JsResult.fromTry(
       Try(
         EmployeedepartmenthistoryId(

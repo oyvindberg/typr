@@ -28,7 +28,6 @@ object Phone {
   implicit lazy val jdbcEncoder: JdbcEncoder[Phone] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[Phone] = JsonDecoder.string.map(Phone.apply)
   implicit lazy val jsonEncoder: JsonEncoder[Phone] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[Phone] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[Phone] = PGType.instance(""""public"."Phone"""", Types.OTHER)
   implicit lazy val setter: Setter[Phone] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[Phone] = new Text[Phone] {

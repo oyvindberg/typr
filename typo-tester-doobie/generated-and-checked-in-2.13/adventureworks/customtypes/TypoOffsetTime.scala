@@ -35,7 +35,6 @@ object TypoOffsetTime {
   implicit lazy val encoder: Encoder[TypoOffsetTime] = Encoder.encodeOffsetTime.contramap(_.value)
   implicit lazy val get: Get[TypoOffsetTime] = Get.Advanced.other[String](NonEmptyList.one("timetz"))
     .map(v => TypoOffsetTime(OffsetTime.parse(v, parser)))
-  implicit lazy val ordering: Ordering[TypoOffsetTime] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoOffsetTime] = Put.Advanced.other[String](NonEmptyList.one("timetz")).contramap(v => v.value.toString)
   implicit lazy val text: Text[TypoOffsetTime] = new Text[TypoOffsetTime] {
     override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

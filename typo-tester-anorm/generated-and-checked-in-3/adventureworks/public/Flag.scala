@@ -23,7 +23,6 @@ object Flag {
   given arrayToStatement: ToStatement[Array[Flag]] = adventureworks.BooleanArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[Flag, Boolean] = Bijection[Flag, Boolean](_.value)(Flag.apply)
   given column: Column[Flag] = Column.columnToBoolean.map(Flag.apply)
-  given ordering: Ordering[Flag] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[Flag] = new ParameterMetaData[Flag] {
     override def sqlType: String = """"public"."Flag""""
     override def jdbcType: Int = Types.OTHER

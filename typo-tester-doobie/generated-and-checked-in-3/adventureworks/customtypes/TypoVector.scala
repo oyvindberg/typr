@@ -23,7 +23,6 @@ object TypoVector {
   given encoder: Encoder[TypoVector] = Encoder.encodeIterable[Float, Array](using Encoder.encodeFloat, implicitly).contramap(_.value)
   given get: Get[TypoVector] = Get.Advanced.other[PgArray](NonEmptyList.one("vector"))
     .map(v => TypoVector(v.getArray.asInstanceOf[Array[java.lang.Float]].map(Float2float)))
-  given ordering(using O0: Ordering[Array[Float]]): Ordering[TypoVector] = Ordering.by(_.value)
   given put: Put[TypoVector] = Put.Advanced.other[Array[java.lang.Float]](NonEmptyList.one("vector")).contramap(v => v.value.map(x => x: java.lang.Float))
   given text: Text[TypoVector] = new Text[TypoVector] {
     override def unsafeEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.mkString("[", ",", "]"), sb)

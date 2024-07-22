@@ -23,7 +23,6 @@ object NameStyle {
   given arrayToStatement: ToStatement[Array[NameStyle]] = adventureworks.BooleanArrayToStatement.contramap(_.map(_.value))
   given bijection: Bijection[NameStyle, Boolean] = Bijection[NameStyle, Boolean](_.value)(NameStyle.apply)
   given column: Column[NameStyle] = Column.columnToBoolean.map(NameStyle.apply)
-  given ordering: Ordering[NameStyle] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[NameStyle] = new ParameterMetaData[NameStyle] {
     override def sqlType: String = """"public"."NameStyle""""
     override def jdbcType: Int = Types.OTHER

@@ -48,7 +48,6 @@ object TypoLocalDateTime {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
     }
   )
-  implicit lazy val ordering: Ordering[TypoLocalDateTime] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TypoLocalDateTime] = new ParameterMetaData[TypoLocalDateTime] {
     override def sqlType: String = "timestamp"
     override def jdbcType: Int = Types.OTHER

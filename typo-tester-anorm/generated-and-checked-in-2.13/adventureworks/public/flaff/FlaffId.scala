@@ -23,7 +23,6 @@ case class FlaffId(
   specifier: ShortText
 )
 object FlaffId {
-  implicit lazy val ordering: Ordering[FlaffId] = Ordering.by(x => (x.code, x.anotherCode, x.someNumber, x.specifier))
   implicit lazy val reads: Reads[FlaffId] = Reads[FlaffId](json => JsResult.fromTry(
       Try(
         FlaffId(

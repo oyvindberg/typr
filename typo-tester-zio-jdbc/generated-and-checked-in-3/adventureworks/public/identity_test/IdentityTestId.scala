@@ -25,7 +25,6 @@ object IdentityTestId {
   given jdbcEncoder: JdbcEncoder[IdentityTestId] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[IdentityTestId] = JsonDecoder.string.map(IdentityTestId.apply)
   given jsonEncoder: JsonEncoder[IdentityTestId] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[IdentityTestId] = Ordering.by(_.value)
   given pgType: PGType[IdentityTestId] = PGType.PGTypeString.as
   given setter: Setter[IdentityTestId] = Setter.stringSetter.contramap(_.value)
   given text: Text[IdentityTestId] = new Text[IdentityTestId] {

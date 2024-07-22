@@ -25,7 +25,6 @@ object FootballClubId {
   given jdbcEncoder: JdbcEncoder[FootballClubId] = JdbcEncoder.longEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[FootballClubId] = JsonDecoder.long.map(FootballClubId.apply)
   given jsonEncoder: JsonEncoder[FootballClubId] = JsonEncoder.long.contramap(_.value)
-  given ordering: Ordering[FootballClubId] = Ordering.by(_.value)
   given pgType: PGType[FootballClubId] = PGType.PGTypeLong.as
   given setter: Setter[FootballClubId] = Setter.longSetter.contramap(_.value)
   given text: Text[FootballClubId] = new Text[FootballClubId] {

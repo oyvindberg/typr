@@ -38,7 +38,6 @@ object TitleId {
   given decoder: Decoder[TitleId] = Decoder.decodeString.map(TitleId.apply)
   given encoder: Encoder[TitleId] = Encoder.encodeString.contramap(_.value)
   given get: Get[TitleId] = Meta.StringMeta.get.map(TitleId.apply)
-  given ordering: Ordering[TitleId] = Ordering.by(_.value)
   given put: Put[TitleId] = Meta.StringMeta.put.contramap(_.value)
   given read: Read[TitleId] = new Read.Single(get)
   given text: Text[TitleId] = new Text[TitleId] {

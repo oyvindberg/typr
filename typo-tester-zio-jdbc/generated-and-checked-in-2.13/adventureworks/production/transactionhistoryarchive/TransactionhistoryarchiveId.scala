@@ -25,7 +25,6 @@ object TransactionhistoryarchiveId {
   implicit lazy val jdbcEncoder: JdbcEncoder[TransactionhistoryarchiveId] = JdbcEncoder.intEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[TransactionhistoryarchiveId] = JsonDecoder.int.map(TransactionhistoryarchiveId.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TransactionhistoryarchiveId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val ordering: Ordering[TransactionhistoryarchiveId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TransactionhistoryarchiveId] = PGType.PGTypeInt.as
   implicit lazy val setter: Setter[TransactionhistoryarchiveId] = Setter.intSetter.contramap(_.value)
   implicit lazy val text: Text[TransactionhistoryarchiveId] = new Text[TransactionhistoryarchiveId] {

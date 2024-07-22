@@ -21,7 +21,6 @@ case class ProductvendorId(
   businessentityid: BusinessentityId
 )
 object ProductvendorId {
-  given ordering: Ordering[ProductvendorId] = Ordering.by(x => (x.productid, x.businessentityid))
   given reads: Reads[ProductvendorId] = Reads[ProductvendorId](json => JsResult.fromTry(
       Try(
         ProductvendorId(

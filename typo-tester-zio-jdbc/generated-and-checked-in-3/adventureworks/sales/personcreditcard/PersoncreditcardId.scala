@@ -36,5 +36,4 @@ object PersoncreditcardId {
       out.write("}")
     }
   }
-  given ordering: Ordering[PersoncreditcardId] = Ordering.by(x => (x.businessentityid, x.creditcardid))
 }

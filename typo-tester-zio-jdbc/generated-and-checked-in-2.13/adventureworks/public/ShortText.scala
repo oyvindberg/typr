@@ -28,7 +28,6 @@ object ShortText {
   implicit lazy val jdbcEncoder: JdbcEncoder[ShortText] = JdbcEncoder.stringEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[ShortText] = JsonDecoder.string.map(ShortText.apply)
   implicit lazy val jsonEncoder: JsonEncoder[ShortText] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[ShortText] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[ShortText] = PGType.instance(""""public"."short_text"""", Types.OTHER)
   implicit lazy val setter: Setter[ShortText] = Setter.stringSetter.contramap(_.value)
   implicit lazy val text: Text[ShortText] = new Text[ShortText] {

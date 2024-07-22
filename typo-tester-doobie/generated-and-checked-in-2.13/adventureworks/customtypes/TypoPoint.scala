@@ -25,7 +25,6 @@ object TypoPoint {
   implicit lazy val encoder: Encoder[TypoPoint] = Encoder.forProduct2[TypoPoint, Double, Double]("x", "y")(x => (x.x, x.y))(Encoder.encodeDouble, Encoder.encodeDouble)
   implicit lazy val get: Get[TypoPoint] = Get.Advanced.other[PGpoint](NonEmptyList.one("point"))
     .map(v => TypoPoint(v.x, v.y))
-  implicit lazy val ordering: Ordering[TypoPoint] = Ordering.by(x => (x.x, x.y))
   implicit lazy val put: Put[TypoPoint] = Put.Advanced.other[PGpoint](NonEmptyList.one("point")).contramap(v => new PGpoint(v.x, v.y))
   implicit lazy val text: Text[TypoPoint] = new Text[TypoPoint] {
     override def unsafeEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"(${v.x},${v.y})", sb)

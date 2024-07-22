@@ -57,7 +57,6 @@ object TypoInt2Vector {
   given jdbcEncoder: JdbcEncoder[TypoInt2Vector] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoInt2Vector] = JsonDecoder.string.map(TypoInt2Vector.apply)
   given jsonEncoder: JsonEncoder[TypoInt2Vector] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[TypoInt2Vector] = Ordering.by(_.value)
   given pgType: PGType[TypoInt2Vector] = PGType.instance[TypoInt2Vector]("int2vector", Types.OTHER)
   given setter: Setter[TypoInt2Vector] = Setter.other(
     (ps, i, v) => {

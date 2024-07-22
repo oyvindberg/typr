@@ -69,7 +69,6 @@ object TypoLineSegment {
       out.write("}")
     }
   }
-  implicit def ordering(implicit O0: Ordering[TypoPoint]): Ordering[TypoLineSegment] = Ordering.by(x => (x.p1, x.p2))
   implicit lazy val pgType: PGType[TypoLineSegment] = PGType.instance[TypoLineSegment]("lseg", Types.OTHER)
   implicit lazy val setter: Setter[TypoLineSegment] = Setter.other(
     (ps, i, v) => {

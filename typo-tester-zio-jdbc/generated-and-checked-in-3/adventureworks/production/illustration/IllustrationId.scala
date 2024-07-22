@@ -25,7 +25,6 @@ object IllustrationId {
   given jdbcEncoder: JdbcEncoder[IllustrationId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[IllustrationId] = JsonDecoder.int.map(IllustrationId.apply)
   given jsonEncoder: JsonEncoder[IllustrationId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[IllustrationId] = Ordering.by(_.value)
   given pgType: PGType[IllustrationId] = PGType.PGTypeInt.as
   given setter: Setter[IllustrationId] = Setter.intSetter.contramap(_.value)
   given text: Text[IllustrationId] = new Text[IllustrationId] {

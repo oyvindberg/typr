@@ -43,7 +43,6 @@ object Myenum {
   implicit lazy val decoder: Decoder[Myenum] = Decoder.decodeString.emap(Myenum.apply)
   implicit lazy val encoder: Encoder[Myenum] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[Myenum] = Meta.StringMeta.get.temap(Myenum.apply)
-  implicit lazy val ordering: Ordering[Myenum] = Ordering.by(_.value)
   implicit lazy val put: Put[Myenum] = Put.Advanced.one[Myenum](JdbcType.Other, NonEmptyList.one("public.myenum"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
   implicit lazy val read: Read[Myenum] = new Read.Single(get)
   implicit lazy val text: Text[Myenum] = new Text[Myenum] {

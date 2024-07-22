@@ -22,7 +22,6 @@ object IllustrationId {
   implicit lazy val decoder: Decoder[IllustrationId] = Decoder.decodeInt.map(IllustrationId.apply)
   implicit lazy val encoder: Encoder[IllustrationId] = Encoder.encodeInt.contramap(_.value)
   implicit lazy val get: Get[IllustrationId] = Meta.IntMeta.get.map(IllustrationId.apply)
-  implicit lazy val ordering: Ordering[IllustrationId] = Ordering.by(_.value)
   implicit lazy val put: Put[IllustrationId] = Meta.IntMeta.put.contramap(_.value)
   implicit lazy val text: Text[IllustrationId] = new Text[IllustrationId] {
     override def unsafeEncode(v: IllustrationId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

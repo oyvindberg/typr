@@ -22,7 +22,6 @@ object PersonId {
   given decoder: Decoder[PersonId] = Decoder.decodeLong.map(PersonId.apply)
   given encoder: Encoder[PersonId] = Encoder.encodeLong.contramap(_.value)
   given get: Get[PersonId] = Meta.LongMeta.get.map(PersonId.apply)
-  given ordering: Ordering[PersonId] = Ordering.by(_.value)
   given put: Put[PersonId] = Meta.LongMeta.put.contramap(_.value)
   given text: Text[PersonId] = new Text[PersonId] {
     override def unsafeEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)

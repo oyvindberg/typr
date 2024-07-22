@@ -20,7 +20,6 @@ object SpecialofferId {
   implicit lazy val arrayToStatement: ToStatement[Array[SpecialofferId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[SpecialofferId, Int] = Bijection[SpecialofferId, Int](_.value)(SpecialofferId.apply)
   implicit lazy val column: Column[SpecialofferId] = Column.columnToInt.map(SpecialofferId.apply)
-  implicit lazy val ordering: Ordering[SpecialofferId] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[SpecialofferId] = new ParameterMetaData[SpecialofferId] {
     override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType

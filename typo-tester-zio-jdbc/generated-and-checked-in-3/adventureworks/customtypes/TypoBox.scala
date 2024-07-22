@@ -76,7 +76,6 @@ object TypoBox {
       out.write("}")
     }
   }
-  given ordering: Ordering[TypoBox] = Ordering.by(x => (x.x1, x.y1, x.x2, x.y2))
   given pgType: PGType[TypoBox] = PGType.instance[TypoBox]("box", Types.OTHER)
   given setter: Setter[TypoBox] = Setter.other(
     (ps, i, v) => {

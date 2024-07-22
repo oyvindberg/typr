@@ -31,7 +31,6 @@ object TypoHStore {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.util.Map[?, ?], got ${other.getClass.getName}"))
     }
   )
-  given ordering(using O0: Ordering[Map[String, String]]): Ordering[TypoHStore] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoHStore] = new ParameterMetaData[TypoHStore] {
     override def sqlType: String = "hstore"
     override def jdbcType: Int = Types.OTHER

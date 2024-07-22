@@ -28,7 +28,6 @@ object NameStyle {
   implicit lazy val jdbcEncoder: JdbcEncoder[NameStyle] = JdbcEncoder.booleanEncoder.contramap(_.value)
   implicit lazy val jsonDecoder: JsonDecoder[NameStyle] = JsonDecoder.boolean.map(NameStyle.apply)
   implicit lazy val jsonEncoder: JsonEncoder[NameStyle] = JsonEncoder.boolean.contramap(_.value)
-  implicit lazy val ordering: Ordering[NameStyle] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[NameStyle] = PGType.instance(""""public"."NameStyle"""", Types.OTHER)
   implicit lazy val setter: Setter[NameStyle] = Setter.booleanSetter.contramap(_.value)
   implicit lazy val text: Text[NameStyle] = new Text[NameStyle] {

@@ -38,7 +38,6 @@ object TitleDomainId {
   implicit lazy val arrayColumn: Column[Array[TitleDomainId]] = ShortText.arrayColumn.map(_.map(TitleDomainId.apply))
   implicit lazy val arrayToStatement: ToStatement[Array[TitleDomainId]] = ShortText.arrayToStatement.contramap(_.map(_.value))
   implicit lazy val column: Column[TitleDomainId] = ShortText.column.map(TitleDomainId.apply)
-  implicit lazy val ordering: Ordering[TitleDomainId] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[TitleDomainId] = new ParameterMetaData[TitleDomainId] {
     override def sqlType: String = """"public"."short_text""""
     override def jdbcType: Int = Types.OTHER

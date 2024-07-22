@@ -18,5 +18,4 @@ case class ProductproductphotoId(
 object ProductproductphotoId {
   implicit lazy val decoder: Decoder[ProductproductphotoId] = Decoder.forProduct2[ProductproductphotoId, ProductId, ProductphotoId]("productid", "productphotoid")(ProductproductphotoId.apply)(ProductId.decoder, ProductphotoId.decoder)
   implicit lazy val encoder: Encoder[ProductproductphotoId] = Encoder.forProduct2[ProductproductphotoId, ProductId, ProductphotoId]("productid", "productphotoid")(x => (x.productid, x.productphotoid))(ProductId.encoder, ProductphotoId.encoder)
-  implicit lazy val ordering: Ordering[ProductproductphotoId] = Ordering.by(x => (x.productid, x.productphotoid))
 }

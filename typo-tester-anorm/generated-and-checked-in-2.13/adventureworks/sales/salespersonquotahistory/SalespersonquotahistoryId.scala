@@ -21,7 +21,6 @@ case class SalespersonquotahistoryId(
   quotadate: TypoLocalDateTime
 )
 object SalespersonquotahistoryId {
-  implicit def ordering(implicit O0: Ordering[TypoLocalDateTime]): Ordering[SalespersonquotahistoryId] = Ordering.by(x => (x.businessentityid, x.quotadate))
   implicit lazy val reads: Reads[SalespersonquotahistoryId] = Reads[SalespersonquotahistoryId](json => JsResult.fromTry(
       Try(
         SalespersonquotahistoryId(

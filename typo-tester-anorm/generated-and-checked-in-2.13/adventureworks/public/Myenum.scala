@@ -42,7 +42,6 @@ object Myenum {
   implicit lazy val arrayColumn: Column[Array[Myenum]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Myenum.force))
   implicit lazy val arrayToStatement: ToStatement[Array[Myenum]] = ToStatement[Array[Myenum]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("public.myenum", arr.map[AnyRef](_.value))))
   implicit lazy val column: Column[Myenum] = Column.columnToString.mapResult(str => Myenum(str).left.map(SqlMappingError.apply))
-  implicit lazy val ordering: Ordering[Myenum] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[Myenum] = new ParameterMetaData[Myenum] {
     override def sqlType: String = "public.myenum"
     override def jdbcType: Int = Types.OTHER

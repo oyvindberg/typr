@@ -25,7 +25,6 @@ object TypoBox {
   given encoder: Encoder[TypoBox] = Encoder.forProduct4[TypoBox, Double, Double, Double, Double]("x1", "y1", "x2", "y2")(x => (x.x1, x.y1, x.x2, x.y2))(using Encoder.encodeDouble, Encoder.encodeDouble, Encoder.encodeDouble, Encoder.encodeDouble)
   given get: Get[TypoBox] = Get.Advanced.other[PGbox](NonEmptyList.one("box"))
     .map(v => TypoBox(v.point(0).x, v.point(0).y, v.point(1).x, v.point(1).y))
-  given ordering: Ordering[TypoBox] = Ordering.by(x => (x.x1, x.y1, x.x2, x.y2))
   given put: Put[TypoBox] = Put.Advanced.other[PGbox](NonEmptyList.one("box")).contramap(v => new PGbox(v.x1, v.y1, v.x2, v.y2))
   given text: Text[TypoBox] = new Text[TypoBox] {
     override def unsafeEncode(v: TypoBox, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"((${v.x1},${v.y1}),(${v.x2},${v.y2}))", sb)

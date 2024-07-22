@@ -23,7 +23,6 @@ case class SalesterritoryhistoryId(
   territoryid: SalesterritoryId
 )
 object SalesterritoryhistoryId {
-  given ordering(using O0: Ordering[TypoLocalDateTime]): Ordering[SalesterritoryhistoryId] = Ordering.by(x => (x.businessentityid, x.startdate, x.territoryid))
   given reads: Reads[SalesterritoryhistoryId] = Reads[SalesterritoryhistoryId](json => JsResult.fromTry(
       Try(
         SalesterritoryhistoryId(

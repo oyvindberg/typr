@@ -35,7 +35,6 @@ object TypoOffsetTime {
   given encoder: Encoder[TypoOffsetTime] = Encoder.encodeOffsetTime.contramap(_.value)
   given get: Get[TypoOffsetTime] = Get.Advanced.other[String](NonEmptyList.one("timetz"))
     .map(v => TypoOffsetTime(OffsetTime.parse(v, parser)))
-  given ordering: Ordering[TypoOffsetTime] = Ordering.by(_.value)
   given put: Put[TypoOffsetTime] = Put.Advanced.other[String](NonEmptyList.one("timetz")).contramap(v => v.value.toString)
   given text: Text[TypoOffsetTime] = new Text[TypoOffsetTime] {
     override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)

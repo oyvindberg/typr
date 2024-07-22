@@ -36,7 +36,6 @@ object TypoHStore {
   given jdbcEncoder: JdbcEncoder[TypoHStore] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoHStore] = JsonDecoder[Map[String, String]].map(TypoHStore.apply)
   given jsonEncoder: JsonEncoder[TypoHStore] = JsonEncoder[Map[String, String]].contramap(_.value)
-  given ordering(using O0: Ordering[Map[String, String]]): Ordering[TypoHStore] = Ordering.by(_.value)
   given pgType: PGType[TypoHStore] = PGType.instance[TypoHStore]("hstore", Types.OTHER)
   given setter: Setter[TypoHStore] = Setter.other(
     (ps, i, v) => {

@@ -42,5 +42,4 @@ object PersonphoneId {
       out.write("}")
     }
   }
-  given ordering: Ordering[PersonphoneId] = Ordering.by(x => (x.businessentityid, x.phonenumber, x.phonenumbertypeid))
 }

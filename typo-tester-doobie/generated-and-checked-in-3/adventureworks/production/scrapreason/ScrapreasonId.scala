@@ -22,7 +22,6 @@ object ScrapreasonId {
   given decoder: Decoder[ScrapreasonId] = Decoder.decodeInt.map(ScrapreasonId.apply)
   given encoder: Encoder[ScrapreasonId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[ScrapreasonId] = Meta.IntMeta.get.map(ScrapreasonId.apply)
-  given ordering: Ordering[ScrapreasonId] = Ordering.by(_.value)
   given put: Put[ScrapreasonId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[ScrapreasonId] = new Text[ScrapreasonId] {
     override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

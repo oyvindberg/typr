@@ -42,5 +42,4 @@ object ProductmodelproductdescriptioncultureId {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[ProductmodelproductdescriptioncultureId] = Ordering.by(x => (x.productmodelid, x.productdescriptionid, x.cultureid))
 }

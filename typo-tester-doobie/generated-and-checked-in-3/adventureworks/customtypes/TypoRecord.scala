@@ -32,7 +32,6 @@ object TypoRecord {
   given encoder: Encoder[TypoRecord] = Encoder.encodeString.contramap(_.value)
   given get: Get[TypoRecord] = Get.Advanced.other[PGobject](NonEmptyList.one("record"))
     .map(v => TypoRecord(v.getValue))
-  given ordering: Ordering[TypoRecord] = Ordering.by(_.value)
   given put: Put[TypoRecord] = Put.Advanced.other[PGobject](NonEmptyList.one("record")).contramap(v => {
                                                                             val obj = new PGobject
                                                                             obj.setType("record")

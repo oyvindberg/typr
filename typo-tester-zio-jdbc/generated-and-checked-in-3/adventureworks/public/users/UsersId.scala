@@ -26,7 +26,6 @@ object UsersId {
   given jdbcEncoder: JdbcEncoder[UsersId] = TypoUUID.jdbcEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[UsersId] = TypoUUID.jsonDecoder.map(UsersId.apply)
   given jsonEncoder: JsonEncoder[UsersId] = TypoUUID.jsonEncoder.contramap(_.value)
-  given ordering(using O0: Ordering[TypoUUID]): Ordering[UsersId] = Ordering.by(_.value)
   given pgType: PGType[UsersId] = TypoUUID.pgType.as
   given setter: Setter[UsersId] = TypoUUID.setter.contramap(_.value)
   given text: Text[UsersId] = new Text[UsersId] {

@@ -49,7 +49,6 @@ object TypoInstant {
       case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
     }
   )
-  given ordering: Ordering[TypoInstant] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TypoInstant] = new ParameterMetaData[TypoInstant] {
     override def sqlType: String = "timestamptz"
     override def jdbcType: Int = Types.OTHER

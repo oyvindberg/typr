@@ -57,7 +57,6 @@ object TypoInet {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoInet] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoInet] = JsonDecoder.string.map(TypoInet.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoInet] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoInet] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoInet] = PGType.instance[TypoInet]("inet", Types.OTHER)
   implicit lazy val setter: Setter[TypoInet] = Setter.other(
     (ps, i, v) => {

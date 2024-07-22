@@ -22,7 +22,6 @@ object TypoBytea {
   implicit lazy val encoder: Encoder[TypoBytea] = Encoder.encodeIterable[Byte, Array](Encoder.encodeByte, implicitly).contramap(_.value)
   implicit lazy val get: Get[TypoBytea] = Get.Advanced.other[Array[Byte]](NonEmptyList.one("bytea"))
     .map(v => TypoBytea(v))
-  implicit def ordering(implicit O0: Ordering[Array[Byte]]): Ordering[TypoBytea] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoBytea] = Put.Advanced.other[Array[Byte]](NonEmptyList.one("bytea")).contramap(v => v.value)
   implicit lazy val text: Text[TypoBytea] = new Text[TypoBytea] {
     override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)

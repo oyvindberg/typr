@@ -39,7 +39,6 @@ object TypoShort {
   implicit lazy val encoder: Encoder[TypoShort] = Encoder[Short].contramap(_.value)
   implicit lazy val get: Get[TypoShort] = Get.Advanced.other[Integer](NonEmptyList.one("int2"))
     .map(v => TypoShort(v.toShort))
-  implicit lazy val ordering: Ordering[TypoShort] = Ordering.by(_.value)
   implicit lazy val put: Put[TypoShort] = Put.Advanced.other[Integer](NonEmptyList.one("int2")).contramap(v => v.value.toInt)
   implicit lazy val text: Text[TypoShort] = new Text[TypoShort] {
     override def unsafeEncode(v: TypoShort, sb: StringBuilder): Unit = Text[Short].unsafeEncode(v.value, sb)

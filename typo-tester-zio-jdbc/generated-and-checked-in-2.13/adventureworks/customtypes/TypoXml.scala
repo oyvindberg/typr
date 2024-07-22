@@ -58,7 +58,6 @@ object TypoXml {
   implicit lazy val jdbcEncoder: JdbcEncoder[TypoXml] = JdbcEncoder.singleParamEncoder(setter)
   implicit lazy val jsonDecoder: JsonDecoder[TypoXml] = JsonDecoder.string.map(TypoXml.apply)
   implicit lazy val jsonEncoder: JsonEncoder[TypoXml] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val ordering: Ordering[TypoXml] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[TypoXml] = PGType.instance[TypoXml]("xml", Types.OTHER)
   implicit lazy val setter: Setter[TypoXml] = Setter.other(
     (ps, i, v) => {

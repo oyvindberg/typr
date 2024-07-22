@@ -38,7 +38,6 @@ object TitleDomainId {
   given arrayColumn: Column[Array[TitleDomainId]] = ShortText.arrayColumn.map(_.map(TitleDomainId.apply))
   given arrayToStatement: ToStatement[Array[TitleDomainId]] = ShortText.arrayToStatement.contramap(_.map(_.value))
   given column: Column[TitleDomainId] = ShortText.column.map(TitleDomainId.apply)
-  given ordering: Ordering[TitleDomainId] = Ordering.by(_.value)
   given parameterMetadata: ParameterMetaData[TitleDomainId] = new ParameterMetaData[TitleDomainId] {
     override def sqlType: String = """"public"."short_text""""
     override def jdbcType: Int = Types.OTHER

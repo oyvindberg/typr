@@ -25,7 +25,6 @@ object CustomerId {
   given jdbcEncoder: JdbcEncoder[CustomerId] = JdbcEncoder.intEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[CustomerId] = JsonDecoder.int.map(CustomerId.apply)
   given jsonEncoder: JsonEncoder[CustomerId] = JsonEncoder.int.contramap(_.value)
-  given ordering: Ordering[CustomerId] = Ordering.by(_.value)
   given pgType: PGType[CustomerId] = PGType.PGTypeInt.as
   given setter: Setter[CustomerId] = Setter.intSetter.contramap(_.value)
   given text: Text[CustomerId] = new Text[CustomerId] {

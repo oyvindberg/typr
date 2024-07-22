@@ -23,7 +23,6 @@ case class PersonphoneId(
   phonenumbertypeid: PhonenumbertypeId
 )
 object PersonphoneId {
-  given ordering: Ordering[PersonphoneId] = Ordering.by(x => (x.businessentityid, x.phonenumber, x.phonenumbertypeid))
   given reads: Reads[PersonphoneId] = Reads[PersonphoneId](json => JsResult.fromTry(
       Try(
         PersonphoneId(

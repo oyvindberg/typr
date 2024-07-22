@@ -34,7 +34,6 @@ object Issue142Id {
   given decoder: Decoder[Issue142Id] = Decoder.decodeString.map(Issue142Id.apply)
   given encoder: Encoder[Issue142Id] = Encoder.encodeString.contramap(_.value)
   given get: Get[Issue142Id] = Meta.StringMeta.get.map(Issue142Id.apply)
-  given ordering: Ordering[Issue142Id] = Ordering.by(_.value)
   given put: Put[Issue142Id] = Meta.StringMeta.put.contramap(_.value)
   given read: Read[Issue142Id] = new Read.Single(get)
   given text: Text[Issue142Id] = new Text[Issue142Id] {

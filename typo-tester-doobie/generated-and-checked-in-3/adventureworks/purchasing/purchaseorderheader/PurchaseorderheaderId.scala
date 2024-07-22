@@ -22,7 +22,6 @@ object PurchaseorderheaderId {
   given decoder: Decoder[PurchaseorderheaderId] = Decoder.decodeInt.map(PurchaseorderheaderId.apply)
   given encoder: Encoder[PurchaseorderheaderId] = Encoder.encodeInt.contramap(_.value)
   given get: Get[PurchaseorderheaderId] = Meta.IntMeta.get.map(PurchaseorderheaderId.apply)
-  given ordering: Ordering[PurchaseorderheaderId] = Ordering.by(_.value)
   given put: Put[PurchaseorderheaderId] = Meta.IntMeta.put.contramap(_.value)
   given text: Text[PurchaseorderheaderId] = new Text[PurchaseorderheaderId] {
     override def unsafeEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)

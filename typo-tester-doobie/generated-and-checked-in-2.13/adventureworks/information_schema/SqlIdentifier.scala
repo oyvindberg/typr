@@ -24,7 +24,6 @@ object SqlIdentifier {
   implicit lazy val decoder: Decoder[SqlIdentifier] = Decoder.decodeString.map(SqlIdentifier.apply)
   implicit lazy val encoder: Encoder[SqlIdentifier] = Encoder.encodeString.contramap(_.value)
   implicit lazy val get: Get[SqlIdentifier] = Meta.StringMeta.get.map(SqlIdentifier.apply)
-  implicit lazy val ordering: Ordering[SqlIdentifier] = Ordering.by(_.value)
   implicit lazy val put: Put[SqlIdentifier] = Meta.StringMeta.put.contramap(_.value)
   implicit lazy val text: Text[SqlIdentifier] = new Text[SqlIdentifier] {
     override def unsafeEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

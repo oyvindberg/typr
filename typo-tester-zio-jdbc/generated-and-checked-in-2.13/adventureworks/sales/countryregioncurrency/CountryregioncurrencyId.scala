@@ -36,5 +36,4 @@ object CountryregioncurrencyId {
       out.write("}")
     }
   }
-  implicit lazy val ordering: Ordering[CountryregioncurrencyId] = Ordering.by(x => (x.countryregioncode, x.currencycode))
 }

@@ -32,7 +32,6 @@ object TypoVector {
   given jdbcEncoder: JdbcEncoder[TypoVector] = JdbcEncoder.singleParamEncoder(using setter)
   given jsonDecoder: JsonDecoder[TypoVector] = JsonDecoder.array[Float](using JsonDecoder.float, implicitly).map(TypoVector.apply)
   given jsonEncoder: JsonEncoder[TypoVector] = JsonEncoder.array[Float](using JsonEncoder.float, implicitly).contramap(_.value)
-  given ordering(using O0: Ordering[Array[Float]]): Ordering[TypoVector] = Ordering.by(_.value)
   given pgType: PGType[TypoVector] = PGType.instance[TypoVector]("vector", Types.OTHER)
   given setter: Setter[TypoVector] = Setter.other(
     (ps, i, v) => {

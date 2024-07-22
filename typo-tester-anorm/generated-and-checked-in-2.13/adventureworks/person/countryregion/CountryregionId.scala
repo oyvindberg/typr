@@ -20,7 +20,6 @@ object CountryregionId {
   implicit lazy val arrayToStatement: ToStatement[Array[CountryregionId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
   implicit lazy val bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
   implicit lazy val column: Column[CountryregionId] = Column.columnToString.map(CountryregionId.apply)
-  implicit lazy val ordering: Ordering[CountryregionId] = Ordering.by(_.value)
   implicit lazy val parameterMetadata: ParameterMetaData[CountryregionId] = new ParameterMetaData[CountryregionId] {
     override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
     override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType

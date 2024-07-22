@@ -24,7 +24,6 @@ object SqlIdentifier {
   given decoder: Decoder[SqlIdentifier] = Decoder.decodeString.map(SqlIdentifier.apply)
   given encoder: Encoder[SqlIdentifier] = Encoder.encodeString.contramap(_.value)
   given get: Get[SqlIdentifier] = Meta.StringMeta.get.map(SqlIdentifier.apply)
-  given ordering: Ordering[SqlIdentifier] = Ordering.by(_.value)
   given put: Put[SqlIdentifier] = Meta.StringMeta.put.contramap(_.value)
   given text: Text[SqlIdentifier] = new Text[SqlIdentifier] {
     override def unsafeEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)

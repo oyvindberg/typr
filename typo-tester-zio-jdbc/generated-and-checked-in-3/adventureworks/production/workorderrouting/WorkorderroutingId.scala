@@ -41,5 +41,4 @@ object WorkorderroutingId {
       out.write("}")
     }
   }
-  given ordering(using O0: Ordering[TypoShort]): Ordering[WorkorderroutingId] = Ordering.by(x => (x.workorderid, x.productid, x.operationsequence))
 }

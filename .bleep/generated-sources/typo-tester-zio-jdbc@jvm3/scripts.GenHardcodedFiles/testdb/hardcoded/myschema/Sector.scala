@@ -62,7 +62,6 @@ object Sector {
   given jdbcEncoder: JdbcEncoder[Sector] = JdbcEncoder.stringEncoder.contramap(_.value)
   given jsonDecoder: JsonDecoder[Sector] = JsonDecoder.string.mapOrFail(Sector.apply)
   given jsonEncoder: JsonEncoder[Sector] = JsonEncoder.string.contramap(_.value)
-  given ordering: Ordering[Sector] = Ordering.by(_.value)
   given pgType: PGType[Sector] = PGType.instance[Sector]("myschema.sector", Types.OTHER)
   given setter: Setter[Sector] = Setter.stringSetter.contramap(_.value)
   given text: Text[Sector] = new Text[Sector] {
