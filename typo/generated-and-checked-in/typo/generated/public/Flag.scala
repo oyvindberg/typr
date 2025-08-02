@@ -31,8 +31,8 @@ object Flag {
   }
   implicit lazy val reads: Reads[Flag] = Reads.BooleanReads.map(Flag.apply)
   implicit lazy val text: Text[Flag] = new Text[Flag] {
-    override def unsafeEncode(v: Flag, sb: StringBuilder) = Text.booleanInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Flag, sb: StringBuilder) = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[Flag] = ToStatement.booleanToStatement.contramap(_.value)
   implicit lazy val writes: Writes[Flag] = Writes.BooleanWrites.contramap(_.value)

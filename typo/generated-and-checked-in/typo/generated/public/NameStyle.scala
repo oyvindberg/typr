@@ -31,8 +31,8 @@ object NameStyle {
   }
   implicit lazy val reads: Reads[NameStyle] = Reads.BooleanReads.map(NameStyle.apply)
   implicit lazy val text: Text[NameStyle] = new Text[NameStyle] {
-    override def unsafeEncode(v: NameStyle, sb: StringBuilder) = Text.booleanInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: NameStyle, sb: StringBuilder) = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[NameStyle] = ToStatement.booleanToStatement.contramap(_.value)
   implicit lazy val writes: Writes[NameStyle] = Writes.BooleanWrites.contramap(_.value)

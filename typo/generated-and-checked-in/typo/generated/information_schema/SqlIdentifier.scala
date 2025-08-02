@@ -31,8 +31,8 @@ object SqlIdentifier {
   }
   implicit lazy val reads: Reads[SqlIdentifier] = Reads.StringReads.map(SqlIdentifier.apply)
   implicit lazy val text: Text[SqlIdentifier] = new Text[SqlIdentifier] {
-    override def unsafeEncode(v: SqlIdentifier, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: SqlIdentifier, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[SqlIdentifier] = ToStatement.stringToStatement.contramap(_.value)
   implicit lazy val writes: Writes[SqlIdentifier] = Writes.StringWrites.contramap(_.value)

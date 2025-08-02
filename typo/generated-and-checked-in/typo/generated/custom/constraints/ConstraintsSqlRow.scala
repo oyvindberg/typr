@@ -45,7 +45,7 @@ object ConstraintsSqlRow {
         ConstraintsSqlRow(
           tableSchema = json.\("table_schema").toOption.map(_.as(Reads.StringReads)),
           tableName = json.\("table_name").toOption.map(_.as(Reads.StringReads)),
-          columns = json.\("columns").toOption.map(_.as(Reads.ArrayReads[String](using Reads.StringReads, implicitly))),
+          columns = json.\("columns").toOption.map(_.as(Reads.ArrayReads[String](Reads.StringReads, implicitly))),
           constraintName = json.\("constraint_name").toOption.map(_.as(Reads.StringReads)),
           checkClause = json.\("check_clause").toOption.map(_.as(Reads.StringReads))
         )
@@ -67,7 +67,7 @@ object ConstraintsSqlRow {
     new JsObject(ListMap[String, JsValue](
       "table_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableSchema),
       "table_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableName),
-      "columns" -> Writes.OptionWrites(Writes.arrayWrites[String](using implicitly, Writes.StringWrites)).writes(o.columns),
+      "columns" -> Writes.OptionWrites(Writes.arrayWrites[String](implicitly, Writes.StringWrites)).writes(o.columns),
       "constraint_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintName),
       "check_clause" -> Writes.OptionWrites(Writes.StringWrites).writes(o.checkClause)
     ))

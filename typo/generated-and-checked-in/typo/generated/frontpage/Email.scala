@@ -31,8 +31,8 @@ object Email {
   }
   implicit lazy val reads: Reads[Email] = Reads.StringReads.map(Email.apply)
   implicit lazy val text: Text[Email] = new Text[Email] {
-    override def unsafeEncode(v: Email, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Email, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: Email, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: Email, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[Email] = ToStatement.stringToStatement.contramap(_.value)
   implicit lazy val writes: Writes[Email] = Writes.StringWrites.contramap(_.value)

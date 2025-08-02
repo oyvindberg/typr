@@ -31,8 +31,8 @@ object YesOrNo {
   }
   implicit lazy val reads: Reads[YesOrNo] = Reads.StringReads.map(YesOrNo.apply)
   implicit lazy val text: Text[YesOrNo] = new Text[YesOrNo] {
-    override def unsafeEncode(v: YesOrNo, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: YesOrNo, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[YesOrNo] = ToStatement.stringToStatement.contramap(_.value)
   implicit lazy val writes: Writes[YesOrNo] = Writes.StringWrites.contramap(_.value)

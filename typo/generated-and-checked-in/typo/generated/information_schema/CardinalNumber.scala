@@ -31,8 +31,8 @@ object CardinalNumber {
   }
   implicit lazy val reads: Reads[CardinalNumber] = Reads.IntReads.map(CardinalNumber.apply)
   implicit lazy val text: Text[CardinalNumber] = new Text[CardinalNumber] {
-    override def unsafeEncode(v: CardinalNumber, sb: StringBuilder) = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder) = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[CardinalNumber] = ToStatement.intToStatement.contramap(_.value)
   implicit lazy val writes: Writes[CardinalNumber] = Writes.IntWrites.contramap(_.value)

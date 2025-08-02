@@ -32,8 +32,8 @@ object TimeStamp {
   }
   implicit lazy val reads: Reads[TimeStamp] = TypoInstant.reads.map(TimeStamp.apply)
   implicit lazy val text: Text[TimeStamp] = new Text[TimeStamp] {
-    override def unsafeEncode(v: TimeStamp, sb: StringBuilder) = TypoInstant.text.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TimeStamp, sb: StringBuilder) = TypoInstant.text.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[TimeStamp] = TypoInstant.toStatement.contramap(_.value)
   implicit lazy val writes: Writes[TimeStamp] = TypoInstant.writes.contramap(_.value)

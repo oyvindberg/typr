@@ -53,8 +53,8 @@ object TypoRegtype {
   }
   implicit lazy val reads: Reads[TypoRegtype] = Reads.StringReads.map(TypoRegtype.apply)
   implicit lazy val text: Text[TypoRegtype] = new Text[TypoRegtype] {
-    override def unsafeEncode(v: TypoRegtype, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoRegtype, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: TypoRegtype, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: TypoRegtype, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[TypoRegtype] = ToStatement[TypoRegtype]((s, index, v) => s.setObject(index, {
                                                                  val obj = new PGobject

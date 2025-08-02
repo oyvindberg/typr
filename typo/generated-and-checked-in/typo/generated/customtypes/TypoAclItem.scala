@@ -53,8 +53,8 @@ object TypoAclItem {
   }
   implicit lazy val reads: Reads[TypoAclItem] = Reads.StringReads.map(TypoAclItem.apply)
   implicit lazy val text: Text[TypoAclItem] = new Text[TypoAclItem] {
-    override def unsafeEncode(v: TypoAclItem, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoAclItem, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: TypoAclItem, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: TypoAclItem, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[TypoAclItem] = ToStatement[TypoAclItem]((s, index, v) => s.setObject(index, {
                                                                  val obj = new PGobject

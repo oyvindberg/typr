@@ -57,8 +57,8 @@ object TypoInstant {
   }
   implicit lazy val reads: Reads[TypoInstant] = Reads.DefaultInstantReads.map(TypoInstant.apply)
   implicit lazy val text: Text[TypoInstant] = new Text[TypoInstant] {
-    override def unsafeEncode(v: TypoInstant, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+    override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
   }
   implicit lazy val toStatement: ToStatement[TypoInstant] = ToStatement[TypoInstant]((s, index, v) => s.setObject(index, v.value.toString))
   implicit lazy val writes: Writes[TypoInstant] = Writes.DefaultInstantWrites.contramap(_.value)

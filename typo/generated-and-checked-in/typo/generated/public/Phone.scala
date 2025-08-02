@@ -31,8 +31,8 @@ object Phone {
   }
   implicit lazy val reads: Reads[Phone] = Reads.StringReads.map(Phone.apply)
   implicit lazy val text: Text[Phone] = new Text[Phone] {
-    override def unsafeEncode(v: Phone, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Phone, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    override def unsafeEncode(v: Phone, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+    override def unsafeArrayEncode(v: Phone, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
   }
   implicit lazy val toStatement: ToStatement[Phone] = ToStatement.stringToStatement.contramap(_.value)
   implicit lazy val writes: Writes[Phone] = Writes.StringWrites.contramap(_.value)
