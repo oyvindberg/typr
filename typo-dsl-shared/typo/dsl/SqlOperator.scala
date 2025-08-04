@@ -9,10 +9,10 @@ object SqlOperator {
     new SqlOperator[T, T, T]("OR", (i1, i2) => B.map(i1)(b1 => b1 || B.underlying(i2)))
   def and[T](implicit B: Bijection[T, Boolean]) =
     new SqlOperator[T, T, T]("AND", (i1, i2) => B.map(i1)(b1 => b1 && B.underlying(i2)))
-  def eq[T](implicit E: Equiv[T]) =
-    new SqlOperator[T, T, Boolean]("=", E.equiv)
-  def neq[T](implicit E: Equiv[T]) =
-    new SqlOperator[T, T, Boolean]("!=", (i1, i2) => !E.equiv(i1, i2))
+  def eq[T](implicit O: Ordering[T]) =
+    new SqlOperator[T, T, Boolean]("=", O.equiv)
+  def neq[T](implicit O: Ordering[T]) =
+    new SqlOperator[T, T, Boolean]("!=", (i1, i2) => !O.equiv(i1, i2))
   def gt[T](implicit N: Ordering[T]) =
     new SqlOperator[T, T, Boolean](">", N.gt)
   def gte[T](implicit N: Ordering[T]) =
