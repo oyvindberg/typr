@@ -85,127 +85,135 @@ case class SohViewRow(
 )
 
 object SohViewRow {
-  given decoder: Decoder[SohViewRow] = Decoder.instanceTry[SohViewRow]((c: HCursor) =>
-    Try {
-      def orThrow[R](either: Either[DecodingFailure, R]): R = either match {
-        case Left(err) => throw err
-        case Right(r)  => r
+  given decoder: Decoder[SohViewRow] = {
+    Decoder.instanceTry[SohViewRow]((c: HCursor) =>
+      Try {
+        def orThrow[R](either: Either[DecodingFailure, R]): R = either match {
+          case Left(err) => throw err
+          case Right(r)  => r
+        }
+        SohViewRow(
+          id = orThrow(c.get("id")(using SalesorderheaderId.decoder)),
+          salesorderid = orThrow(c.get("salesorderid")(using SalesorderheaderId.decoder)),
+          revisionnumber = orThrow(c.get("revisionnumber")(using TypoShort.decoder)),
+          orderdate = orThrow(c.get("orderdate")(using TypoLocalDateTime.decoder)),
+          duedate = orThrow(c.get("duedate")(using TypoLocalDateTime.decoder)),
+          shipdate = orThrow(c.get("shipdate")(using Decoder.decodeOption(using TypoLocalDateTime.decoder))),
+          status = orThrow(c.get("status")(using TypoShort.decoder)),
+          onlineorderflag = orThrow(c.get("onlineorderflag")(using Flag.decoder)),
+          purchaseordernumber = orThrow(c.get("purchaseordernumber")(using Decoder.decodeOption(using OrderNumber.decoder))),
+          accountnumber = orThrow(c.get("accountnumber")(using Decoder.decodeOption(using AccountNumber.decoder))),
+          customerid = orThrow(c.get("customerid")(using CustomerId.decoder)),
+          salespersonid = orThrow(c.get("salespersonid")(using Decoder.decodeOption(using BusinessentityId.decoder))),
+          territoryid = orThrow(c.get("territoryid")(using Decoder.decodeOption(using SalesterritoryId.decoder))),
+          billtoaddressid = orThrow(c.get("billtoaddressid")(using AddressId.decoder)),
+          shiptoaddressid = orThrow(c.get("shiptoaddressid")(using AddressId.decoder)),
+          shipmethodid = orThrow(c.get("shipmethodid")(using ShipmethodId.decoder)),
+          creditcardid = orThrow(c.get("creditcardid")(using Decoder.decodeOption(using CustomCreditcardId.decoder))),
+          creditcardapprovalcode = orThrow(c.get("creditcardapprovalcode")(using Decoder.decodeOption(using Decoder.decodeString))),
+          currencyrateid = orThrow(c.get("currencyrateid")(using Decoder.decodeOption(using CurrencyrateId.decoder))),
+          subtotal = orThrow(c.get("subtotal")(using Decoder.decodeBigDecimal)),
+          taxamt = orThrow(c.get("taxamt")(using Decoder.decodeBigDecimal)),
+          freight = orThrow(c.get("freight")(using Decoder.decodeBigDecimal)),
+          totaldue = orThrow(c.get("totaldue")(using Decoder.decodeOption(using Decoder.decodeBigDecimal))),
+          comment = orThrow(c.get("comment")(using Decoder.decodeOption(using Decoder.decodeString))),
+          rowguid = orThrow(c.get("rowguid")(using TypoUUID.decoder)),
+          modifieddate = orThrow(c.get("modifieddate")(using TypoLocalDateTime.decoder))
+        )
       }
+    )
+  }
+
+  given encoder: Encoder[SohViewRow] = {
+    Encoder.instance[SohViewRow](row =>
+      Json.obj(
+        "id" -> SalesorderheaderId.encoder.apply(row.id),
+        "salesorderid" -> SalesorderheaderId.encoder.apply(row.salesorderid),
+        "revisionnumber" -> TypoShort.encoder.apply(row.revisionnumber),
+        "orderdate" -> TypoLocalDateTime.encoder.apply(row.orderdate),
+        "duedate" -> TypoLocalDateTime.encoder.apply(row.duedate),
+        "shipdate" -> Encoder.encodeOption(using TypoLocalDateTime.encoder).apply(row.shipdate),
+        "status" -> TypoShort.encoder.apply(row.status),
+        "onlineorderflag" -> Flag.encoder.apply(row.onlineorderflag),
+        "purchaseordernumber" -> Encoder.encodeOption(using OrderNumber.encoder).apply(row.purchaseordernumber),
+        "accountnumber" -> Encoder.encodeOption(using AccountNumber.encoder).apply(row.accountnumber),
+        "customerid" -> CustomerId.encoder.apply(row.customerid),
+        "salespersonid" -> Encoder.encodeOption(using BusinessentityId.encoder).apply(row.salespersonid),
+        "territoryid" -> Encoder.encodeOption(using SalesterritoryId.encoder).apply(row.territoryid),
+        "billtoaddressid" -> AddressId.encoder.apply(row.billtoaddressid),
+        "shiptoaddressid" -> AddressId.encoder.apply(row.shiptoaddressid),
+        "shipmethodid" -> ShipmethodId.encoder.apply(row.shipmethodid),
+        "creditcardid" -> Encoder.encodeOption(using CustomCreditcardId.encoder).apply(row.creditcardid),
+        "creditcardapprovalcode" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.creditcardapprovalcode),
+        "currencyrateid" -> Encoder.encodeOption(using CurrencyrateId.encoder).apply(row.currencyrateid),
+        "subtotal" -> Encoder.encodeBigDecimal.apply(row.subtotal),
+        "taxamt" -> Encoder.encodeBigDecimal.apply(row.taxamt),
+        "freight" -> Encoder.encodeBigDecimal.apply(row.freight),
+        "totaldue" -> Encoder.encodeOption(using Encoder.encodeBigDecimal).apply(row.totaldue),
+        "comment" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.comment),
+        "rowguid" -> TypoUUID.encoder.apply(row.rowguid),
+        "modifieddate" -> TypoLocalDateTime.encoder.apply(row.modifieddate)
+      )
+    )
+  }
+
+  given read: Read[SohViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(OrderNumber.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(AccountNumber.get).asInstanceOf[Read[Any]],
+        new Read.Single(CustomerId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(SalesterritoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
+        new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ShipmethodId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(CurrencyrateId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
       SohViewRow(
-        id = orThrow(c.get("id")(using SalesorderheaderId.decoder)),
-        salesorderid = orThrow(c.get("salesorderid")(using SalesorderheaderId.decoder)),
-        revisionnumber = orThrow(c.get("revisionnumber")(using TypoShort.decoder)),
-        orderdate = orThrow(c.get("orderdate")(using TypoLocalDateTime.decoder)),
-        duedate = orThrow(c.get("duedate")(using TypoLocalDateTime.decoder)),
-        shipdate = orThrow(c.get("shipdate")(using Decoder.decodeOption(using TypoLocalDateTime.decoder))),
-        status = orThrow(c.get("status")(using TypoShort.decoder)),
-        onlineorderflag = orThrow(c.get("onlineorderflag")(using Flag.decoder)),
-        purchaseordernumber = orThrow(c.get("purchaseordernumber")(using Decoder.decodeOption(using OrderNumber.decoder))),
-        accountnumber = orThrow(c.get("accountnumber")(using Decoder.decodeOption(using AccountNumber.decoder))),
-        customerid = orThrow(c.get("customerid")(using CustomerId.decoder)),
-        salespersonid = orThrow(c.get("salespersonid")(using Decoder.decodeOption(using BusinessentityId.decoder))),
-        territoryid = orThrow(c.get("territoryid")(using Decoder.decodeOption(using SalesterritoryId.decoder))),
-        billtoaddressid = orThrow(c.get("billtoaddressid")(using AddressId.decoder)),
-        shiptoaddressid = orThrow(c.get("shiptoaddressid")(using AddressId.decoder)),
-        shipmethodid = orThrow(c.get("shipmethodid")(using ShipmethodId.decoder)),
-        creditcardid = orThrow(c.get("creditcardid")(using Decoder.decodeOption(using CustomCreditcardId.decoder))),
-        creditcardapprovalcode = orThrow(c.get("creditcardapprovalcode")(using Decoder.decodeOption(using Decoder.decodeString))),
-        currencyrateid = orThrow(c.get("currencyrateid")(using Decoder.decodeOption(using CurrencyrateId.decoder))),
-        subtotal = orThrow(c.get("subtotal")(using Decoder.decodeBigDecimal)),
-        taxamt = orThrow(c.get("taxamt")(using Decoder.decodeBigDecimal)),
-        freight = orThrow(c.get("freight")(using Decoder.decodeBigDecimal)),
-        totaldue = orThrow(c.get("totaldue")(using Decoder.decodeOption(using Decoder.decodeBigDecimal))),
-        comment = orThrow(c.get("comment")(using Decoder.decodeOption(using Decoder.decodeString))),
-        rowguid = orThrow(c.get("rowguid")(using TypoUUID.decoder)),
-        modifieddate = orThrow(c.get("modifieddate")(using TypoLocalDateTime.decoder))
+        id = arr(0).asInstanceOf[SalesorderheaderId],
+            salesorderid = arr(1).asInstanceOf[SalesorderheaderId],
+            revisionnumber = arr(2).asInstanceOf[TypoShort],
+            orderdate = arr(3).asInstanceOf[TypoLocalDateTime],
+            duedate = arr(4).asInstanceOf[TypoLocalDateTime],
+            shipdate = arr(5).asInstanceOf[Option[TypoLocalDateTime]],
+            status = arr(6).asInstanceOf[TypoShort],
+            onlineorderflag = arr(7).asInstanceOf[Flag],
+            purchaseordernumber = arr(8).asInstanceOf[Option[OrderNumber]],
+            accountnumber = arr(9).asInstanceOf[Option[AccountNumber]],
+            customerid = arr(10).asInstanceOf[CustomerId],
+            salespersonid = arr(11).asInstanceOf[Option[BusinessentityId]],
+            territoryid = arr(12).asInstanceOf[Option[SalesterritoryId]],
+            billtoaddressid = arr(13).asInstanceOf[AddressId],
+            shiptoaddressid = arr(14).asInstanceOf[AddressId],
+            shipmethodid = arr(15).asInstanceOf[ShipmethodId],
+            creditcardid = arr(16).asInstanceOf[Option[/* user-picked */ CustomCreditcardId]],
+            creditcardapprovalcode = arr(17).asInstanceOf[Option[/* max 15 chars */ String]],
+            currencyrateid = arr(18).asInstanceOf[Option[CurrencyrateId]],
+            subtotal = arr(19).asInstanceOf[BigDecimal],
+            taxamt = arr(20).asInstanceOf[BigDecimal],
+            freight = arr(21).asInstanceOf[BigDecimal],
+            totaldue = arr(22).asInstanceOf[Option[BigDecimal]],
+            comment = arr(23).asInstanceOf[Option[/* max 128 chars */ String]],
+            rowguid = arr(24).asInstanceOf[TypoUUID],
+            modifieddate = arr(25).asInstanceOf[TypoLocalDateTime]
       )
     }
-  )
-  given encoder: Encoder[SohViewRow] = Encoder.instance[SohViewRow](row =>
-    Json.obj(
-      "id" -> SalesorderheaderId.encoder.apply(row.id),
-      "salesorderid" -> SalesorderheaderId.encoder.apply(row.salesorderid),
-      "revisionnumber" -> TypoShort.encoder.apply(row.revisionnumber),
-      "orderdate" -> TypoLocalDateTime.encoder.apply(row.orderdate),
-      "duedate" -> TypoLocalDateTime.encoder.apply(row.duedate),
-      "shipdate" -> Encoder.encodeOption(using TypoLocalDateTime.encoder).apply(row.shipdate),
-      "status" -> TypoShort.encoder.apply(row.status),
-      "onlineorderflag" -> Flag.encoder.apply(row.onlineorderflag),
-      "purchaseordernumber" -> Encoder.encodeOption(using OrderNumber.encoder).apply(row.purchaseordernumber),
-      "accountnumber" -> Encoder.encodeOption(using AccountNumber.encoder).apply(row.accountnumber),
-      "customerid" -> CustomerId.encoder.apply(row.customerid),
-      "salespersonid" -> Encoder.encodeOption(using BusinessentityId.encoder).apply(row.salespersonid),
-      "territoryid" -> Encoder.encodeOption(using SalesterritoryId.encoder).apply(row.territoryid),
-      "billtoaddressid" -> AddressId.encoder.apply(row.billtoaddressid),
-      "shiptoaddressid" -> AddressId.encoder.apply(row.shiptoaddressid),
-      "shipmethodid" -> ShipmethodId.encoder.apply(row.shipmethodid),
-      "creditcardid" -> Encoder.encodeOption(using CustomCreditcardId.encoder).apply(row.creditcardid),
-      "creditcardapprovalcode" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.creditcardapprovalcode),
-      "currencyrateid" -> Encoder.encodeOption(using CurrencyrateId.encoder).apply(row.currencyrateid),
-      "subtotal" -> Encoder.encodeBigDecimal.apply(row.subtotal),
-      "taxamt" -> Encoder.encodeBigDecimal.apply(row.taxamt),
-      "freight" -> Encoder.encodeBigDecimal.apply(row.freight),
-      "totaldue" -> Encoder.encodeOption(using Encoder.encodeBigDecimal).apply(row.totaldue),
-      "comment" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.comment),
-      "rowguid" -> TypoUUID.encoder.apply(row.rowguid),
-      "modifieddate" -> TypoLocalDateTime.encoder.apply(row.modifieddate)
-    )
-  )
-  given read: Read[SohViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(OrderNumber.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(AccountNumber.get).asInstanceOf[Read[Any]],
-      new Read.Single(CustomerId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(SalesterritoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
-      new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ShipmethodId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(CurrencyrateId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SohViewRow(
-      id = arr(0).asInstanceOf[SalesorderheaderId],
-          salesorderid = arr(1).asInstanceOf[SalesorderheaderId],
-          revisionnumber = arr(2).asInstanceOf[TypoShort],
-          orderdate = arr(3).asInstanceOf[TypoLocalDateTime],
-          duedate = arr(4).asInstanceOf[TypoLocalDateTime],
-          shipdate = arr(5).asInstanceOf[Option[TypoLocalDateTime]],
-          status = arr(6).asInstanceOf[TypoShort],
-          onlineorderflag = arr(7).asInstanceOf[Flag],
-          purchaseordernumber = arr(8).asInstanceOf[Option[OrderNumber]],
-          accountnumber = arr(9).asInstanceOf[Option[AccountNumber]],
-          customerid = arr(10).asInstanceOf[CustomerId],
-          salespersonid = arr(11).asInstanceOf[Option[BusinessentityId]],
-          territoryid = arr(12).asInstanceOf[Option[SalesterritoryId]],
-          billtoaddressid = arr(13).asInstanceOf[AddressId],
-          shiptoaddressid = arr(14).asInstanceOf[AddressId],
-          shipmethodid = arr(15).asInstanceOf[ShipmethodId],
-          creditcardid = arr(16).asInstanceOf[Option[/* user-picked */ CustomCreditcardId]],
-          creditcardapprovalcode = arr(17).asInstanceOf[Option[/* max 15 chars */ String]],
-          currencyrateid = arr(18).asInstanceOf[Option[CurrencyrateId]],
-          subtotal = arr(19).asInstanceOf[BigDecimal],
-          taxamt = arr(20).asInstanceOf[BigDecimal],
-          freight = arr(21).asInstanceOf[BigDecimal],
-          totaldue = arr(22).asInstanceOf[Option[BigDecimal]],
-          comment = arr(23).asInstanceOf[Option[/* max 128 chars */ String]],
-          rowguid = arr(24).asInstanceOf[TypoUUID],
-          modifieddate = arr(25).asInstanceOf[TypoLocalDateTime]
-    )
   }
 }

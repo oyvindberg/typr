@@ -17,23 +17,29 @@ case class ProductlistpricehistoryId(
   productid: ProductId,
   startdate: TypoLocalDateTime
 )
+
 object ProductlistpricehistoryId {
-  implicit lazy val jsonDecoder: JsonDecoder[ProductlistpricehistoryId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
-    val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (productid.isRight && startdate.isRight)
-      Right(ProductlistpricehistoryId(productid = productid.toOption.get, startdate = startdate.toOption.get))
-    else Left(List[Either[String, Any]](productid, startdate).flatMap(_.left.toOption).mkString(", "))
+  implicit lazy val jsonDecoder: JsonDecoder[ProductlistpricehistoryId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
+      val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (productid.isRight && startdate.isRight)
+        Right(ProductlistpricehistoryId(productid = productid.toOption.get, startdate = startdate.toOption.get))
+      else Left(List[Either[String, Any]](productid, startdate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[ProductlistpricehistoryId] = new JsonEncoder[ProductlistpricehistoryId] {
-    override def unsafeEncode(a: ProductlistpricehistoryId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""startdate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[ProductlistpricehistoryId] = {
+    new JsonEncoder[ProductlistpricehistoryId] {
+      override def unsafeEncode(a: ProductlistpricehistoryId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""startdate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

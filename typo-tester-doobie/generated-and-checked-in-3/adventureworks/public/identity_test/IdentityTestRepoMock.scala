@@ -19,31 +19,33 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class IdentityTestRepoMock(toRow: Function1[IdentityTestRowUnsaved, IdentityTestRow],
-                           map: scala.collection.mutable.Map[IdentityTestId, IdentityTestRow] = scala.collection.mutable.Map.empty) extends IdentityTestRepo {
-  override def delete: DeleteBuilder[IdentityTestFields, IdentityTestRow] = {
-    DeleteBuilderMock(DeleteParams.empty, IdentityTestFields.structure, map)
+case class IdentityTestRepoMock(
+  toRow: IdentityTestRowUnsaved => IdentityTestRow,
+  map: scala.collection.mutable.Map[IdentityTestId, IdentityTestRow] = scala.collection.mutable.Map.empty[IdentityTestId, IdentityTestRow]
+) extends IdentityTestRepo {
+  def delete: DeleteBuilder[IdentityTestFields, IdentityTestRow] = DeleteBuilderMock(DeleteParams.empty, IdentityTestFields.structure, map)
+
+  def deleteById(name: IdentityTestId): ConnectionIO[Boolean] = delay(map.remove(name).isDefined)
+
+  def deleteByIds(names: Array[IdentityTestId]): ConnectionIO[Int] = delay(names.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: IdentityTestRow): ConnectionIO[IdentityTestRow] = {
+  delay {
+    val _ = if (map.contains(unsaved.name))
+      sys.error(s"id ${unsaved.name} already exists")
+    else
+      map.put(unsaved.name, unsaved)
+
+    unsaved
   }
-  override def deleteById(name: IdentityTestId): ConnectionIO[Boolean] = {
-    delay(map.remove(name).isDefined)
   }
-  override def deleteByIds(names: Array[IdentityTestId]): ConnectionIO[Int] = {
-    delay(names.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: IdentityTestRow): ConnectionIO[IdentityTestRow] = {
-    delay {
-      val _ = if (map.contains(unsaved.name))
-        sys.error(s"id ${unsaved.name} already exists")
-      else
-        map.put(unsaved.name, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: IdentityTestRowUnsaved): ConnectionIO[IdentityTestRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, IdentityTestRow], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insert(unsaved: IdentityTestRowUnsaved): ConnectionIO[IdentityTestRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, IdentityTestRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -53,8 +55,12 @@ class IdentityTestRepoMock(toRow: Function1[IdentityTestRowUnsaved, IdentityTest
       num
     }
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, IdentityTestRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, IdentityTestRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { unsavedRows =>
       var num = 0L
       unsavedRows.foreach { unsavedRow =>
@@ -65,28 +71,25 @@ class IdentityTestRepoMock(toRow: Function1[IdentityTestRowUnsaved, IdentityTest
       num
     }
   }
-  override def select: SelectBuilder[IdentityTestFields, IdentityTestRow] = {
-    SelectBuilderMock(IdentityTestFields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, IdentityTestRow] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(name: IdentityTestId): ConnectionIO[Option[IdentityTestRow]] = {
-    delay(map.get(name))
-  }
-  override def selectByIds(names: Array[IdentityTestId]): Stream[ConnectionIO, IdentityTestRow] = {
-    Stream.emits(names.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(names: Array[IdentityTestId]): ConnectionIO[Map[IdentityTestId, IdentityTestRow]] = {
+
+  def select: SelectBuilder[IdentityTestFields, IdentityTestRow] = SelectBuilderMock(IdentityTestFields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, IdentityTestRow] = Stream.emits(map.values.toList)
+
+  def selectById(name: IdentityTestId): ConnectionIO[Option[IdentityTestRow]] = delay(map.get(name))
+
+  def selectByIds(names: Array[IdentityTestId]): Stream[ConnectionIO, IdentityTestRow] = Stream.emits(names.flatMap(map.get).toList)
+
+  def selectByIdsTracked(names: Array[IdentityTestId]): ConnectionIO[Map[IdentityTestId, IdentityTestRow]] = {
     selectByIds(names).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.name, x)).toMap
       names.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[IdentityTestFields, IdentityTestRow] = {
-    UpdateBuilderMock(UpdateParams.empty, IdentityTestFields.structure, map)
-  }
-  override def update(row: IdentityTestRow): ConnectionIO[Option[IdentityTestRow]] = {
+
+  def update: UpdateBuilder[IdentityTestFields, IdentityTestRow] = UpdateBuilderMock(UpdateParams.empty, IdentityTestFields.structure, map)
+
+  def update(row: IdentityTestRow): ConnectionIO[Option[IdentityTestRow]] = {
     delay {
       map.get(row.name).map { _ =>
         map.put(row.name, row): @nowarn
@@ -94,13 +97,15 @@ class IdentityTestRepoMock(toRow: Function1[IdentityTestRowUnsaved, IdentityTest
       }
     }
   }
-  override def upsert(unsaved: IdentityTestRow): ConnectionIO[IdentityTestRow] = {
+
+  def upsert(unsaved: IdentityTestRow): ConnectionIO[IdentityTestRow] = {
     delay {
       map.put(unsaved.name, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[IdentityTestRow]): Stream[ConnectionIO, IdentityTestRow] = {
+
+  def upsertBatch(unsaved: List[IdentityTestRow]): Stream[ConnectionIO, IdentityTestRow] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.name -> row)
@@ -108,8 +113,12 @@ class IdentityTestRepoMock(toRow: Function1[IdentityTestRowUnsaved, IdentityTest
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, IdentityTestRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, IdentityTestRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

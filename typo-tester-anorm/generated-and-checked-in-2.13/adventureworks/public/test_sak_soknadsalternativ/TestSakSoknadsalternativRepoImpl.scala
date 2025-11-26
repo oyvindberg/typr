@@ -11,98 +11,99 @@ import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterMetaData
 import anorm.ParameterValue
-import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
-  override def delete: DeleteBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = {
-    DeleteBuilder(""""public"."test_sak_soknadsalternativ"""", TestSakSoknadsalternativFields.structure)
-  }
-  override def deleteById(compositeId: TestSakSoknadsalternativId)(implicit c: Connection): Boolean = {
-    SQL"""delete from "public"."test_sak_soknadsalternativ" where "organisasjonskode_saksbehandler" = ${ParameterValue(compositeId.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)} AND "utdanningsmulighet_kode" = ${ParameterValue(compositeId.utdanningsmulighetKode, null, ToStatement.stringToStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(compositeIds: Array[TestSakSoknadsalternativId])(implicit c: Connection): Int = {
+  def delete: DeleteBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = DeleteBuilder.of(""""public"."test_sak_soknadsalternativ"""", TestSakSoknadsalternativFields.structure, TestSakSoknadsalternativRow.rowParser(1).*)
+
+  def deleteById(compositeId: TestSakSoknadsalternativId)(implicit c: Connection): Boolean = SQL"""delete from "public"."test_sak_soknadsalternativ" where "organisasjonskode_saksbehandler" = ${ParameterValue(compositeId.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)} AND "utdanningsmulighet_kode" = ${ParameterValue(compositeId.utdanningsmulighetKode, null, ToStatement.stringToStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(compositeIds: Array[TestSakSoknadsalternativId])(implicit c: Connection): Int = {
     val organisasjonskodeSaksbehandler = compositeIds.map(_.organisasjonskodeSaksbehandler)
     val utdanningsmulighetKode = compositeIds.map(_.utdanningsmulighetKode)
     SQL"""delete
-          from "public"."test_sak_soknadsalternativ"
-          where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${ParameterValue(organisasjonskodeSaksbehandler, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
-       """.executeUpdate()
-    
+    from "public"."test_sak_soknadsalternativ"
+    where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
+    in (select unnest(${ParameterValue(organisasjonskodeSaksbehandler, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
+    """.executeUpdate()
   }
-  override def insert(unsaved: TestSakSoknadsalternativRow)(implicit c: Connection): TestSakSoknadsalternativRow = {
-    SQL"""insert into "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder")
-          values (${ParameterValue(unsaved.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.utdanningsmulighetKode, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.organisasjonskodeTilbyder, null, TestOrganisasjonId.toStatement)})
-          returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
-       """
-      .executeInsert(TestSakSoknadsalternativRow.rowParser(1).single)
-    
+
+  def insert(unsaved: TestSakSoknadsalternativRow)(implicit c: Connection): TestSakSoknadsalternativRow = {
+  SQL"""insert into "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder")
+    values (${ParameterValue(unsaved.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.utdanningsmulighetKode, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.organisasjonskodeTilbyder, null, TestOrganisasjonId.toStatement)})
+    returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
+    """
+    .executeInsert(TestSakSoknadsalternativRow.rowParser(1).single)
   }
-  override def insertStreaming(unsaved: Iterator[TestSakSoknadsalternativRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
-    streamingInsert(s"""COPY "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder") FROM STDIN""", batchSize, unsaved)(TestSakSoknadsalternativRow.text, c)
-  }
-  override def select: SelectBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = {
-    SelectBuilderSql(""""public"."test_sak_soknadsalternativ"""", TestSakSoknadsalternativFields.structure, TestSakSoknadsalternativRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[TestSakSoknadsalternativRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[TestSakSoknadsalternativRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = streamingInsert(s"""COPY "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder") FROM STDIN""", batchSize, unsaved)(TestSakSoknadsalternativRow.pgText, c)
+
+  def select: SelectBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = SelectBuilder.of(""""public"."test_sak_soknadsalternativ"""", TestSakSoknadsalternativFields.structure, TestSakSoknadsalternativRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[TestSakSoknadsalternativRow] = {
     SQL"""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
-          from "public"."test_sak_soknadsalternativ"
-       """.as(TestSakSoknadsalternativRow.rowParser(1).*)
+    from "public"."test_sak_soknadsalternativ"
+    """.as(TestSakSoknadsalternativRow.rowParser(1).*)
   }
-  override def selectById(compositeId: TestSakSoknadsalternativId)(implicit c: Connection): Option[TestSakSoknadsalternativRow] = {
+
+  def selectById(compositeId: TestSakSoknadsalternativId)(implicit c: Connection): Option[TestSakSoknadsalternativRow] = {
     SQL"""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
-          from "public"."test_sak_soknadsalternativ"
-          where "organisasjonskode_saksbehandler" = ${ParameterValue(compositeId.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)} AND "utdanningsmulighet_kode" = ${ParameterValue(compositeId.utdanningsmulighetKode, null, ToStatement.stringToStatement)}
-       """.as(TestSakSoknadsalternativRow.rowParser(1).singleOpt)
+    from "public"."test_sak_soknadsalternativ"
+    where "organisasjonskode_saksbehandler" = ${ParameterValue(compositeId.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)} AND "utdanningsmulighet_kode" = ${ParameterValue(compositeId.utdanningsmulighetKode, null, ToStatement.stringToStatement)}
+    """.as(TestSakSoknadsalternativRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(compositeIds: Array[TestSakSoknadsalternativId])(implicit c: Connection): List[TestSakSoknadsalternativRow] = {
+
+  def selectByIds(compositeIds: Array[TestSakSoknadsalternativId])(implicit c: Connection): List[TestSakSoknadsalternativRow] = {
     val organisasjonskodeSaksbehandler = compositeIds.map(_.organisasjonskodeSaksbehandler)
     val utdanningsmulighetKode = compositeIds.map(_.utdanningsmulighetKode)
     SQL"""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
-          from "public"."test_sak_soknadsalternativ"
-          where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          in (select unnest(${ParameterValue(organisasjonskodeSaksbehandler, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
-       """.as(TestSakSoknadsalternativRow.rowParser(1).*)
-    
+    from "public"."test_sak_soknadsalternativ"
+    where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
+    in (select unnest(${ParameterValue(organisasjonskodeSaksbehandler, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}), unnest(${ParameterValue(utdanningsmulighetKode, null, ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData))}))
+    """.as(TestSakSoknadsalternativRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(compositeIds: Array[TestSakSoknadsalternativId])(implicit c: Connection): Map[TestSakSoknadsalternativId, TestSakSoknadsalternativRow] = {
+
+  def selectByIdsTracked(compositeIds: Array[TestSakSoknadsalternativId])(implicit c: Connection): Map[TestSakSoknadsalternativId, TestSakSoknadsalternativRow] = {
     val byId = selectByIds(compositeIds).view.map(x => (x.compositeId, x)).toMap
     compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = {
-    UpdateBuilder(""""public"."test_sak_soknadsalternativ"""", TestSakSoknadsalternativFields.structure, TestSakSoknadsalternativRow.rowParser)
-  }
-  override def update(row: TestSakSoknadsalternativRow)(implicit c: Connection): Option[TestSakSoknadsalternativRow] = {
+
+  def update: UpdateBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = UpdateBuilder.of(""""public"."test_sak_soknadsalternativ"""", TestSakSoknadsalternativFields.structure, TestSakSoknadsalternativRow.rowParser(1).*)
+
+  def update(row: TestSakSoknadsalternativRow)(implicit c: Connection): Option[TestSakSoknadsalternativRow] = {
     val compositeId = row.compositeId
     SQL"""update "public"."test_sak_soknadsalternativ"
-          set "organisasjonskode_tilbyder" = ${ParameterValue(row.organisasjonskodeTilbyder, null, TestOrganisasjonId.toStatement)}
-          where "organisasjonskode_saksbehandler" = ${ParameterValue(compositeId.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)} AND "utdanningsmulighet_kode" = ${ParameterValue(compositeId.utdanningsmulighetKode, null, ToStatement.stringToStatement)}
-          returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
-       """.executeInsert(TestSakSoknadsalternativRow.rowParser(1).singleOpt)
+    set "organisasjonskode_tilbyder" = ${ParameterValue(row.organisasjonskodeTilbyder, null, TestOrganisasjonId.toStatement)}
+    where "organisasjonskode_saksbehandler" = ${ParameterValue(compositeId.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)} AND "utdanningsmulighet_kode" = ${ParameterValue(compositeId.utdanningsmulighetKode, null, ToStatement.stringToStatement)}
+    returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
+    """.executeInsert(TestSakSoknadsalternativRow.rowParser(1).singleOpt)
   }
-  override def upsert(unsaved: TestSakSoknadsalternativRow)(implicit c: Connection): TestSakSoknadsalternativRow = {
-    SQL"""insert into "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder")
-          values (
-            ${ParameterValue(unsaved.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)},
-            ${ParameterValue(unsaved.utdanningsmulighetKode, null, ToStatement.stringToStatement)},
-            ${ParameterValue(unsaved.organisasjonskodeTilbyder, null, TestOrganisasjonId.toStatement)}
-          )
-          on conflict ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          do update set
-            "organisasjonskode_tilbyder" = EXCLUDED."organisasjonskode_tilbyder"
-          returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
-       """
-      .executeInsert(TestSakSoknadsalternativRow.rowParser(1).single)
-    
+
+  def upsert(unsaved: TestSakSoknadsalternativRow)(implicit c: Connection): TestSakSoknadsalternativRow = {
+  SQL"""insert into "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder")
+    values (
+      ${ParameterValue(unsaved.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)},
+    ${ParameterValue(unsaved.utdanningsmulighetKode, null, ToStatement.stringToStatement)},
+    ${ParameterValue(unsaved.organisasjonskodeTilbyder, null, TestOrganisasjonId.toStatement)}
+    )
+    on conflict ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
+    do update set
+      "organisasjonskode_tilbyder" = EXCLUDED."organisasjonskode_tilbyder"
+    returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
+    """
+    .executeInsert(TestSakSoknadsalternativRow.rowParser(1).single)
   }
-  override def upsertBatch(unsaved: Iterable[TestSakSoknadsalternativRow])(implicit c: Connection): List[TestSakSoknadsalternativRow] = {
+
+  def upsertBatch(unsaved: Iterable[TestSakSoknadsalternativRow])(implicit c: Connection): List[TestSakSoknadsalternativRow] = {
     def toNamedParameter(row: TestSakSoknadsalternativRow): List[NamedParameter] = List(
       NamedParameter("organisasjonskode_saksbehandler", ParameterValue(row.organisasjonskodeSaksbehandler, null, ToStatement.stringToStatement)),
       NamedParameter("utdanningsmulighet_kode", ParameterValue(row.utdanningsmulighetKode, null, ToStatement.stringToStatement)),
@@ -114,28 +115,32 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
         new anorm.adventureworks.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder")
-                values ({organisasjonskode_saksbehandler}, {utdanningsmulighet_kode}, {organisasjonskode_tilbyder})
-                on conflict ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-                do update set
-                  "organisasjonskode_tilbyder" = EXCLUDED."organisasjonskode_tilbyder"
-                returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
-             """,
+            values ({organisasjonskode_saksbehandler}, {utdanningsmulighet_kode}, {organisasjonskode_tilbyder})
+            on conflict ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
+            do update set
+              "organisasjonskode_tilbyder" = EXCLUDED."organisasjonskode_tilbyder"
+            returning "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
+            """,
             toNamedParameter(head),
             rest.map(toNamedParameter)*
           )
         ).executeReturning(TestSakSoknadsalternativRow.rowParser(1).*)
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[TestSakSoknadsalternativRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[TestSakSoknadsalternativRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     SQL"""create temporary table test_sak_soknadsalternativ_TEMP (like "public"."test_sak_soknadsalternativ") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy test_sak_soknadsalternativ_TEMP("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder") from stdin""", batchSize, unsaved)(TestSakSoknadsalternativRow.text, c): @nowarn
+    streamingInsert(s"""copy test_sak_soknadsalternativ_TEMP("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder") from stdin""", batchSize, unsaved)(TestSakSoknadsalternativRow.pgText, c): @nowarn
     SQL"""insert into "public"."test_sak_soknadsalternativ"("organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder")
-          select * from test_sak_soknadsalternativ_TEMP
-          on conflict ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-          do update set
-            "organisasjonskode_tilbyder" = EXCLUDED."organisasjonskode_tilbyder"
-          ;
-          drop table test_sak_soknadsalternativ_TEMP;""".executeUpdate()
+    select * from test_sak_soknadsalternativ_TEMP
+    on conflict ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
+    do update set
+      "organisasjonskode_tilbyder" = EXCLUDED."organisasjonskode_tilbyder"
+    ;
+    drop table test_sak_soknadsalternativ_TEMP;""".executeUpdate()
   }
 }

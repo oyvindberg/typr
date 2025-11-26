@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.productphoto` */
-case class ProductphotoId(value: Int) extends AnyVal
+case class ProductphotoId(value: Int) extends scala.AnyVal
+
 object ProductphotoId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ProductphotoId]] = adventureworks.IntArrayDecoder.map(_.map(ProductphotoId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ProductphotoId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ProductphotoId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ProductphotoId, Int] = Bijection[ProductphotoId, Int](_.value)(ProductphotoId.apply)
+
+  given bijection: Bijection[ProductphotoId, Int] = Bijection.apply[ProductphotoId, Int](_.value)(ProductphotoId.apply)
+
   given jdbcDecoder: JdbcDecoder[ProductphotoId] = JdbcDecoder.intDecoder.map(ProductphotoId.apply)
+
   given jdbcEncoder: JdbcEncoder[ProductphotoId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ProductphotoId] = JsonDecoder.int.map(ProductphotoId.apply)
+
   given jsonEncoder: JsonEncoder[ProductphotoId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ProductphotoId] = PGType.PGTypeInt.as
-  given setter: Setter[ProductphotoId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ProductphotoId] = new Text[ProductphotoId] {
-    override def unsafeEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ProductphotoId] = {
+    new Text[ProductphotoId] {
+      override def unsafeEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ProductphotoId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ProductphotoId] = Setter.intSetter.contramap(_.value)
 }

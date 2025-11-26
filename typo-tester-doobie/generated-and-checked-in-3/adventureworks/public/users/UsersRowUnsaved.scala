@@ -6,6 +6,7 @@
 package adventureworks.public.users
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoInstant
 import adventureworks.customtypes.TypoUnknownCitext
 import doobie.postgres.Text
@@ -16,43 +17,46 @@ import io.circe.Encoder
 case class UsersRowUnsaved(
   userId: UsersId,
   name: String,
-  lastName: Option[String],
+  lastName: Option[String] = None,
   email: TypoUnknownCitext,
   password: String,
-  verifiedOn: Option[TypoInstant],
+  verifiedOn: Option[TypoInstant] = None,
   /** Default: now() */
-  createdAt: Defaulted[TypoInstant] = Defaulted.UseDefault
+  createdAt: Defaulted[TypoInstant] = new UseDefault()
 ) {
-  def toRow(createdAtDefault: => TypoInstant): UsersRow =
-    UsersRow(
+  def toRow(createdAtDefault: => TypoInstant): UsersRow = {
+    new UsersRow(
       userId = userId,
       name = name,
       lastName = lastName,
       email = email,
       password = password,
-      verifiedOn = verifiedOn,
-      createdAt = createdAt match {
-                    case Defaulted.UseDefault => createdAtDefault
-                    case Defaulted.Provided(value) => value
-                  }
+      createdAt = createdAt.getOrElse(createdAtDefault),
+      verifiedOn = verifiedOn
     )
+  }
 }
+
 object UsersRowUnsaved {
   given decoder: Decoder[UsersRowUnsaved] = Decoder.forProduct7[UsersRowUnsaved, UsersId, String, Option[String], TypoUnknownCitext, String, Option[TypoInstant], Defaulted[TypoInstant]]("user_id", "name", "last_name", "email", "password", "verified_on", "created_at")(UsersRowUnsaved.apply)(using UsersId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), TypoUnknownCitext.decoder, Decoder.decodeString, Decoder.decodeOption(using TypoInstant.decoder), Defaulted.decoder(using TypoInstant.decoder))
+
   given encoder: Encoder[UsersRowUnsaved] = Encoder.forProduct7[UsersRowUnsaved, UsersId, String, Option[String], TypoUnknownCitext, String, Option[TypoInstant], Defaulted[TypoInstant]]("user_id", "name", "last_name", "email", "password", "verified_on", "created_at")(x => (x.userId, x.name, x.lastName, x.email, x.password, x.verifiedOn, x.createdAt))(using UsersId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), TypoUnknownCitext.encoder, Encoder.encodeString, Encoder.encodeOption(using TypoInstant.encoder), Defaulted.encoder(using TypoInstant.encoder))
-  given text: Text[UsersRowUnsaved] = Text.instance[UsersRowUnsaved]{ (row, sb) =>
-    UsersId.text.unsafeEncode(row.userId, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.lastName, sb)
-    sb.append(Text.DELIMETER)
-    TypoUnknownCitext.text.unsafeEncode(row.email, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.password, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoInstant.text).unsafeEncode(row.verifiedOn, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoInstant.text).unsafeEncode(row.createdAt, sb)
+
+  given pgText: Text[UsersRowUnsaved] = {
+    Text.instance[UsersRowUnsaved]{ (row, sb) =>
+      UsersId.pgText.unsafeEncode(row.userId, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.lastName, sb)
+      sb.append(Text.DELIMETER)
+      TypoUnknownCitext.pgText.unsafeEncode(row.email, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.password, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoInstant.pgText).unsafeEncode(row.verifiedOn, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoInstant.pgText).unsafeEncode(row.createdAt, sb)
+    }
   }
 }

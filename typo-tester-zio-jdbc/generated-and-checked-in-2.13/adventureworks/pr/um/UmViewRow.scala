@@ -28,40 +28,48 @@ case class UmViewRow(
 )
 
 object UmViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[UmViewRow] = new JdbcDecoder[UmViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, UmViewRow) =
-      columIndex + 3 ->
-        UmViewRow(
-          id = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          unitmeasurecode = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[UmViewRow] = {
+    new JdbcDecoder[UmViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, UmViewRow) =
+        columIndex + 3 ->
+          UmViewRow(
+            id = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            unitmeasurecode = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[UmViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(UnitmeasureId.jsonDecoder))
-    val unitmeasurecode = jsonObj.get("unitmeasurecode").toRight("Missing field 'unitmeasurecode'").flatMap(_.as(UnitmeasureId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && unitmeasurecode.isRight && name.isRight && modifieddate.isRight)
-      Right(UmViewRow(id = id.toOption.get, unitmeasurecode = unitmeasurecode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, unitmeasurecode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[UmViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(UnitmeasureId.jsonDecoder))
+      val unitmeasurecode = jsonObj.get("unitmeasurecode").toRight("Missing field 'unitmeasurecode'").flatMap(_.as(UnitmeasureId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && unitmeasurecode.isRight && name.isRight && modifieddate.isRight)
+        Right(UmViewRow(id = id.toOption.get, unitmeasurecode = unitmeasurecode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, unitmeasurecode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[UmViewRow] = new JsonEncoder[UmViewRow] {
-    override def unsafeEncode(a: UmViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      UnitmeasureId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""unitmeasurecode":""")
-      UnitmeasureId.jsonEncoder.unsafeEncode(a.unitmeasurecode, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[UmViewRow] = {
+    new JsonEncoder[UmViewRow] {
+      override def unsafeEncode(a: UmViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        UnitmeasureId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""unitmeasurecode":""")
+        UnitmeasureId.jsonEncoder.unsafeEncode(a.unitmeasurecode, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

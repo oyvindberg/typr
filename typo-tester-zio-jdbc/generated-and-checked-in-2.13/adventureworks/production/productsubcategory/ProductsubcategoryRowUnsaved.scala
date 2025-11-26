@@ -7,6 +7,7 @@ package adventureworks.production.productsubcategory
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
@@ -19,76 +20,83 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `production.productsubcategory` which has not been persisted yet */
 case class ProductsubcategoryRowUnsaved(
   /** Product category identification number. Foreign key to ProductCategory.ProductCategoryID.
-      Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]] */
+   * Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]]
+   */
   productcategoryid: ProductcategoryId,
   /** Subcategory description. */
   name: Name,
   /** Default: nextval('production.productsubcategory_productsubcategoryid_seq'::regclass)
-      Primary key for ProductSubcategory records. */
-  productsubcategoryid: Defaulted[ProductsubcategoryId] = Defaulted.UseDefault,
+   * Primary key for ProductSubcategory records.
+   */
+  productsubcategoryid: Defaulted[ProductsubcategoryId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productsubcategoryidDefault: => ProductsubcategoryId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductsubcategoryRow =
-    ProductsubcategoryRow(
-      productsubcategoryid = productsubcategoryid match {
-                               case Defaulted.UseDefault => productsubcategoryidDefault
-                               case Defaulted.Provided(value) => value
-                             },
+  def toRow(
+    productsubcategoryidDefault: => ProductsubcategoryId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductsubcategoryRow = {
+    new ProductsubcategoryRow(
+      productsubcategoryid = productsubcategoryid.getOrElse(productsubcategoryidDefault),
       productcategoryid = productcategoryid,
       name = name,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ProductsubcategoryRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[ProductsubcategoryRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productcategoryid = jsonObj.get("productcategoryid").toRight("Missing field 'productcategoryid'").flatMap(_.as(ProductcategoryId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val productsubcategoryid = jsonObj.get("productsubcategoryid").toRight("Missing field 'productsubcategoryid'").flatMap(_.as(Defaulted.jsonDecoder(ProductsubcategoryId.jsonDecoder)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (productcategoryid.isRight && name.isRight && productsubcategoryid.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(ProductsubcategoryRowUnsaved(productcategoryid = productcategoryid.toOption.get, name = name.toOption.get, productsubcategoryid = productsubcategoryid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](productcategoryid, name, productsubcategoryid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  implicit lazy val jsonEncoder: JsonEncoder[ProductsubcategoryRowUnsaved] = new JsonEncoder[ProductsubcategoryRowUnsaved] {
-    override def unsafeEncode(a: ProductsubcategoryRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productcategoryid":""")
-      ProductcategoryId.jsonEncoder.unsafeEncode(a.productcategoryid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""productsubcategoryid":""")
-      Defaulted.jsonEncoder(ProductsubcategoryId.jsonEncoder).unsafeEncode(a.productsubcategoryid, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object ProductsubcategoryRowUnsaved {
+  implicit lazy val jsonDecoder: JsonDecoder[ProductsubcategoryRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productcategoryid = jsonObj.get("productcategoryid").toRight("Missing field 'productcategoryid'").flatMap(_.as(ProductcategoryId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val productsubcategoryid = jsonObj.get("productsubcategoryid").toRight("Missing field 'productsubcategoryid'").flatMap(_.as(Defaulted.jsonDecoder(ProductsubcategoryId.jsonDecoder)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (productcategoryid.isRight && name.isRight && productsubcategoryid.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(ProductsubcategoryRowUnsaved(productcategoryid = productcategoryid.toOption.get, name = name.toOption.get, productsubcategoryid = productsubcategoryid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](productcategoryid, name, productsubcategoryid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[ProductsubcategoryRowUnsaved] = Text.instance[ProductsubcategoryRowUnsaved]{ (row, sb) =>
-    ProductcategoryId.text.unsafeEncode(row.productcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ProductsubcategoryId.text).unsafeEncode(row.productsubcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[ProductsubcategoryRowUnsaved] = {
+    new JsonEncoder[ProductsubcategoryRowUnsaved] {
+      override def unsafeEncode(a: ProductsubcategoryRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productcategoryid":""")
+        ProductcategoryId.jsonEncoder.unsafeEncode(a.productcategoryid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""productsubcategoryid":""")
+        Defaulted.jsonEncoder(ProductsubcategoryId.jsonEncoder).unsafeEncode(a.productsubcategoryid, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[ProductsubcategoryRowUnsaved] = {
+    Text.instance[ProductsubcategoryRowUnsaved]{ (row, sb) =>
+      ProductcategoryId.pgText.unsafeEncode(row.productcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ProductsubcategoryId.pgText).unsafeEncode(row.productsubcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

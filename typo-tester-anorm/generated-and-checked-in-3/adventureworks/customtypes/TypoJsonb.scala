@@ -21,44 +21,64 @@ import typo.dsl.Bijection
 case class TypoJsonb(value: String)
 
 object TypoJsonb {
-  given arrayColumn: Column[Array[TypoJsonb]] = Column.nonNull[Array[TypoJsonb]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoJsonb(v.asInstanceOf[String])))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoJsonb, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
-  given arrayToStatement: ToStatement[Array[TypoJsonb]] = ToStatement[Array[TypoJsonb]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("jsonb", v.map(v => {
-                                                                                                                       val obj = new PGobject
-                                                                                                                       obj.setType("jsonb")
-                                                                                                                       obj.setValue(v.value)
-                                                                                                                       obj
-                                                                                                                     }))))
-  given bijection: Bijection[TypoJsonb, String] = Bijection[TypoJsonb, String](_.value)(TypoJsonb.apply)
-  given column: Column[TypoJsonb] = Column.nonNull[TypoJsonb]((v1: Any, _) =>
-    v1 match {
-      case v: PGobject => Right(TypoJsonb(v.getValue))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.util.PGobject, got ${other.getClass.getName}"))
-    }
-  )
-  given parameterMetadata: ParameterMetaData[TypoJsonb] = new ParameterMetaData[TypoJsonb] {
-    override def sqlType: String = "jsonb"
-    override def jdbcType: Int = Types.OTHER
+  given arrayColumn: Column[Array[TypoJsonb]] = {
+    Column.nonNull[Array[TypoJsonb]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoJsonb(v.asInstanceOf[String])))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoJsonb, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
   }
+
+  given arrayToStatement: ToStatement[Array[TypoJsonb]] = {
+    ToStatement[Array[TypoJsonb]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("jsonb", v.map(v => {
+      val obj = new PGobject()
+      obj.setType("jsonb")
+      obj.setValue(v.value)
+      obj
+    }))))
+  }
+
+  given bijection: Bijection[TypoJsonb, String] = Bijection.apply[TypoJsonb, String](_.value)(TypoJsonb.apply)
+
+  given column: Column[TypoJsonb] = {
+    Column.nonNull[TypoJsonb]((v1: Any, _) =>
+      v1 match {
+        case v: PGobject => Right(new TypoJsonb(v.getValue))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.util.PGobject, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  given parameterMetadata: ParameterMetaData[TypoJsonb] = {
+    new ParameterMetaData[TypoJsonb] {
+      override def sqlType: String = "jsonb"
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  given pgText: Text[TypoJsonb] = {
+    new Text[TypoJsonb] {
+      override def unsafeEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[TypoJsonb] = Reads.StringReads.map(TypoJsonb.apply)
-  given text: Text[TypoJsonb] = new Text[TypoJsonb] {
-    override def unsafeEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given toStatement: ToStatement[TypoJsonb] = {
+    ToStatement[TypoJsonb]((s, index, v) => s.setObject(index, {
+      val obj = new PGobject()
+      obj.setType("jsonb")
+      obj.setValue(v.value)
+      obj
+    }))
   }
-  given toStatement: ToStatement[TypoJsonb] = ToStatement[TypoJsonb]((s, index, v) => s.setObject(index, {
-                                                               val obj = new PGobject
-                                                               obj.setType("jsonb")
-                                                               obj.setValue(v.value)
-                                                               obj
-                                                             }))
+
   given writes: Writes[TypoJsonb] = Writes.StringWrites.contramap(_.value)
 }

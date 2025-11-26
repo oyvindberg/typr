@@ -7,6 +7,7 @@ package adventureworks.sales.shoppingcartitem
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import play.api.libs.json.JsObject
@@ -23,78 +24,85 @@ case class ShoppingcartitemRowUnsaved(
   /** Shopping cart identification number. */
   shoppingcartid: /* max 50 chars */ String,
   /** Product ordered. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: nextval('sales.shoppingcartitem_shoppingcartitemid_seq'::regclass)
-      Primary key for ShoppingCartItem records. */
-  shoppingcartitemid: Defaulted[ShoppingcartitemId] = Defaulted.UseDefault,
+   * Primary key for ShoppingCartItem records.
+   */
+  shoppingcartitemid: Defaulted[ShoppingcartitemId] = new UseDefault(),
   /** Default: 1
-      Product quantity ordered.
-      Constraint CK_ShoppingCartItem_Quantity affecting columns quantity:  ((quantity >= 1)) */
-  quantity: Defaulted[Int] = Defaulted.UseDefault,
+   * Product quantity ordered.
+   * Constraint CK_ShoppingCartItem_Quantity affecting columns quantity:  ((quantity >= 1))
+   */
+  quantity: Defaulted[Int] = new UseDefault(),
   /** Default: now()
-      Date the time the record was created. */
-  datecreated: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+   * Date the time the record was created.
+   */
+  datecreated: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(shoppingcartitemidDefault: => ShoppingcartitemId, quantityDefault: => Int, datecreatedDefault: => TypoLocalDateTime, modifieddateDefault: => TypoLocalDateTime): ShoppingcartitemRow =
-    ShoppingcartitemRow(
-      shoppingcartitemid = shoppingcartitemid match {
-                             case Defaulted.UseDefault => shoppingcartitemidDefault
-                             case Defaulted.Provided(value) => value
-                           },
+  def toRow(
+    shoppingcartitemidDefault: => ShoppingcartitemId,
+    quantityDefault: => Int,
+    datecreatedDefault: => TypoLocalDateTime,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ShoppingcartitemRow = {
+    new ShoppingcartitemRow(
+      shoppingcartitemid = shoppingcartitemid.getOrElse(shoppingcartitemidDefault),
       shoppingcartid = shoppingcartid,
-      quantity = quantity match {
-                   case Defaulted.UseDefault => quantityDefault
-                   case Defaulted.Provided(value) => value
-                 },
+      quantity = quantity.getOrElse(quantityDefault),
       productid = productid,
-      datecreated = datecreated match {
-                      case Defaulted.UseDefault => datecreatedDefault
-                      case Defaulted.Provided(value) => value
-                    },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      datecreated = datecreated.getOrElse(datecreatedDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ShoppingcartitemRowUnsaved {
-  implicit lazy val reads: Reads[ShoppingcartitemRowUnsaved] = Reads[ShoppingcartitemRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ShoppingcartitemRowUnsaved(
-          shoppingcartid = json.\("shoppingcartid").as(Reads.StringReads),
-          productid = json.\("productid").as(ProductId.reads),
-          shoppingcartitemid = json.\("shoppingcartitemid").as(Defaulted.reads(ShoppingcartitemId.reads)),
-          quantity = json.\("quantity").as(Defaulted.reads(Reads.IntReads)),
-          datecreated = json.\("datecreated").as(Defaulted.reads(TypoLocalDateTime.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ShoppingcartitemRowUnsaved] = Text.instance[ShoppingcartitemRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.shoppingcartid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ShoppingcartitemId.text).unsafeEncode(row.shoppingcartitemid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.intInstance).unsafeEncode(row.quantity, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.datecreated, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[ShoppingcartitemRowUnsaved] = OWrites[ShoppingcartitemRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "shoppingcartid" -> Writes.StringWrites.writes(o.shoppingcartid),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "shoppingcartitemid" -> Defaulted.writes(ShoppingcartitemId.writes).writes(o.shoppingcartitemid),
-      "quantity" -> Defaulted.writes(Writes.IntWrites).writes(o.quantity),
-      "datecreated" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.datecreated),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ShoppingcartitemRowUnsaved {
+  implicit lazy val pgText: Text[ShoppingcartitemRowUnsaved] = {
+    Text.instance[ShoppingcartitemRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.shoppingcartid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ShoppingcartitemId.pgText).unsafeEncode(row.shoppingcartitemid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.intInstance).unsafeEncode(row.quantity, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.datecreated, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[ShoppingcartitemRowUnsaved] = {
+    Reads[ShoppingcartitemRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ShoppingcartitemRowUnsaved(
+            shoppingcartid = json.\("shoppingcartid").as(Reads.StringReads),
+            productid = json.\("productid").as(ProductId.reads),
+            shoppingcartitemid = json.\("shoppingcartitemid").as(Defaulted.reads(ShoppingcartitemId.reads)),
+            quantity = json.\("quantity").as(Defaulted.reads(Reads.IntReads)),
+            datecreated = json.\("datecreated").as(Defaulted.reads(TypoLocalDateTime.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ShoppingcartitemRowUnsaved] = {
+    OWrites[ShoppingcartitemRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "shoppingcartid" -> Writes.StringWrites.writes(o.shoppingcartid),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "shoppingcartitemid" -> Defaulted.writes(ShoppingcartitemId.writes).writes(o.shoppingcartitemid),
+        "quantity" -> Defaulted.writes(Writes.IntWrites).writes(o.quantity),
+        "datecreated" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.datecreated),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

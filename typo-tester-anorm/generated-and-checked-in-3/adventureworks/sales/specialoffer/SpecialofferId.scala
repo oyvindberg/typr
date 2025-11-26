@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.specialoffer` */
-case class SpecialofferId(value: Int) extends AnyVal
+case class SpecialofferId(value: Int) extends scala.AnyVal
+
 object SpecialofferId {
   given arrayColumn: Column[Array[SpecialofferId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[SpecialofferId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[SpecialofferId, Int] = Bijection[SpecialofferId, Int](_.value)(SpecialofferId.apply)
+
+  given bijection: Bijection[SpecialofferId, Int] = Bijection.apply[SpecialofferId, Int](_.value)(SpecialofferId.apply)
+
   given column: Column[SpecialofferId] = Column.columnToInt.map(SpecialofferId.apply)
-  given parameterMetadata: ParameterMetaData[SpecialofferId] = new ParameterMetaData[SpecialofferId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[SpecialofferId] = {
+    new ParameterMetaData[SpecialofferId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[SpecialofferId] = {
+    new Text[SpecialofferId] {
+      override def unsafeEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[SpecialofferId] = Reads.IntReads.map(SpecialofferId.apply)
-  given text: Text[SpecialofferId] = new Text[SpecialofferId] {
-    override def unsafeEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[SpecialofferId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[SpecialofferId] = Writes.IntWrites.contramap(_.value)
 }

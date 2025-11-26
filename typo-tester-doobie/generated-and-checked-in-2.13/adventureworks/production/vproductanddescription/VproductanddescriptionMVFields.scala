@@ -23,11 +23,11 @@ trait VproductanddescriptionMVFields {
 
 object VproductanddescriptionMVFields {
   lazy val structure: Relation[VproductanddescriptionMVFields, VproductanddescriptionMVRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VproductanddescriptionMVFields, VproductanddescriptionMVRow] {
-  
+
     override lazy val fields: VproductanddescriptionMVFields = new VproductanddescriptionMVFields {
       override def productid = Field[ProductId, VproductanddescriptionMVRow](_path, "productid", None, None, x => x.productid, (row, value) => row.copy(productid = value))
       override def name = Field[Name, VproductanddescriptionMVRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
@@ -35,12 +35,11 @@ object VproductanddescriptionMVFields {
       override def cultureid = Field[CultureId, VproductanddescriptionMVRow](_path, "cultureid", None, None, x => x.cultureid, (row, value) => row.copy(cultureid = value))
       override def description = Field[/* max 400 chars */ String, VproductanddescriptionMVRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VproductanddescriptionMVRow]] =
       List[FieldLike[?, VproductanddescriptionMVRow]](fields.productid, fields.name, fields.productmodel, fields.cultureid, fields.description)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

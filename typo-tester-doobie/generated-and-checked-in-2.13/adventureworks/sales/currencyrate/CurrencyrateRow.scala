@@ -16,19 +16,23 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.currencyrate
-    Currency exchange rates.
-    Primary key: currencyrateid */
+ * Currency exchange rates.
+ * Primary key: currencyrateid
+ */
 case class CurrencyrateRow(
   /** Primary key for CurrencyRate records.
-      Default: nextval('sales.currencyrate_currencyrateid_seq'::regclass) */
+   * Default: nextval('sales.currencyrate_currencyrateid_seq'::regclass)
+   */
   currencyrateid: CurrencyrateId,
   /** Date and time the exchange rate was obtained. */
   currencyratedate: TypoLocalDateTime,
   /** Exchange rate was converted from this currency code.
-      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
+   * Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]]
+   */
   fromcurrencycode: CurrencyId,
   /** Exchange rate was converted to this currency code.
-      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
+   * Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]]
+   */
   tocurrencycode: CurrencyId,
   /** Average exchange rate for the day. */
   averagerate: BigDecimal,
@@ -36,57 +40,80 @@ case class CurrencyrateRow(
   endofdayrate: BigDecimal,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = currencyrateid
-   def toUnsavedRow(currencyrateid: Defaulted[CurrencyrateId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CurrencyrateRowUnsaved =
-     CurrencyrateRowUnsaved(currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, currencyrateid, modifieddate)
- }
+) {
+  def id: CurrencyrateId = currencyrateid
+
+  def toUnsavedRow(
+    currencyrateid: Defaulted[CurrencyrateId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): CurrencyrateRowUnsaved = {
+    new CurrencyrateRowUnsaved(
+      currencyratedate,
+      fromcurrencycode,
+      tocurrencycode,
+      averagerate,
+      endofdayrate,
+      currencyrateid,
+      modifieddate
+    )
+  }
+}
 
 object CurrencyrateRow {
   implicit lazy val decoder: Decoder[CurrencyrateRow] = Decoder.forProduct7[CurrencyrateRow, CurrencyrateId, TypoLocalDateTime, CurrencyId, CurrencyId, BigDecimal, BigDecimal, TypoLocalDateTime]("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")(CurrencyrateRow.apply)(CurrencyrateId.decoder, TypoLocalDateTime.decoder, CurrencyId.decoder, CurrencyId.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[CurrencyrateRow] = Encoder.forProduct7[CurrencyrateRow, CurrencyrateId, TypoLocalDateTime, CurrencyId, CurrencyId, BigDecimal, BigDecimal, TypoLocalDateTime]("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")(x => (x.currencyrateid, x.currencyratedate, x.fromcurrencycode, x.tocurrencycode, x.averagerate, x.endofdayrate, x.modifieddate))(CurrencyrateId.encoder, TypoLocalDateTime.encoder, CurrencyId.encoder, CurrencyId.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[CurrencyrateRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(CurrencyrateId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
-      new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    CurrencyrateRow(
-      currencyrateid = arr(0).asInstanceOf[CurrencyrateId],
-          currencyratedate = arr(1).asInstanceOf[TypoLocalDateTime],
-          fromcurrencycode = arr(2).asInstanceOf[CurrencyId],
-          tocurrencycode = arr(3).asInstanceOf[CurrencyId],
-          averagerate = arr(4).asInstanceOf[BigDecimal],
-          endofdayrate = arr(5).asInstanceOf[BigDecimal],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+
+  implicit lazy val pgText: Text[CurrencyrateRow] = {
+    Text.instance[CurrencyrateRow]{ (row, sb) =>
+      CurrencyrateId.pgText.unsafeEncode(row.currencyrateid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.currencyratedate, sb)
+      sb.append(Text.DELIMETER)
+      CurrencyId.pgText.unsafeEncode(row.fromcurrencycode, sb)
+      sb.append(Text.DELIMETER)
+      CurrencyId.pgText.unsafeEncode(row.tocurrencycode, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.averagerate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.endofdayrate, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[CurrencyrateRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(CurrencyrateId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
+        new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      CurrencyrateRow(
+        currencyrateid = arr(0).asInstanceOf[CurrencyrateId],
+            currencyratedate = arr(1).asInstanceOf[TypoLocalDateTime],
+            fromcurrencycode = arr(2).asInstanceOf[CurrencyId],
+            tocurrencycode = arr(3).asInstanceOf[CurrencyId],
+            averagerate = arr(4).asInstanceOf[BigDecimal],
+            endofdayrate = arr(5).asInstanceOf[BigDecimal],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[CurrencyrateRow] = {
+    new Write.Composite[CurrencyrateRow](
+      List(new Write.Single(CurrencyrateId.put),
+           new Write.Single(TypoLocalDateTime.put),
+           new Write.Single(CurrencyId.put),
+           new Write.Single(CurrencyId.put),
+           new Write.Single(Meta.ScalaBigDecimalMeta.put),
+           new Write.Single(Meta.ScalaBigDecimalMeta.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.currencyrateid, a.currencyratedate, a.fromcurrencycode, a.tocurrencycode, a.averagerate, a.endofdayrate, a.modifieddate)
     )
   }
-  implicit lazy val text: Text[CurrencyrateRow] = Text.instance[CurrencyrateRow]{ (row, sb) =>
-    CurrencyrateId.text.unsafeEncode(row.currencyrateid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.currencyratedate, sb)
-    sb.append(Text.DELIMETER)
-    CurrencyId.text.unsafeEncode(row.fromcurrencycode, sb)
-    sb.append(Text.DELIMETER)
-    CurrencyId.text.unsafeEncode(row.tocurrencycode, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.averagerate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.endofdayrate, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  implicit lazy val write: Write[CurrencyrateRow] = new Write.Composite[CurrencyrateRow](
-    List(new Write.Single(CurrencyrateId.put),
-         new Write.Single(TypoLocalDateTime.put),
-         new Write.Single(CurrencyId.put),
-         new Write.Single(CurrencyId.put),
-         new Write.Single(Meta.ScalaBigDecimalMeta.put),
-         new Write.Single(Meta.ScalaBigDecimalMeta.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.currencyrateid, a.currencyratedate, a.fromcurrencycode, a.tocurrencycode, a.averagerate, a.endofdayrate, a.modifieddate)
-  )
 }

@@ -29,20 +29,24 @@ case class AtViewRow(
 
 object AtViewRow {
   implicit lazy val decoder: Decoder[AtViewRow] = Decoder.forProduct5[AtViewRow, AddresstypeId, AddresstypeId, Name, TypoUUID, TypoLocalDateTime]("id", "addresstypeid", "name", "rowguid", "modifieddate")(AtViewRow.apply)(AddresstypeId.decoder, AddresstypeId.decoder, Name.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[AtViewRow] = Encoder.forProduct5[AtViewRow, AddresstypeId, AddresstypeId, Name, TypoUUID, TypoLocalDateTime]("id", "addresstypeid", "name", "rowguid", "modifieddate")(x => (x.id, x.addresstypeid, x.name, x.rowguid, x.modifieddate))(AddresstypeId.encoder, AddresstypeId.encoder, Name.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[AtViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(AddresstypeId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[AtViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(AddresstypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    AtViewRow(
-      id = arr(0).asInstanceOf[AddresstypeId],
-          addresstypeid = arr(1).asInstanceOf[AddresstypeId],
-          name = arr(2).asInstanceOf[Name],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(AddresstypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      AtViewRow(
+        id = arr(0).asInstanceOf[AddresstypeId],
+            addresstypeid = arr(1).asInstanceOf[AddresstypeId],
+            name = arr(2).asInstanceOf[Name],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

@@ -19,23 +19,38 @@ import typo.dsl.Bijection
 case class TypoXml(value: String)
 
 object TypoXml {
-  given arrayGet: Get[Array[TypoXml]] = Get.Advanced.array[AnyRef](NonEmptyList.one("xml[]"))
-    .map(_.map(v => TypoXml(v.asInstanceOf[PGobject].getValue)))
-  given arrayPut: Put[Array[TypoXml]] = Put.Advanced.array[AnyRef](NonEmptyList.one("xml[]"), "xml")
-    .contramap(_.map(v => {
-                            val obj = new PGobject
-                            obj.setType("xml")
-                            obj.setValue(v.value)
-                            obj
-                          }))
-  given bijection: Bijection[TypoXml, String] = Bijection[TypoXml, String](_.value)(TypoXml.apply)
-  given decoder: Decoder[TypoXml] = Decoder.decodeString.map(TypoXml.apply)
-  given encoder: Encoder[TypoXml] = Encoder.encodeString.contramap(_.value)
-  given get: Get[TypoXml] = Get.Advanced.other[PgSQLXML](NonEmptyList.one("xml"))
-    .map(v => TypoXml(v.getString))
-  given put: Put[TypoXml] = Put.Advanced.other[String](NonEmptyList.one("xml")).contramap(v => v.value)
-  given text: Text[TypoXml] = new Text[TypoXml] {
-    override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+  given arrayGet: Get[Array[TypoXml]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("xml[]"))
+      .map(_.map(v => new TypoXml(v.asInstanceOf[PGobject].getValue)))
   }
+
+  given arrayPut: Put[Array[TypoXml]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("xml[]"), "xml")
+      .contramap(_.map(v => {
+                              val obj = new PGobject()
+                              obj.setType("xml")
+                              obj.setValue(v.value)
+                              obj
+                            }))
+  }
+
+  given bijection: Bijection[TypoXml, String] = Bijection.apply[TypoXml, String](_.value)(TypoXml.apply)
+
+  given decoder: Decoder[TypoXml] = Decoder.decodeString.map(TypoXml.apply)
+
+  given encoder: Encoder[TypoXml] = Encoder.encodeString.contramap(_.value)
+
+  given get: Get[TypoXml] = {
+    Get.Advanced.other[PgSQLXML](NonEmptyList.one("xml"))
+      .map(v => new TypoXml(v.getString))
+  }
+
+  given pgText: Text[TypoXml] = {
+    new Text[TypoXml] {
+      override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString(), sb)
+      override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString(), sb)
+    }
+  }
+
+  given put: Put[TypoXml] = Put.Advanced.other[String](NonEmptyList.one("xml")).contramap(v => v.value)
 }

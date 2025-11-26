@@ -14,20 +14,55 @@ import io.circe.Encoder
 import org.postgresql.util.PGInterval
 
 /** Interval type in PostgreSQL */
-case class TypoInterval(years: Int, months: Int, days: Int, hours: Int, minutes: Int, seconds: Double)
+case class TypoInterval(
+  years: Int,
+  months: Int,
+  days: Int,
+  hours: Int,
+  minutes: Int,
+  seconds: Double
+)
 
 object TypoInterval {
-  given arrayGet: Get[Array[TypoInterval]] = Get.Advanced.array[AnyRef](NonEmptyList.one("interval[]"))
-    .map(_.map(v => TypoInterval(v.asInstanceOf[PGInterval].getYears, v.asInstanceOf[PGInterval].getMonths, v.asInstanceOf[PGInterval].getDays, v.asInstanceOf[PGInterval].getHours, v.asInstanceOf[PGInterval].getMinutes, v.asInstanceOf[PGInterval].getSeconds)))
-  given arrayPut: Put[Array[TypoInterval]] = Put.Advanced.array[AnyRef](NonEmptyList.one("interval[]"), "interval")
-    .contramap(_.map(v => new PGInterval(v.years, v.months, v.days, v.hours, v.minutes, v.seconds)))
-  given decoder: Decoder[TypoInterval] = Decoder.forProduct6[TypoInterval, Int, Int, Int, Int, Int, Double]("years", "months", "days", "hours", "minutes", "seconds")(TypoInterval.apply)(using Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeDouble)
-  given encoder: Encoder[TypoInterval] = Encoder.forProduct6[TypoInterval, Int, Int, Int, Int, Int, Double]("years", "months", "days", "hours", "minutes", "seconds")(x => (x.years, x.months, x.days, x.hours, x.minutes, x.seconds))(using Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeDouble)
-  given get: Get[TypoInterval] = Get.Advanced.other[PGInterval](NonEmptyList.one("interval"))
-    .map(v => TypoInterval(v.getYears, v.getMonths, v.getDays, v.getHours, v.getMinutes, v.getSeconds))
-  given put: Put[TypoInterval] = Put.Advanced.other[PGInterval](NonEmptyList.one("interval")).contramap(v => new PGInterval(v.years, v.months, v.days, v.hours, v.minutes, v.seconds))
-  given text: Text[TypoInterval] = new Text[TypoInterval] {
-    override def unsafeEncode(v: TypoInterval, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"P${v.years}Y${v.months}M${v.days}DT${v.hours}H${v.minutes}M${v.seconds}S", sb)
-    override def unsafeArrayEncode(v: TypoInterval, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"P${v.years}Y${v.months}M${v.days}DT${v.hours}H${v.minutes}M${v.seconds}S", sb)
+  given arrayGet: Get[Array[TypoInterval]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("interval[]"))
+      .map(_.map(v => new TypoInterval(
+                        v.asInstanceOf[PGInterval].getYears,
+                        v.asInstanceOf[PGInterval].getMonths,
+                        v.asInstanceOf[PGInterval].getDays,
+                        v.asInstanceOf[PGInterval].getHours,
+                        v.asInstanceOf[PGInterval].getMinutes,
+                        v.asInstanceOf[PGInterval].getSeconds
+                      )))
   }
+
+  given arrayPut: Put[Array[TypoInterval]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("interval[]"), "interval")
+      .contramap(_.map(v => new PGInterval(v.years, v.months, v.days, v.hours, v.minutes, v.seconds)))
+  }
+
+  given decoder: Decoder[TypoInterval] = Decoder.forProduct6[TypoInterval, Int, Int, Int, Int, Int, Double]("years", "months", "days", "hours", "minutes", "seconds")(TypoInterval.apply)(using Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeDouble)
+
+  given encoder: Encoder[TypoInterval] = Encoder.forProduct6[TypoInterval, Int, Int, Int, Int, Int, Double]("years", "months", "days", "hours", "minutes", "seconds")(x => (x.years, x.months, x.days, x.hours, x.minutes, x.seconds))(using Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeDouble)
+
+  given get: Get[TypoInterval] = {
+    Get.Advanced.other[PGInterval](NonEmptyList.one("interval"))
+      .map(v => new TypoInterval(
+                  v.getYears,
+                  v.getMonths,
+                  v.getDays,
+                  v.getHours,
+                  v.getMinutes,
+                  v.getSeconds
+                ))
+  }
+
+  given pgText: Text[TypoInterval] = {
+    new Text[TypoInterval] {
+      override def unsafeEncode(v: TypoInterval, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"P${v.years}Y${v.months}M${v.days}DT${v.hours}H${v.minutes}M${v.seconds}S", sb)
+      override def unsafeArrayEncode(v: TypoInterval, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"P${v.years}Y${v.months}M${v.days}DT${v.hours}H${v.minutes}M${v.seconds}S", sb)
+    }
+  }
+
+  given put: Put[TypoInterval] = Put.Advanced.other[PGInterval](NonEmptyList.one("interval")).contramap(v => new PGInterval(v.years, v.months, v.days, v.hours, v.minutes, v.seconds))
 }

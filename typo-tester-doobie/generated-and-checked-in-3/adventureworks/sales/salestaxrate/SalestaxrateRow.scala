@@ -19,20 +19,25 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.salestaxrate
-    Tax rate lookup table.
-    Primary key: salestaxrateid */
+ * Tax rate lookup table.
+ * Primary key: salestaxrateid
+ */
 case class SalestaxrateRow(
   /** Primary key for SalesTaxRate records.
-      Default: nextval('sales.salestaxrate_salestaxrateid_seq'::regclass) */
+   * Default: nextval('sales.salestaxrate_salestaxrateid_seq'::regclass)
+   */
   salestaxrateid: SalestaxrateId,
   /** State, province, or country/region the sales tax applies to.
-      Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
+   * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
+   */
   stateprovinceid: StateprovinceId,
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
-      Constraint CK_SalesTaxRate_TaxType affecting columns taxtype: (((taxtype >= 1) AND (taxtype <= 3))) */
+   * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype: (((taxtype >= 1) AND (taxtype <= 3)))
+   */
   taxtype: TypoShort,
   /** Tax rate amount.
-      Default: 0.00 */
+   * Default: 0.00
+   */
   taxrate: BigDecimal,
   /** Tax rate description. */
   name: Name,
@@ -40,57 +45,82 @@ case class SalestaxrateRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = salestaxrateid
-   def toUnsavedRow(salestaxrateid: Defaulted[SalestaxrateId], taxrate: Defaulted[BigDecimal] = Defaulted.Provided(this.taxrate), rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SalestaxrateRowUnsaved =
-     SalestaxrateRowUnsaved(stateprovinceid, taxtype, name, salestaxrateid, taxrate, rowguid, modifieddate)
- }
+) {
+  def id: SalestaxrateId = salestaxrateid
+
+  def toUnsavedRow(
+    salestaxrateid: Defaulted[SalestaxrateId],
+    taxrate: Defaulted[BigDecimal] = Defaulted.Provided(this.taxrate),
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): SalestaxrateRowUnsaved = {
+    new SalestaxrateRowUnsaved(
+      stateprovinceid,
+      taxtype,
+      name,
+      salestaxrateid,
+      taxrate,
+      rowguid,
+      modifieddate
+    )
+  }
+}
 
 object SalestaxrateRow {
   given decoder: Decoder[SalestaxrateRow] = Decoder.forProduct7[SalestaxrateRow, SalestaxrateId, StateprovinceId, TypoShort, BigDecimal, Name, TypoUUID, TypoLocalDateTime]("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")(SalestaxrateRow.apply)(using SalestaxrateId.decoder, StateprovinceId.decoder, TypoShort.decoder, Decoder.decodeBigDecimal, Name.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[SalestaxrateRow] = Encoder.forProduct7[SalestaxrateRow, SalestaxrateId, StateprovinceId, TypoShort, BigDecimal, Name, TypoUUID, TypoLocalDateTime]("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")(x => (x.salestaxrateid, x.stateprovinceid, x.taxtype, x.taxrate, x.name, x.rowguid, x.modifieddate))(using SalestaxrateId.encoder, StateprovinceId.encoder, TypoShort.encoder, Encoder.encodeBigDecimal, Name.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SalestaxrateRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SalestaxrateId.get).asInstanceOf[Read[Any]],
-      new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SalestaxrateRow(
-      salestaxrateid = arr(0).asInstanceOf[SalestaxrateId],
-          stateprovinceid = arr(1).asInstanceOf[StateprovinceId],
-          taxtype = arr(2).asInstanceOf[TypoShort],
-          taxrate = arr(3).asInstanceOf[BigDecimal],
-          name = arr(4).asInstanceOf[Name],
-          rowguid = arr(5).asInstanceOf[TypoUUID],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[SalestaxrateRow] = {
+    Text.instance[SalestaxrateRow]{ (row, sb) =>
+      SalestaxrateId.pgText.unsafeEncode(row.salestaxrateid, sb)
+      sb.append(Text.DELIMETER)
+      StateprovinceId.pgText.unsafeEncode(row.stateprovinceid, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.taxtype, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.taxrate, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[SalestaxrateRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(SalestaxrateId.get).asInstanceOf[Read[Any]],
+        new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SalestaxrateRow(
+        salestaxrateid = arr(0).asInstanceOf[SalestaxrateId],
+            stateprovinceid = arr(1).asInstanceOf[StateprovinceId],
+            taxtype = arr(2).asInstanceOf[TypoShort],
+            taxrate = arr(3).asInstanceOf[BigDecimal],
+            name = arr(4).asInstanceOf[Name],
+            rowguid = arr(5).asInstanceOf[TypoUUID],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[SalestaxrateRow] = {
+    new Write.Composite[SalestaxrateRow](
+      List(new Write.Single(SalestaxrateId.put),
+           new Write.Single(StateprovinceId.put),
+           new Write.Single(TypoShort.put),
+           new Write.Single(Meta.ScalaBigDecimalMeta.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.salestaxrateid, a.stateprovinceid, a.taxtype, a.taxrate, a.name, a.rowguid, a.modifieddate)
     )
   }
-  given text: Text[SalestaxrateRow] = Text.instance[SalestaxrateRow]{ (row, sb) =>
-    SalestaxrateId.text.unsafeEncode(row.salestaxrateid, sb)
-    sb.append(Text.DELIMETER)
-    StateprovinceId.text.unsafeEncode(row.stateprovinceid, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.taxtype, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.taxrate, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[SalestaxrateRow] = new Write.Composite[SalestaxrateRow](
-    List(new Write.Single(SalestaxrateId.put),
-         new Write.Single(StateprovinceId.put),
-         new Write.Single(TypoShort.put),
-         new Write.Single(Meta.ScalaBigDecimalMeta.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.salestaxrateid, a.stateprovinceid, a.taxtype, a.taxrate, a.name, a.rowguid, a.modifieddate)
-  )
 }

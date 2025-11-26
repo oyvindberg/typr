@@ -16,52 +16,72 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: production.productdocument
-    Cross-reference table mapping products to related product documents.
-    Composite primary key: productid, documentnode */
+ * Cross-reference table mapping products to related product documents.
+ * Composite primary key: productid, documentnode
+ */
 case class ProductdocumentRow(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime,
   /** Document identification number. Foreign key to Document.DocumentNode.
-      Default: '/'::character varying
-      Points to [[adventureworks.production.document.DocumentRow.documentnode]] */
+   * Default: '/'::character varying
+   * Points to [[adventureworks.production.document.DocumentRow.documentnode]]
+   */
   documentnode: DocumentId
-){
-   val compositeId: ProductdocumentId = ProductdocumentId(productid, documentnode)
-   val id = compositeId
-   def toUnsavedRow(documentnode: Defaulted[DocumentId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductdocumentRowUnsaved =
-     ProductdocumentRowUnsaved(productid, modifieddate, documentnode)
- }
+) {
+  def compositeId: ProductdocumentId = new ProductdocumentId(productid, documentnode)
+
+  def id: ProductdocumentId = this.compositeId
+
+  def toUnsavedRow(
+    documentnode: Defaulted[DocumentId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): ProductdocumentRowUnsaved = new ProductdocumentRowUnsaved(productid, modifieddate, documentnode)
+}
 
 object ProductdocumentRow {
-  def apply(compositeId: ProductdocumentId, modifieddate: TypoLocalDateTime) =
-    new ProductdocumentRow(compositeId.productid, modifieddate, compositeId.documentnode)
+  def apply(
+    compositeId: ProductdocumentId,
+    modifieddate: TypoLocalDateTime
+  ): ProductdocumentRow = new ProductdocumentRow(compositeId.productid, modifieddate, compositeId.documentnode)
+
   implicit lazy val decoder: Decoder[ProductdocumentRow] = Decoder.forProduct3[ProductdocumentRow, ProductId, TypoLocalDateTime, DocumentId]("productid", "modifieddate", "documentnode")(ProductdocumentRow.apply)(ProductId.decoder, TypoLocalDateTime.decoder, DocumentId.decoder)
+
   implicit lazy val encoder: Encoder[ProductdocumentRow] = Encoder.forProduct3[ProductdocumentRow, ProductId, TypoLocalDateTime, DocumentId]("productid", "modifieddate", "documentnode")(x => (x.productid, x.modifieddate, x.documentnode))(ProductId.encoder, TypoLocalDateTime.encoder, DocumentId.encoder)
-  implicit lazy val read: Read[ProductdocumentRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(DocumentId.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    ProductdocumentRow(
-      productid = arr(0).asInstanceOf[ProductId],
-          modifieddate = arr(1).asInstanceOf[TypoLocalDateTime],
-          documentnode = arr(2).asInstanceOf[DocumentId]
+
+  implicit lazy val pgText: Text[ProductdocumentRow] = {
+    Text.instance[ProductdocumentRow]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      DocumentId.pgText.unsafeEncode(row.documentnode, sb)
+    }
+  }
+
+  implicit lazy val read: Read[ProductdocumentRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(DocumentId.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      ProductdocumentRow(
+        productid = arr(0).asInstanceOf[ProductId],
+            modifieddate = arr(1).asInstanceOf[TypoLocalDateTime],
+            documentnode = arr(2).asInstanceOf[DocumentId]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[ProductdocumentRow] = {
+    new Write.Composite[ProductdocumentRow](
+      List(new Write.Single(ProductId.put),
+           new Write.Single(TypoLocalDateTime.put),
+           new Write.Single(DocumentId.put)),
+      a => List(a.productid, a.modifieddate, a.documentnode)
     )
   }
-  implicit lazy val text: Text[ProductdocumentRow] = Text.instance[ProductdocumentRow]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    DocumentId.text.unsafeEncode(row.documentnode, sb)
-  }
-  implicit lazy val write: Write[ProductdocumentRow] = new Write.Composite[ProductdocumentRow](
-    List(new Write.Single(ProductId.put),
-         new Write.Single(TypoLocalDateTime.put),
-         new Write.Single(DocumentId.put)),
-    a => List(a.productid, a.modifieddate, a.documentnode)
-  )
 }

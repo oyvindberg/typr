@@ -34,36 +34,44 @@ case class PcViewRow(
 )
 
 object PcViewRow {
-  implicit lazy val reads: Reads[PcViewRow] = Reads[PcViewRow](json => JsResult.fromTry(
-      Try(
-        PcViewRow(
-          id = json.\("id").as(ProductcategoryId.reads),
-          productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
-          name = json.\("name").as(Name.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[PcViewRow] = {
+    Reads[PcViewRow](json => JsResult.fromTry(
+        Try(
+          PcViewRow(
+            id = json.\("id").as(ProductcategoryId.reads),
+            productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
+            name = json.\("name").as(Name.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PcViewRow] = RowParser[PcViewRow] { row =>
-    Success(
-      PcViewRow(
-        id = row(idx + 0)(ProductcategoryId.column),
-        productcategoryid = row(idx + 1)(ProductcategoryId.column),
-        name = row(idx + 2)(Name.column),
-        rowguid = row(idx + 3)(TypoUUID.column),
-        modifieddate = row(idx + 4)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PcViewRow] = OWrites[PcViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductcategoryId.writes.writes(o.id),
-      "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
-      "name" -> Name.writes.writes(o.name),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PcViewRow] = {
+    RowParser[PcViewRow] { row =>
+      Success(
+        PcViewRow(
+          id = row(idx + 0)(ProductcategoryId.column),
+          productcategoryid = row(idx + 1)(ProductcategoryId.column),
+          name = row(idx + 2)(Name.column),
+          rowguid = row(idx + 3)(TypoUUID.column),
+          modifieddate = row(idx + 4)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PcViewRow] = {
+    OWrites[PcViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductcategoryId.writes.writes(o.id),
+        "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
+        "name" -> Name.writes.writes(o.name),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

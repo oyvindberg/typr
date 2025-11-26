@@ -30,23 +30,22 @@ trait JobcandidateFields {
 
 object JobcandidateFields {
   lazy val structure: Relation[JobcandidateFields, JobcandidateRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[JobcandidateFields, JobcandidateRow] {
-  
+
     override lazy val fields: JobcandidateFields = new JobcandidateFields {
       override def jobcandidateid = IdField[JobcandidateId, JobcandidateRow](_path, "jobcandidateid", None, Some("int4"), x => x.jobcandidateid, (row, value) => row.copy(jobcandidateid = value))
       override def businessentityid = OptField[BusinessentityId, JobcandidateRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def resume = OptField[TypoXml, JobcandidateRow](_path, "resume", None, Some("xml"), x => x.resume, (row, value) => row.copy(resume = value))
       override def modifieddate = Field[TypoLocalDateTime, JobcandidateRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, JobcandidateRow]] =
       List[FieldLike[?, JobcandidateRow]](fields.jobcandidateid, fields.businessentityid, fields.resume, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

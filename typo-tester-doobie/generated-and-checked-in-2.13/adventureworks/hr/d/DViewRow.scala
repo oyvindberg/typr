@@ -28,20 +28,24 @@ case class DViewRow(
 
 object DViewRow {
   implicit lazy val decoder: Decoder[DViewRow] = Decoder.forProduct5[DViewRow, DepartmentId, DepartmentId, Name, Name, TypoLocalDateTime]("id", "departmentid", "name", "groupname", "modifieddate")(DViewRow.apply)(DepartmentId.decoder, DepartmentId.decoder, Name.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[DViewRow] = Encoder.forProduct5[DViewRow, DepartmentId, DepartmentId, Name, Name, TypoLocalDateTime]("id", "departmentid", "name", "groupname", "modifieddate")(x => (x.id, x.departmentid, x.name, x.groupname, x.modifieddate))(DepartmentId.encoder, DepartmentId.encoder, Name.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[DViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[DViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    DViewRow(
-      id = arr(0).asInstanceOf[DepartmentId],
-          departmentid = arr(1).asInstanceOf[DepartmentId],
-          name = arr(2).asInstanceOf[Name],
-          groupname = arr(3).asInstanceOf[Name],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      DViewRow(
+        id = arr(0).asInstanceOf[DepartmentId],
+            departmentid = arr(1).asInstanceOf[DepartmentId],
+            name = arr(2).asInstanceOf[Name],
+            groupname = arr(3).asInstanceOf[Name],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

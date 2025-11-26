@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `public.Flag`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Flag(value: Boolean)
+
 object Flag {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[Flag]] = adventureworks.BooleanArrayDecoder.map(_.map(Flag.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[Flag]] = adventureworks.BooleanArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[Flag]] = adventureworks.BooleanArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[Flag, Boolean] = Bijection[Flag, Boolean](_.value)(Flag.apply)
+
+  implicit lazy val bijection: Bijection[Flag, Boolean] = Bijection.apply[Flag, Boolean](_.value)(Flag.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[Flag] = JdbcDecoder.booleanDecoder.map(Flag.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[Flag] = JdbcEncoder.booleanEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[Flag] = JsonDecoder.boolean.map(Flag.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[Flag] = JsonEncoder.boolean.contramap(_.value)
-  implicit lazy val pgType: PGType[Flag] = PGType.instance(""""public"."Flag"""", Types.OTHER)
-  implicit lazy val setter: Setter[Flag] = Setter.booleanSetter.contramap(_.value)
-  implicit lazy val text: Text[Flag] = new Text[Flag] {
-    override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[Flag] = {
+    new Text[Flag] {
+      override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[Flag] = PGType.instance(""""public"."Flag"""", Types.OTHER)
+
+  implicit lazy val setter: Setter[Flag] = Setter.booleanSetter.contramap(_.value)
 }

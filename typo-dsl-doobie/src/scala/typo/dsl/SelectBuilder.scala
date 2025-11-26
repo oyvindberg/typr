@@ -1,6 +1,7 @@
 package typo.dsl
 
 import doobie.free.connection.ConnectionIO
+import doobie.util.Read
 import doobie.util.fragment.Fragment
 
 trait SelectBuilder[Fields, Row] {
@@ -115,4 +116,13 @@ trait SelectBuilder[Fields, Row] {
   def joinOn[Fields2, Row2](other: SelectBuilder[Fields2, Row2])(pred: Fields ~ Fields2 => SqlExpr[Boolean]): SelectBuilder[Fields ~ Fields2, Row ~ Row2]
 
   def leftJoinOn[Fields2, Row2](other: SelectBuilder[Fields2, Row2])(pred: Fields ~ Fields2 => SqlExpr[Boolean]): SelectBuilder[Fields ~ Fields2, Row ~ Option[Row2]]
+}
+
+object SelectBuilder {
+  def of[Fields, Row](
+      name: String,
+      structure: Structure.Relation[Fields, Row],
+      rowParser: Read[Row]
+  ): SelectBuilderSql[Fields, Row] =
+    SelectBuilderSql.Relation(name, structure, rowParser, SelectParams.empty)
 }

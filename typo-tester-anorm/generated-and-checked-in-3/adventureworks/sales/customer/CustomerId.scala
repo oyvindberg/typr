@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.customer` */
-case class CustomerId(value: Int) extends AnyVal
+case class CustomerId(value: Int) extends scala.AnyVal
+
 object CustomerId {
   given arrayColumn: Column[Array[CustomerId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[CustomerId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[CustomerId, Int] = Bijection[CustomerId, Int](_.value)(CustomerId.apply)
+
+  given bijection: Bijection[CustomerId, Int] = Bijection.apply[CustomerId, Int](_.value)(CustomerId.apply)
+
   given column: Column[CustomerId] = Column.columnToInt.map(CustomerId.apply)
-  given parameterMetadata: ParameterMetaData[CustomerId] = new ParameterMetaData[CustomerId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[CustomerId] = {
+    new ParameterMetaData[CustomerId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[CustomerId] = {
+    new Text[CustomerId] {
+      override def unsafeEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[CustomerId] = Reads.IntReads.map(CustomerId.apply)
-  given text: Text[CustomerId] = new Text[CustomerId] {
-    override def unsafeEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[CustomerId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[CustomerId] = Writes.IntWrites.contramap(_.value)
 }

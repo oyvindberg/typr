@@ -5,18 +5,16 @@
  */
 package adventureworks.person.vstateprovincecountryregion
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class VstateprovincecountryregionMVRepoImpl extends VstateprovincecountryregionMVRepo {
-  override def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] = {
-    SelectBuilderSql(""""person"."vstateprovincecountryregion"""", VstateprovincecountryregionMVFields.structure, VstateprovincecountryregionMVRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[VstateprovincecountryregionMVRow] = {
+  def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] = SelectBuilder.of(""""person"."vstateprovincecountryregion"""", VstateprovincecountryregionMVFields.structure, VstateprovincecountryregionMVRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[VstateprovincecountryregionMVRow] = {
     SQL"""select "stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname"
-          from "person"."vstateprovincecountryregion"
-       """.as(VstateprovincecountryregionMVRow.rowParser(1).*)
+    from "person"."vstateprovincecountryregion"
+    """.as(VstateprovincecountryregionMVRow.rowParser(1).*)
   }
 }

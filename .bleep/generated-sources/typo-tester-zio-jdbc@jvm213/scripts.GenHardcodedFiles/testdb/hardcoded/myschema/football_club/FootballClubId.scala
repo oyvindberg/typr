@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `myschema.football_club` */
-case class FootballClubId(value: Long) extends AnyVal
+case class FootballClubId(value: Long) extends scala.AnyVal
+
 object FootballClubId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[FootballClubId]] = testdb.hardcoded.LongArrayDecoder.map(_.map(FootballClubId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[FootballClubId]] = testdb.hardcoded.LongArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[FootballClubId]] = testdb.hardcoded.LongArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[FootballClubId, Long] = Bijection[FootballClubId, Long](_.value)(FootballClubId.apply)
+
+  implicit lazy val bijection: Bijection[FootballClubId, Long] = Bijection.apply[FootballClubId, Long](_.value)(FootballClubId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[FootballClubId] = JdbcDecoder.longDecoder.map(FootballClubId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[FootballClubId] = JdbcEncoder.longEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[FootballClubId] = JsonDecoder.long.map(FootballClubId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[FootballClubId] = JsonEncoder.long.contramap(_.value)
-  implicit lazy val pgType: PGType[FootballClubId] = PGType.PGTypeLong.as
-  implicit lazy val setter: Setter[FootballClubId] = Setter.longSetter.contramap(_.value)
-  implicit lazy val text: Text[FootballClubId] = new Text[FootballClubId] {
-    override def unsafeEncode(v: FootballClubId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: FootballClubId, sb: StringBuilder): Unit = Text.longInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[FootballClubId] = {
+    new Text[FootballClubId] {
+      override def unsafeEncode(v: FootballClubId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: FootballClubId, sb: StringBuilder): Unit = Text.longInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[FootballClubId] = PGType.PGTypeLong.as
+
+  implicit lazy val setter: Setter[FootballClubId] = Setter.longSetter.contramap(_.value)
 }

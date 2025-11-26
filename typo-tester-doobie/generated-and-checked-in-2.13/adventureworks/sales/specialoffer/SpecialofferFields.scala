@@ -30,11 +30,11 @@ trait SpecialofferFields {
 
 object SpecialofferFields {
   lazy val structure: Relation[SpecialofferFields, SpecialofferRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SpecialofferFields, SpecialofferRow] {
-  
+
     override lazy val fields: SpecialofferFields = new SpecialofferFields {
       override def specialofferid = IdField[SpecialofferId, SpecialofferRow](_path, "specialofferid", None, Some("int4"), x => x.specialofferid, (row, value) => row.copy(specialofferid = value))
       override def description = Field[/* max 255 chars */ String, SpecialofferRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
@@ -48,12 +48,11 @@ object SpecialofferFields {
       override def rowguid = Field[TypoUUID, SpecialofferRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SpecialofferRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SpecialofferRow]] =
       List[FieldLike[?, SpecialofferRow]](fields.specialofferid, fields.description, fields.discountpct, fields.`type`, fields.category, fields.startdate, fields.enddate, fields.minqty, fields.maxqty, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

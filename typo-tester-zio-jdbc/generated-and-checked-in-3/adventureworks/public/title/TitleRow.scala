@@ -13,30 +13,38 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: public.title
-    Primary key: code */
-case class TitleRow(
-  code: TitleId
-){
-   val id = code
- }
+ * Primary key: code
+ */
+case class TitleRow(code: TitleId) {
+  def id: TitleId = code
+}
 
 object TitleRow {
   given jdbcDecoder: JdbcDecoder[TitleRow] = TitleId.jdbcDecoder.map(v => TitleRow(code = v))
-  given jsonDecoder: JsonDecoder[TitleRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val code = jsonObj.get("code").toRight("Missing field 'code'").flatMap(_.as(using TitleId.jsonDecoder))
-    if (code.isRight)
-      Right(TitleRow(code = code.toOption.get))
-    else Left(List[Either[String, Any]](code).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[TitleRow] = new JsonEncoder[TitleRow] {
-    override def unsafeEncode(a: TitleRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""code":""")
-      TitleId.jsonEncoder.unsafeEncode(a.code, indent, out)
-      out.write("}")
+
+  given jsonDecoder: JsonDecoder[TitleRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val code = jsonObj.get("code").toRight("Missing field 'code'").flatMap(_.as(using TitleId.jsonDecoder))
+      if (code.isRight)
+        Right(TitleRow(code = code.toOption.get))
+      else Left(List[Either[String, Any]](code).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[TitleRow] = Text.instance[TitleRow]{ (row, sb) =>
-    TitleId.text.unsafeEncode(row.code, sb)
+
+  given jsonEncoder: JsonEncoder[TitleRow] = {
+    new JsonEncoder[TitleRow] {
+      override def unsafeEncode(a: TitleRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""code":""")
+        TitleId.jsonEncoder.unsafeEncode(a.code, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[TitleRow] = {
+    Text.instance[TitleRow]{ (row, sb) =>
+      TitleId.pgText.unsafeEncode(row.code, sb)
+    }
   }
 }

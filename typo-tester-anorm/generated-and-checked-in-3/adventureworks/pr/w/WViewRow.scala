@@ -47,51 +47,59 @@ case class WViewRow(
 )
 
 object WViewRow {
-  given reads: Reads[WViewRow] = Reads[WViewRow](json => JsResult.fromTry(
-      Try(
-        WViewRow(
-          id = json.\("id").as(WorkorderId.reads),
-          workorderid = json.\("workorderid").as(WorkorderId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          orderqty = json.\("orderqty").as(Reads.IntReads),
-          scrappedqty = json.\("scrappedqty").as(TypoShort.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-          enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          duedate = json.\("duedate").as(TypoLocalDateTime.reads),
-          scrapreasonid = json.\("scrapreasonid").toOption.map(_.as(ScrapreasonId.reads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[WViewRow] = {
+    Reads[WViewRow](json => JsResult.fromTry(
+        Try(
+          WViewRow(
+            id = json.\("id").as(WorkorderId.reads),
+            workorderid = json.\("workorderid").as(WorkorderId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            orderqty = json.\("orderqty").as(Reads.IntReads),
+            scrappedqty = json.\("scrappedqty").as(TypoShort.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads),
+            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            duedate = json.\("duedate").as(TypoLocalDateTime.reads),
+            scrapreasonid = json.\("scrapreasonid").toOption.map(_.as(ScrapreasonId.reads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[WViewRow] = RowParser[WViewRow] { row =>
-    Success(
-      WViewRow(
-        id = row(idx + 0)(using WorkorderId.column),
-        workorderid = row(idx + 1)(using WorkorderId.column),
-        productid = row(idx + 2)(using ProductId.column),
-        orderqty = row(idx + 3)(using Column.columnToInt),
-        scrappedqty = row(idx + 4)(using TypoShort.column),
-        startdate = row(idx + 5)(using TypoLocalDateTime.column),
-        enddate = row(idx + 6)(using Column.columnToOption(using TypoLocalDateTime.column)),
-        duedate = row(idx + 7)(using TypoLocalDateTime.column),
-        scrapreasonid = row(idx + 8)(using Column.columnToOption(using ScrapreasonId.column)),
-        modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[WViewRow] = OWrites[WViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> WorkorderId.writes.writes(o.id),
-      "workorderid" -> WorkorderId.writes.writes(o.workorderid),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "orderqty" -> Writes.IntWrites.writes(o.orderqty),
-      "scrappedqty" -> TypoShort.writes.writes(o.scrappedqty),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-      "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
-      "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
-      "scrapreasonid" -> Writes.OptionWrites(using ScrapreasonId.writes).writes(o.scrapreasonid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[WViewRow] = {
+    RowParser[WViewRow] { row =>
+      Success(
+        WViewRow(
+          id = row(idx + 0)(using WorkorderId.column),
+          workorderid = row(idx + 1)(using WorkorderId.column),
+          productid = row(idx + 2)(using ProductId.column),
+          orderqty = row(idx + 3)(using Column.columnToInt),
+          scrappedqty = row(idx + 4)(using TypoShort.column),
+          startdate = row(idx + 5)(using TypoLocalDateTime.column),
+          enddate = row(idx + 6)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          duedate = row(idx + 7)(using TypoLocalDateTime.column),
+          scrapreasonid = row(idx + 8)(using Column.columnToOption(using ScrapreasonId.column)),
+          modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[WViewRow] = {
+    OWrites[WViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> WorkorderId.writes.writes(o.id),
+        "workorderid" -> WorkorderId.writes.writes(o.workorderid),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "orderqty" -> Writes.IntWrites.writes(o.orderqty),
+        "scrappedqty" -> TypoShort.writes.writes(o.scrappedqty),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
+        "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
+        "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
+        "scrapreasonid" -> Writes.OptionWrites(using ScrapreasonId.writes).writes(o.scrapreasonid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

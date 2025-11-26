@@ -15,7 +15,9 @@ case class ProductmodelillustrationId(
   productmodelid: ProductmodelId,
   illustrationid: IllustrationId
 )
+
 object ProductmodelillustrationId {
   given decoder: Decoder[ProductmodelillustrationId] = Decoder.forProduct2[ProductmodelillustrationId, ProductmodelId, IllustrationId]("productmodelid", "illustrationid")(ProductmodelillustrationId.apply)(using ProductmodelId.decoder, IllustrationId.decoder)
+
   given encoder: Encoder[ProductmodelillustrationId] = Encoder.forProduct2[ProductmodelillustrationId, ProductmodelId, IllustrationId]("productmodelid", "illustrationid")(x => (x.productmodelid, x.illustrationid))(using ProductmodelId.encoder, IllustrationId.encoder)
 }

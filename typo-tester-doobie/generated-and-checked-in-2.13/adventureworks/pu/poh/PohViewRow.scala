@@ -47,36 +47,40 @@ case class PohViewRow(
 
 object PohViewRow {
   implicit lazy val decoder: Decoder[PohViewRow] = Decoder.forProduct13[PohViewRow, PurchaseorderheaderId, PurchaseorderheaderId, TypoShort, TypoShort, BusinessentityId, BusinessentityId, ShipmethodId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, BigDecimal, BigDecimal, TypoLocalDateTime]("id", "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate", "shipdate", "subtotal", "taxamt", "freight", "modifieddate")(PohViewRow.apply)(PurchaseorderheaderId.decoder, PurchaseorderheaderId.decoder, TypoShort.decoder, TypoShort.decoder, BusinessentityId.decoder, BusinessentityId.decoder, ShipmethodId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(TypoLocalDateTime.decoder), Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[PohViewRow] = Encoder.forProduct13[PohViewRow, PurchaseorderheaderId, PurchaseorderheaderId, TypoShort, TypoShort, BusinessentityId, BusinessentityId, ShipmethodId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, BigDecimal, BigDecimal, TypoLocalDateTime]("id", "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate", "shipdate", "subtotal", "taxamt", "freight", "modifieddate")(x => (x.id, x.purchaseorderid, x.revisionnumber, x.status, x.employeeid, x.vendorid, x.shipmethodid, x.orderdate, x.shipdate, x.subtotal, x.taxamt, x.freight, x.modifieddate))(PurchaseorderheaderId.encoder, PurchaseorderheaderId.encoder, TypoShort.encoder, TypoShort.encoder, BusinessentityId.encoder, BusinessentityId.encoder, ShipmethodId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(TypoLocalDateTime.encoder), Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[PohViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(PurchaseorderheaderId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[PohViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(PurchaseorderheaderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ShipmethodId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    PohViewRow(
-      id = arr(0).asInstanceOf[PurchaseorderheaderId],
-          purchaseorderid = arr(1).asInstanceOf[PurchaseorderheaderId],
-          revisionnumber = arr(2).asInstanceOf[TypoShort],
-          status = arr(3).asInstanceOf[TypoShort],
-          employeeid = arr(4).asInstanceOf[BusinessentityId],
-          vendorid = arr(5).asInstanceOf[BusinessentityId],
-          shipmethodid = arr(6).asInstanceOf[ShipmethodId],
-          orderdate = arr(7).asInstanceOf[TypoLocalDateTime],
-          shipdate = arr(8).asInstanceOf[Option[TypoLocalDateTime]],
-          subtotal = arr(9).asInstanceOf[BigDecimal],
-          taxamt = arr(10).asInstanceOf[BigDecimal],
-          freight = arr(11).asInstanceOf[BigDecimal],
-          modifieddate = arr(12).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(PurchaseorderheaderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ShipmethodId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      PohViewRow(
+        id = arr(0).asInstanceOf[PurchaseorderheaderId],
+            purchaseorderid = arr(1).asInstanceOf[PurchaseorderheaderId],
+            revisionnumber = arr(2).asInstanceOf[TypoShort],
+            status = arr(3).asInstanceOf[TypoShort],
+            employeeid = arr(4).asInstanceOf[BusinessentityId],
+            vendorid = arr(5).asInstanceOf[BusinessentityId],
+            shipmethodid = arr(6).asInstanceOf[ShipmethodId],
+            orderdate = arr(7).asInstanceOf[TypoLocalDateTime],
+            shipdate = arr(8).asInstanceOf[Option[TypoLocalDateTime]],
+            subtotal = arr(9).asInstanceOf[BigDecimal],
+            taxamt = arr(10).asInstanceOf[BigDecimal],
+            freight = arr(11).asInstanceOf[BigDecimal],
+            modifieddate = arr(12).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

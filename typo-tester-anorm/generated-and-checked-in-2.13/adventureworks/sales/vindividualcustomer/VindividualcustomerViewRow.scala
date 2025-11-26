@@ -63,75 +63,83 @@ case class VindividualcustomerViewRow(
 )
 
 object VindividualcustomerViewRow {
-  implicit lazy val reads: Reads[VindividualcustomerViewRow] = Reads[VindividualcustomerViewRow](json => JsResult.fromTry(
-      Try(
-        VindividualcustomerViewRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads),
-          suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-          phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
-          phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
-          emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
-          emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
-          addresstype = json.\("addresstype").as(Name.reads),
-          addressline1 = json.\("addressline1").as(Reads.StringReads),
-          addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
-          city = json.\("city").as(Reads.StringReads),
-          stateprovincename = json.\("stateprovincename").as(Name.reads),
-          postalcode = json.\("postalcode").as(Reads.StringReads),
-          countryregionname = json.\("countryregionname").as(Name.reads),
-          demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads))
+  implicit lazy val reads: Reads[VindividualcustomerViewRow] = {
+    Reads[VindividualcustomerViewRow](json => JsResult.fromTry(
+        Try(
+          VindividualcustomerViewRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads),
+            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
+            phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
+            emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
+            emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
+            addresstype = json.\("addresstype").as(Name.reads),
+            addressline1 = json.\("addressline1").as(Reads.StringReads),
+            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            city = json.\("city").as(Reads.StringReads),
+            stateprovincename = json.\("stateprovincename").as(Name.reads),
+            postalcode = json.\("postalcode").as(Reads.StringReads),
+            countryregionname = json.\("countryregionname").as(Name.reads),
+            demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VindividualcustomerViewRow] = RowParser[VindividualcustomerViewRow] { row =>
-    Success(
-      VindividualcustomerViewRow(
-        businessentityid = row(idx + 0)(BusinessentityId.column),
-        title = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-        firstname = row(idx + 2)(/* user-picked */ FirstName.column),
-        middlename = row(idx + 3)(Column.columnToOption(Name.column)),
-        lastname = row(idx + 4)(Name.column),
-        suffix = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-        phonenumber = row(idx + 6)(Column.columnToOption(Phone.column)),
-        phonenumbertype = row(idx + 7)(Column.columnToOption(Name.column)),
-        emailaddress = row(idx + 8)(Column.columnToOption(Column.columnToString)),
-        emailpromotion = row(idx + 9)(Column.columnToInt),
-        addresstype = row(idx + 10)(Name.column),
-        addressline1 = row(idx + 11)(Column.columnToString),
-        addressline2 = row(idx + 12)(Column.columnToOption(Column.columnToString)),
-        city = row(idx + 13)(Column.columnToString),
-        stateprovincename = row(idx + 14)(Name.column),
-        postalcode = row(idx + 15)(Column.columnToString),
-        countryregionname = row(idx + 16)(Name.column),
-        demographics = row(idx + 17)(Column.columnToOption(TypoXml.column))
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[VindividualcustomerViewRow] = OWrites[VindividualcustomerViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "title" -> Writes.OptionWrites(Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname),
-      "suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.suffix),
-      "phonenumber" -> Writes.OptionWrites(Phone.writes).writes(o.phonenumber),
-      "phonenumbertype" -> Writes.OptionWrites(Name.writes).writes(o.phonenumbertype),
-      "emailaddress" -> Writes.OptionWrites(Writes.StringWrites).writes(o.emailaddress),
-      "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
-      "addresstype" -> Name.writes.writes(o.addresstype),
-      "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-      "addressline2" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addressline2),
-      "city" -> Writes.StringWrites.writes(o.city),
-      "stateprovincename" -> Name.writes.writes(o.stateprovincename),
-      "postalcode" -> Writes.StringWrites.writes(o.postalcode),
-      "countryregionname" -> Name.writes.writes(o.countryregionname),
-      "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VindividualcustomerViewRow] = {
+    RowParser[VindividualcustomerViewRow] { row =>
+      Success(
+        VindividualcustomerViewRow(
+          businessentityid = row(idx + 0)(BusinessentityId.column),
+          title = row(idx + 1)(Column.columnToOption(Column.columnToString)),
+          firstname = row(idx + 2)(/* user-picked */ FirstName.column),
+          middlename = row(idx + 3)(Column.columnToOption(Name.column)),
+          lastname = row(idx + 4)(Name.column),
+          suffix = row(idx + 5)(Column.columnToOption(Column.columnToString)),
+          phonenumber = row(idx + 6)(Column.columnToOption(Phone.column)),
+          phonenumbertype = row(idx + 7)(Column.columnToOption(Name.column)),
+          emailaddress = row(idx + 8)(Column.columnToOption(Column.columnToString)),
+          emailpromotion = row(idx + 9)(Column.columnToInt),
+          addresstype = row(idx + 10)(Name.column),
+          addressline1 = row(idx + 11)(Column.columnToString),
+          addressline2 = row(idx + 12)(Column.columnToOption(Column.columnToString)),
+          city = row(idx + 13)(Column.columnToString),
+          stateprovincename = row(idx + 14)(Name.column),
+          postalcode = row(idx + 15)(Column.columnToString),
+          countryregionname = row(idx + 16)(Name.column),
+          demographics = row(idx + 17)(Column.columnToOption(TypoXml.column))
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[VindividualcustomerViewRow] = {
+    OWrites[VindividualcustomerViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "title" -> Writes.OptionWrites(Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname),
+        "suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.suffix),
+        "phonenumber" -> Writes.OptionWrites(Phone.writes).writes(o.phonenumber),
+        "phonenumbertype" -> Writes.OptionWrites(Name.writes).writes(o.phonenumbertype),
+        "emailaddress" -> Writes.OptionWrites(Writes.StringWrites).writes(o.emailaddress),
+        "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
+        "addresstype" -> Name.writes.writes(o.addresstype),
+        "addressline1" -> Writes.StringWrites.writes(o.addressline1),
+        "addressline2" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addressline2),
+        "city" -> Writes.StringWrites.writes(o.city),
+        "stateprovincename" -> Name.writes.writes(o.stateprovincename),
+        "postalcode" -> Writes.StringWrites.writes(o.postalcode),
+        "countryregionname" -> Name.writes.writes(o.countryregionname),
+        "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics)
+      ))
+    )
+  }
 }

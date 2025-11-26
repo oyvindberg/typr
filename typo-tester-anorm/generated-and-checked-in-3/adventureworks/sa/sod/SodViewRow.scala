@@ -50,54 +50,62 @@ case class SodViewRow(
 )
 
 object SodViewRow {
-  given reads: Reads[SodViewRow] = Reads[SodViewRow](json => JsResult.fromTry(
-      Try(
-        SodViewRow(
-          id = json.\("id").as(Reads.IntReads),
-          salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
-          salesorderdetailid = json.\("salesorderdetailid").as(Reads.IntReads),
-          carriertrackingnumber = json.\("carriertrackingnumber").toOption.map(_.as(Reads.StringReads)),
-          orderqty = json.\("orderqty").as(TypoShort.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
-          unitprice = json.\("unitprice").as(Reads.bigDecReads),
-          unitpricediscount = json.\("unitpricediscount").as(Reads.bigDecReads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SodViewRow] = {
+    Reads[SodViewRow](json => JsResult.fromTry(
+        Try(
+          SodViewRow(
+            id = json.\("id").as(Reads.IntReads),
+            salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
+            salesorderdetailid = json.\("salesorderdetailid").as(Reads.IntReads),
+            carriertrackingnumber = json.\("carriertrackingnumber").toOption.map(_.as(Reads.StringReads)),
+            orderqty = json.\("orderqty").as(TypoShort.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
+            unitprice = json.\("unitprice").as(Reads.bigDecReads),
+            unitpricediscount = json.\("unitpricediscount").as(Reads.bigDecReads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SodViewRow] = RowParser[SodViewRow] { row =>
-    Success(
-      SodViewRow(
-        id = row(idx + 0)(using Column.columnToInt),
-        salesorderid = row(idx + 1)(using SalesorderheaderId.column),
-        salesorderdetailid = row(idx + 2)(using Column.columnToInt),
-        carriertrackingnumber = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
-        orderqty = row(idx + 4)(using TypoShort.column),
-        productid = row(idx + 5)(using ProductId.column),
-        specialofferid = row(idx + 6)(using SpecialofferId.column),
-        unitprice = row(idx + 7)(using Column.columnToScalaBigDecimal),
-        unitpricediscount = row(idx + 8)(using Column.columnToScalaBigDecimal),
-        rowguid = row(idx + 9)(using TypoUUID.column),
-        modifieddate = row(idx + 10)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SodViewRow] = OWrites[SodViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> Writes.IntWrites.writes(o.id),
-      "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
-      "salesorderdetailid" -> Writes.IntWrites.writes(o.salesorderdetailid),
-      "carriertrackingnumber" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.carriertrackingnumber),
-      "orderqty" -> TypoShort.writes.writes(o.orderqty),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
-      "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
-      "unitpricediscount" -> Writes.BigDecimalWrites.writes(o.unitpricediscount),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SodViewRow] = {
+    RowParser[SodViewRow] { row =>
+      Success(
+        SodViewRow(
+          id = row(idx + 0)(using Column.columnToInt),
+          salesorderid = row(idx + 1)(using SalesorderheaderId.column),
+          salesorderdetailid = row(idx + 2)(using Column.columnToInt),
+          carriertrackingnumber = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          orderqty = row(idx + 4)(using TypoShort.column),
+          productid = row(idx + 5)(using ProductId.column),
+          specialofferid = row(idx + 6)(using SpecialofferId.column),
+          unitprice = row(idx + 7)(using Column.columnToScalaBigDecimal),
+          unitpricediscount = row(idx + 8)(using Column.columnToScalaBigDecimal),
+          rowguid = row(idx + 9)(using TypoUUID.column),
+          modifieddate = row(idx + 10)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SodViewRow] = {
+    OWrites[SodViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> Writes.IntWrites.writes(o.id),
+        "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
+        "salesorderdetailid" -> Writes.IntWrites.writes(o.salesorderdetailid),
+        "carriertrackingnumber" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.carriertrackingnumber),
+        "orderqty" -> TypoShort.writes.writes(o.orderqty),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
+        "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
+        "unitpricediscount" -> Writes.BigDecimalWrites.writes(o.unitpricediscount),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -14,43 +14,55 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: myschema.football_club
-    football club
-    Primary key: id */
+ * football club
+ * Primary key: id
+ */
 case class FootballClubRow(
   id: FootballClubId,
   name: /* max 100 chars */ String
 )
 
 object FootballClubRow {
-  given jdbcDecoder: JdbcDecoder[FootballClubRow] = new JdbcDecoder[FootballClubRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, FootballClubRow) =
-      columIndex + 1 ->
-        FootballClubRow(
-          id = FootballClubId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          name = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2
-        )
-  }
-  given jsonDecoder: JsonDecoder[FootballClubRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using FootballClubId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using JsonDecoder.string))
-    if (id.isRight && name.isRight)
-      Right(FootballClubRow(id = id.toOption.get, name = name.toOption.get))
-    else Left(List[Either[String, Any]](id, name).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[FootballClubRow] = new JsonEncoder[FootballClubRow] {
-    override def unsafeEncode(a: FootballClubRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      FootballClubId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      JsonEncoder.string.unsafeEncode(a.name, indent, out)
-      out.write("}")
+  given jdbcDecoder: JdbcDecoder[FootballClubRow] = {
+    new JdbcDecoder[FootballClubRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, FootballClubRow) =
+        columIndex + 1 ->
+          FootballClubRow(
+            id = FootballClubId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            name = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2
+          )
     }
   }
-  given text: Text[FootballClubRow] = Text.instance[FootballClubRow]{ (row, sb) =>
-    FootballClubId.text.unsafeEncode(row.id, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
+
+  given jsonDecoder: JsonDecoder[FootballClubRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using FootballClubId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using JsonDecoder.string))
+      if (id.isRight && name.isRight)
+        Right(FootballClubRow(id = id.toOption.get, name = name.toOption.get))
+      else Left(List[Either[String, Any]](id, name).flatMap(_.left.toOption).mkString(", "))
+    }
+  }
+
+  given jsonEncoder: JsonEncoder[FootballClubRow] = {
+    new JsonEncoder[FootballClubRow] {
+      override def unsafeEncode(a: FootballClubRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        FootballClubId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        JsonEncoder.string.unsafeEncode(a.name, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[FootballClubRow] = {
+    Text.instance[FootballClubRow]{ (row, sb) =>
+      FootballClubId.pgText.unsafeEncode(row.id, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+    }
   }
 }

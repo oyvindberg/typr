@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.productcategory` */
-case class ProductcategoryId(value: Int) extends AnyVal
+case class ProductcategoryId(value: Int) extends scala.AnyVal
+
 object ProductcategoryId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ProductcategoryId]] = adventureworks.IntArrayDecoder.map(_.map(ProductcategoryId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ProductcategoryId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ProductcategoryId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ProductcategoryId, Int] = Bijection[ProductcategoryId, Int](_.value)(ProductcategoryId.apply)
+
+  given bijection: Bijection[ProductcategoryId, Int] = Bijection.apply[ProductcategoryId, Int](_.value)(ProductcategoryId.apply)
+
   given jdbcDecoder: JdbcDecoder[ProductcategoryId] = JdbcDecoder.intDecoder.map(ProductcategoryId.apply)
+
   given jdbcEncoder: JdbcEncoder[ProductcategoryId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ProductcategoryId] = JsonDecoder.int.map(ProductcategoryId.apply)
+
   given jsonEncoder: JsonEncoder[ProductcategoryId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ProductcategoryId] = PGType.PGTypeInt.as
-  given setter: Setter[ProductcategoryId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ProductcategoryId] = new Text[ProductcategoryId] {
-    override def unsafeEncode(v: ProductcategoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ProductcategoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ProductcategoryId] = {
+    new Text[ProductcategoryId] {
+      override def unsafeEncode(v: ProductcategoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ProductcategoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ProductcategoryId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ProductcategoryId] = Setter.intSetter.contramap(_.value)
 }

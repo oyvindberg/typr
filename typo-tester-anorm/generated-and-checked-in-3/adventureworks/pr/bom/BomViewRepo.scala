@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait BomViewRepo {
   def select: SelectBuilder[BomViewFields, BomViewRow]
+
   def selectAll(using c: Connection): List[BomViewRow]
 }

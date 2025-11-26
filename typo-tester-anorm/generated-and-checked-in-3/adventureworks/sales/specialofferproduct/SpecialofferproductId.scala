@@ -20,20 +20,26 @@ case class SpecialofferproductId(
   specialofferid: SpecialofferId,
   productid: ProductId
 )
+
 object SpecialofferproductId {
-  given reads: Reads[SpecialofferproductId] = Reads[SpecialofferproductId](json => JsResult.fromTry(
-      Try(
-        SpecialofferproductId(
-          specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
-          productid = json.\("productid").as(ProductId.reads)
+  given reads: Reads[SpecialofferproductId] = {
+    Reads[SpecialofferproductId](json => JsResult.fromTry(
+        Try(
+          SpecialofferproductId(
+            specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
+            productid = json.\("productid").as(ProductId.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[SpecialofferproductId] = OWrites[SpecialofferproductId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
-      "productid" -> ProductId.writes.writes(o.productid)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[SpecialofferproductId] = {
+    OWrites[SpecialofferproductId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
+        "productid" -> ProductId.writes.writes(o.productid)
+      ))
+    )
+  }
 }

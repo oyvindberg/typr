@@ -20,8 +20,9 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: person.countryregion
-    Lookup table containing the ISO standard codes for countries and regions.
-    Primary key: countryregioncode */
+ * Lookup table containing the ISO standard codes for countries and regions.
+ * Primary key: countryregioncode
+ */
 case class CountryregionRow(
   /** ISO standard code for countries and regions. */
   countryregioncode: CountryregionId,
@@ -29,44 +30,55 @@ case class CountryregionRow(
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = countryregioncode
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CountryregionRowUnsaved =
-     CountryregionRowUnsaved(countryregioncode, name, modifieddate)
- }
+) {
+  def id: CountryregionId = countryregioncode
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CountryregionRowUnsaved = new CountryregionRowUnsaved(countryregioncode, name, modifieddate)
+}
 
 object CountryregionRow {
-  given reads: Reads[CountryregionRow] = Reads[CountryregionRow](json => JsResult.fromTry(
-      Try(
-        CountryregionRow(
-          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given pgText: Text[CountryregionRow] = {
+    Text.instance[CountryregionRow]{ (row, sb) =>
+      CountryregionId.pgText.unsafeEncode(row.countryregioncode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[CountryregionRow] = {
+    Reads[CountryregionRow](json => JsResult.fromTry(
+        Try(
+          CountryregionRow(
+            countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CountryregionRow] = RowParser[CountryregionRow] { row =>
-    Success(
-      CountryregionRow(
-        countryregioncode = row(idx + 0)(using CountryregionId.column),
-        name = row(idx + 1)(using Name.column),
-        modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given text: Text[CountryregionRow] = Text.instance[CountryregionRow]{ (row, sb) =>
-    CountryregionId.text.unsafeEncode(row.countryregioncode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[CountryregionRow] = {
+    RowParser[CountryregionRow] { row =>
+      Success(
+        CountryregionRow(
+          countryregioncode = row(idx + 0)(using CountryregionId.column),
+          name = row(idx + 1)(using Name.column),
+          modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[CountryregionRow] = OWrites[CountryregionRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given writes: OWrites[CountryregionRow] = {
+    OWrites[CountryregionRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

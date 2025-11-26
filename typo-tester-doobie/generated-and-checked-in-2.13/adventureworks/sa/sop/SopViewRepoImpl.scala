@@ -6,16 +6,12 @@
 package adventureworks.sa.sop
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class SopViewRepoImpl extends SopViewRepo {
-  override def select: SelectBuilder[SopViewFields, SopViewRow] = {
-    SelectBuilderSql(""""sa"."sop"""", SopViewFields.structure, SopViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, SopViewRow] = {
-    sql"""select "id", "specialofferid", "productid", "rowguid", "modifieddate"::text from "sa"."sop"""".query(SopViewRow.read).stream
-  }
+  def select: SelectBuilder[SopViewFields, SopViewRow] = SelectBuilder.of(""""sa"."sop"""", SopViewFields.structure, SopViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, SopViewRow] = sql"""select "id", "specialofferid", "productid", "rowguid", "modifieddate"::text from "sa"."sop"""".query(SopViewRow.read).stream
 }

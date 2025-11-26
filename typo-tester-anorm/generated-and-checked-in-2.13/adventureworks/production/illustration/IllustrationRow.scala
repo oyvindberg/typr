@@ -22,54 +22,70 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: production.illustration
-    Bicycle assembly diagrams.
-    Primary key: illustrationid */
+ * Bicycle assembly diagrams.
+ * Primary key: illustrationid
+ */
 case class IllustrationRow(
   /** Primary key for Illustration records.
-      Default: nextval('production.illustration_illustrationid_seq'::regclass) */
+   * Default: nextval('production.illustration_illustrationid_seq'::regclass)
+   */
   illustrationid: IllustrationId,
   /** Illustrations used in manufacturing instructions. Stored as XML. */
   diagram: Option[TypoXml],
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = illustrationid
-   def toUnsavedRow(illustrationid: Defaulted[IllustrationId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): IllustrationRowUnsaved =
-     IllustrationRowUnsaved(diagram, illustrationid, modifieddate)
- }
+) {
+  def id: IllustrationId = illustrationid
+
+  def toUnsavedRow(
+    illustrationid: Defaulted[IllustrationId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): IllustrationRowUnsaved = new IllustrationRowUnsaved(diagram, illustrationid, modifieddate)
+}
 
 object IllustrationRow {
-  implicit lazy val reads: Reads[IllustrationRow] = Reads[IllustrationRow](json => JsResult.fromTry(
-      Try(
-        IllustrationRow(
-          illustrationid = json.\("illustrationid").as(IllustrationId.reads),
-          diagram = json.\("diagram").toOption.map(_.as(TypoXml.reads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val pgText: Text[IllustrationRow] = {
+    Text.instance[IllustrationRow]{ (row, sb) =>
+      IllustrationId.pgText.unsafeEncode(row.illustrationid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoXml.pgText).unsafeEncode(row.diagram, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[IllustrationRow] = {
+    Reads[IllustrationRow](json => JsResult.fromTry(
+        Try(
+          IllustrationRow(
+            illustrationid = json.\("illustrationid").as(IllustrationId.reads),
+            diagram = json.\("diagram").toOption.map(_.as(TypoXml.reads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[IllustrationRow] = RowParser[IllustrationRow] { row =>
-    Success(
-      IllustrationRow(
-        illustrationid = row(idx + 0)(IllustrationId.column),
-        diagram = row(idx + 1)(Column.columnToOption(TypoXml.column)),
-        modifieddate = row(idx + 2)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[IllustrationRow] = Text.instance[IllustrationRow]{ (row, sb) =>
-    IllustrationId.text.unsafeEncode(row.illustrationid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoXml.text).unsafeEncode(row.diagram, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[IllustrationRow] = {
+    RowParser[IllustrationRow] { row =>
+      Success(
+        IllustrationRow(
+          illustrationid = row(idx + 0)(IllustrationId.column),
+          diagram = row(idx + 1)(Column.columnToOption(TypoXml.column)),
+          modifieddate = row(idx + 2)(TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[IllustrationRow] = OWrites[IllustrationRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
-      "diagram" -> Writes.OptionWrites(TypoXml.writes).writes(o.diagram),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[IllustrationRow] = {
+    OWrites[IllustrationRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
+        "diagram" -> Writes.OptionWrites(TypoXml.writes).writes(o.diagram),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

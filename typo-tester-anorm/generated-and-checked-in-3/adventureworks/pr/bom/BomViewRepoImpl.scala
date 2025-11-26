@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.bom
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class BomViewRepoImpl extends BomViewRepo {
-  override def select: SelectBuilder[BomViewFields, BomViewRow] = {
-    SelectBuilderSql(""""pr"."bom"""", BomViewFields.structure, BomViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[BomViewRow] = {
+  def select: SelectBuilder[BomViewFields, BomViewRow] = SelectBuilder.of(""""pr"."bom"""", BomViewFields.structure, BomViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[BomViewRow] = {
     SQL"""select "id", "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text
-          from "pr"."bom"
-       """.as(BomViewRow.rowParser(1).*)
+    from "pr"."bom"
+    """.as(BomViewRow.rowParser(1).*)
   }
 }

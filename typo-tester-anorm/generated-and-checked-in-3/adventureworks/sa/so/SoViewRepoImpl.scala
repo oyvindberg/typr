@@ -5,18 +5,16 @@
  */
 package adventureworks.sa.so
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class SoViewRepoImpl extends SoViewRepo {
-  override def select: SelectBuilder[SoViewFields, SoViewRow] = {
-    SelectBuilderSql(""""sa"."so"""", SoViewFields.structure, SoViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[SoViewRow] = {
+  def select: SelectBuilder[SoViewFields, SoViewRow] = SelectBuilder.of(""""sa"."so"""", SoViewFields.structure, SoViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[SoViewRow] = {
     SQL"""select "id", "specialofferid", "description", "discountpct", "type", "category", "startdate"::text, "enddate"::text, "minqty", "maxqty", "rowguid", "modifieddate"::text
-          from "sa"."so"
-       """.as(SoViewRow.rowParser(1).*)
+    from "sa"."so"
+    """.as(SoViewRow.rowParser(1).*)
   }
 }

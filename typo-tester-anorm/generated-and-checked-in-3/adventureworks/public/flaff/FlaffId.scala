@@ -22,24 +22,30 @@ case class FlaffId(
   someNumber: Int,
   specifier: ShortText
 )
+
 object FlaffId {
-  given reads: Reads[FlaffId] = Reads[FlaffId](json => JsResult.fromTry(
-      Try(
-        FlaffId(
-          code = json.\("code").as(ShortText.reads),
-          anotherCode = json.\("another_code").as(Reads.StringReads),
-          someNumber = json.\("some_number").as(Reads.IntReads),
-          specifier = json.\("specifier").as(ShortText.reads)
+  given reads: Reads[FlaffId] = {
+    Reads[FlaffId](json => JsResult.fromTry(
+        Try(
+          FlaffId(
+            code = json.\("code").as(ShortText.reads),
+            anotherCode = json.\("another_code").as(Reads.StringReads),
+            someNumber = json.\("some_number").as(Reads.IntReads),
+            specifier = json.\("specifier").as(ShortText.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[FlaffId] = OWrites[FlaffId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "code" -> ShortText.writes.writes(o.code),
-      "another_code" -> Writes.StringWrites.writes(o.anotherCode),
-      "some_number" -> Writes.IntWrites.writes(o.someNumber),
-      "specifier" -> ShortText.writes.writes(o.specifier)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[FlaffId] = {
+    OWrites[FlaffId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "code" -> ShortText.writes.writes(o.code),
+        "another_code" -> Writes.StringWrites.writes(o.anotherCode),
+        "some_number" -> Writes.IntWrites.writes(o.someNumber),
+        "specifier" -> ShortText.writes.writes(o.specifier)
+      ))
+    )
+  }
 }

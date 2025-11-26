@@ -7,6 +7,7 @@ package adventureworks.production.productphoto
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import play.api.libs.json.JsObject
@@ -21,70 +22,78 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productphoto` which has not been persisted yet */
 case class ProductphotoRowUnsaved(
   /** Small image of the product. */
-  thumbnailphoto: Option[TypoBytea],
+  thumbnailphoto: Option[TypoBytea] = None,
   /** Small image file name. */
-  thumbnailphotofilename: Option[/* max 50 chars */ String],
+  thumbnailphotofilename: Option[/* max 50 chars */ String] = None,
   /** Large image of the product. */
-  largephoto: Option[TypoBytea],
+  largephoto: Option[TypoBytea] = None,
   /** Large image file name. */
-  largephotofilename: Option[/* max 50 chars */ String],
+  largephotofilename: Option[/* max 50 chars */ String] = None,
   /** Default: nextval('production.productphoto_productphotoid_seq'::regclass)
-      Primary key for ProductPhoto records. */
-  productphotoid: Defaulted[ProductphotoId] = Defaulted.UseDefault,
+   * Primary key for ProductPhoto records.
+   */
+  productphotoid: Defaulted[ProductphotoId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productphotoidDefault: => ProductphotoId, modifieddateDefault: => TypoLocalDateTime): ProductphotoRow =
-    ProductphotoRow(
-      productphotoid = productphotoid match {
-                         case Defaulted.UseDefault => productphotoidDefault
-                         case Defaulted.Provided(value) => value
-                       },
+  def toRow(
+    productphotoidDefault: => ProductphotoId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductphotoRow = {
+    new ProductphotoRow(
+      productphotoid = productphotoid.getOrElse(productphotoidDefault),
       thumbnailphoto = thumbnailphoto,
       thumbnailphotofilename = thumbnailphotofilename,
       largephoto = largephoto,
       largephotofilename = largephotofilename,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ProductphotoRowUnsaved {
-  implicit lazy val reads: Reads[ProductphotoRowUnsaved] = Reads[ProductphotoRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductphotoRowUnsaved(
-          thumbnailphoto = json.\("thumbnailphoto").toOption.map(_.as(TypoBytea.reads)),
-          thumbnailphotofilename = json.\("thumbnailphotofilename").toOption.map(_.as(Reads.StringReads)),
-          largephoto = json.\("largephoto").toOption.map(_.as(TypoBytea.reads)),
-          largephotofilename = json.\("largephotofilename").toOption.map(_.as(Reads.StringReads)),
-          productphotoid = json.\("productphotoid").as(Defaulted.reads(ProductphotoId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ProductphotoRowUnsaved] = Text.instance[ProductphotoRowUnsaved]{ (row, sb) =>
-    Text.option(TypoBytea.text).unsafeEncode(row.thumbnailphoto, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.thumbnailphotofilename, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoBytea.text).unsafeEncode(row.largephoto, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.largephotofilename, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ProductphotoId.text).unsafeEncode(row.productphotoid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[ProductphotoRowUnsaved] = OWrites[ProductphotoRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "thumbnailphoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.thumbnailphoto),
-      "thumbnailphotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.thumbnailphotofilename),
-      "largephoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.largephoto),
-      "largephotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.largephotofilename),
-      "productphotoid" -> Defaulted.writes(ProductphotoId.writes).writes(o.productphotoid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ProductphotoRowUnsaved {
+  implicit lazy val pgText: Text[ProductphotoRowUnsaved] = {
+    Text.instance[ProductphotoRowUnsaved]{ (row, sb) =>
+      Text.option(TypoBytea.pgText).unsafeEncode(row.thumbnailphoto, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.thumbnailphotofilename, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoBytea.pgText).unsafeEncode(row.largephoto, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.largephotofilename, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ProductphotoId.pgText).unsafeEncode(row.productphotoid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[ProductphotoRowUnsaved] = {
+    Reads[ProductphotoRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductphotoRowUnsaved(
+            thumbnailphoto = json.\("thumbnailphoto").toOption.map(_.as(TypoBytea.reads)),
+            thumbnailphotofilename = json.\("thumbnailphotofilename").toOption.map(_.as(Reads.StringReads)),
+            largephoto = json.\("largephoto").toOption.map(_.as(TypoBytea.reads)),
+            largephotofilename = json.\("largephotofilename").toOption.map(_.as(Reads.StringReads)),
+            productphotoid = json.\("productphotoid").as(Defaulted.reads(ProductphotoId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductphotoRowUnsaved] = {
+    OWrites[ProductphotoRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "thumbnailphoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.thumbnailphoto),
+        "thumbnailphotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.thumbnailphotofilename),
+        "largephoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.largephoto),
+        "largephotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.largephotofilename),
+        "productphotoid" -> Defaulted.writes(ProductphotoId.writes).writes(o.productphotoid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

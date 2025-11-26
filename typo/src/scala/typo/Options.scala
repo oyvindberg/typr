@@ -4,12 +4,13 @@ import scala.concurrent.ExecutionContext
 
 case class Options(
     pkg: String,
+    lang: Lang,
     dbLib: Option[DbLibName],
     jsonLibs: List[JsonLibName] = Nil,
     silentBanner: Boolean = false,
     logger: TypoLogger = TypoLogger.Console,
     fileHeader: String = Options.header,
-    naming: sc.QIdent => Naming = new Naming(_),
+    naming: (jvm.QIdent, Lang) => Naming = (pkg, lang) => new Naming(pkg, lang),
     typeOverride: TypeOverride = TypeOverride.Empty,
     nullabilityOverride: NullabilityOverride = NullabilityOverride.Empty,
     generateMockRepos: Selector = Selector.All,
@@ -26,8 +27,7 @@ case class Options(
     rewriteDatabase: MetaDb => MetaDb = identity,
     executionContext: ExecutionContext = ExecutionContext.global,
     schemaMode: SchemaMode = SchemaMode.MultiSchema,
-    openEnums: Selector = Selector.None,
-    dialect: Dialect = Dialect.Scala2XSource3
+    openEnums: Selector = Selector.None
 )
 
 object Options {

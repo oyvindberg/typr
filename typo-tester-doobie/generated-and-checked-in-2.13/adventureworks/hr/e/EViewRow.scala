@@ -54,42 +54,46 @@ case class EViewRow(
 
 object EViewRow {
   implicit lazy val decoder: Decoder[EViewRow] = Decoder.forProduct16[EViewRow, BusinessentityId, BusinessentityId, /* max 15 chars */ String, /* max 256 chars */ String, /* max 50 chars */ String, TypoLocalDate, /* bpchar, max 1 chars */ String, /* bpchar, max 1 chars */ String, TypoLocalDate, Flag, TypoShort, TypoShort, Flag, TypoUUID, TypoLocalDateTime, Option[String]]("id", "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(EViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Flag.decoder, TypoShort.decoder, TypoShort.decoder, Flag.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(Decoder.decodeString))
+
   implicit lazy val encoder: Encoder[EViewRow] = Encoder.forProduct16[EViewRow, BusinessentityId, BusinessentityId, /* max 15 chars */ String, /* max 256 chars */ String, /* max 50 chars */ String, TypoLocalDate, /* bpchar, max 1 chars */ String, /* bpchar, max 1 chars */ String, TypoLocalDate, Flag, TypoShort, TypoShort, Flag, TypoUUID, TypoLocalDateTime, Option[String]]("id", "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(x => (x.id, x.businessentityid, x.nationalidnumber, x.loginid, x.jobtitle, x.birthdate, x.maritalstatus, x.gender, x.hiredate, x.salariedflag, x.vacationhours, x.sickleavehours, x.currentflag, x.rowguid, x.modifieddate, x.organizationnode))(BusinessentityId.encoder, BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Flag.encoder, TypoShort.encoder, TypoShort.encoder, Flag.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(Encoder.encodeString))
-  implicit lazy val read: Read[EViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[EViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    EViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          nationalidnumber = arr(2).asInstanceOf[/* max 15 chars */ String],
-          loginid = arr(3).asInstanceOf[/* max 256 chars */ String],
-          jobtitle = arr(4).asInstanceOf[/* max 50 chars */ String],
-          birthdate = arr(5).asInstanceOf[TypoLocalDate],
-          maritalstatus = arr(6).asInstanceOf[/* bpchar, max 1 chars */ String],
-          gender = arr(7).asInstanceOf[/* bpchar, max 1 chars */ String],
-          hiredate = arr(8).asInstanceOf[TypoLocalDate],
-          salariedflag = arr(9).asInstanceOf[Flag],
-          vacationhours = arr(10).asInstanceOf[TypoShort],
-          sickleavehours = arr(11).asInstanceOf[TypoShort],
-          currentflag = arr(12).asInstanceOf[Flag],
-          rowguid = arr(13).asInstanceOf[TypoUUID],
-          modifieddate = arr(14).asInstanceOf[TypoLocalDateTime],
-          organizationnode = arr(15).asInstanceOf[Option[String]]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      EViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            nationalidnumber = arr(2).asInstanceOf[/* max 15 chars */ String],
+            loginid = arr(3).asInstanceOf[/* max 256 chars */ String],
+            jobtitle = arr(4).asInstanceOf[/* max 50 chars */ String],
+            birthdate = arr(5).asInstanceOf[TypoLocalDate],
+            maritalstatus = arr(6).asInstanceOf[/* bpchar, max 1 chars */ String],
+            gender = arr(7).asInstanceOf[/* bpchar, max 1 chars */ String],
+            hiredate = arr(8).asInstanceOf[TypoLocalDate],
+            salariedflag = arr(9).asInstanceOf[Flag],
+            vacationhours = arr(10).asInstanceOf[TypoShort],
+            sickleavehours = arr(11).asInstanceOf[TypoShort],
+            currentflag = arr(12).asInstanceOf[Flag],
+            rowguid = arr(13).asInstanceOf[TypoUUID],
+            modifieddate = arr(14).asInstanceOf[TypoLocalDateTime],
+            organizationnode = arr(15).asInstanceOf[Option[String]]
+      )
+    }
   }
 }

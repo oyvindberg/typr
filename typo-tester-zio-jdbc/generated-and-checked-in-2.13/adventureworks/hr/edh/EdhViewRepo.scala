@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait EdhViewRepo {
   def select: SelectBuilder[EdhViewFields, EdhViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, EdhViewRow]
 }

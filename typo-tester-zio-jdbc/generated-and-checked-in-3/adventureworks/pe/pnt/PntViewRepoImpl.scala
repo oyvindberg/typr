@@ -6,16 +6,12 @@
 package adventureworks.pe.pnt
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PntViewRepoImpl extends PntViewRepo {
-  override def select: SelectBuilder[PntViewFields, PntViewRow] = {
-    SelectBuilderSql(""""pe"."pnt"""", PntViewFields.structure, PntViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PntViewRow] = {
-    sql"""select "id", "phonenumbertypeid", "name", "modifieddate"::text from "pe"."pnt"""".query(using PntViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[PntViewFields, PntViewRow] = SelectBuilder.of(""""pe"."pnt"""", PntViewFields.structure, PntViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, PntViewRow] = sql"""select "id", "phonenumbertypeid", "name", "modifieddate"::text from "pe"."pnt"""".query(using PntViewRow.jdbcDecoder).selectStream()
 }

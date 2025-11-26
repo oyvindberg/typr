@@ -43,16 +43,16 @@ trait ProductinventoryFields {
     productid.isEqual(compositeId.productid).and(locationid.isEqual(compositeId.locationid))
   def compositeIdIn(compositeIds: Array[ProductinventoryId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[ProductinventoryId](productid)(_.productid)(using as[Array[ProductId]](ProductId.arrayPut), implicitly), TuplePart[ProductinventoryId](locationid)(_.locationid)(using as[Array[LocationId]](LocationId.arrayPut), implicitly))
-  
+
 }
 
 object ProductinventoryFields {
   lazy val structure: Relation[ProductinventoryFields, ProductinventoryRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductinventoryFields, ProductinventoryRow] {
-  
+
     override lazy val fields: ProductinventoryFields = new ProductinventoryFields {
       override def productid = IdField[ProductId, ProductinventoryRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def locationid = IdField[LocationId, ProductinventoryRow](_path, "locationid", None, Some("int2"), x => x.locationid, (row, value) => row.copy(locationid = value))
@@ -62,12 +62,11 @@ object ProductinventoryFields {
       override def rowguid = Field[TypoUUID, ProductinventoryRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductinventoryRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductinventoryRow]] =
       List[FieldLike[?, ProductinventoryRow]](fields.productid, fields.locationid, fields.shelf, fields.bin, fields.quantity, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

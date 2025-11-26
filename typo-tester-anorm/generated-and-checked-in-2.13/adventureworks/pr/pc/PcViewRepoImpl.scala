@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.pc
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PcViewRepoImpl extends PcViewRepo {
-  override def select: SelectBuilder[PcViewFields, PcViewRow] = {
-    SelectBuilderSql(""""pr"."pc"""", PcViewFields.structure, PcViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[PcViewRow] = {
+  def select: SelectBuilder[PcViewFields, PcViewRow] = SelectBuilder.of(""""pr"."pc"""", PcViewFields.structure, PcViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[PcViewRow] = {
     SQL"""select "id", "productcategoryid", "name", "rowguid", "modifieddate"::text
-          from "pr"."pc"
-       """.as(PcViewRow.rowParser(1).*)
+    from "pr"."pc"
+    """.as(PcViewRow.rowParser(1).*)
   }
 }

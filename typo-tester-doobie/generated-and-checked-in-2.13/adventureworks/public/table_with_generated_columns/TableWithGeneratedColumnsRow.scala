@@ -13,39 +13,50 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.table-with-generated-columns
-    Primary key: name */
+ * Primary key: name
+ */
 case class TableWithGeneratedColumnsRow(
   name: TableWithGeneratedColumnsId,
   /** Generated ALWAYS, expression: 
-      CASE
-          WHEN (name IS NOT NULL) THEN 'no-name'::text
-          WHEN (name = 'a'::text) THEN 'a-name'::text
-          ELSE 'some-name'::text
-      END */
+  CASE
+      WHEN (name IS NOT NULL) THEN 'no-name'::text
+      WHEN (name = 'a'::text) THEN 'a-name'::text
+      ELSE 'some-name'::text
+  END */
   nameTypeAlways: String
-){
-   val id = name
-   def toUnsavedRow(): TableWithGeneratedColumnsRowUnsaved =
-     TableWithGeneratedColumnsRowUnsaved(name)
- }
+) {
+  def id: TableWithGeneratedColumnsId = name
+
+  def toUnsavedRow: TableWithGeneratedColumnsRowUnsaved = new TableWithGeneratedColumnsRowUnsaved(name)
+}
 
 object TableWithGeneratedColumnsRow {
   implicit lazy val decoder: Decoder[TableWithGeneratedColumnsRow] = Decoder.forProduct2[TableWithGeneratedColumnsRow, TableWithGeneratedColumnsId, String]("name", "name-type-always")(TableWithGeneratedColumnsRow.apply)(TableWithGeneratedColumnsId.decoder, Decoder.decodeString)
+
   implicit lazy val encoder: Encoder[TableWithGeneratedColumnsRow] = Encoder.forProduct2[TableWithGeneratedColumnsRow, TableWithGeneratedColumnsId, String]("name", "name-type-always")(x => (x.name, x.nameTypeAlways))(TableWithGeneratedColumnsId.encoder, Encoder.encodeString)
-  implicit lazy val read: Read[TableWithGeneratedColumnsRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(TableWithGeneratedColumnsId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    TableWithGeneratedColumnsRow(
-      name = arr(0).asInstanceOf[TableWithGeneratedColumnsId],
-          nameTypeAlways = arr(1).asInstanceOf[String]
+
+  implicit lazy val pgText: Text[TableWithGeneratedColumnsRow] = {
+    Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
+      TableWithGeneratedColumnsId.pgText.unsafeEncode(row.name, sb)
+    }
+  }
+
+  implicit lazy val read: Read[TableWithGeneratedColumnsRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(TableWithGeneratedColumnsId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      TableWithGeneratedColumnsRow(
+        name = arr(0).asInstanceOf[TableWithGeneratedColumnsId],
+            nameTypeAlways = arr(1).asInstanceOf[String]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[TableWithGeneratedColumnsRow] = {
+    new Write.Composite[TableWithGeneratedColumnsRow](
+      List(new Write.Single(TableWithGeneratedColumnsId.put)),
+      a => List(a.name)
     )
   }
-  implicit lazy val text: Text[TableWithGeneratedColumnsRow] = Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
-    TableWithGeneratedColumnsId.text.unsafeEncode(row.name, sb)
-  }
-  implicit lazy val write: Write[TableWithGeneratedColumnsRow] = new Write.Composite[TableWithGeneratedColumnsRow](
-    List(new Write.Single(TableWithGeneratedColumnsId.put)),
-    a => List(a.name)
-  )
 }

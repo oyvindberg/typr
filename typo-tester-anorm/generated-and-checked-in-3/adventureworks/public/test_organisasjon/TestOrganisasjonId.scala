@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `public.test_organisasjon` */
-case class TestOrganisasjonId(value: String) extends AnyVal
+case class TestOrganisasjonId(value: String) extends scala.AnyVal
+
 object TestOrganisasjonId {
   given arrayColumn: Column[Array[TestOrganisasjonId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[TestOrganisasjonId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  given bijection: Bijection[TestOrganisasjonId, String] = Bijection[TestOrganisasjonId, String](_.value)(TestOrganisasjonId.apply)
+
+  given bijection: Bijection[TestOrganisasjonId, String] = Bijection.apply[TestOrganisasjonId, String](_.value)(TestOrganisasjonId.apply)
+
   given column: Column[TestOrganisasjonId] = Column.columnToString.map(TestOrganisasjonId.apply)
-  given parameterMetadata: ParameterMetaData[TestOrganisasjonId] = new ParameterMetaData[TestOrganisasjonId] {
-    override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[TestOrganisasjonId] = {
+    new ParameterMetaData[TestOrganisasjonId] {
+      override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[TestOrganisasjonId] = {
+    new Text[TestOrganisasjonId] {
+      override def unsafeEncode(v: TestOrganisasjonId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TestOrganisasjonId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[TestOrganisasjonId] = Reads.StringReads.map(TestOrganisasjonId.apply)
-  given text: Text[TestOrganisasjonId] = new Text[TestOrganisasjonId] {
-    override def unsafeEncode(v: TestOrganisasjonId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TestOrganisasjonId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[TestOrganisasjonId] = ToStatement.stringToStatement.contramap(_.value)
+
   given writes: Writes[TestOrganisasjonId] = Writes.StringWrites.contramap(_.value)
 }

@@ -6,16 +6,12 @@
 package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class VsalespersonsalesbyfiscalyearsViewRepoImpl extends VsalespersonsalesbyfiscalyearsViewRepo {
-  override def select: SelectBuilder[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] = {
-    SelectBuilderSql(""""sales"."vsalespersonsalesbyfiscalyears"""", VsalespersonsalesbyfiscalyearsViewFields.structure, VsalespersonsalesbyfiscalyearsViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, VsalespersonsalesbyfiscalyearsViewRow] = {
-    sql"""select "SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014" from "sales"."vsalespersonsalesbyfiscalyears"""".query(VsalespersonsalesbyfiscalyearsViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] = SelectBuilder.of(""""sales"."vsalespersonsalesbyfiscalyears"""", VsalespersonsalesbyfiscalyearsViewFields.structure, VsalespersonsalesbyfiscalyearsViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, VsalespersonsalesbyfiscalyearsViewRow] = sql"""select "SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014" from "sales"."vsalespersonsalesbyfiscalyears"""".query(VsalespersonsalesbyfiscalyearsViewRow.jdbcDecoder).selectStream()
 }

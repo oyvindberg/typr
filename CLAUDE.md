@@ -369,3 +369,4 @@ When working on Typo issues, follow this workflow:
 
 ### Memories
 - **NEVER REPORT SUCCESS IF ITS NOT A SUCCESS.**
+- never ever use default parameters for anything

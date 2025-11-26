@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait ProductphotoRepo {
   def delete: DeleteBuilder[ProductphotoFields, ProductphotoRow]
+
   def deleteById(productphotoid: ProductphotoId): ConnectionIO[Boolean]
+
   def deleteByIds(productphotoids: Array[ProductphotoId]): ConnectionIO[Int]
+
   def insert(unsaved: ProductphotoRow): ConnectionIO[ProductphotoRow]
+
   def insert(unsaved: ProductphotoRowUnsaved): ConnectionIO[ProductphotoRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, ProductphotoRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, ProductphotoRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, ProductphotoRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, ProductphotoRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[ProductphotoFields, ProductphotoRow]
+
   def selectAll: Stream[ConnectionIO, ProductphotoRow]
+
   def selectById(productphotoid: ProductphotoId): ConnectionIO[Option[ProductphotoRow]]
+
   def selectByIds(productphotoids: Array[ProductphotoId]): Stream[ConnectionIO, ProductphotoRow]
+
   def selectByIdsTracked(productphotoids: Array[ProductphotoId]): ConnectionIO[Map[ProductphotoId, ProductphotoRow]]
+
   def update: UpdateBuilder[ProductphotoFields, ProductphotoRow]
+
   def update(row: ProductphotoRow): ConnectionIO[Option[ProductphotoRow]]
+
   def upsert(unsaved: ProductphotoRow): ConnectionIO[ProductphotoRow]
+
   def upsertBatch(unsaved: List[ProductphotoRow]): Stream[ConnectionIO, ProductphotoRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, ProductphotoRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, ProductphotoRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

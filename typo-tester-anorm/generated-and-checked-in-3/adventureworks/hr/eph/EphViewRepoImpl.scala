@@ -5,18 +5,16 @@
  */
 package adventureworks.hr.eph
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class EphViewRepoImpl extends EphViewRepo {
-  override def select: SelectBuilder[EphViewFields, EphViewRow] = {
-    SelectBuilderSql(""""hr"."eph"""", EphViewFields.structure, EphViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[EphViewRow] = {
+  def select: SelectBuilder[EphViewFields, EphViewRow] = SelectBuilder.of(""""hr"."eph"""", EphViewFields.structure, EphViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[EphViewRow] = {
     SQL"""select "id", "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-          from "hr"."eph"
-       """.as(EphViewRow.rowParser(1).*)
+    from "hr"."eph"
+    """.as(EphViewRow.rowParser(1).*)
   }
 }

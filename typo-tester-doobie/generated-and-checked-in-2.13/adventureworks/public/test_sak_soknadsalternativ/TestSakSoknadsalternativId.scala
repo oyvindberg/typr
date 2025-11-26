@@ -14,11 +14,14 @@ case class TestSakSoknadsalternativId(
   organisasjonskodeSaksbehandler: String,
   utdanningsmulighetKode: String
 )
+
 object TestSakSoknadsalternativId {
   implicit lazy val decoder: Decoder[TestSakSoknadsalternativId] = Decoder.forProduct2[TestSakSoknadsalternativId, String, String]("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")(TestSakSoknadsalternativId.apply)(Decoder.decodeString, Decoder.decodeString)
+
   implicit lazy val encoder: Encoder[TestSakSoknadsalternativId] = Encoder.forProduct2[TestSakSoknadsalternativId, String, String]("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")(x => (x.organisasjonskodeSaksbehandler, x.utdanningsmulighetKode))(Encoder.encodeString, Encoder.encodeString)
-  def from(TestUtdanningstilbudId: TestUtdanningstilbudId, organisasjonskodeSaksbehandler: String): TestSakSoknadsalternativId = TestSakSoknadsalternativId(
-    organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler,
-    utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode
-  )
+
+  def from(
+    TestUtdanningstilbudId: TestUtdanningstilbudId,
+    organisasjonskodeSaksbehandler: String
+  ): TestSakSoknadsalternativId = new TestSakSoknadsalternativId(organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler, utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode)
 }

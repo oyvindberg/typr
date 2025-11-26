@@ -15,23 +15,29 @@ case class PersonId(
   one: Long,
   two: Option[String]
 )
+
 object PersonId {
-  given jsonDecoder: JsonDecoder[PersonId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val one = jsonObj.get("one").toRight("Missing field 'one'").flatMap(_.as(using JsonDecoder.long))
-    val two = jsonObj.get("two").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    if (one.isRight && two.isRight)
-      Right(PersonId(one = one.toOption.get, two = two.toOption.get))
-    else Left(List[Either[String, Any]](one, two).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[PersonId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val one = jsonObj.get("one").toRight("Missing field 'one'").flatMap(_.as(using JsonDecoder.long))
+      val two = jsonObj.get("two").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      if (one.isRight && two.isRight)
+        Right(PersonId(one = one.toOption.get, two = two.toOption.get))
+      else Left(List[Either[String, Any]](one, two).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[PersonId] = new JsonEncoder[PersonId] {
-    override def unsafeEncode(a: PersonId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""one":""")
-      JsonEncoder.long.unsafeEncode(a.one, indent, out)
-      out.write(",")
-      out.write(""""two":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.two, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[PersonId] = {
+    new JsonEncoder[PersonId] {
+      override def unsafeEncode(a: PersonId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""one":""")
+        JsonEncoder.long.unsafeEncode(a.one, indent, out)
+        out.write(",")
+        out.write(""""two":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.two, indent, out)
+        out.write("}")
+      }
     }
   }
 }

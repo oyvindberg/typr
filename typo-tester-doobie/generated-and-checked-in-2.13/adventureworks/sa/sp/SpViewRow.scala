@@ -40,30 +40,34 @@ case class SpViewRow(
 
 object SpViewRow {
   implicit lazy val decoder: Decoder[SpViewRow] = Decoder.forProduct10[SpViewRow, BusinessentityId, BusinessentityId, Option[SalesterritoryId], Option[BigDecimal], BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(SpViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, Decoder.decodeOption(SalesterritoryId.decoder), Decoder.decodeOption(Decoder.decodeBigDecimal), Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[SpViewRow] = Encoder.forProduct10[SpViewRow, BusinessentityId, BusinessentityId, Option[SalesterritoryId], Option[BigDecimal], BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.territoryid, x.salesquota, x.bonus, x.commissionpct, x.salesytd, x.saleslastyear, x.rowguid, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, Encoder.encodeOption(SalesterritoryId.encoder), Encoder.encodeOption(Encoder.encodeBigDecimal), Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[SpViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[SpViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(SalesterritoryId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    SpViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          territoryid = arr(2).asInstanceOf[Option[SalesterritoryId]],
-          salesquota = arr(3).asInstanceOf[Option[BigDecimal]],
-          bonus = arr(4).asInstanceOf[BigDecimal],
-          commissionpct = arr(5).asInstanceOf[BigDecimal],
-          salesytd = arr(6).asInstanceOf[BigDecimal],
-          saleslastyear = arr(7).asInstanceOf[BigDecimal],
-          rowguid = arr(8).asInstanceOf[TypoUUID],
-          modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(SalesterritoryId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      SpViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            territoryid = arr(2).asInstanceOf[Option[SalesterritoryId]],
+            salesquota = arr(3).asInstanceOf[Option[BigDecimal]],
+            bonus = arr(4).asInstanceOf[BigDecimal],
+            commissionpct = arr(5).asInstanceOf[BigDecimal],
+            salesytd = arr(6).asInstanceOf[BigDecimal],
+            saleslastyear = arr(7).asInstanceOf[BigDecimal],
+            rowguid = arr(8).asInstanceOf[TypoUUID],
+            modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

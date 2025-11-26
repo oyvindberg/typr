@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.culture` */
-case class CultureId(value: /* bpchar, max 6 chars */ String) extends AnyVal
+case class CultureId(value: /* bpchar, max 6 chars */ String) extends scala.AnyVal
+
 object CultureId {
   given arrayJdbcDecoder: JdbcDecoder[Array[CultureId]] = adventureworks.StringArrayDecoder.map(_.map(CultureId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[CultureId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[CultureId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[CultureId, /* bpchar, max 6 chars */ String] = Bijection[CultureId, /* bpchar, max 6 chars */ String](_.value)(CultureId.apply)
+
+  given bijection: Bijection[CultureId, /* bpchar, max 6 chars */ String] = Bijection.apply[CultureId, /* bpchar, max 6 chars */ String](_.value)(CultureId.apply)
+
   given jdbcDecoder: JdbcDecoder[CultureId] = JdbcDecoder.stringDecoder.map(CultureId.apply)
+
   given jdbcEncoder: JdbcEncoder[CultureId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[CultureId] = JsonDecoder.string.map(CultureId.apply)
+
   given jsonEncoder: JsonEncoder[CultureId] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[CultureId] = PGType.PGTypeString.as
-  given setter: Setter[CultureId] = Setter.stringSetter.contramap(_.value)
-  given text: Text[CultureId] = new Text[CultureId] {
-    override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CultureId] = {
+    new Text[CultureId] {
+      override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[CultureId] = PGType.PGTypeString.as
+
+  given setter: Setter[CultureId] = Setter.stringSetter.contramap(_.value)
 }

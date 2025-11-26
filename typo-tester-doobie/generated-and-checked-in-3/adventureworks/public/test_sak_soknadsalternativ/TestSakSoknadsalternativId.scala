@@ -14,11 +14,14 @@ case class TestSakSoknadsalternativId(
   organisasjonskodeSaksbehandler: String,
   utdanningsmulighetKode: String
 )
+
 object TestSakSoknadsalternativId {
   given decoder: Decoder[TestSakSoknadsalternativId] = Decoder.forProduct2[TestSakSoknadsalternativId, String, String]("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")(TestSakSoknadsalternativId.apply)(using Decoder.decodeString, Decoder.decodeString)
+
   given encoder: Encoder[TestSakSoknadsalternativId] = Encoder.forProduct2[TestSakSoknadsalternativId, String, String]("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")(x => (x.organisasjonskodeSaksbehandler, x.utdanningsmulighetKode))(using Encoder.encodeString, Encoder.encodeString)
-  def from(TestUtdanningstilbudId: TestUtdanningstilbudId, organisasjonskodeSaksbehandler: String): TestSakSoknadsalternativId = TestSakSoknadsalternativId(
-    organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler,
-    utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode
-  )
+
+  def from(
+    TestUtdanningstilbudId: TestUtdanningstilbudId,
+    organisasjonskodeSaksbehandler: String
+  ): TestSakSoknadsalternativId = new TestSakSoknadsalternativId(organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler, utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode)
 }

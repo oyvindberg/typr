@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait PViewRepo {
   def select: SelectBuilder[PViewFields, PViewRow]
+
   def selectAll: Stream[ConnectionIO, PViewRow]
 }

@@ -10,8 +10,12 @@ import typo.dsl.SelectBuilder
 
 trait PurchaseorderdetailRepo {
   def select: SelectBuilder[PurchaseorderdetailFields, PurchaseorderdetailRow]
+
   def selectAll(implicit c: Connection): List[PurchaseorderdetailRow]
+
   def selectById(compositeId: PurchaseorderdetailId)(implicit c: Connection): Option[PurchaseorderdetailRow]
+
   def selectByIds(compositeIds: Array[PurchaseorderdetailId])(implicit c: Connection): List[PurchaseorderdetailRow]
+
   def selectByIdsTracked(compositeIds: Array[PurchaseorderdetailId])(implicit c: Connection): Map[PurchaseorderdetailId, PurchaseorderdetailRow]
 }

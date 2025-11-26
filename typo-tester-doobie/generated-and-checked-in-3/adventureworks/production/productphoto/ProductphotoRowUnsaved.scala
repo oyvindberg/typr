@@ -6,6 +6,7 @@
 package adventureworks.production.productphoto
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import doobie.postgres.Text
@@ -15,49 +16,53 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.productphoto` which has not been persisted yet */
 case class ProductphotoRowUnsaved(
   /** Small image of the product. */
-  thumbnailphoto: Option[TypoBytea],
+  thumbnailphoto: Option[TypoBytea] = None,
   /** Small image file name. */
-  thumbnailphotofilename: Option[/* max 50 chars */ String],
+  thumbnailphotofilename: Option[/* max 50 chars */ String] = None,
   /** Large image of the product. */
-  largephoto: Option[TypoBytea],
+  largephoto: Option[TypoBytea] = None,
   /** Large image file name. */
-  largephotofilename: Option[/* max 50 chars */ String],
+  largephotofilename: Option[/* max 50 chars */ String] = None,
   /** Default: nextval('production.productphoto_productphotoid_seq'::regclass)
-      Primary key for ProductPhoto records. */
-  productphotoid: Defaulted[ProductphotoId] = Defaulted.UseDefault,
+   * Primary key for ProductPhoto records.
+   */
+  productphotoid: Defaulted[ProductphotoId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productphotoidDefault: => ProductphotoId, modifieddateDefault: => TypoLocalDateTime): ProductphotoRow =
-    ProductphotoRow(
+  def toRow(
+    productphotoidDefault: => ProductphotoId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductphotoRow = {
+    new ProductphotoRow(
+      productphotoid = productphotoid.getOrElse(productphotoidDefault),
       thumbnailphoto = thumbnailphoto,
       thumbnailphotofilename = thumbnailphotofilename,
       largephoto = largephoto,
       largephotofilename = largephotofilename,
-      productphotoid = productphotoid match {
-                         case Defaulted.UseDefault => productphotoidDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ProductphotoRowUnsaved {
   given decoder: Decoder[ProductphotoRowUnsaved] = Decoder.forProduct6[ProductphotoRowUnsaved, Option[TypoBytea], Option[/* max 50 chars */ String], Option[TypoBytea], Option[/* max 50 chars */ String], Defaulted[ProductphotoId], Defaulted[TypoLocalDateTime]]("thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "productphotoid", "modifieddate")(ProductphotoRowUnsaved.apply)(using Decoder.decodeOption(using TypoBytea.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoBytea.decoder), Decoder.decodeOption(using Decoder.decodeString), Defaulted.decoder(using ProductphotoId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ProductphotoRowUnsaved] = Encoder.forProduct6[ProductphotoRowUnsaved, Option[TypoBytea], Option[/* max 50 chars */ String], Option[TypoBytea], Option[/* max 50 chars */ String], Defaulted[ProductphotoId], Defaulted[TypoLocalDateTime]]("thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "productphotoid", "modifieddate")(x => (x.thumbnailphoto, x.thumbnailphotofilename, x.largephoto, x.largephotofilename, x.productphotoid, x.modifieddate))(using Encoder.encodeOption(using TypoBytea.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoBytea.encoder), Encoder.encodeOption(using Encoder.encodeString), Defaulted.encoder(using ProductphotoId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ProductphotoRowUnsaved] = Text.instance[ProductphotoRowUnsaved]{ (row, sb) =>
-    Text.option(using TypoBytea.text).unsafeEncode(row.thumbnailphoto, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.thumbnailphotofilename, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoBytea.text).unsafeEncode(row.largephoto, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.largephotofilename, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ProductphotoId.text).unsafeEncode(row.productphotoid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ProductphotoRowUnsaved] = {
+    Text.instance[ProductphotoRowUnsaved]{ (row, sb) =>
+      Text.option(using TypoBytea.pgText).unsafeEncode(row.thumbnailphoto, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.thumbnailphotofilename, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoBytea.pgText).unsafeEncode(row.largephoto, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.largephotofilename, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ProductphotoId.pgText).unsafeEncode(row.productphotoid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

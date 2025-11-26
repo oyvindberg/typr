@@ -7,6 +7,7 @@ package adventureworks.production.illustration
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
 import play.api.libs.json.JsObject
@@ -21,49 +22,51 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.illustration` which has not been persisted yet */
 case class IllustrationRowUnsaved(
   /** Illustrations used in manufacturing instructions. Stored as XML. */
-  diagram: Option[TypoXml],
+  diagram: Option[TypoXml] = None,
   /** Default: nextval('production.illustration_illustrationid_seq'::regclass)
-      Primary key for Illustration records. */
-  illustrationid: Defaulted[IllustrationId] = Defaulted.UseDefault,
+   * Primary key for Illustration records.
+   */
+  illustrationid: Defaulted[IllustrationId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(illustrationidDefault: => IllustrationId, modifieddateDefault: => TypoLocalDateTime): IllustrationRow =
-    IllustrationRow(
-      diagram = diagram,
-      illustrationid = illustrationid match {
-                         case Defaulted.UseDefault => illustrationidDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    illustrationidDefault: => IllustrationId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): IllustrationRow = new IllustrationRow(illustrationid = illustrationid.getOrElse(illustrationidDefault), diagram = diagram, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object IllustrationRowUnsaved {
-  given reads: Reads[IllustrationRowUnsaved] = Reads[IllustrationRowUnsaved](json => JsResult.fromTry(
-      Try(
-        IllustrationRowUnsaved(
-          diagram = json.\("diagram").toOption.map(_.as(TypoXml.reads)),
-          illustrationid = json.\("illustrationid").as(Defaulted.reads(using IllustrationId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[IllustrationRowUnsaved] = Text.instance[IllustrationRowUnsaved]{ (row, sb) =>
-    Text.option(using TypoXml.text).unsafeEncode(row.diagram, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using IllustrationId.text).unsafeEncode(row.illustrationid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  given pgText: Text[IllustrationRowUnsaved] = {
+    Text.instance[IllustrationRowUnsaved]{ (row, sb) =>
+      Text.option(using TypoXml.pgText).unsafeEncode(row.diagram, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using IllustrationId.pgText).unsafeEncode(row.illustrationid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  given writes: OWrites[IllustrationRowUnsaved] = OWrites[IllustrationRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "diagram" -> Writes.OptionWrites(using TypoXml.writes).writes(o.diagram),
-      "illustrationid" -> Defaulted.writes(using IllustrationId.writes).writes(o.illustrationid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  given reads: Reads[IllustrationRowUnsaved] = {
+    Reads[IllustrationRowUnsaved](json => JsResult.fromTry(
+        Try(
+          IllustrationRowUnsaved(
+            diagram = json.\("diagram").toOption.map(_.as(TypoXml.reads)),
+            illustrationid = json.\("illustrationid").as(Defaulted.reads(using IllustrationId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[IllustrationRowUnsaved] = {
+    OWrites[IllustrationRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "diagram" -> Writes.OptionWrites(using TypoXml.writes).writes(o.diagram),
+        "illustrationid" -> Defaulted.writes(using IllustrationId.writes).writes(o.illustrationid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

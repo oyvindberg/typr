@@ -6,16 +6,12 @@
 package adventureworks.pe.p
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PViewRepoImpl extends PViewRepo {
-  override def select: SelectBuilder[PViewFields, PViewRow] = {
-    SelectBuilderSql(""""pe"."p"""", PViewFields.structure, PViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PViewRow] = {
-    sql"""select "id", "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "pe"."p"""".query(using PViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[PViewFields, PViewRow] = SelectBuilder.of(""""pe"."p"""", PViewFields.structure, PViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, PViewRow] = sql"""select "id", "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "pe"."p"""".query(using PViewRow.jdbcDecoder).selectStream()
 }

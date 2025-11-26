@@ -20,54 +20,73 @@ import testdb.hardcoded.Text
 import testdb.hardcoded.customtypes.Defaulted
 
 /** Table: compositepk.person
-    Composite primary key: one, two */
+ * Composite primary key: one, two
+ */
 case class PersonRow(
   /** Default: auto-increment */
   one: Long,
   /** Default: auto-increment */
   two: Option[String],
   name: Option[String]
-){
-   val compositeId: PersonId = PersonId(one, two)
-   val id = compositeId
-   def toUnsavedRow(one: Defaulted[Long], two: Defaulted[Option[String]]): PersonRowUnsaved =
-     PersonRowUnsaved(name, one, two)
- }
+) {
+  def compositeId: PersonId = new PersonId(one, two)
+
+  def id: PersonId = this.compositeId
+
+  def toUnsavedRow(
+    one: Defaulted[Long],
+    two: Defaulted[Option[String]]
+  ): PersonRowUnsaved = new PersonRowUnsaved(name, one, two)
+}
 
 object PersonRow {
-  def apply(compositeId: PersonId, name: Option[String]) =
-    new PersonRow(compositeId.one, compositeId.two, name)
-  given reads: Reads[PersonRow] = Reads[PersonRow](json => JsResult.fromTry(
-      Try(
-        PersonRow(
-          one = json.\("one").as(Reads.LongReads),
-          two = json.\("two").toOption.map(_.as(Reads.StringReads)),
-          name = json.\("name").toOption.map(_.as(Reads.StringReads))
+  def apply(
+    compositeId: PersonId,
+    name: Option[String]
+  ): PersonRow = new PersonRow(compositeId.one, compositeId.two, name)
+
+  given pgText: Text[PersonRow] = {
+    Text.instance[PersonRow]{ (row, sb) =>
+      Text.longInstance.unsafeEncode(row.one, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.two, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.name, sb)
+    }
+  }
+
+  given reads: Reads[PersonRow] = {
+    Reads[PersonRow](json => JsResult.fromTry(
+        Try(
+          PersonRow(
+            one = json.\("one").as(Reads.LongReads),
+            two = json.\("two").toOption.map(_.as(Reads.StringReads)),
+            name = json.\("name").toOption.map(_.as(Reads.StringReads))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersonRow] = RowParser[PersonRow] { row =>
-    Success(
-      PersonRow(
-        one = row(idx + 0)(using Column.columnToLong),
-        two = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
-        name = row(idx + 2)(using Column.columnToOption(using Column.columnToString))
-      )
+      ),
     )
   }
-  given text: Text[PersonRow] = Text.instance[PersonRow]{ (row, sb) =>
-    Text.longInstance.unsafeEncode(row.one, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.two, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.name, sb)
+
+  def rowParser(idx: Int): RowParser[PersonRow] = {
+    RowParser[PersonRow] { row =>
+      Success(
+        PersonRow(
+          one = row(idx + 0)(using Column.columnToLong),
+          two = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          name = row(idx + 2)(using Column.columnToOption(using Column.columnToString))
+        )
+      )
+    }
   }
-  given writes: OWrites[PersonRow] = OWrites[PersonRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "one" -> Writes.LongWrites.writes(o.one),
-      "two" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.two),
-      "name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.name)
-    ))
-  )
+
+  given writes: OWrites[PersonRow] = {
+    OWrites[PersonRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "one" -> Writes.LongWrites.writes(o.one),
+        "two" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.two),
+        "name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.name)
+      ))
+    )
+  }
 }

@@ -6,6 +6,7 @@
 package adventureworks.sales.specialofferproduct
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
@@ -17,40 +18,45 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.specialofferproduct` which has not been persisted yet */
 case class SpecialofferproductRowUnsaved(
   /** Primary key for SpecialOfferProduct records.
-      Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
+   * Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]]
+   */
   specialofferid: SpecialofferId,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SpecialofferproductRow =
-    SpecialofferproductRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SpecialofferproductRow = {
+    new SpecialofferproductRow(
       specialofferid = specialofferid,
       productid = productid,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object SpecialofferproductRowUnsaved {
   given decoder: Decoder[SpecialofferproductRowUnsaved] = Decoder.forProduct4[SpecialofferproductRowUnsaved, SpecialofferId, ProductId, Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("specialofferid", "productid", "rowguid", "modifieddate")(SpecialofferproductRowUnsaved.apply)(using SpecialofferId.decoder, ProductId.decoder, Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[SpecialofferproductRowUnsaved] = Encoder.forProduct4[SpecialofferproductRowUnsaved, SpecialofferId, ProductId, Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("specialofferid", "productid", "rowguid", "modifieddate")(x => (x.specialofferid, x.productid, x.rowguid, x.modifieddate))(using SpecialofferId.encoder, ProductId.encoder, Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[SpecialofferproductRowUnsaved] = Text.instance[SpecialofferproductRowUnsaved]{ (row, sb) =>
-    SpecialofferId.text.unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[SpecialofferproductRowUnsaved] = {
+    Text.instance[SpecialofferproductRowUnsaved]{ (row, sb) =>
+      SpecialofferId.pgText.unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

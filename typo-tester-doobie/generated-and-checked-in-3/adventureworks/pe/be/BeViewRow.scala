@@ -26,18 +26,22 @@ case class BeViewRow(
 
 object BeViewRow {
   given decoder: Decoder[BeViewRow] = Decoder.forProduct4[BeViewRow, BusinessentityId, BusinessentityId, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "rowguid", "modifieddate")(BeViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[BeViewRow] = Encoder.forProduct4[BeViewRow, BusinessentityId, BusinessentityId, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[BeViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[BeViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    BeViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          rowguid = arr(2).asInstanceOf[TypoUUID],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      BeViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            rowguid = arr(2).asInstanceOf[TypoUUID],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

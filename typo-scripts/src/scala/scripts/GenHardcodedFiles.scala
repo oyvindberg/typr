@@ -5,6 +5,7 @@ import ryddig.TypedLogger
 import typo.*
 import typo.internal.FileSync.SoftWrite
 import typo.internal.analysis.ParsedName
+import typo.internal.codegen.{LangJava, LangScala}
 import typo.internal.{DebugJson, Lazy, generate}
 
 // this runs automatically at build time to instantly see results.
@@ -134,16 +135,23 @@ object GenHardcodedFiles extends BleepCodegenScript("GenHardcodedFiles") {
          |""".stripMargin
 
     targets.foreach { target =>
-      val (dbLib, jsonLib) =
-        if (target.project.value.contains("doobie"))
-          (DbLibName.Doobie, JsonLibName.Circe)
-        else if (target.project.value.contains("zio-jdbc"))
-          (DbLibName.ZioJdbc, JsonLibName.ZioJson)
-        else (DbLibName.Anorm, JsonLibName.PlayJson)
-      val domains = Nil
-
       val dialect: Dialect =
         if (target.project.value.contains("jvm3")) Dialect.Scala3 else Dialect.Scala2XSource3
+
+      val isTypoScala = target.project.value.contains("typo-scala")
+      val (language, dbLib, jsonLib, dslEnabled) =
+        if (target.project.value.contains("doobie"))
+          (LangScala(dialect, TypeSupportScala), Some(DbLibName.Doobie), Some(JsonLibName.Circe), true)
+        else if (target.project.value.contains("zio-jdbc"))
+          (LangScala(dialect, TypeSupportScala), Some(DbLibName.ZioJdbc), Some(JsonLibName.ZioJson), true)
+        else if (target.project.value.contains("typo-java"))
+          (LangJava, Some(DbLibName.Typo), None, true)
+        else if (isTypoScala)
+          (LangScala(Dialect.Scala3, TypeSupportJava), Some(DbLibName.Typo), None, true)
+        else (LangScala(dialect, TypeSupportScala), Some(DbLibName.Anorm), Some(JsonLibName.PlayJson), true)
+      // Mock repos use Scala idioms not compatible with Java types
+      val mockSelector = if (isTypoScala) Selector.None else Selector.All
+      val domains = Nil
 
       val metaDb = MetaDb(relations = all.map(t => t.name -> Lazy(t)).toMap, enums = List(sector, number), domains = domains)
 
@@ -151,18 +159,19 @@ object GenHardcodedFiles extends BleepCodegenScript("GenHardcodedFiles") {
         generate(
           Options(
             pkg = "testdb.hardcoded",
-            Some(dbLib),
-            List(jsonLib),
-            naming = pkg =>
-              new Naming(pkg) {
-                override def enumValue(name: String): sc.Ident = sc.Ident("_" + name.toLowerCase)
-              },
-            fileHeader = header,
-            enableDsl = true,
-            enableTestInserts = Selector.All,
-            enableFieldValue = Selector.All,
+            lang = language,
+            dbLib,
+            jsonLib.toList,
+            generateMockRepos = mockSelector,
             silentBanner = true,
-            dialect = dialect
+            fileHeader = header,
+            naming = (pkg, lang) =>
+              new Naming(pkg, lang) {
+                override def enumValue(name: String): jvm.Ident = jvm.Ident("_" + name.toLowerCase)
+              },
+            enableFieldValue = if (language == LangJava) Selector.None else Selector.All,
+            enableTestInserts = Selector.All,
+            enableDsl = dslEnabled
           ),
           metaDb,
           ProjectGraph(name = "", target.sources, None, Selector.All, scripts = Nil, Nil),
@@ -171,7 +180,6 @@ object GenHardcodedFiles extends BleepCodegenScript("GenHardcodedFiles") {
 
       generated.foreach(
         _.overwriteFolder(
-          dialect,
           // todo: bleep should use something better than timestamps
           softWrite = SoftWrite.No
         )

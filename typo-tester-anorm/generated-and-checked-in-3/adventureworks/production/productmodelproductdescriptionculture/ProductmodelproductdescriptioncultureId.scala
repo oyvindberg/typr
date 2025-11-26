@@ -22,22 +22,28 @@ case class ProductmodelproductdescriptioncultureId(
   productdescriptionid: ProductdescriptionId,
   cultureid: CultureId
 )
+
 object ProductmodelproductdescriptioncultureId {
-  given reads: Reads[ProductmodelproductdescriptioncultureId] = Reads[ProductmodelproductdescriptioncultureId](json => JsResult.fromTry(
-      Try(
-        ProductmodelproductdescriptioncultureId(
-          productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
-          productdescriptionid = json.\("productdescriptionid").as(ProductdescriptionId.reads),
-          cultureid = json.\("cultureid").as(CultureId.reads)
+  given reads: Reads[ProductmodelproductdescriptioncultureId] = {
+    Reads[ProductmodelproductdescriptioncultureId](json => JsResult.fromTry(
+        Try(
+          ProductmodelproductdescriptioncultureId(
+            productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
+            productdescriptionid = json.\("productdescriptionid").as(ProductdescriptionId.reads),
+            cultureid = json.\("cultureid").as(CultureId.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[ProductmodelproductdescriptioncultureId] = OWrites[ProductmodelproductdescriptioncultureId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
-      "productdescriptionid" -> ProductdescriptionId.writes.writes(o.productdescriptionid),
-      "cultureid" -> CultureId.writes.writes(o.cultureid)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[ProductmodelproductdescriptioncultureId] = {
+    OWrites[ProductmodelproductdescriptioncultureId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
+        "productdescriptionid" -> ProductdescriptionId.writes.writes(o.productdescriptionid),
+        "cultureid" -> CultureId.writes.writes(o.cultureid)
+      ))
+    )
+  }
 }

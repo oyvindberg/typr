@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VsalespersonsalesbyfiscalyearsdataViewRepo {
   def select: SelectBuilder[VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VsalespersonsalesbyfiscalyearsdataViewRow]
 }

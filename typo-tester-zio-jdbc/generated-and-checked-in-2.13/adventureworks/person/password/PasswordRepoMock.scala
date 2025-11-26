@@ -22,32 +22,34 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class PasswordRepoMock(toRow: Function1[PasswordRowUnsaved, PasswordRow],
-                       map: scala.collection.mutable.Map[BusinessentityId, PasswordRow] = scala.collection.mutable.Map.empty) extends PasswordRepo {
-  override def delete: DeleteBuilder[PasswordFields, PasswordRow] = {
-    DeleteBuilderMock(DeleteParams.empty, PasswordFields.structure, map)
+case class PasswordRepoMock(
+  toRow: PasswordRowUnsaved => PasswordRow,
+  map: scala.collection.mutable.Map[BusinessentityId, PasswordRow] = scala.collection.mutable.Map.empty[BusinessentityId, PasswordRow]
+) extends PasswordRepo {
+  def delete: DeleteBuilder[PasswordFields, PasswordRow] = DeleteBuilderMock(DeleteParams.empty, PasswordFields.structure, map)
+
+  def deleteById(businessentityid: BusinessentityId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(businessentityid).isDefined)
+
+  def deleteByIds(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(businessentityids.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: PasswordRow): ZIO[ZConnection, Throwable, PasswordRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.businessentityid))
+        sys.error(s"id ${unsaved.businessentityid} already exists")
+      else
+        map.put(unsaved.businessentityid, unsaved)
+
+    unsaved
   }
-  override def deleteById(businessentityid: BusinessentityId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(businessentityid).isDefined)
   }
-  override def deleteByIds(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(businessentityids.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: PasswordRow): ZIO[ZConnection, Throwable, PasswordRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.businessentityid))
-          sys.error(s"id ${unsaved.businessentityid} already exists")
-        else
-          map.put(unsaved.businessentityid, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: PasswordRowUnsaved): ZIO[ZConnection, Throwable, PasswordRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, PasswordRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insert(unsaved: PasswordRowUnsaved): ZIO[ZConnection, Throwable, PasswordRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, PasswordRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.businessentityid -> row)
@@ -55,8 +57,12 @@ class PasswordRepoMock(toRow: Function1[PasswordRowUnsaved, PasswordRow],
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, PasswordRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, PasswordRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
       ZIO.succeed {
         val row = toRow(unsavedRow)
@@ -65,28 +71,25 @@ class PasswordRepoMock(toRow: Function1[PasswordRowUnsaved, PasswordRow],
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[PasswordFields, PasswordRow] = {
-    SelectBuilderMock(PasswordFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PasswordRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(businessentityid: BusinessentityId): ZIO[ZConnection, Throwable, Option[PasswordRow]] = {
-    ZIO.succeed(map.get(businessentityid))
-  }
-  override def selectByIds(businessentityids: Array[BusinessentityId]): ZStream[ZConnection, Throwable, PasswordRow] = {
-    ZStream.fromIterable(businessentityids.flatMap(map.get))
-  }
-  override def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Map[BusinessentityId, PasswordRow]] = {
+
+  def select: SelectBuilder[PasswordFields, PasswordRow] = SelectBuilderMock(PasswordFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, PasswordRow] = ZStream.fromIterable(map.values)
+
+  def selectById(businessentityid: BusinessentityId): ZIO[ZConnection, Throwable, Option[PasswordRow]] = ZIO.succeed(map.get(businessentityid))
+
+  def selectByIds(businessentityids: Array[BusinessentityId]): ZStream[ZConnection, Throwable, PasswordRow] = ZStream.fromIterable(businessentityids.flatMap(map.get))
+
+  def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ZIO[ZConnection, Throwable, Map[BusinessentityId, PasswordRow]] = {
     selectByIds(businessentityids).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.businessentityid, x)).toMap
       businessentityids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[PasswordFields, PasswordRow] = {
-    UpdateBuilderMock(UpdateParams.empty, PasswordFields.structure, map)
-  }
-  override def update(row: PasswordRow): ZIO[ZConnection, Throwable, Option[PasswordRow]] = {
+
+  def update: UpdateBuilder[PasswordFields, PasswordRow] = UpdateBuilderMock(UpdateParams.empty, PasswordFields.structure, map)
+
+  def update(row: PasswordRow): ZIO[ZConnection, Throwable, Option[PasswordRow]] = {
     ZIO.succeed {
       map.get(row.businessentityid).map { _ =>
         map.put(row.businessentityid, row): @nowarn
@@ -94,14 +97,19 @@ class PasswordRepoMock(toRow: Function1[PasswordRowUnsaved, PasswordRow],
       }
     }
   }
-  override def upsert(unsaved: PasswordRow): ZIO[ZConnection, Throwable, UpdateResult[PasswordRow]] = {
+
+  def upsert(unsaved: PasswordRow): ZIO[ZConnection, Throwable, UpdateResult[PasswordRow]] = {
     ZIO.succeed {
       map.put(unsaved.businessentityid, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, PasswordRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, PasswordRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.businessentityid -> row)

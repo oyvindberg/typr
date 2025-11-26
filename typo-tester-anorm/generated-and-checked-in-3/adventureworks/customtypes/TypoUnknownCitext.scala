@@ -20,34 +20,50 @@ import typo.dsl.Bijection
 case class TypoUnknownCitext(value: String)
 
 object TypoUnknownCitext {
-  given arrayColumn: Column[Array[TypoUnknownCitext]] = Column.nonNull[Array[TypoUnknownCitext]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoUnknownCitext(v.asInstanceOf[String])))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoUnknownCitext, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+  given arrayColumn: Column[Array[TypoUnknownCitext]] = {
+    Column.nonNull[Array[TypoUnknownCitext]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoUnknownCitext(v.asInstanceOf[String])))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoUnknownCitext, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   given arrayToStatement: ToStatement[Array[TypoUnknownCitext]] = ToStatement[Array[TypoUnknownCitext]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("citext", v.map(v => v.value))))
-  given bijection: Bijection[TypoUnknownCitext, String] = Bijection[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
-  given column: Column[TypoUnknownCitext] = Column.nonNull[TypoUnknownCitext]((v1: Any, _) =>
-    v1 match {
-      case v: String => Right(TypoUnknownCitext(v))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+
+  given bijection: Bijection[TypoUnknownCitext, String] = Bijection.apply[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
+
+  given column: Column[TypoUnknownCitext] = {
+    Column.nonNull[TypoUnknownCitext]((v1: Any, _) =>
+      v1 match {
+        case v: String => Right(new TypoUnknownCitext(v))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  given parameterMetadata: ParameterMetaData[TypoUnknownCitext] = {
+    new ParameterMetaData[TypoUnknownCitext] {
+      override def sqlType: String = "citext"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  given parameterMetadata: ParameterMetaData[TypoUnknownCitext] = new ParameterMetaData[TypoUnknownCitext] {
-    override def sqlType: String = "citext"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  given pgText: Text[TypoUnknownCitext] = {
+    new Text[TypoUnknownCitext] {
+      override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
   given reads: Reads[TypoUnknownCitext] = Reads.StringReads.map(TypoUnknownCitext.apply)
-  given text: Text[TypoUnknownCitext] = new Text[TypoUnknownCitext] {
-    override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
+
   given toStatement: ToStatement[TypoUnknownCitext] = ToStatement[TypoUnknownCitext]((s, index, v) => s.setObject(index, v.value))
+
   given writes: Writes[TypoUnknownCitext] = Writes.StringWrites.contramap(_.value)
 }

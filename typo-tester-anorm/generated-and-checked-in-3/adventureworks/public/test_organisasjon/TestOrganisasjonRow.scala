@@ -17,35 +17,45 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.test_organisasjon
-    Primary key: organisasjonskode */
-case class TestOrganisasjonRow(
-  organisasjonskode: TestOrganisasjonId
-){
-   val id = organisasjonskode
- }
+ * Primary key: organisasjonskode
+ */
+case class TestOrganisasjonRow(organisasjonskode: TestOrganisasjonId) {
+  def id: TestOrganisasjonId = organisasjonskode
+}
 
 object TestOrganisasjonRow {
-  given reads: Reads[TestOrganisasjonRow] = Reads[TestOrganisasjonRow](json => JsResult.fromTry(
-      Try(
-        TestOrganisasjonRow(
-          organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads)
+  given pgText: Text[TestOrganisasjonRow] = {
+    Text.instance[TestOrganisasjonRow]{ (row, sb) =>
+      TestOrganisasjonId.pgText.unsafeEncode(row.organisasjonskode, sb)
+    }
+  }
+
+  given reads: Reads[TestOrganisasjonRow] = {
+    Reads[TestOrganisasjonRow](json => JsResult.fromTry(
+        Try(
+          TestOrganisasjonRow(
+            organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TestOrganisasjonRow] = RowParser[TestOrganisasjonRow] { row =>
-    Success(
-      TestOrganisasjonRow(
-        organisasjonskode = row(idx + 0)(using TestOrganisasjonId.column)
-      )
+      ),
     )
   }
-  given text: Text[TestOrganisasjonRow] = Text.instance[TestOrganisasjonRow]{ (row, sb) =>
-    TestOrganisasjonId.text.unsafeEncode(row.organisasjonskode, sb)
+
+  def rowParser(idx: Int): RowParser[TestOrganisasjonRow] = {
+    RowParser[TestOrganisasjonRow] { row =>
+      Success(
+        TestOrganisasjonRow(
+          organisasjonskode = row(idx + 0)(using TestOrganisasjonId.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[TestOrganisasjonRow] = OWrites[TestOrganisasjonRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode)
-    ))
-  )
+
+  given writes: OWrites[TestOrganisasjonRow] = {
+    OWrites[TestOrganisasjonRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode)
+      ))
+    )
+  }
 }

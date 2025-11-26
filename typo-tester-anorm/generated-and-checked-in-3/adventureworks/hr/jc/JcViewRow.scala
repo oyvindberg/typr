@@ -36,36 +36,44 @@ case class JcViewRow(
 )
 
 object JcViewRow {
-  given reads: Reads[JcViewRow] = Reads[JcViewRow](json => JsResult.fromTry(
-      Try(
-        JcViewRow(
-          id = json.\("id").as(JobcandidateId.reads),
-          jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
-          businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
-          resume = json.\("resume").toOption.map(_.as(TypoXml.reads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[JcViewRow] = {
+    Reads[JcViewRow](json => JsResult.fromTry(
+        Try(
+          JcViewRow(
+            id = json.\("id").as(JobcandidateId.reads),
+            jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
+            businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
+            resume = json.\("resume").toOption.map(_.as(TypoXml.reads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[JcViewRow] = RowParser[JcViewRow] { row =>
-    Success(
-      JcViewRow(
-        id = row(idx + 0)(using JobcandidateId.column),
-        jobcandidateid = row(idx + 1)(using JobcandidateId.column),
-        businessentityid = row(idx + 2)(using Column.columnToOption(using BusinessentityId.column)),
-        resume = row(idx + 3)(using Column.columnToOption(using TypoXml.column)),
-        modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[JcViewRow] = OWrites[JcViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> JobcandidateId.writes.writes(o.id),
-      "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
-      "businessentityid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.businessentityid),
-      "resume" -> Writes.OptionWrites(using TypoXml.writes).writes(o.resume),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[JcViewRow] = {
+    RowParser[JcViewRow] { row =>
+      Success(
+        JcViewRow(
+          id = row(idx + 0)(using JobcandidateId.column),
+          jobcandidateid = row(idx + 1)(using JobcandidateId.column),
+          businessentityid = row(idx + 2)(using Column.columnToOption(using BusinessentityId.column)),
+          resume = row(idx + 3)(using Column.columnToOption(using TypoXml.column)),
+          modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[JcViewRow] = {
+    OWrites[JcViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> JobcandidateId.writes.writes(o.id),
+        "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
+        "businessentityid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.businessentityid),
+        "resume" -> Writes.OptionWrites(using TypoXml.writes).writes(o.resume),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

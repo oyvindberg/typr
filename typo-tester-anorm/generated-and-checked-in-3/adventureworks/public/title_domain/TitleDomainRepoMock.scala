@@ -17,61 +17,64 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class TitleDomainRepoMock(map: scala.collection.mutable.Map[TitleDomainId, TitleDomainRow] = scala.collection.mutable.Map.empty) extends TitleDomainRepo {
-  override def delete: DeleteBuilder[TitleDomainFields, TitleDomainRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TitleDomainFields.structure, map)
-  }
-  override def deleteById(code: TitleDomainId)(using c: Connection): Boolean = {
-    map.remove(code).isDefined
-  }
-  override def deleteByIds(codes: Array[TitleDomainId])(using c: Connection): Int = {
-    codes.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: TitleDomainRow)(using c: Connection): TitleDomainRow = {
+case class TitleDomainRepoMock(map: scala.collection.mutable.Map[TitleDomainId, TitleDomainRow] = scala.collection.mutable.Map.empty[TitleDomainId, TitleDomainRow]) extends TitleDomainRepo {
+  def delete: DeleteBuilder[TitleDomainFields, TitleDomainRow] = DeleteBuilderMock(DeleteParams.empty, TitleDomainFields.structure, map)
+
+  def deleteById(code: TitleDomainId)(using c: Connection): Boolean = map.remove(code).isDefined
+
+  def deleteByIds(codes: Array[TitleDomainId])(using c: Connection): Int = codes.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: TitleDomainRow)(using c: Connection): TitleDomainRow = {
     val _ = if (map.contains(unsaved.code))
       sys.error(s"id ${unsaved.code} already exists")
     else
       map.put(unsaved.code, unsaved)
-    
+  
     unsaved
   }
-  override def insertStreaming(unsaved: Iterator[TitleDomainRow], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  def insertStreaming(
+    unsaved: Iterator[TitleDomainRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.code -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[TitleDomainFields, TitleDomainRow] = {
-    SelectBuilderMock(TitleDomainFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(using c: Connection): List[TitleDomainRow] = {
-    map.values.toList
-  }
-  override def selectById(code: TitleDomainId)(using c: Connection): Option[TitleDomainRow] = {
-    map.get(code)
-  }
-  override def selectByIds(codes: Array[TitleDomainId])(using c: Connection): List[TitleDomainRow] = {
-    codes.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(codes: Array[TitleDomainId])(using c: Connection): Map[TitleDomainId, TitleDomainRow] = {
+
+  def select: SelectBuilder[TitleDomainFields, TitleDomainRow] = SelectBuilderMock(TitleDomainFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(using c: Connection): List[TitleDomainRow] = map.values.toList
+
+  def selectById(code: TitleDomainId)(using c: Connection): Option[TitleDomainRow] = map.get(code)
+
+  def selectByIds(codes: Array[TitleDomainId])(using c: Connection): List[TitleDomainRow] = codes.flatMap(map.get).toList
+
+  def selectByIdsTracked(codes: Array[TitleDomainId])(using c: Connection): Map[TitleDomainId, TitleDomainRow] = {
     val byId = selectByIds(codes).view.map(x => (x.code, x)).toMap
     codes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[TitleDomainFields, TitleDomainRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TitleDomainFields.structure, map)
-  }
-  override def upsert(unsaved: TitleDomainRow)(using c: Connection): TitleDomainRow = {
+
+  def update: UpdateBuilder[TitleDomainFields, TitleDomainRow] = UpdateBuilderMock(UpdateParams.empty, TitleDomainFields.structure, map)
+
+  def upsert(unsaved: TitleDomainRow)(using c: Connection): TitleDomainRow = {
     map.put(unsaved.code, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[TitleDomainRow])(using c: Connection): List[TitleDomainRow] = {
+
+  def upsertBatch(unsaved: Iterable[TitleDomainRow])(using c: Connection): List[TitleDomainRow] = {
     unsaved.map { row =>
       map += (row.code -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[TitleDomainRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[TitleDomainRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.code -> row)
     }

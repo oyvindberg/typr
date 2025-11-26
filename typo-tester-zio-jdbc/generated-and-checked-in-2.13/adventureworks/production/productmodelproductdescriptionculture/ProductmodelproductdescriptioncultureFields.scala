@@ -45,28 +45,27 @@ trait ProductmodelproductdescriptioncultureFields {
     productmodelid.isEqual(compositeId.productmodelid).and(productdescriptionid.isEqual(compositeId.productdescriptionid)).and(cultureid.isEqual(compositeId.cultureid))
   def compositeIdIn(compositeIds: Array[ProductmodelproductdescriptioncultureId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[ProductmodelproductdescriptioncultureId](productmodelid)(_.productmodelid)(using as[Array[ProductmodelId]](ProductmodelId.arrayJdbcEncoder, PGType.forArray(ProductmodelId.pgType)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](productdescriptionid)(_.productdescriptionid)(using as[Array[ProductdescriptionId]](ProductdescriptionId.arrayJdbcEncoder, PGType.forArray(ProductdescriptionId.pgType)), implicitly), TuplePart[ProductmodelproductdescriptioncultureId](cultureid)(_.cultureid)(using as[Array[CultureId]](CultureId.arrayJdbcEncoder, PGType.forArray(CultureId.pgType)), implicitly))
-  
+
 }
 
 object ProductmodelproductdescriptioncultureFields {
   lazy val structure: Relation[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] {
-  
+
     override lazy val fields: ProductmodelproductdescriptioncultureFields = new ProductmodelproductdescriptioncultureFields {
       override def productmodelid = IdField[ProductmodelId, ProductmodelproductdescriptioncultureRow](_path, "productmodelid", None, Some("int4"), x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def productdescriptionid = IdField[ProductdescriptionId, ProductmodelproductdescriptioncultureRow](_path, "productdescriptionid", None, Some("int4"), x => x.productdescriptionid, (row, value) => row.copy(productdescriptionid = value))
       override def cultureid = IdField[CultureId, ProductmodelproductdescriptioncultureRow](_path, "cultureid", None, Some("bpchar"), x => x.cultureid, (row, value) => row.copy(cultureid = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductmodelproductdescriptioncultureRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductmodelproductdescriptioncultureRow]] =
       List[FieldLike[?, ProductmodelproductdescriptioncultureRow]](fields.productmodelid, fields.productdescriptionid, fields.cultureid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

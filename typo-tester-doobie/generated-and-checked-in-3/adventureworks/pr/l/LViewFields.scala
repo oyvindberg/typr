@@ -24,11 +24,11 @@ trait LViewFields {
 
 object LViewFields {
   lazy val structure: Relation[LViewFields, LViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[LViewFields, LViewRow] {
-  
+
     override lazy val fields: LViewFields = new LViewFields {
       override def id = Field[LocationId, LViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def locationid = Field[LocationId, LViewRow](_path, "locationid", None, None, x => x.locationid, (row, value) => row.copy(locationid = value))
@@ -37,12 +37,11 @@ object LViewFields {
       override def availability = Field[BigDecimal, LViewRow](_path, "availability", None, None, x => x.availability, (row, value) => row.copy(availability = value))
       override def modifieddate = Field[TypoLocalDateTime, LViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, LViewRow]] =
       List[FieldLike[?, LViewRow]](fields.id, fields.locationid, fields.name, fields.costrate, fields.availability, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

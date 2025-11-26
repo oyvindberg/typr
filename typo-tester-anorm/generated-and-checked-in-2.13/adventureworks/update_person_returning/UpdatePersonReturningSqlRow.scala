@@ -26,27 +26,35 @@ case class UpdatePersonReturningSqlRow(
 )
 
 object UpdatePersonReturningSqlRow {
-  implicit lazy val reads: Reads[UpdatePersonReturningSqlRow] = Reads[UpdatePersonReturningSqlRow](json => JsResult.fromTry(
-      Try(
-        UpdatePersonReturningSqlRow(
-          firstname = json.\("firstname").as(FirstName.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[UpdatePersonReturningSqlRow] = {
+    Reads[UpdatePersonReturningSqlRow](json => JsResult.fromTry(
+        Try(
+          UpdatePersonReturningSqlRow(
+            firstname = json.\("firstname").as(FirstName.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[UpdatePersonReturningSqlRow] = RowParser[UpdatePersonReturningSqlRow] { row =>
-    Success(
-      UpdatePersonReturningSqlRow(
-        firstname = row(idx + 0)(/* user-picked */ FirstName.column),
-        modifieddate = row(idx + 1)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[UpdatePersonReturningSqlRow] = OWrites[UpdatePersonReturningSqlRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[UpdatePersonReturningSqlRow] = {
+    RowParser[UpdatePersonReturningSqlRow] { row =>
+      Success(
+        UpdatePersonReturningSqlRow(
+          firstname = row(idx + 0)(/* user-picked */ FirstName.column),
+          modifieddate = row(idx + 1)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[UpdatePersonReturningSqlRow] = {
+    OWrites[UpdatePersonReturningSqlRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

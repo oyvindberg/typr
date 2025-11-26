@@ -94,6 +94,17 @@ sealed trait SqlExpr[T] {
 }
 
 object SqlExpr {
+
+  /** Combine multiple boolean expressions with AND. Returns TRUE if all expressions are true. */
+  def all(exprs: SqlExpr[Boolean]*): SqlExpr[Boolean] =
+    if (exprs.isEmpty) ConstReq(true, implicitly, implicitly)
+    else exprs.reduce((a, b) => Binary(a, SqlOperator.and[Boolean], b))
+
+  /** Combine multiple boolean expressions with OR. Returns TRUE if any expression is true. */
+  def any(exprs: SqlExpr[Boolean]*): SqlExpr[Boolean] =
+    if (exprs.isEmpty) ConstReq(false, implicitly, implicitly)
+    else exprs.reduce((a, b) => Binary(a, SqlOperator.or[Boolean], b))
+
   sealed trait FieldLike[T, R] extends SqlExpr[T] {
     val path: List[Path]
     val name: String

@@ -8,4 +8,5 @@ target
 .vscode
 site/docs
 myproject/
+docs/
 frontpage-generated/

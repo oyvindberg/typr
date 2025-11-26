@@ -7,6 +7,7 @@ package adventureworks.production.productcategory
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
@@ -23,57 +24,63 @@ case class ProductcategoryRowUnsaved(
   /** Category description. */
   name: Name,
   /** Default: nextval('production.productcategory_productcategoryid_seq'::regclass)
-      Primary key for ProductCategory records. */
-  productcategoryid: Defaulted[ProductcategoryId] = Defaulted.UseDefault,
+   * Primary key for ProductCategory records.
+   */
+  productcategoryid: Defaulted[ProductcategoryId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productcategoryidDefault: => ProductcategoryId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductcategoryRow =
-    ProductcategoryRow(
-      productcategoryid = productcategoryid match {
-                            case Defaulted.UseDefault => productcategoryidDefault
-                            case Defaulted.Provided(value) => value
-                          },
+  def toRow(
+    productcategoryidDefault: => ProductcategoryId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductcategoryRow = {
+    new ProductcategoryRow(
+      productcategoryid = productcategoryid.getOrElse(productcategoryidDefault),
       name = name,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ProductcategoryRowUnsaved {
-  implicit lazy val reads: Reads[ProductcategoryRowUnsaved] = Reads[ProductcategoryRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductcategoryRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          productcategoryid = json.\("productcategoryid").as(Defaulted.reads(ProductcategoryId.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ProductcategoryRowUnsaved] = Text.instance[ProductcategoryRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ProductcategoryId.text).unsafeEncode(row.productcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[ProductcategoryRowUnsaved] = OWrites[ProductcategoryRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "productcategoryid" -> Defaulted.writes(ProductcategoryId.writes).writes(o.productcategoryid),
-      "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ProductcategoryRowUnsaved {
+  implicit lazy val pgText: Text[ProductcategoryRowUnsaved] = {
+    Text.instance[ProductcategoryRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ProductcategoryId.pgText).unsafeEncode(row.productcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[ProductcategoryRowUnsaved] = {
+    Reads[ProductcategoryRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductcategoryRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            productcategoryid = json.\("productcategoryid").as(Defaulted.reads(ProductcategoryId.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductcategoryRowUnsaved] = {
+    OWrites[ProductcategoryRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "productcategoryid" -> Defaulted.writes(ProductcategoryId.writes).writes(o.productcategoryid),
+        "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

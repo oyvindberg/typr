@@ -6,16 +6,12 @@
 package adventureworks.pr.plph
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PlphViewRepoImpl extends PlphViewRepo {
-  override def select: SelectBuilder[PlphViewFields, PlphViewRow] = {
-    SelectBuilderSql(""""pr"."plph"""", PlphViewFields.structure, PlphViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PlphViewRow] = {
-    sql"""select "id", "productid", "startdate"::text, "enddate"::text, "listprice", "modifieddate"::text from "pr"."plph"""".query(PlphViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[PlphViewFields, PlphViewRow] = SelectBuilder.of(""""pr"."plph"""", PlphViewFields.structure, PlphViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, PlphViewRow] = sql"""select "id", "productid", "startdate"::text, "enddate"::text, "listprice", "modifieddate"::text from "pr"."plph"""".query(PlphViewRow.jdbcDecoder).selectStream()
 }

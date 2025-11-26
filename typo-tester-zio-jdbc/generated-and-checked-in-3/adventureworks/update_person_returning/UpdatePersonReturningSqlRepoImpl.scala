@@ -9,20 +9,23 @@ import adventureworks.customtypes.TypoLocalDateTime
 import zio.jdbc.SqlFragment.Segment
 import zio.jdbc.SqlFragment.Setter
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class UpdatePersonReturningSqlRepoImpl extends UpdatePersonReturningSqlRepo {
-  override def apply(suffix: /* nullability unknown */ Option[String], cutoff: /* nullability unknown */ Option[TypoLocalDateTime]): ZStream[ZConnection, Throwable, UpdatePersonReturningSqlRow] = {
+  def apply(
+    suffix: /* nullability unknown */ Option[String],
+    cutoff: /* nullability unknown */ Option[TypoLocalDateTime]
+  ): ZStream[ZConnection, Throwable, UpdatePersonReturningSqlRow] = {
     val sql =
       sql"""with row as (
-              update person.person
-              set firstname = firstname || '-' || ${Segment.paramSegment(suffix)(using Setter.optionParamSetter(using Setter.stringSetter))}
-              where modifieddate < ${Segment.paramSegment(cutoff)(using Setter.optionParamSetter(using TypoLocalDateTime.setter))}::timestamp
-              returning firstname, modifieddate
-            )
-            select row."firstname", row."modifieddate"::text
-            from row"""
+        update person.person
+      set firstname = firstname || '-' || ${Segment.paramSegment(suffix)(using Setter.optionParamSetter(using Setter.stringSetter))}
+      where modifieddate < ${Segment.paramSegment(cutoff)(using Setter.optionParamSetter(using TypoLocalDateTime.setter))}::timestamp
+      returning firstname, modifieddate
+      )
+      select row."firstname", row."modifieddate"::text
+      from row"""
     sql.query(using UpdatePersonReturningSqlRow.jdbcDecoder).selectStream()
   }
 }

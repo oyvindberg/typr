@@ -1,5 +1,7 @@
 package typo.dsl
 
+import anorm.RowParser
+
 import java.sql.Connection
 
 trait SelectBuilder[Fields, Row] {
@@ -118,4 +120,13 @@ trait SelectBuilder[Fields, Row] {
   def leftJoinOn[Fields2, Row2](other: SelectBuilder[Fields2, Row2])(
       pred: (Fields ~ Fields2) => SqlExpr[Boolean]
   ): SelectBuilder[Fields ~ Fields2, Row ~ Option[Row2]]
+}
+
+object SelectBuilder {
+  def of[Fields, Row](
+      name: String,
+      structure: Structure.Relation[Fields, Row],
+      rowParser: Int => RowParser[Row]
+  ): SelectBuilderSql[Fields, Row] =
+    SelectBuilderSql.Relation(name, structure, rowParser, SelectParams.empty)
 }

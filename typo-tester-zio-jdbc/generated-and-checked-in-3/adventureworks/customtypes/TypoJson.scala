@@ -21,59 +21,79 @@ import zio.json.JsonEncoder
 case class TypoJson(value: String)
 
 object TypoJson {
-  given arrayJdbcDecoder: JdbcDecoder[Array[TypoJson]] = JdbcDecoder[Array[TypoJson]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoJson(x.asInstanceOf[String]))
-    },
-    "Array[org.postgresql.util.PGobject]"
-  )
+  given arrayJdbcDecoder: JdbcDecoder[Array[TypoJson]] = {
+    JdbcDecoder[Array[TypoJson]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoJson(x.asInstanceOf[String]))
+      },
+      "Array[org.postgresql.util.PGobject]"
+    )
+  }
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TypoJson]] = JdbcEncoder.singleParamEncoder(using arraySetter)
-  given arraySetter: Setter[Array[TypoJson]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "json",
-        v.map { vv =>
+
+  given arraySetter: Setter[Array[TypoJson]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
+        i,
+        ps.getConnection.createArrayOf(
+          "json",
+          v.map { vv =>
+            {
+              val obj = new PGobject()
+              obj.setType("json")
+              obj.setValue(vv.value)
+              obj
+            }
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  given bijection: Bijection[TypoJson, String] = Bijection.apply[TypoJson, String](_.value)(TypoJson.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoJson] = {
+    JdbcDecoder[TypoJson](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoJson(v.asInstanceOf[PGobject].getValue)
+      },
+      "org.postgresql.util.PGobject"
+    )
+  }
+
+  given jdbcEncoder: JdbcEncoder[TypoJson] = JdbcEncoder.singleParamEncoder(using setter)
+
+  given jsonDecoder: JsonDecoder[TypoJson] = JsonDecoder.string.map(TypoJson.apply)
+
+  given jsonEncoder: JsonEncoder[TypoJson] = JsonEncoder.string.contramap(_.value)
+
+  given pgText: Text[TypoJson] = {
+    new Text[TypoJson] {
+      override def unsafeEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given pgType: PGType[TypoJson] = PGType.instance[TypoJson]("json", Types.OTHER)
+
+  given setter: Setter[TypoJson] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
           {
-            val obj = new PGobject
+            val obj = new PGobject()
             obj.setType("json")
-            obj.setValue(vv.value)
+            obj.setValue(v.value)
             obj
           }
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  given bijection: Bijection[TypoJson, String] = Bijection[TypoJson, String](_.value)(TypoJson.apply)
-  given jdbcDecoder: JdbcDecoder[TypoJson] = JdbcDecoder[TypoJson](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoJson(v.asInstanceOf[PGobject].getValue)
-    },
-    "org.postgresql.util.PGobject"
-  )
-  given jdbcEncoder: JdbcEncoder[TypoJson] = JdbcEncoder.singleParamEncoder(using setter)
-  given jsonDecoder: JsonDecoder[TypoJson] = JsonDecoder.string.map(TypoJson.apply)
-  given jsonEncoder: JsonEncoder[TypoJson] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[TypoJson] = PGType.instance[TypoJson]("json", Types.OTHER)
-  given setter: Setter[TypoJson] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
-        i,
-        {
-          val obj = new PGobject
-          obj.setType("json")
-          obj.setValue(v.value)
-          obj
-        }
-      )
-    },
-    "json"
-  )
-  given text: Text[TypoJson] = new Text[TypoJson] {
-    override def unsafeEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+        )
+      },
+      "json"
+    )
   }
 }

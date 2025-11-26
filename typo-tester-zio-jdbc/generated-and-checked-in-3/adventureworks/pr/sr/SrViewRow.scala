@@ -28,40 +28,48 @@ case class SrViewRow(
 )
 
 object SrViewRow {
-  given jdbcDecoder: JdbcDecoder[SrViewRow] = new JdbcDecoder[SrViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SrViewRow) =
-      columIndex + 3 ->
-        SrViewRow(
-          id = ScrapreasonId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          scrapreasonid = ScrapreasonId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[SrViewRow] = {
+    new JdbcDecoder[SrViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SrViewRow) =
+        columIndex + 3 ->
+          SrViewRow(
+            id = ScrapreasonId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            scrapreasonid = ScrapreasonId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[SrViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ScrapreasonId.jsonDecoder))
-    val scrapreasonid = jsonObj.get("scrapreasonid").toRight("Missing field 'scrapreasonid'").flatMap(_.as(using ScrapreasonId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && scrapreasonid.isRight && name.isRight && modifieddate.isRight)
-      Right(SrViewRow(id = id.toOption.get, scrapreasonid = scrapreasonid.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, scrapreasonid, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[SrViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ScrapreasonId.jsonDecoder))
+      val scrapreasonid = jsonObj.get("scrapreasonid").toRight("Missing field 'scrapreasonid'").flatMap(_.as(using ScrapreasonId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && scrapreasonid.isRight && name.isRight && modifieddate.isRight)
+        Right(SrViewRow(id = id.toOption.get, scrapreasonid = scrapreasonid.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, scrapreasonid, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[SrViewRow] = new JsonEncoder[SrViewRow] {
-    override def unsafeEncode(a: SrViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      ScrapreasonId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""scrapreasonid":""")
-      ScrapreasonId.jsonEncoder.unsafeEncode(a.scrapreasonid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[SrViewRow] = {
+    new JsonEncoder[SrViewRow] {
+      override def unsafeEncode(a: SrViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        ScrapreasonId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""scrapreasonid":""")
+        ScrapreasonId.jsonEncoder.unsafeEncode(a.scrapreasonid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

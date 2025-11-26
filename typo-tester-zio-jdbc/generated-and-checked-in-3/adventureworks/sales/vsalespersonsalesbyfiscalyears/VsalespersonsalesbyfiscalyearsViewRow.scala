@@ -24,55 +24,63 @@ case class VsalespersonsalesbyfiscalyearsViewRow(
 )
 
 object VsalespersonsalesbyfiscalyearsViewRow {
-  given jdbcDecoder: JdbcDecoder[VsalespersonsalesbyfiscalyearsViewRow] = new JdbcDecoder[VsalespersonsalesbyfiscalyearsViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, VsalespersonsalesbyfiscalyearsViewRow) =
-      columIndex + 6 ->
-        VsalespersonsalesbyfiscalyearsViewRow(
-          salesPersonID = JdbcDecoder.optionDecoder(using JdbcDecoder.intDecoder).unsafeDecode(columIndex + 0, rs)._2,
-          fullName = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 1, rs)._2,
-          jobTitle = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 2, rs)._2,
-          salesTerritory = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
-          `2012` = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 4, rs)._2,
-          `2013` = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 5, rs)._2,
-          `2014` = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 6, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[VsalespersonsalesbyfiscalyearsViewRow] = {
+    new JdbcDecoder[VsalespersonsalesbyfiscalyearsViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, VsalespersonsalesbyfiscalyearsViewRow) =
+        columIndex + 6 ->
+          VsalespersonsalesbyfiscalyearsViewRow(
+            salesPersonID = JdbcDecoder.optionDecoder(using JdbcDecoder.intDecoder).unsafeDecode(columIndex + 0, rs)._2,
+            fullName = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 1, rs)._2,
+            jobTitle = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            salesTerritory = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            `2012` = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 4, rs)._2,
+            `2013` = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 5, rs)._2,
+            `2014` = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 6, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[VsalespersonsalesbyfiscalyearsViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val salesPersonID = jsonObj.get("SalesPersonID").fold[Either[String, Option[Int]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.int)))
-    val fullName = jsonObj.get("FullName").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val jobTitle = jsonObj.get("JobTitle").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val salesTerritory = jsonObj.get("SalesTerritory").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val `2012` = jsonObj.get("2012").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-    val `2013` = jsonObj.get("2013").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-    val `2014` = jsonObj.get("2014").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-    if (salesPersonID.isRight && fullName.isRight && jobTitle.isRight && salesTerritory.isRight && `2012`.isRight && `2013`.isRight && `2014`.isRight)
-      Right(VsalespersonsalesbyfiscalyearsViewRow(salesPersonID = salesPersonID.toOption.get, fullName = fullName.toOption.get, jobTitle = jobTitle.toOption.get, salesTerritory = salesTerritory.toOption.get, `2012` = `2012`.toOption.get, `2013` = `2013`.toOption.get, `2014` = `2014`.toOption.get))
-    else Left(List[Either[String, Any]](salesPersonID, fullName, jobTitle, salesTerritory, `2012`, `2013`, `2014`).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[VsalespersonsalesbyfiscalyearsViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val salesPersonID = jsonObj.get("SalesPersonID").fold[Either[String, Option[Int]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.int)))
+      val fullName = jsonObj.get("FullName").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val jobTitle = jsonObj.get("JobTitle").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val salesTerritory = jsonObj.get("SalesTerritory").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val `2012` = jsonObj.get("2012").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
+      val `2013` = jsonObj.get("2013").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
+      val `2014` = jsonObj.get("2014").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
+      if (salesPersonID.isRight && fullName.isRight && jobTitle.isRight && salesTerritory.isRight && `2012`.isRight && `2013`.isRight && `2014`.isRight)
+        Right(VsalespersonsalesbyfiscalyearsViewRow(salesPersonID = salesPersonID.toOption.get, fullName = fullName.toOption.get, jobTitle = jobTitle.toOption.get, salesTerritory = salesTerritory.toOption.get, `2012` = `2012`.toOption.get, `2013` = `2013`.toOption.get, `2014` = `2014`.toOption.get))
+      else Left(List[Either[String, Any]](salesPersonID, fullName, jobTitle, salesTerritory, `2012`, `2013`, `2014`).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[VsalespersonsalesbyfiscalyearsViewRow] = new JsonEncoder[VsalespersonsalesbyfiscalyearsViewRow] {
-    override def unsafeEncode(a: VsalespersonsalesbyfiscalyearsViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""SalesPersonID":""")
-      JsonEncoder.option(using JsonEncoder.int).unsafeEncode(a.salesPersonID, indent, out)
-      out.write(",")
-      out.write(""""FullName":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.fullName, indent, out)
-      out.write(",")
-      out.write(""""JobTitle":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.jobTitle, indent, out)
-      out.write(",")
-      out.write(""""SalesTerritory":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.salesTerritory, indent, out)
-      out.write(",")
-      out.write(""""2012":""")
-      JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.`2012`, indent, out)
-      out.write(",")
-      out.write(""""2013":""")
-      JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.`2013`, indent, out)
-      out.write(",")
-      out.write(""""2014":""")
-      JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.`2014`, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[VsalespersonsalesbyfiscalyearsViewRow] = {
+    new JsonEncoder[VsalespersonsalesbyfiscalyearsViewRow] {
+      override def unsafeEncode(a: VsalespersonsalesbyfiscalyearsViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""SalesPersonID":""")
+        JsonEncoder.option(using JsonEncoder.int).unsafeEncode(a.salesPersonID, indent, out)
+        out.write(",")
+        out.write(""""FullName":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.fullName, indent, out)
+        out.write(",")
+        out.write(""""JobTitle":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.jobTitle, indent, out)
+        out.write(",")
+        out.write(""""SalesTerritory":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.salesTerritory, indent, out)
+        out.write(",")
+        out.write(""""2012":""")
+        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.`2012`, indent, out)
+        out.write(",")
+        out.write(""""2013":""")
+        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.`2013`, indent, out)
+        out.write(",")
+        out.write(""""2014":""")
+        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.`2014`, indent, out)
+        out.write("}")
+      }
     }
   }
 }

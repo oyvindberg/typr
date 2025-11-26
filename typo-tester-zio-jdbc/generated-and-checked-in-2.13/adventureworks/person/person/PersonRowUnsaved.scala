@@ -7,6 +7,7 @@ package adventureworks.person.person
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
@@ -22,154 +23,161 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `person.person` which has not been persisted yet */
 case class PersonRowUnsaved(
   /** Primary key for Person records.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
-      Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text])))) */
+   * Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
+   */
   persontype: /* bpchar, max 2 chars */ String,
   /** A courtesy title. For example, Mr. or Ms. */
-  title: Option[/* max 8 chars */ String],
+  title: Option[/* max 8 chars */ String] = None,
   /** First name of the person. */
   firstname: /* user-picked */ FirstName,
   /** Middle name or middle initial of the person. */
-  middlename: Option[Name],
+  middlename: Option[Name] = None,
   /** Last name of the person. */
   lastname: Name,
   /** Surname suffix. For example, Sr. or Jr. */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: Option[/* max 10 chars */ String] = None,
   /** Additional contact information about the person stored in xml format. */
-  additionalcontactinfo: Option[TypoXml],
+  additionalcontactinfo: Option[TypoXml] = None,
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  demographics: Option[TypoXml],
+  demographics: Option[TypoXml] = None,
   /** Default: false
-      0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order. */
-  namestyle: Defaulted[NameStyle] = Defaulted.UseDefault,
+   * 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
+   */
+  namestyle: Defaulted[NameStyle] = new UseDefault(),
   /** Default: 0
-      0 = Contact does not wish to receive e-mail promotions, 1 = Contact does wish to receive e-mail promotions from AdventureWorks, 2 = Contact does wish to receive e-mail promotions from AdventureWorks and selected partners.
-      Constraint CK_Person_EmailPromotion affecting columns emailpromotion:  (((emailpromotion >= 0) AND (emailpromotion <= 2))) */
-  emailpromotion: Defaulted[Int] = Defaulted.UseDefault,
+   * 0 = Contact does not wish to receive e-mail promotions, 1 = Contact does wish to receive e-mail promotions from AdventureWorks, 2 = Contact does wish to receive e-mail promotions from AdventureWorks and selected partners.
+   * Constraint CK_Person_EmailPromotion affecting columns emailpromotion:  (((emailpromotion >= 0) AND (emailpromotion <= 2)))
+   */
+  emailpromotion: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(namestyleDefault: => NameStyle, emailpromotionDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): PersonRow =
-    PersonRow(
+  def toRow(
+    namestyleDefault: => NameStyle,
+    emailpromotionDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): PersonRow = {
+    new PersonRow(
       businessentityid = businessentityid,
       persontype = persontype,
-      namestyle = namestyle match {
-                    case Defaulted.UseDefault => namestyleDefault
-                    case Defaulted.Provided(value) => value
-                  },
+      namestyle = namestyle.getOrElse(namestyleDefault),
       title = title,
       firstname = firstname,
       middlename = middlename,
       lastname = lastname,
       suffix = suffix,
-      emailpromotion = emailpromotion match {
-                         case Defaulted.UseDefault => emailpromotionDefault
-                         case Defaulted.Provided(value) => value
-                       },
+      emailpromotion = emailpromotion.getOrElse(emailpromotionDefault),
       additionalcontactinfo = additionalcontactinfo,
       demographics = demographics,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object PersonRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[PersonRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val persontype = jsonObj.get("persontype").toRight("Missing field 'persontype'").flatMap(_.as(JsonDecoder.string))
-    val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-    val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
-    val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
-    val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
-    val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-    val additionalcontactinfo = jsonObj.get("additionalcontactinfo").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
-    val demographics = jsonObj.get("demographics").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
-    val namestyle = jsonObj.get("namestyle").toRight("Missing field 'namestyle'").flatMap(_.as(Defaulted.jsonDecoder(NameStyle.jsonDecoder)))
-    val emailpromotion = jsonObj.get("emailpromotion").toRight("Missing field 'emailpromotion'").flatMap(_.as(Defaulted.jsonDecoder(JsonDecoder.int)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (businessentityid.isRight && persontype.isRight && title.isRight && firstname.isRight && middlename.isRight && lastname.isRight && suffix.isRight && additionalcontactinfo.isRight && demographics.isRight && namestyle.isRight && emailpromotion.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(PersonRowUnsaved(businessentityid = businessentityid.toOption.get, persontype = persontype.toOption.get, title = title.toOption.get, firstname = firstname.toOption.get, middlename = middlename.toOption.get, lastname = lastname.toOption.get, suffix = suffix.toOption.get, additionalcontactinfo = additionalcontactinfo.toOption.get, demographics = demographics.toOption.get, namestyle = namestyle.toOption.get, emailpromotion = emailpromotion.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  implicit lazy val jsonEncoder: JsonEncoder[PersonRowUnsaved] = new JsonEncoder[PersonRowUnsaved] {
-    override def unsafeEncode(a: PersonRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""persontype":""")
-      JsonEncoder.string.unsafeEncode(a.persontype, indent, out)
-      out.write(",")
-      out.write(""""title":""")
-      JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.title, indent, out)
-      out.write(",")
-      out.write(""""firstname":""")
-      FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
-      out.write(",")
-      out.write(""""middlename":""")
-      JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
-      out.write(",")
-      out.write(""""lastname":""")
-      Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
-      out.write(",")
-      out.write(""""suffix":""")
-      JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.suffix, indent, out)
-      out.write(",")
-      out.write(""""additionalcontactinfo":""")
-      JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.additionalcontactinfo, indent, out)
-      out.write(",")
-      out.write(""""demographics":""")
-      JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.demographics, indent, out)
-      out.write(",")
-      out.write(""""namestyle":""")
-      Defaulted.jsonEncoder(NameStyle.jsonEncoder).unsafeEncode(a.namestyle, indent, out)
-      out.write(",")
-      out.write(""""emailpromotion":""")
-      Defaulted.jsonEncoder(JsonEncoder.int).unsafeEncode(a.emailpromotion, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object PersonRowUnsaved {
+  implicit lazy val jsonDecoder: JsonDecoder[PersonRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val persontype = jsonObj.get("persontype").toRight("Missing field 'persontype'").flatMap(_.as(JsonDecoder.string))
+      val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
+      val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
+      val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
+      val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val additionalcontactinfo = jsonObj.get("additionalcontactinfo").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
+      val demographics = jsonObj.get("demographics").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
+      val namestyle = jsonObj.get("namestyle").toRight("Missing field 'namestyle'").flatMap(_.as(Defaulted.jsonDecoder(NameStyle.jsonDecoder)))
+      val emailpromotion = jsonObj.get("emailpromotion").toRight("Missing field 'emailpromotion'").flatMap(_.as(Defaulted.jsonDecoder(JsonDecoder.int)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (businessentityid.isRight && persontype.isRight && title.isRight && firstname.isRight && middlename.isRight && lastname.isRight && suffix.isRight && additionalcontactinfo.isRight && demographics.isRight && namestyle.isRight && emailpromotion.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(PersonRowUnsaved(businessentityid = businessentityid.toOption.get, persontype = persontype.toOption.get, title = title.toOption.get, firstname = firstname.toOption.get, middlename = middlename.toOption.get, lastname = lastname.toOption.get, suffix = suffix.toOption.get, additionalcontactinfo = additionalcontactinfo.toOption.get, demographics = demographics.toOption.get, namestyle = namestyle.toOption.get, emailpromotion = emailpromotion.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[PersonRowUnsaved] = Text.instance[PersonRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.persontype, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    /* user-picked */ FirstName.text.unsafeEncode(row.firstname, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Name.text).unsafeEncode(row.middlename, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.lastname, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.suffix, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoXml.text).unsafeEncode(row.additionalcontactinfo, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoXml.text).unsafeEncode(row.demographics, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(NameStyle.text).unsafeEncode(row.namestyle, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.intInstance).unsafeEncode(row.emailpromotion, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[PersonRowUnsaved] = {
+    new JsonEncoder[PersonRowUnsaved] {
+      override def unsafeEncode(a: PersonRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""persontype":""")
+        JsonEncoder.string.unsafeEncode(a.persontype, indent, out)
+        out.write(",")
+        out.write(""""title":""")
+        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.title, indent, out)
+        out.write(",")
+        out.write(""""firstname":""")
+        FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
+        out.write(",")
+        out.write(""""middlename":""")
+        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
+        out.write(",")
+        out.write(""""lastname":""")
+        Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
+        out.write(",")
+        out.write(""""suffix":""")
+        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.suffix, indent, out)
+        out.write(",")
+        out.write(""""additionalcontactinfo":""")
+        JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.additionalcontactinfo, indent, out)
+        out.write(",")
+        out.write(""""demographics":""")
+        JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.demographics, indent, out)
+        out.write(",")
+        out.write(""""namestyle":""")
+        Defaulted.jsonEncoder(NameStyle.jsonEncoder).unsafeEncode(a.namestyle, indent, out)
+        out.write(",")
+        out.write(""""emailpromotion":""")
+        Defaulted.jsonEncoder(JsonEncoder.int).unsafeEncode(a.emailpromotion, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[PersonRowUnsaved] = {
+    Text.instance[PersonRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.persontype, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      /* user-picked */ FirstName.pgText.unsafeEncode(row.firstname, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Name.pgText).unsafeEncode(row.middlename, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.lastname, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.suffix, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoXml.pgText).unsafeEncode(row.additionalcontactinfo, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoXml.pgText).unsafeEncode(row.demographics, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(NameStyle.pgText).unsafeEncode(row.namestyle, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.intInstance).unsafeEncode(row.emailpromotion, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

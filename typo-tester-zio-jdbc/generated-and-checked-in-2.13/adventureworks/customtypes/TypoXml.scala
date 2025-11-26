@@ -22,54 +22,74 @@ import zio.json.JsonEncoder
 case class TypoXml(value: String)
 
 object TypoXml {
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoXml]] = JdbcDecoder[Array[TypoXml]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoXml(x.asInstanceOf[PGobject].getValue))
-    },
-    "Array[java.lang.String]"
-  )
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoXml]] = {
+    JdbcDecoder[Array[TypoXml]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoXml(x.asInstanceOf[PGobject].getValue))
+      },
+      "Array[java.lang.String]"
+    )
+  }
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TypoXml]] = JdbcEncoder.singleParamEncoder(arraySetter)
-  implicit lazy val arraySetter: Setter[Array[TypoXml]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "xml",
-        v.map { vv =>
-          {
-            val obj = new PGobject
-            obj.setType("xml")
-            obj.setValue(vv.value)
-            obj
-          }
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  implicit lazy val bijection: Bijection[TypoXml, String] = Bijection[TypoXml, String](_.value)(TypoXml.apply)
-  implicit lazy val jdbcDecoder: JdbcDecoder[TypoXml] = JdbcDecoder[TypoXml](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoXml(v.asInstanceOf[PgSQLXML].getString)
-    },
-    "java.lang.String"
-  )
-  implicit lazy val jdbcEncoder: JdbcEncoder[TypoXml] = JdbcEncoder.singleParamEncoder(setter)
-  implicit lazy val jsonDecoder: JsonDecoder[TypoXml] = JsonDecoder.string.map(TypoXml.apply)
-  implicit lazy val jsonEncoder: JsonEncoder[TypoXml] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val pgType: PGType[TypoXml] = PGType.instance[TypoXml]("xml", Types.OTHER)
-  implicit lazy val setter: Setter[TypoXml] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  implicit lazy val arraySetter: Setter[Array[TypoXml]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value
-      )
-    },
-    "xml"
-  )
-  implicit lazy val text: Text[TypoXml] = new Text[TypoXml] {
-    override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+        ps.getConnection.createArrayOf(
+          "xml",
+          v.map { vv =>
+            {
+              val obj = new PGobject()
+              obj.setType("xml")
+              obj.setValue(vv.value)
+              obj
+            }
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  implicit lazy val bijection: Bijection[TypoXml, String] = Bijection.apply[TypoXml, String](_.value)(TypoXml.apply)
+
+  implicit lazy val jdbcDecoder: JdbcDecoder[TypoXml] = {
+    JdbcDecoder[TypoXml](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoXml(v.asInstanceOf[PgSQLXML].getString)
+      },
+      "java.lang.String"
+    )
+  }
+
+  implicit lazy val jdbcEncoder: JdbcEncoder[TypoXml] = JdbcEncoder.singleParamEncoder(setter)
+
+  implicit lazy val jsonDecoder: JsonDecoder[TypoXml] = JsonDecoder.string.map(TypoXml.apply)
+
+  implicit lazy val jsonEncoder: JsonEncoder[TypoXml] = JsonEncoder.string.contramap(_.value)
+
+  implicit lazy val pgText: Text[TypoXml] = {
+    new Text[TypoXml] {
+      override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString(), sb)
+      override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString(), sb)
+    }
+  }
+
+  implicit lazy val pgType: PGType[TypoXml] = PGType.instance[TypoXml]("xml", Types.OTHER)
+
+  implicit lazy val setter: Setter[TypoXml] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value
+        )
+      },
+      "xml"
+    )
   }
 }

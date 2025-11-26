@@ -31,33 +31,41 @@ case class CuViewRow(
 )
 
 object CuViewRow {
-  given reads: Reads[CuViewRow] = Reads[CuViewRow](json => JsResult.fromTry(
-      Try(
-        CuViewRow(
-          id = json.\("id").as(CurrencyId.reads),
-          currencycode = json.\("currencycode").as(CurrencyId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[CuViewRow] = {
+    Reads[CuViewRow](json => JsResult.fromTry(
+        Try(
+          CuViewRow(
+            id = json.\("id").as(CurrencyId.reads),
+            currencycode = json.\("currencycode").as(CurrencyId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CuViewRow] = RowParser[CuViewRow] { row =>
-    Success(
-      CuViewRow(
-        id = row(idx + 0)(using CurrencyId.column),
-        currencycode = row(idx + 1)(using CurrencyId.column),
-        name = row(idx + 2)(using Name.column),
-        modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[CuViewRow] = OWrites[CuViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> CurrencyId.writes.writes(o.id),
-      "currencycode" -> CurrencyId.writes.writes(o.currencycode),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[CuViewRow] = {
+    RowParser[CuViewRow] { row =>
+      Success(
+        CuViewRow(
+          id = row(idx + 0)(using CurrencyId.column),
+          currencycode = row(idx + 1)(using CurrencyId.column),
+          name = row(idx + 2)(using Name.column),
+          modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[CuViewRow] = {
+    OWrites[CuViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> CurrencyId.writes.writes(o.id),
+        "currencycode" -> CurrencyId.writes.writes(o.currencycode),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -12,19 +12,44 @@ import typo.dsl.UpdateBuilder
 
 trait MaritalStatusRepo {
   def delete: DeleteBuilder[MaritalStatusFields, MaritalStatusRow]
+
   def deleteById(id: MaritalStatusId)(using c: Connection): Boolean
+
   def deleteByIds(ids: Array[MaritalStatusId])(using c: Connection): Int
+
   def insert(unsaved: MaritalStatusRow)(using c: Connection): MaritalStatusRow
-  def insertStreaming(unsaved: Iterator[MaritalStatusRow], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[MaritalStatusRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[MaritalStatusFields, MaritalStatusRow]
+
   def selectAll(using c: Connection): List[MaritalStatusRow]
-  def selectByFieldValues(fieldValues: List[MaritalStatusFieldOrIdValue[?]])(using c: Connection): List[MaritalStatusRow]
+
+  def selectByFieldValues(fieldValues: List[MaritalStatusFieldValue[?]])(using c: Connection): List[MaritalStatusRow]
+
   def selectById(id: MaritalStatusId)(using c: Connection): Option[MaritalStatusRow]
+
   def selectByIds(ids: Array[MaritalStatusId])(using c: Connection): List[MaritalStatusRow]
+
   def selectByIdsTracked(ids: Array[MaritalStatusId])(using c: Connection): Map[MaritalStatusId, MaritalStatusRow]
+
   def update: UpdateBuilder[MaritalStatusFields, MaritalStatusRow]
+
+  def updateFieldValues(
+    id: MaritalStatusId,
+    fieldValues: List[MaritalStatusFieldValue[?]]
+  )(using c: Connection): Boolean
+
   def upsert(unsaved: MaritalStatusRow)(using c: Connection): MaritalStatusRow
+
   def upsertBatch(unsaved: Iterable[MaritalStatusRow])(using c: Connection): List[MaritalStatusRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[MaritalStatusRow], batchSize: Int = 10000)(using c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[MaritalStatusRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int
 }

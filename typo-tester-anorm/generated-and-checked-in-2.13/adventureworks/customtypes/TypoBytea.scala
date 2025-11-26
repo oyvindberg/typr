@@ -19,22 +19,34 @@ import typo.dsl.Bijection
 case class TypoBytea(value: Array[Byte])
 
 object TypoBytea {
-  implicit lazy val bijection: Bijection[TypoBytea, Array[Byte]] = Bijection[TypoBytea, Array[Byte]](_.value)(TypoBytea.apply)
-  implicit lazy val column: Column[TypoBytea] = Column.nonNull[TypoBytea]((v1: Any, _) =>
-    v1 match {
-      case v: Array[Byte] => Right(TypoBytea(v))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of Array[scala.Byte], got ${other.getClass.getName}"))
+  implicit lazy val bijection: Bijection[TypoBytea, Array[Byte]] = Bijection.apply[TypoBytea, Array[Byte]](_.value)(TypoBytea.apply)
+
+  implicit lazy val column: Column[TypoBytea] = {
+    Column.nonNull[TypoBytea]((v1: Any, _) =>
+      v1 match {
+        case v: Array[Byte] => Right(new TypoBytea(v))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of Array[scala.Byte], got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  implicit lazy val parameterMetadata: ParameterMetaData[TypoBytea] = {
+    new ParameterMetaData[TypoBytea] {
+      override def sqlType: String = "bytea"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  implicit lazy val parameterMetadata: ParameterMetaData[TypoBytea] = new ParameterMetaData[TypoBytea] {
-    override def sqlType: String = "bytea"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  implicit lazy val pgText: Text[TypoBytea] = {
+    new Text[TypoBytea] {
+      override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[TypoBytea] = Reads.ArrayReads[Byte](Reads.ByteReads, implicitly).map(TypoBytea.apply)
-  implicit lazy val text: Text[TypoBytea] = new Text[TypoBytea] {
-    override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[TypoBytea] = ToStatement[TypoBytea]((s, index, v) => s.setObject(index, v.value))
+
   implicit lazy val writes: Writes[TypoBytea] = Writes.arrayWrites[Byte](implicitly, Writes.ByteWrites).contramap(_.value)
 }

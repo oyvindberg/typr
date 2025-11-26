@@ -28,11 +28,11 @@ trait PmViewFields {
 
 object PmViewFields {
   lazy val structure: Relation[PmViewFields, PmViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PmViewFields, PmViewRow] {
-  
+
     override lazy val fields: PmViewFields = new PmViewFields {
       override def id = Field[ProductmodelId, PmViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productmodelid = Field[ProductmodelId, PmViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
@@ -42,12 +42,11 @@ object PmViewFields {
       override def rowguid = Field[TypoUUID, PmViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PmViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PmViewRow]] =
       List[FieldLike[?, PmViewRow]](fields.id, fields.productmodelid, fields.name, fields.catalogdescription, fields.instructions, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

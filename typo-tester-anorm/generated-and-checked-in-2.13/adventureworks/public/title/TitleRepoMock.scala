@@ -17,61 +17,64 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class TitleRepoMock(map: scala.collection.mutable.Map[TitleId, TitleRow] = scala.collection.mutable.Map.empty) extends TitleRepo {
-  override def delete: DeleteBuilder[TitleFields, TitleRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TitleFields.structure, map)
-  }
-  override def deleteById(code: TitleId)(implicit c: Connection): Boolean = {
-    map.remove(code).isDefined
-  }
-  override def deleteByIds(codes: Array[TitleId])(implicit c: Connection): Int = {
-    codes.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
+case class TitleRepoMock(map: scala.collection.mutable.Map[TitleId, TitleRow] = scala.collection.mutable.Map.empty[TitleId, TitleRow]) extends TitleRepo {
+  def delete: DeleteBuilder[TitleFields, TitleRow] = DeleteBuilderMock(DeleteParams.empty, TitleFields.structure, map)
+
+  def deleteById(code: TitleId)(implicit c: Connection): Boolean = map.remove(code).isDefined
+
+  def deleteByIds(codes: Array[TitleId])(implicit c: Connection): Int = codes.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
     val _ = if (map.contains(unsaved.code))
       sys.error(s"id ${unsaved.code} already exists")
     else
       map.put(unsaved.code, unsaved)
-    
+  
     unsaved
   }
-  override def insertStreaming(unsaved: Iterator[TitleRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  def insertStreaming(
+    unsaved: Iterator[TitleRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.code -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[TitleFields, TitleRow] = {
-    SelectBuilderMock(TitleFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(implicit c: Connection): List[TitleRow] = {
-    map.values.toList
-  }
-  override def selectById(code: TitleId)(implicit c: Connection): Option[TitleRow] = {
-    map.get(code)
-  }
-  override def selectByIds(codes: Array[TitleId])(implicit c: Connection): List[TitleRow] = {
-    codes.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(codes: Array[TitleId])(implicit c: Connection): Map[TitleId, TitleRow] = {
+
+  def select: SelectBuilder[TitleFields, TitleRow] = SelectBuilderMock(TitleFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(implicit c: Connection): List[TitleRow] = map.values.toList
+
+  def selectById(code: TitleId)(implicit c: Connection): Option[TitleRow] = map.get(code)
+
+  def selectByIds(codes: Array[TitleId])(implicit c: Connection): List[TitleRow] = codes.flatMap(map.get).toList
+
+  def selectByIdsTracked(codes: Array[TitleId])(implicit c: Connection): Map[TitleId, TitleRow] = {
     val byId = selectByIds(codes).view.map(x => (x.code, x)).toMap
     codes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[TitleFields, TitleRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TitleFields.structure, map)
-  }
-  override def upsert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
+
+  def update: UpdateBuilder[TitleFields, TitleRow] = UpdateBuilderMock(UpdateParams.empty, TitleFields.structure, map)
+
+  def upsert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
     map.put(unsaved.code, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[TitleRow])(implicit c: Connection): List[TitleRow] = {
+
+  def upsertBatch(unsaved: Iterable[TitleRow])(implicit c: Connection): List[TitleRow] = {
     unsaved.map { row =>
       map += (row.code -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[TitleRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[TitleRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.code -> row)
     }

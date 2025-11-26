@@ -4,7 +4,7 @@ package codegen
 
 case class SqlCast(typeName: String) {
   val withColons = s"::$typeName"
-  val asCode: sc.Code = sc.Code.Str(withColons)
+  val asCode: jvm.Code = jvm.Code.Str(withColons)
 
   override def toString: String = sys.error("don't write directly")
 }
@@ -33,8 +33,8 @@ object SqlCast {
         }
     }
 
-  def toPgCode(c: ComputedColumn): sc.Code =
-    toPg(c.dbCol).fold(sc.Code.Empty)(_.asCode)
+  def toPgCode(c: ComputedColumn): jvm.Code =
+    toPg(c.dbCol).fold(jvm.Code.Empty)(_.asCode)
 
   /** avoid whatever the postgres driver does for these data formats by going through basic data types
     */
@@ -61,6 +61,6 @@ object SqlCast {
       case _ => None
     }
 
-  def fromPgCode(c: ComputedColumn): sc.Code =
-    fromPg(c.dbCol.tpe).fold(sc.Code.Empty)(_.asCode)
+  def fromPgCode(c: ComputedColumn): jvm.Code =
+    fromPg(c.dbCol.tpe).fold(jvm.Code.Empty)(_.asCode)
 }

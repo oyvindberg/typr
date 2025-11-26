@@ -7,6 +7,7 @@ package adventureworks.production.location
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -23,71 +24,77 @@ case class LocationRowUnsaved(
   /** Location description. */
   name: Name,
   /** Default: nextval('production.location_locationid_seq'::regclass)
-      Primary key for Location records. */
-  locationid: Defaulted[LocationId] = Defaulted.UseDefault,
+   * Primary key for Location records.
+   */
+  locationid: Defaulted[LocationId] = new UseDefault(),
   /** Default: 0.00
-      Standard hourly cost of the manufacturing location.
-      Constraint CK_Location_CostRate affecting columns costrate:  ((costrate >= 0.00)) */
-  costrate: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Standard hourly cost of the manufacturing location.
+   * Constraint CK_Location_CostRate affecting columns costrate:  ((costrate >= 0.00))
+   */
+  costrate: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.00
-      Work capacity (in hours) of the manufacturing location.
-      Constraint CK_Location_Availability affecting columns availability:  ((availability >= 0.00)) */
-  availability: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Work capacity (in hours) of the manufacturing location.
+   * Constraint CK_Location_Availability affecting columns availability:  ((availability >= 0.00))
+   */
+  availability: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(locationidDefault: => LocationId, costrateDefault: => BigDecimal, availabilityDefault: => BigDecimal, modifieddateDefault: => TypoLocalDateTime): LocationRow =
-    LocationRow(
-      locationid = locationid match {
-                     case Defaulted.UseDefault => locationidDefault
-                     case Defaulted.Provided(value) => value
-                   },
+  def toRow(
+    locationidDefault: => LocationId,
+    costrateDefault: => BigDecimal,
+    availabilityDefault: => BigDecimal,
+    modifieddateDefault: => TypoLocalDateTime
+  ): LocationRow = {
+    new LocationRow(
+      locationid = locationid.getOrElse(locationidDefault),
       name = name,
-      costrate = costrate match {
-                   case Defaulted.UseDefault => costrateDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      availability = availability match {
-                       case Defaulted.UseDefault => availabilityDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      costrate = costrate.getOrElse(costrateDefault),
+      availability = availability.getOrElse(availabilityDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object LocationRowUnsaved {
-  implicit lazy val reads: Reads[LocationRowUnsaved] = Reads[LocationRowUnsaved](json => JsResult.fromTry(
-      Try(
-        LocationRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          locationid = json.\("locationid").as(Defaulted.reads(LocationId.reads)),
-          costrate = json.\("costrate").as(Defaulted.reads(Reads.bigDecReads)),
-          availability = json.\("availability").as(Defaulted.reads(Reads.bigDecReads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[LocationRowUnsaved] = Text.instance[LocationRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(LocationId.text).unsafeEncode(row.locationid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.costrate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.availability, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[LocationRowUnsaved] = OWrites[LocationRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "locationid" -> Defaulted.writes(LocationId.writes).writes(o.locationid),
-      "costrate" -> Defaulted.writes(Writes.BigDecimalWrites).writes(o.costrate),
-      "availability" -> Defaulted.writes(Writes.BigDecimalWrites).writes(o.availability),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object LocationRowUnsaved {
+  implicit lazy val pgText: Text[LocationRowUnsaved] = {
+    Text.instance[LocationRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(LocationId.pgText).unsafeEncode(row.locationid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.costrate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.availability, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[LocationRowUnsaved] = {
+    Reads[LocationRowUnsaved](json => JsResult.fromTry(
+        Try(
+          LocationRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            locationid = json.\("locationid").as(Defaulted.reads(LocationId.reads)),
+            costrate = json.\("costrate").as(Defaulted.reads(Reads.bigDecReads)),
+            availability = json.\("availability").as(Defaulted.reads(Reads.bigDecReads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[LocationRowUnsaved] = {
+    OWrites[LocationRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "locationid" -> Defaulted.writes(LocationId.writes).writes(o.locationid),
+        "costrate" -> Defaulted.writes(Writes.BigDecimalWrites).writes(o.costrate),
+        "availability" -> Defaulted.writes(Writes.BigDecimalWrites).writes(o.availability),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

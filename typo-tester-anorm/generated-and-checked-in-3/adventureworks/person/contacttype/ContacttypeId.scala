@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.contacttype` */
-case class ContacttypeId(value: Int) extends AnyVal
+case class ContacttypeId(value: Int) extends scala.AnyVal
+
 object ContacttypeId {
   given arrayColumn: Column[Array[ContacttypeId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[ContacttypeId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[ContacttypeId, Int] = Bijection[ContacttypeId, Int](_.value)(ContacttypeId.apply)
+
+  given bijection: Bijection[ContacttypeId, Int] = Bijection.apply[ContacttypeId, Int](_.value)(ContacttypeId.apply)
+
   given column: Column[ContacttypeId] = Column.columnToInt.map(ContacttypeId.apply)
-  given parameterMetadata: ParameterMetaData[ContacttypeId] = new ParameterMetaData[ContacttypeId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[ContacttypeId] = {
+    new ParameterMetaData[ContacttypeId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[ContacttypeId] = {
+    new Text[ContacttypeId] {
+      override def unsafeEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[ContacttypeId] = Reads.IntReads.map(ContacttypeId.apply)
-  given text: Text[ContacttypeId] = new Text[ContacttypeId] {
-    override def unsafeEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[ContacttypeId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[ContacttypeId] = Writes.IntWrites.contramap(_.value)
 }

@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VstateprovincecountryregionMVRepo {
   def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VstateprovincecountryregionMVRow]
 }

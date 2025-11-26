@@ -26,11 +26,11 @@ trait BeaViewFields {
 
 object BeaViewFields {
   lazy val structure: Relation[BeaViewFields, BeaViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[BeaViewFields, BeaViewRow] {
-  
+
     override lazy val fields: BeaViewFields = new BeaViewFields {
       override def id = Field[BusinessentityId, BeaViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, BeaViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -39,12 +39,11 @@ object BeaViewFields {
       override def rowguid = Field[TypoUUID, BeaViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, BeaViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, BeaViewRow]] =
       List[FieldLike[?, BeaViewRow]](fields.id, fields.businessentityid, fields.addressid, fields.addresstypeid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

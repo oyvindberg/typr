@@ -5,18 +5,16 @@
  */
 package adventureworks.production.vproductanddescription
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class VproductanddescriptionMVRepoImpl extends VproductanddescriptionMVRepo {
-  override def select: SelectBuilder[VproductanddescriptionMVFields, VproductanddescriptionMVRow] = {
-    SelectBuilderSql(""""production"."vproductanddescription"""", VproductanddescriptionMVFields.structure, VproductanddescriptionMVRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[VproductanddescriptionMVRow] = {
+  def select: SelectBuilder[VproductanddescriptionMVFields, VproductanddescriptionMVRow] = SelectBuilder.of(""""production"."vproductanddescription"""", VproductanddescriptionMVFields.structure, VproductanddescriptionMVRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[VproductanddescriptionMVRow] = {
     SQL"""select "productid", "name", "productmodel", "cultureid", "description"
-          from "production"."vproductanddescription"
-       """.as(VproductanddescriptionMVRow.rowParser(1).*)
+    from "production"."vproductanddescription"
+    """.as(VproductanddescriptionMVRow.rowParser(1).*)
   }
 }

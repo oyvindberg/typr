@@ -17,14 +17,17 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: person.emailaddress
-    Where to send a person email.
-    Composite primary key: businessentityid, emailaddressid */
+ * Where to send a person email.
+ * Composite primary key: businessentityid, emailaddressid
+ */
 case class EmailaddressRow(
   /** Primary key. Person associated with this email address.  Foreign key to Person.BusinessEntityID
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary key. ID of this email address.
-      Default: nextval('person.emailaddress_emailaddressid_seq'::regclass) */
+   * Default: nextval('person.emailaddress_emailaddressid_seq'::regclass)
+   */
   emailaddressid: Int,
   /** E-mail address for the person. */
   emailaddress: Option[/* max 50 chars */ String],
@@ -32,50 +35,86 @@ case class EmailaddressRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: EmailaddressId = EmailaddressId(businessentityid, emailaddressid)
-   val id = compositeId
-   def toUnsavedRow(emailaddressid: Defaulted[Int], rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): EmailaddressRowUnsaved =
-     EmailaddressRowUnsaved(businessentityid, emailaddress, emailaddressid, rowguid, modifieddate)
- }
+) {
+  def compositeId: EmailaddressId = new EmailaddressId(businessentityid, emailaddressid)
 
-object EmailaddressRow {
-  def apply(compositeId: EmailaddressId, emailaddress: Option[/* max 50 chars */ String], rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new EmailaddressRow(compositeId.businessentityid, compositeId.emailaddressid, emailaddress, rowguid, modifieddate)
-  given decoder: Decoder[EmailaddressRow] = Decoder.forProduct5[EmailaddressRow, BusinessentityId, Int, Option[/* max 50 chars */ String], TypoUUID, TypoLocalDateTime]("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")(EmailaddressRow.apply)(using BusinessentityId.decoder, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoUUID.decoder, TypoLocalDateTime.decoder)
-  given encoder: Encoder[EmailaddressRow] = Encoder.forProduct5[EmailaddressRow, BusinessentityId, Int, Option[/* max 50 chars */ String], TypoUUID, TypoLocalDateTime]("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")(x => (x.businessentityid, x.emailaddressid, x.emailaddress, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[EmailaddressRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    EmailaddressRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          emailaddressid = arr(1).asInstanceOf[Int],
-          emailaddress = arr(2).asInstanceOf[Option[/* max 50 chars */ String]],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+  def id: EmailaddressId = this.compositeId
+
+  def toUnsavedRow(
+    emailaddressid: Defaulted[Int],
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): EmailaddressRowUnsaved = {
+    new EmailaddressRowUnsaved(
+      businessentityid,
+      emailaddress,
+      emailaddressid,
+      rowguid,
+      modifieddate
     )
   }
-  given text: Text[EmailaddressRow] = Text.instance[EmailaddressRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.emailaddressid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.emailaddress, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object EmailaddressRow {
+  def apply(
+    compositeId: EmailaddressId,
+    emailaddress: Option[/* max 50 chars */ String],
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): EmailaddressRow = {
+    new EmailaddressRow(
+      compositeId.businessentityid,
+      compositeId.emailaddressid,
+      emailaddress,
+      rowguid,
+      modifieddate
+    )
   }
-  given write: Write[EmailaddressRow] = new Write.Composite[EmailaddressRow](
-    List(new Write.Single(BusinessentityId.put),
-         new Write.Single(Meta.IntMeta.put),
-         new Write.Single(Meta.StringMeta.put).toOpt,
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.businessentityid, a.emailaddressid, a.emailaddress, a.rowguid, a.modifieddate)
-  )
+
+  given decoder: Decoder[EmailaddressRow] = Decoder.forProduct5[EmailaddressRow, BusinessentityId, Int, Option[/* max 50 chars */ String], TypoUUID, TypoLocalDateTime]("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")(EmailaddressRow.apply)(using BusinessentityId.decoder, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
+  given encoder: Encoder[EmailaddressRow] = Encoder.forProduct5[EmailaddressRow, BusinessentityId, Int, Option[/* max 50 chars */ String], TypoUUID, TypoLocalDateTime]("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")(x => (x.businessentityid, x.emailaddressid, x.emailaddress, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoUUID.encoder, TypoLocalDateTime.encoder)
+
+  given pgText: Text[EmailaddressRow] = {
+    Text.instance[EmailaddressRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.emailaddressid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.emailaddress, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[EmailaddressRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      EmailaddressRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            emailaddressid = arr(1).asInstanceOf[Int],
+            emailaddress = arr(2).asInstanceOf[Option[/* max 50 chars */ String]],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[EmailaddressRow] = {
+    new Write.Composite[EmailaddressRow](
+      List(new Write.Single(BusinessentityId.put),
+           new Write.Single(Meta.IntMeta.put),
+           new Write.Single(Meta.StringMeta.put).toOpt,
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.businessentityid, a.emailaddressid, a.emailaddress, a.rowguid, a.modifieddate)
+    )
+  }
 }

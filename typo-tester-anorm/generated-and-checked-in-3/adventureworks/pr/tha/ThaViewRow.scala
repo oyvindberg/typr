@@ -44,51 +44,59 @@ case class ThaViewRow(
 )
 
 object ThaViewRow {
-  given reads: Reads[ThaViewRow] = Reads[ThaViewRow](json => JsResult.fromTry(
-      Try(
-        ThaViewRow(
-          id = json.\("id").as(TransactionhistoryarchiveId.reads),
-          transactionid = json.\("transactionid").as(TransactionhistoryarchiveId.reads),
-          productid = json.\("productid").as(Reads.IntReads),
-          referenceorderid = json.\("referenceorderid").as(Reads.IntReads),
-          referenceorderlineid = json.\("referenceorderlineid").as(Reads.IntReads),
-          transactiondate = json.\("transactiondate").as(TypoLocalDateTime.reads),
-          transactiontype = json.\("transactiontype").as(Reads.StringReads),
-          quantity = json.\("quantity").as(Reads.IntReads),
-          actualcost = json.\("actualcost").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[ThaViewRow] = {
+    Reads[ThaViewRow](json => JsResult.fromTry(
+        Try(
+          ThaViewRow(
+            id = json.\("id").as(TransactionhistoryarchiveId.reads),
+            transactionid = json.\("transactionid").as(TransactionhistoryarchiveId.reads),
+            productid = json.\("productid").as(Reads.IntReads),
+            referenceorderid = json.\("referenceorderid").as(Reads.IntReads),
+            referenceorderlineid = json.\("referenceorderlineid").as(Reads.IntReads),
+            transactiondate = json.\("transactiondate").as(TypoLocalDateTime.reads),
+            transactiontype = json.\("transactiontype").as(Reads.StringReads),
+            quantity = json.\("quantity").as(Reads.IntReads),
+            actualcost = json.\("actualcost").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[ThaViewRow] = RowParser[ThaViewRow] { row =>
-    Success(
-      ThaViewRow(
-        id = row(idx + 0)(using TransactionhistoryarchiveId.column),
-        transactionid = row(idx + 1)(using TransactionhistoryarchiveId.column),
-        productid = row(idx + 2)(using Column.columnToInt),
-        referenceorderid = row(idx + 3)(using Column.columnToInt),
-        referenceorderlineid = row(idx + 4)(using Column.columnToInt),
-        transactiondate = row(idx + 5)(using TypoLocalDateTime.column),
-        transactiontype = row(idx + 6)(using Column.columnToString),
-        quantity = row(idx + 7)(using Column.columnToInt),
-        actualcost = row(idx + 8)(using Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[ThaViewRow] = OWrites[ThaViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> TransactionhistoryarchiveId.writes.writes(o.id),
-      "transactionid" -> TransactionhistoryarchiveId.writes.writes(o.transactionid),
-      "productid" -> Writes.IntWrites.writes(o.productid),
-      "referenceorderid" -> Writes.IntWrites.writes(o.referenceorderid),
-      "referenceorderlineid" -> Writes.IntWrites.writes(o.referenceorderlineid),
-      "transactiondate" -> TypoLocalDateTime.writes.writes(o.transactiondate),
-      "transactiontype" -> Writes.StringWrites.writes(o.transactiontype),
-      "quantity" -> Writes.IntWrites.writes(o.quantity),
-      "actualcost" -> Writes.BigDecimalWrites.writes(o.actualcost),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[ThaViewRow] = {
+    RowParser[ThaViewRow] { row =>
+      Success(
+        ThaViewRow(
+          id = row(idx + 0)(using TransactionhistoryarchiveId.column),
+          transactionid = row(idx + 1)(using TransactionhistoryarchiveId.column),
+          productid = row(idx + 2)(using Column.columnToInt),
+          referenceorderid = row(idx + 3)(using Column.columnToInt),
+          referenceorderlineid = row(idx + 4)(using Column.columnToInt),
+          transactiondate = row(idx + 5)(using TypoLocalDateTime.column),
+          transactiontype = row(idx + 6)(using Column.columnToString),
+          quantity = row(idx + 7)(using Column.columnToInt),
+          actualcost = row(idx + 8)(using Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[ThaViewRow] = {
+    OWrites[ThaViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> TransactionhistoryarchiveId.writes.writes(o.id),
+        "transactionid" -> TransactionhistoryarchiveId.writes.writes(o.transactionid),
+        "productid" -> Writes.IntWrites.writes(o.productid),
+        "referenceorderid" -> Writes.IntWrites.writes(o.referenceorderid),
+        "referenceorderlineid" -> Writes.IntWrites.writes(o.referenceorderlineid),
+        "transactiondate" -> TypoLocalDateTime.writes.writes(o.transactiondate),
+        "transactiontype" -> Writes.StringWrites.writes(o.transactiontype),
+        "quantity" -> Writes.IntWrites.writes(o.quantity),
+        "actualcost" -> Writes.BigDecimalWrites.writes(o.actualcost),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

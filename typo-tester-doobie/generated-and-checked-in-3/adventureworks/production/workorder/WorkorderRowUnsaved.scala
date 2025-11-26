@@ -6,6 +6,7 @@
 package adventureworks.production.workorder
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
@@ -17,33 +18,44 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.workorder` which has not been persisted yet */
 case class WorkorderRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Product quantity to build.
-      Constraint CK_WorkOrder_OrderQty affecting columns orderqty:  ((orderqty > 0)) */
+   * Constraint CK_WorkOrder_OrderQty affecting columns orderqty:  ((orderqty > 0))
+   */
   orderqty: Int,
   /** Quantity that failed inspection.
-      Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty:  ((scrappedqty >= 0)) */
+   * Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty:  ((scrappedqty >= 0))
+   */
   scrappedqty: TypoShort,
   /** Work order start date.
-      Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */
+   * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
+   */
   startdate: TypoLocalDateTime,
   /** Work order end date.
-      Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */
-  enddate: Option[TypoLocalDateTime],
+   * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
+   */
+  enddate: Option[TypoLocalDateTime] = None,
   /** Work order due date. */
   duedate: TypoLocalDateTime,
   /** Reason for inspection failure.
-      Points to [[adventureworks.production.scrapreason.ScrapreasonRow.scrapreasonid]] */
-  scrapreasonid: Option[ScrapreasonId],
+   * Points to [[adventureworks.production.scrapreason.ScrapreasonRow.scrapreasonid]]
+   */
+  scrapreasonid: Option[ScrapreasonId] = None,
   /** Default: nextval('production.workorder_workorderid_seq'::regclass)
-      Primary key for WorkOrder records. */
-  workorderid: Defaulted[WorkorderId] = Defaulted.UseDefault,
+   * Primary key for WorkOrder records.
+   */
+  workorderid: Defaulted[WorkorderId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(workorderidDefault: => WorkorderId, modifieddateDefault: => TypoLocalDateTime): WorkorderRow =
-    WorkorderRow(
+  def toRow(
+    workorderidDefault: => WorkorderId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): WorkorderRow = {
+    new WorkorderRow(
+      workorderid = workorderid.getOrElse(workorderidDefault),
       productid = productid,
       orderqty = orderqty,
       scrappedqty = scrappedqty,
@@ -51,36 +63,35 @@ case class WorkorderRowUnsaved(
       enddate = enddate,
       duedate = duedate,
       scrapreasonid = scrapreasonid,
-      workorderid = workorderid match {
-                      case Defaulted.UseDefault => workorderidDefault
-                      case Defaulted.Provided(value) => value
-                    },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object WorkorderRowUnsaved {
   given decoder: Decoder[WorkorderRowUnsaved] = Decoder.forProduct9[WorkorderRowUnsaved, ProductId, Int, TypoShort, TypoLocalDateTime, Option[TypoLocalDateTime], TypoLocalDateTime, Option[ScrapreasonId], Defaulted[WorkorderId], Defaulted[TypoLocalDateTime]]("productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "workorderid", "modifieddate")(WorkorderRowUnsaved.apply)(using ProductId.decoder, Decoder.decodeInt, TypoShort.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), TypoLocalDateTime.decoder, Decoder.decodeOption(using ScrapreasonId.decoder), Defaulted.decoder(using WorkorderId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[WorkorderRowUnsaved] = Encoder.forProduct9[WorkorderRowUnsaved, ProductId, Int, TypoShort, TypoLocalDateTime, Option[TypoLocalDateTime], TypoLocalDateTime, Option[ScrapreasonId], Defaulted[WorkorderId], Defaulted[TypoLocalDateTime]]("productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "workorderid", "modifieddate")(x => (x.productid, x.orderqty, x.scrappedqty, x.startdate, x.enddate, x.duedate, x.scrapreasonid, x.workorderid, x.modifieddate))(using ProductId.encoder, Encoder.encodeInt, TypoShort.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), TypoLocalDateTime.encoder, Encoder.encodeOption(using ScrapreasonId.encoder), Defaulted.encoder(using WorkorderId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[WorkorderRowUnsaved] = Text.instance[WorkorderRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.orderqty, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.scrappedqty, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.startdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoLocalDateTime.text).unsafeEncode(row.enddate, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.duedate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using ScrapreasonId.text).unsafeEncode(row.scrapreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using WorkorderId.text).unsafeEncode(row.workorderid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[WorkorderRowUnsaved] = {
+    Text.instance[WorkorderRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.orderqty, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.scrappedqty, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.startdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoLocalDateTime.pgText).unsafeEncode(row.enddate, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.duedate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using ScrapreasonId.pgText).unsafeEncode(row.scrapreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using WorkorderId.pgText).unsafeEncode(row.workorderid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

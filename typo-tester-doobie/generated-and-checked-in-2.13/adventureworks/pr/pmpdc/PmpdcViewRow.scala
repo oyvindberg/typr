@@ -27,18 +27,22 @@ case class PmpdcViewRow(
 
 object PmpdcViewRow {
   implicit lazy val decoder: Decoder[PmpdcViewRow] = Decoder.forProduct4[PmpdcViewRow, ProductmodelId, ProductdescriptionId, CultureId, TypoLocalDateTime]("productmodelid", "productdescriptionid", "cultureid", "modifieddate")(PmpdcViewRow.apply)(ProductmodelId.decoder, ProductdescriptionId.decoder, CultureId.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[PmpdcViewRow] = Encoder.forProduct4[PmpdcViewRow, ProductmodelId, ProductdescriptionId, CultureId, TypoLocalDateTime]("productmodelid", "productdescriptionid", "cultureid", "modifieddate")(x => (x.productmodelid, x.productdescriptionid, x.cultureid, x.modifieddate))(ProductmodelId.encoder, ProductdescriptionId.encoder, CultureId.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[PmpdcViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductdescriptionId.get).asInstanceOf[Read[Any]],
-      new Read.Single(CultureId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    PmpdcViewRow(
-      productmodelid = arr(0).asInstanceOf[ProductmodelId],
-          productdescriptionid = arr(1).asInstanceOf[ProductdescriptionId],
-          cultureid = arr(2).asInstanceOf[CultureId],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+
+  implicit lazy val read: Read[PmpdcViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductdescriptionId.get).asInstanceOf[Read[Any]],
+        new Read.Single(CultureId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      PmpdcViewRow(
+        productmodelid = arr(0).asInstanceOf[ProductmodelId],
+            productdescriptionid = arr(1).asInstanceOf[ProductdescriptionId],
+            cultureid = arr(2).asInstanceOf[CultureId],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

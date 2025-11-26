@@ -9,6 +9,7 @@ import doobie.postgres.Text
 import io.circe.Decoder
 import io.circe.Encoder
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.customtypes.Defaulted.UseDefault
 import testdb.hardcoded.myschema.Number
 import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
@@ -19,26 +20,29 @@ case class PersonRowUnsaved(
   /** Points to [[testdb.hardcoded.myschema.football_club.FootballClubRow.id]] */
   favouriteFootballClubId: FootballClubId,
   name: /* max 100 chars */ String,
-  nickName: Option[/* max 30 chars */ String],
-  blogUrl: Option[/* max 100 chars */ String],
+  nickName: Option[/* max 30 chars */ String] = None,
+  blogUrl: Option[/* max 100 chars */ String] = None,
   email: /* max 254 chars */ String,
   phone: /* max 8 chars */ String,
   likesPizza: Boolean,
-  workEmail: Option[/* max 254 chars */ String],
+  workEmail: Option[/* max 254 chars */ String] = None,
   /** Default: auto-increment */
-  id: Defaulted[PersonId] = Defaulted.UseDefault,
+  id: Defaulted[PersonId] = new UseDefault(),
   /** Default: some-value
-      Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]] */
-  maritalStatusId: Defaulted[MaritalStatusId] = Defaulted.UseDefault,
+   * Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]]
+   */
+  maritalStatusId: Defaulted[MaritalStatusId] = new UseDefault(),
   /** Default: one */
-  favoriteNumber: Defaulted[Number] = Defaulted.UseDefault
+  favoriteNumber: Defaulted[Number] = new UseDefault()
 ) {
-  def toRow(idDefault: => PersonId, maritalStatusIdDefault: => MaritalStatusId, favoriteNumberDefault: => Number, sectorDefault: => Sector): PersonRow =
-    PersonRow(
-      id = id match {
-             case Defaulted.UseDefault => idDefault
-             case Defaulted.Provided(value) => value
-           },
+  def toRow(
+    idDefault: => PersonId,
+    maritalStatusIdDefault: => MaritalStatusId,
+    favoriteNumberDefault: => Number,
+    sectorDefault: => Sector
+  ): PersonRow = {
+    new PersonRow(
+      id = id.getOrElse(idDefault),
       favouriteFootballClubId = favouriteFootballClubId,
       name = name,
       nickName = nickName,
@@ -46,42 +50,42 @@ case class PersonRowUnsaved(
       email = email,
       phone = phone,
       likesPizza = likesPizza,
-      maritalStatusId = maritalStatusId match {
-                          case Defaulted.UseDefault => maritalStatusIdDefault
-                          case Defaulted.Provided(value) => value
-                        },
+      maritalStatusId = maritalStatusId.getOrElse(maritalStatusIdDefault),
       workEmail = workEmail,
       sector = sectorDefault,
-      favoriteNumber = favoriteNumber match {
-                         case Defaulted.UseDefault => favoriteNumberDefault
-                         case Defaulted.Provided(value) => value
-                       }
+      favoriteNumber = favoriteNumber.getOrElse(favoriteNumberDefault)
     )
+  }
 }
+
 object PersonRowUnsaved {
   given decoder: Decoder[PersonRowUnsaved] = Decoder.forProduct11[PersonRowUnsaved, FootballClubId, /* max 100 chars */ String, Option[/* max 30 chars */ String], Option[/* max 100 chars */ String], /* max 254 chars */ String, /* max 8 chars */ String, Boolean, Option[/* max 254 chars */ String], Defaulted[PersonId], Defaulted[MaritalStatusId], Defaulted[Number]]("favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "work_email", "id", "marital_status_id", "favorite_number")(PersonRowUnsaved.apply)(using FootballClubId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Decoder.decodeString, Decoder.decodeBoolean, Decoder.decodeOption(using Decoder.decodeString), Defaulted.decoder(using PersonId.decoder), Defaulted.decoder(using MaritalStatusId.decoder), Defaulted.decoder(using Number.decoder))
+
   given encoder: Encoder[PersonRowUnsaved] = Encoder.forProduct11[PersonRowUnsaved, FootballClubId, /* max 100 chars */ String, Option[/* max 30 chars */ String], Option[/* max 100 chars */ String], /* max 254 chars */ String, /* max 8 chars */ String, Boolean, Option[/* max 254 chars */ String], Defaulted[PersonId], Defaulted[MaritalStatusId], Defaulted[Number]]("favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "work_email", "id", "marital_status_id", "favorite_number")(x => (x.favouriteFootballClubId, x.name, x.nickName, x.blogUrl, x.email, x.phone, x.likesPizza, x.workEmail, x.id, x.maritalStatusId, x.favoriteNumber))(using FootballClubId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Encoder.encodeString, Encoder.encodeBoolean, Encoder.encodeOption(using Encoder.encodeString), Defaulted.encoder(using PersonId.encoder), Defaulted.encoder(using MaritalStatusId.encoder), Defaulted.encoder(using Number.encoder))
-  given text: Text[PersonRowUnsaved] = Text.instance[PersonRowUnsaved]{ (row, sb) =>
-    FootballClubId.text.unsafeEncode(row.favouriteFootballClubId, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.nickName, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.blogUrl, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.email, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.phone, sb)
-    sb.append(Text.DELIMETER)
-    Text.booleanInstance.unsafeEncode(row.likesPizza, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.workEmail, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using PersonId.text).unsafeEncode(row.id, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using MaritalStatusId.text).unsafeEncode(row.maritalStatusId, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Number.text).unsafeEncode(row.favoriteNumber, sb)
+
+  given pgText: Text[PersonRowUnsaved] = {
+    Text.instance[PersonRowUnsaved]{ (row, sb) =>
+      FootballClubId.pgText.unsafeEncode(row.favouriteFootballClubId, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.nickName, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.blogUrl, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.email, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.phone, sb)
+      sb.append(Text.DELIMETER)
+      Text.booleanInstance.unsafeEncode(row.likesPizza, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.workEmail, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using PersonId.pgText).unsafeEncode(row.id, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using MaritalStatusId.pgText).unsafeEncode(row.maritalStatusId, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Number.pgText).unsafeEncode(row.favoriteNumber, sb)
+    }
   }
 }

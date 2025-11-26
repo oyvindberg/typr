@@ -16,41 +16,87 @@ import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
+/** This signals a value where if you don't provide it, postgres will generate it for you */
+sealed trait Defaulted[T] {
+  def fold[U](
+    onDefault: => U,
+    onProvided: T => U
+  ): U
 
-/**
- * This signals a value where if you don't provide it, postgres will generate it for you
- */
-sealed trait Defaulted[+T]
+  def getOrElse(onDefault: => T): T
+
+  def visit(
+    onDefault: => Unit,
+    onProvided: T => Unit
+  ): Unit
+}
 
 object Defaulted {
-  case class Provided[T](value: T) extends Defaulted[T]
-  case object UseDefault extends Defaulted[Nothing]
+  implicit def pgText[T](implicit t: Text[T]): Text[Defaulted[T]] = {
+    Text.instance {
+      case (Defaulted.Provided(value), sb) => t.unsafeEncode(value, sb)
+      case (Defaulted.UseDefault(), sb) =>
+        sb.append("__DEFAULT_VALUE__")
+        ()
+    }
+  }
+
   implicit def reads[T](implicit T: Reads[T]): Reads[Defaulted[T]] = {
-    case JsString("defaulted") =>
-      JsSuccess(Defaulted.UseDefault)
-    case JsObject(Seq(("provided", providedJson: JsValue))) =>
-      Json.fromJson[T](providedJson).map(Defaulted.Provided.apply)
-    case _ =>
-      JsError(s"Expected `Defaulted` json object structure")
+    {
+      case JsString("defaulted") =>
+        JsSuccess(Defaulted.UseDefault())
+      case JsObject(Seq(("provided", providedJson: JsValue))) =>
+        Json.fromJson[T](providedJson).map(Defaulted.Provided.apply)
+      case _ =>
+        JsError(s"Expected `Defaulted` json object structure")
+    }
   }
+
   implicit def readsOpt[T](implicit T: Reads[T]): Reads[Defaulted[Option[T]]] = {
-    case JsString("defaulted") =>
-      JsSuccess(Defaulted.UseDefault)
-    case JsObject(Seq(("provided", JsNull))) =>
-      JsSuccess(Defaulted.Provided(None))
-    case JsObject(Seq(("provided", providedJson: JsValue))) =>
-      Json.fromJson[T](providedJson).map(x => Defaulted.Provided(Some(x)))
-    case _ =>
-      JsError(s"Expected `Defaulted` json object structure")
+    {
+      case JsString("defaulted") =>
+        JsSuccess(Defaulted.UseDefault())
+      case JsObject(Seq(("provided", JsNull))) =>
+        JsSuccess(Defaulted.Provided(None))
+      case JsObject(Seq(("provided", providedJson: JsValue))) =>
+        Json.fromJson[T](providedJson).map(x => Defaulted.Provided(Some(x)))
+      case _ =>
+        JsError(s"Expected `Defaulted` json object structure")
+    }
   }
-  implicit def text[T](implicit t: Text[T]): Text[Defaulted[T]] = Text.instance {
-    case (Defaulted.Provided(value), sb) => t.unsafeEncode(value, sb)
-    case (Defaulted.UseDefault, sb) =>
-      sb.append("__DEFAULT_VALUE__")
-      ()
-  }
+
   implicit def writes[T](implicit T: Writes[T]): Writes[Defaulted[T]] = {
-    case Defaulted.Provided(value) => Json.obj("provided" -> T.writes(value))
-    case Defaulted.UseDefault      => JsString("defaulted")
+    {
+      case Defaulted.Provided(value) => Json.obj("provided" -> T.writes(value))
+      case Defaulted.UseDefault()    => JsString("defaulted")
+    }
+  }
+
+  case class Provided[T](value: T) extends Defaulted[T] {
+    def fold[U](
+      onDefault: => U,
+      onProvided: T => U
+    ): U = onProvided(value)
+
+    def getOrElse(onDefault: => T): T = value
+
+    def visit(
+      onDefault: => Unit,
+      onProvided: T => Unit
+    ): Unit = onProvided(value)
+  }
+
+  case class UseDefault[T]() extends Defaulted[T] {
+    def fold[U](
+      onDefault: => U,
+      onProvided: T => U
+    ): U = onDefault
+
+    def getOrElse(onDefault: => T): T = onDefault
+
+    def visit(
+      onDefault: => Unit,
+      onProvided: T => Unit
+    ): Unit = onDefault
   }
 }

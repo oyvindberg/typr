@@ -5,18 +5,16 @@
  */
 package adventureworks.sales.vstorewithdemographics
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class VstorewithdemographicsViewRepoImpl extends VstorewithdemographicsViewRepo {
-  override def select: SelectBuilder[VstorewithdemographicsViewFields, VstorewithdemographicsViewRow] = {
-    SelectBuilderSql(""""sales"."vstorewithdemographics"""", VstorewithdemographicsViewFields.structure, VstorewithdemographicsViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[VstorewithdemographicsViewRow] = {
+  def select: SelectBuilder[VstorewithdemographicsViewFields, VstorewithdemographicsViewRow] = SelectBuilder.of(""""sales"."vstorewithdemographics"""", VstorewithdemographicsViewFields.structure, VstorewithdemographicsViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[VstorewithdemographicsViewRow] = {
     SQL"""select "businessentityid", "name", "AnnualSales"::numeric, "AnnualRevenue"::numeric, "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees"
-          from "sales"."vstorewithdemographics"
-       """.as(VstorewithdemographicsViewRow.rowParser(1).*)
+    from "sales"."vstorewithdemographics"
+    """.as(VstorewithdemographicsViewRow.rowParser(1).*)
   }
 }

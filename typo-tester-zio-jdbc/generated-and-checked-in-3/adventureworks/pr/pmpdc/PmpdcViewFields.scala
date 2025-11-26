@@ -23,23 +23,22 @@ trait PmpdcViewFields {
 
 object PmpdcViewFields {
   lazy val structure: Relation[PmpdcViewFields, PmpdcViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PmpdcViewFields, PmpdcViewRow] {
-  
+
     override lazy val fields: PmpdcViewFields = new PmpdcViewFields {
       override def productmodelid = Field[ProductmodelId, PmpdcViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def productdescriptionid = Field[ProductdescriptionId, PmpdcViewRow](_path, "productdescriptionid", None, None, x => x.productdescriptionid, (row, value) => row.copy(productdescriptionid = value))
       override def cultureid = Field[CultureId, PmpdcViewRow](_path, "cultureid", None, None, x => x.cultureid, (row, value) => row.copy(cultureid = value))
       override def modifieddate = Field[TypoLocalDateTime, PmpdcViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PmpdcViewRow]] =
       List[FieldLike[?, PmpdcViewRow]](fields.productmodelid, fields.productdescriptionid, fields.cultureid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

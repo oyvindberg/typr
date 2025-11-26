@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `information_schema.cardinal_number`
-  * Constraint: CHECK ((VALUE >= 0))
-  */
+ * Constraint: CHECK ((VALUE >= 0))
+ */
 case class CardinalNumber(value: Int)
+
 object CardinalNumber {
   given arrayJdbcDecoder: JdbcDecoder[Array[CardinalNumber]] = adventureworks.IntArrayDecoder.map(_.map(CardinalNumber.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[CardinalNumber]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[CardinalNumber]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[CardinalNumber, Int] = Bijection[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
+  given bijection: Bijection[CardinalNumber, Int] = Bijection.apply[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
   given jdbcDecoder: JdbcDecoder[CardinalNumber] = JdbcDecoder.intDecoder.map(CardinalNumber.apply)
+
   given jdbcEncoder: JdbcEncoder[CardinalNumber] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[CardinalNumber] = JsonDecoder.int.map(CardinalNumber.apply)
+
   given jsonEncoder: JsonEncoder[CardinalNumber] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[CardinalNumber] = PGType.instance(""""information_schema"."cardinal_number"""", Types.OTHER)
-  given setter: Setter[CardinalNumber] = Setter.intSetter.contramap(_.value)
-  given text: Text[CardinalNumber] = new Text[CardinalNumber] {
-    override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CardinalNumber] = {
+    new Text[CardinalNumber] {
+      override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[CardinalNumber] = PGType.instance(""""information_schema"."cardinal_number"""", Types.OTHER)
+
+  given setter: Setter[CardinalNumber] = Setter.intSetter.contramap(_.value)
 }

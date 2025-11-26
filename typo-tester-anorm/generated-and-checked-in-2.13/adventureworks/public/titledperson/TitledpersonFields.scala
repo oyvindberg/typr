@@ -31,22 +31,21 @@ trait TitledpersonFields {
 
 object TitledpersonFields {
   lazy val structure: Relation[TitledpersonFields, TitledpersonRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[TitledpersonFields, TitledpersonRow] {
-  
+
     override lazy val fields: TitledpersonFields = new TitledpersonFields {
       override def titleShort = Field[TitleDomainId, TitledpersonRow](_path, "title_short", None, Some("text"), x => x.titleShort, (row, value) => row.copy(titleShort = value))
       override def title = Field[TitleId, TitledpersonRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
       override def name = Field[String, TitledpersonRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, TitledpersonRow]] =
       List[FieldLike[?, TitledpersonRow]](fields.titleShort, fields.title, fields.name)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

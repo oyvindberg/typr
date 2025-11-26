@@ -17,7 +17,29 @@ import typo.dsl.Bijection
 case class TypoShort(value: Short)
 
 object TypoShort {
-  implicit object numeric extends Numeric[TypoShort] {
+  implicit lazy val arrayGet: Get[Array[TypoShort]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("int2[]"))
+      .map(_.map(v => new TypoShort(v.asInstanceOf[java.lang.Short])))
+  }
+
+  implicit lazy val arrayPut: Put[Array[TypoShort]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("int2[]"), "int2")
+      .contramap(_.map(v => v.value: java.lang.Short))
+  }
+
+  implicit lazy val bijection: Bijection[TypoShort, Short] = Bijection.apply[TypoShort, Short](_.value)(TypoShort.apply)
+
+  implicit lazy val decoder: Decoder[TypoShort] = Decoder[Short].map(TypoShort.apply)
+
+  implicit lazy val encoder: Encoder[TypoShort] = Encoder[Short].contramap(_.value)
+
+  implicit lazy val get: Get[TypoShort] = {
+    Get.Advanced.other[Integer](NonEmptyList.one("int2"))
+      .map(v => TypoShort(v.toShort))
+  }
+
+  implicit lazy val numeric: Numeric[TypoShort] = {
+    new Numeric[TypoShort] {
       override def compare(x: TypoShort, y: TypoShort): Int = java.lang.Short.compare(x.value, y.value)
       override def plus(x: TypoShort, y: TypoShort): TypoShort = TypoShort((x.value + y.value).toShort)
       override def minus(x: TypoShort, y: TypoShort): TypoShort = TypoShort((x.value - y.value).toShort)
@@ -28,20 +50,17 @@ object TypoShort {
       override def toLong(x: TypoShort): Long = x.value.toLong
       override def toFloat(x: TypoShort): Float = x.value.toFloat
       override def toDouble(x: TypoShort): Double = x.value.toDouble
-      def parseString(str: String): Option[TypoShort] = str.toShortOption.map(TypoShort.apply)
+      def parseString(str: String): Option[TypoShort] = str.toShortOption.map(s => TypoShort(s: java.lang.Short))
+      locally{val _ = parseString("1")}
     }
-  implicit lazy val arrayGet: Get[Array[TypoShort]] = Get.Advanced.array[AnyRef](NonEmptyList.one("int2[]"))
-    .map(_.map(v => TypoShort(v.asInstanceOf[java.lang.Short])))
-  implicit lazy val arrayPut: Put[Array[TypoShort]] = Put.Advanced.array[AnyRef](NonEmptyList.one("int2[]"), "int2")
-    .contramap(_.map(v => v.value: java.lang.Short))
-  implicit lazy val bijection: Bijection[TypoShort, Short] = Bijection[TypoShort, Short](_.value)(TypoShort.apply)
-  implicit lazy val decoder: Decoder[TypoShort] = Decoder[Short].map(TypoShort.apply)
-  implicit lazy val encoder: Encoder[TypoShort] = Encoder[Short].contramap(_.value)
-  implicit lazy val get: Get[TypoShort] = Get.Advanced.other[Integer](NonEmptyList.one("int2"))
-    .map(v => TypoShort(v.toShort))
-  implicit lazy val put: Put[TypoShort] = Put.Advanced.other[Integer](NonEmptyList.one("int2")).contramap(v => v.value.toInt)
-  implicit lazy val text: Text[TypoShort] = new Text[TypoShort] {
-    override def unsafeEncode(v: TypoShort, sb: StringBuilder): Unit = Text[Short].unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoShort, sb: StringBuilder): Unit = Text[Short].unsafeArrayEncode(v.value, sb)
   }
+
+  implicit lazy val pgText: Text[TypoShort] = {
+    new Text[TypoShort] {
+      override def unsafeEncode(v: TypoShort, sb: StringBuilder): Unit = Text[Short].unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoShort, sb: StringBuilder): Unit = Text[Short].unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val put: Put[TypoShort] = Put.Advanced.other[Integer](NonEmptyList.one("int2")).contramap(v => v.value.toInt)
 }

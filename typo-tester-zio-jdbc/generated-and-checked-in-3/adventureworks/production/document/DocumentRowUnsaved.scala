@@ -7,6 +7,7 @@ package adventureworks.production.document
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -23,156 +24,163 @@ case class DocumentRowUnsaved(
   /** Title of the document. */
   title: /* max 50 chars */ String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
-      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
+   * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
+   */
   owner: BusinessentityId,
   /** File name of the document */
   filename: /* max 400 chars */ String,
   /** File extension indicating the document type. For example, .doc or .txt. */
-  fileextension: Option[/* max 8 chars */ String],
+  fileextension: Option[/* max 8 chars */ String] = None,
   /** Revision number of the document. */
   revision: /* bpchar, max 5 chars */ String,
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
-      Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3))) */
+   * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
+   */
   status: TypoShort,
   /** Document abstract. */
-  documentsummary: Option[String],
+  documentsummary: Option[String] = None,
   /** Complete document. */
-  document: Option[TypoBytea],
+  document: Option[TypoBytea] = None,
   /** Default: false
-      0 = This is a folder, 1 = This is a document. */
-  folderflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = This is a folder, 1 = This is a document.
+   */
+  folderflag: Defaulted[Flag] = new UseDefault(),
   /** Default: 0
-      Engineering change approval number. */
-  changenumber: Defaulted[Int] = Defaulted.UseDefault,
+   * Engineering change approval number.
+   */
+  changenumber: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1()
-      ROWGUIDCOL number uniquely identifying the record. Required for FileStream. */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+   * ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
+   */
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Primary key for Document records. */
-  documentnode: Defaulted[DocumentId] = Defaulted.UseDefault
+   * Primary key for Document records.
+   */
+  documentnode: Defaulted[DocumentId] = new UseDefault()
 ) {
-  def toRow(folderflagDefault: => Flag, changenumberDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime, documentnodeDefault: => DocumentId): DocumentRow =
-    DocumentRow(
+  def toRow(
+    folderflagDefault: => Flag,
+    changenumberDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime,
+    documentnodeDefault: => DocumentId
+  ): DocumentRow = {
+    new DocumentRow(
       title = title,
       owner = owner,
+      folderflag = folderflag.getOrElse(folderflagDefault),
       filename = filename,
       fileextension = fileextension,
       revision = revision,
+      changenumber = changenumber.getOrElse(changenumberDefault),
       status = status,
       documentsummary = documentsummary,
       document = document,
-      folderflag = folderflag match {
-                     case Defaulted.UseDefault => folderflagDefault
-                     case Defaulted.Provided(value) => value
-                   },
-      changenumber = changenumber match {
-                       case Defaulted.UseDefault => changenumberDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      documentnode = documentnode match {
-                       case Defaulted.UseDefault => documentnodeDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault),
+      documentnode = documentnode.getOrElse(documentnodeDefault)
     )
-}
-object DocumentRowUnsaved {
-  given jsonDecoder: JsonDecoder[DocumentRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(using JsonDecoder.string))
-    val owner = jsonObj.get("owner").toRight("Missing field 'owner'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val filename = jsonObj.get("filename").toRight("Missing field 'filename'").flatMap(_.as(using JsonDecoder.string))
-    val fileextension = jsonObj.get("fileextension").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val revision = jsonObj.get("revision").toRight("Missing field 'revision'").flatMap(_.as(using JsonDecoder.string))
-    val status = jsonObj.get("status").toRight("Missing field 'status'").flatMap(_.as(using TypoShort.jsonDecoder))
-    val documentsummary = jsonObj.get("documentsummary").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val document = jsonObj.get("document").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
-    val folderflag = jsonObj.get("folderflag").toRight("Missing field 'folderflag'").flatMap(_.as(using Defaulted.jsonDecoder(using Flag.jsonDecoder)))
-    val changenumber = jsonObj.get("changenumber").toRight("Missing field 'changenumber'").flatMap(_.as(using Defaulted.jsonDecoder(using JsonDecoder.int)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoUUID.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(using Defaulted.jsonDecoder(using DocumentId.jsonDecoder)))
-    if (title.isRight && owner.isRight && filename.isRight && fileextension.isRight && revision.isRight && status.isRight && documentsummary.isRight && document.isRight && folderflag.isRight && changenumber.isRight && rowguid.isRight && modifieddate.isRight && documentnode.isRight)
-      Right(DocumentRowUnsaved(title = title.toOption.get, owner = owner.toOption.get, filename = filename.toOption.get, fileextension = fileextension.toOption.get, revision = revision.toOption.get, status = status.toOption.get, documentsummary = documentsummary.toOption.get, document = document.toOption.get, folderflag = folderflag.toOption.get, changenumber = changenumber.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get, documentnode = documentnode.toOption.get))
-    else Left(List[Either[String, Any]](title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode).flatMap(_.left.toOption).mkString(", "))
   }
-  given jsonEncoder: JsonEncoder[DocumentRowUnsaved] = new JsonEncoder[DocumentRowUnsaved] {
-    override def unsafeEncode(a: DocumentRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""title":""")
-      JsonEncoder.string.unsafeEncode(a.title, indent, out)
-      out.write(",")
-      out.write(""""owner":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.owner, indent, out)
-      out.write(",")
-      out.write(""""filename":""")
-      JsonEncoder.string.unsafeEncode(a.filename, indent, out)
-      out.write(",")
-      out.write(""""fileextension":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.fileextension, indent, out)
-      out.write(",")
-      out.write(""""revision":""")
-      JsonEncoder.string.unsafeEncode(a.revision, indent, out)
-      out.write(",")
-      out.write(""""status":""")
-      TypoShort.jsonEncoder.unsafeEncode(a.status, indent, out)
-      out.write(",")
-      out.write(""""documentsummary":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.documentsummary, indent, out)
-      out.write(",")
-      out.write(""""document":""")
-      JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.document, indent, out)
-      out.write(",")
-      out.write(""""folderflag":""")
-      Defaulted.jsonEncoder(using Flag.jsonEncoder).unsafeEncode(a.folderflag, indent, out)
-      out.write(",")
-      out.write(""""changenumber":""")
-      Defaulted.jsonEncoder(using JsonEncoder.int).unsafeEncode(a.changenumber, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      Defaulted.jsonEncoder(using TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write(",")
-      out.write(""""documentnode":""")
-      Defaulted.jsonEncoder(using DocumentId.jsonEncoder).unsafeEncode(a.documentnode, indent, out)
-      out.write("}")
+}
+
+object DocumentRowUnsaved {
+  given jsonDecoder: JsonDecoder[DocumentRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(using JsonDecoder.string))
+      val owner = jsonObj.get("owner").toRight("Missing field 'owner'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val filename = jsonObj.get("filename").toRight("Missing field 'filename'").flatMap(_.as(using JsonDecoder.string))
+      val fileextension = jsonObj.get("fileextension").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val revision = jsonObj.get("revision").toRight("Missing field 'revision'").flatMap(_.as(using JsonDecoder.string))
+      val status = jsonObj.get("status").toRight("Missing field 'status'").flatMap(_.as(using TypoShort.jsonDecoder))
+      val documentsummary = jsonObj.get("documentsummary").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val document = jsonObj.get("document").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
+      val folderflag = jsonObj.get("folderflag").toRight("Missing field 'folderflag'").flatMap(_.as(using Defaulted.jsonDecoder(using Flag.jsonDecoder)))
+      val changenumber = jsonObj.get("changenumber").toRight("Missing field 'changenumber'").flatMap(_.as(using Defaulted.jsonDecoder(using JsonDecoder.int)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoUUID.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(using Defaulted.jsonDecoder(using DocumentId.jsonDecoder)))
+      if (title.isRight && owner.isRight && filename.isRight && fileextension.isRight && revision.isRight && status.isRight && documentsummary.isRight && document.isRight && folderflag.isRight && changenumber.isRight && rowguid.isRight && modifieddate.isRight && documentnode.isRight)
+        Right(DocumentRowUnsaved(title = title.toOption.get, owner = owner.toOption.get, filename = filename.toOption.get, fileextension = fileextension.toOption.get, revision = revision.toOption.get, status = status.toOption.get, documentsummary = documentsummary.toOption.get, document = document.toOption.get, folderflag = folderflag.toOption.get, changenumber = changenumber.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get, documentnode = documentnode.toOption.get))
+      else Left(List[Either[String, Any]](title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[DocumentRowUnsaved] = Text.instance[DocumentRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    BusinessentityId.text.unsafeEncode(row.owner, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.filename, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.fileextension, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.revision, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.status, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.documentsummary, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoBytea.text).unsafeEncode(row.document, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Flag.text).unsafeEncode(row.folderflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.changenumber, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using DocumentId.text).unsafeEncode(row.documentnode, sb)
+
+  given jsonEncoder: JsonEncoder[DocumentRowUnsaved] = {
+    new JsonEncoder[DocumentRowUnsaved] {
+      override def unsafeEncode(a: DocumentRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""title":""")
+        JsonEncoder.string.unsafeEncode(a.title, indent, out)
+        out.write(",")
+        out.write(""""owner":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.owner, indent, out)
+        out.write(",")
+        out.write(""""filename":""")
+        JsonEncoder.string.unsafeEncode(a.filename, indent, out)
+        out.write(",")
+        out.write(""""fileextension":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.fileextension, indent, out)
+        out.write(",")
+        out.write(""""revision":""")
+        JsonEncoder.string.unsafeEncode(a.revision, indent, out)
+        out.write(",")
+        out.write(""""status":""")
+        TypoShort.jsonEncoder.unsafeEncode(a.status, indent, out)
+        out.write(",")
+        out.write(""""documentsummary":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.documentsummary, indent, out)
+        out.write(",")
+        out.write(""""document":""")
+        JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.document, indent, out)
+        out.write(",")
+        out.write(""""folderflag":""")
+        Defaulted.jsonEncoder(using Flag.jsonEncoder).unsafeEncode(a.folderflag, indent, out)
+        out.write(",")
+        out.write(""""changenumber":""")
+        Defaulted.jsonEncoder(using JsonEncoder.int).unsafeEncode(a.changenumber, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        Defaulted.jsonEncoder(using TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write(",")
+        out.write(""""documentnode":""")
+        Defaulted.jsonEncoder(using DocumentId.jsonEncoder).unsafeEncode(a.documentnode, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[DocumentRowUnsaved] = {
+    Text.instance[DocumentRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      BusinessentityId.pgText.unsafeEncode(row.owner, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.filename, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.fileextension, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.revision, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.status, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.documentsummary, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoBytea.pgText).unsafeEncode(row.document, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Flag.pgText).unsafeEncode(row.folderflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.changenumber, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using DocumentId.pgText).unsafeEncode(row.documentnode, sb)
+    }
   }
 }

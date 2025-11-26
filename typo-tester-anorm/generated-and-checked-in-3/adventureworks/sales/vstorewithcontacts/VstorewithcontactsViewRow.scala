@@ -50,57 +50,65 @@ case class VstorewithcontactsViewRow(
 )
 
 object VstorewithcontactsViewRow {
-  given reads: Reads[VstorewithcontactsViewRow] = Reads[VstorewithcontactsViewRow](json => JsResult.fromTry(
-      Try(
-        VstorewithcontactsViewRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          name = json.\("name").as(Name.reads),
-          contacttype = json.\("contacttype").as(Name.reads),
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads),
-          suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-          phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
-          phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
-          emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
-          emailpromotion = json.\("emailpromotion").as(Reads.IntReads)
+  given reads: Reads[VstorewithcontactsViewRow] = {
+    Reads[VstorewithcontactsViewRow](json => JsResult.fromTry(
+        Try(
+          VstorewithcontactsViewRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            name = json.\("name").as(Name.reads),
+            contacttype = json.\("contacttype").as(Name.reads),
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads),
+            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
+            phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
+            emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
+            emailpromotion = json.\("emailpromotion").as(Reads.IntReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VstorewithcontactsViewRow] = RowParser[VstorewithcontactsViewRow] { row =>
-    Success(
-      VstorewithcontactsViewRow(
-        businessentityid = row(idx + 0)(using BusinessentityId.column),
-        name = row(idx + 1)(using Name.column),
-        contacttype = row(idx + 2)(using Name.column),
-        title = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
-        firstname = row(idx + 4)(using /* user-picked */ FirstName.column),
-        middlename = row(idx + 5)(using Column.columnToOption(using Name.column)),
-        lastname = row(idx + 6)(using Name.column),
-        suffix = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
-        phonenumber = row(idx + 8)(using Column.columnToOption(using Phone.column)),
-        phonenumbertype = row(idx + 9)(using Column.columnToOption(using Name.column)),
-        emailaddress = row(idx + 10)(using Column.columnToOption(using Column.columnToString)),
-        emailpromotion = row(idx + 11)(using Column.columnToInt)
-      )
+      ),
     )
   }
-  given writes: OWrites[VstorewithcontactsViewRow] = OWrites[VstorewithcontactsViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "name" -> Name.writes.writes(o.name),
-      "contacttype" -> Name.writes.writes(o.contacttype),
-      "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname),
-      "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
-      "phonenumber" -> Writes.OptionWrites(using Phone.writes).writes(o.phonenumber),
-      "phonenumbertype" -> Writes.OptionWrites(using Name.writes).writes(o.phonenumbertype),
-      "emailaddress" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.emailaddress),
-      "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VstorewithcontactsViewRow] = {
+    RowParser[VstorewithcontactsViewRow] { row =>
+      Success(
+        VstorewithcontactsViewRow(
+          businessentityid = row(idx + 0)(using BusinessentityId.column),
+          name = row(idx + 1)(using Name.column),
+          contacttype = row(idx + 2)(using Name.column),
+          title = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          firstname = row(idx + 4)(using /* user-picked */ FirstName.column),
+          middlename = row(idx + 5)(using Column.columnToOption(using Name.column)),
+          lastname = row(idx + 6)(using Name.column),
+          suffix = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
+          phonenumber = row(idx + 8)(using Column.columnToOption(using Phone.column)),
+          phonenumbertype = row(idx + 9)(using Column.columnToOption(using Name.column)),
+          emailaddress = row(idx + 10)(using Column.columnToOption(using Column.columnToString)),
+          emailpromotion = row(idx + 11)(using Column.columnToInt)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[VstorewithcontactsViewRow] = {
+    OWrites[VstorewithcontactsViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "name" -> Name.writes.writes(o.name),
+        "contacttype" -> Name.writes.writes(o.contacttype),
+        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname),
+        "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
+        "phonenumber" -> Writes.OptionWrites(using Phone.writes).writes(o.phonenumber),
+        "phonenumbertype" -> Writes.OptionWrites(using Name.writes).writes(o.phonenumbertype),
+        "emailaddress" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.emailaddress),
+        "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion)
+      ))
+    )
+  }
 }

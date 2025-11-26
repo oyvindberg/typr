@@ -18,79 +18,88 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class VendorRepoMock(toRow: Function1[VendorRowUnsaved, VendorRow],
-                     map: scala.collection.mutable.Map[BusinessentityId, VendorRow] = scala.collection.mutable.Map.empty) extends VendorRepo {
-  override def delete: DeleteBuilder[VendorFields, VendorRow] = {
-    DeleteBuilderMock(DeleteParams.empty, VendorFields.structure, map)
-  }
-  override def deleteById(businessentityid: BusinessentityId)(implicit c: Connection): Boolean = {
-    map.remove(businessentityid).isDefined
-  }
-  override def deleteByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): Int = {
-    businessentityids.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: VendorRow)(implicit c: Connection): VendorRow = {
+case class VendorRepoMock(
+  toRow: VendorRowUnsaved => VendorRow,
+  map: scala.collection.mutable.Map[BusinessentityId, VendorRow] = scala.collection.mutable.Map.empty[BusinessentityId, VendorRow]
+) extends VendorRepo {
+  def delete: DeleteBuilder[VendorFields, VendorRow] = DeleteBuilderMock(DeleteParams.empty, VendorFields.structure, map)
+
+  def deleteById(businessentityid: BusinessentityId)(implicit c: Connection): Boolean = map.remove(businessentityid).isDefined
+
+  def deleteByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): Int = businessentityids.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: VendorRow)(implicit c: Connection): VendorRow = {
     val _ = if (map.contains(unsaved.businessentityid))
       sys.error(s"id ${unsaved.businessentityid} already exists")
     else
       map.put(unsaved.businessentityid, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: VendorRowUnsaved)(implicit c: Connection): VendorRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[VendorRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  def insert(unsaved: VendorRowUnsaved)(implicit c: Connection): VendorRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[VendorRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.businessentityid -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[VendorRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[VendorRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.businessentityid -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[VendorFields, VendorRow] = {
-    SelectBuilderMock(VendorFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(implicit c: Connection): List[VendorRow] = {
-    map.values.toList
-  }
-  override def selectById(businessentityid: BusinessentityId)(implicit c: Connection): Option[VendorRow] = {
-    map.get(businessentityid)
-  }
-  override def selectByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): List[VendorRow] = {
-    businessentityids.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(businessentityids: Array[BusinessentityId])(implicit c: Connection): Map[BusinessentityId, VendorRow] = {
+
+  def select: SelectBuilder[VendorFields, VendorRow] = SelectBuilderMock(VendorFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(implicit c: Connection): List[VendorRow] = map.values.toList
+
+  def selectById(businessentityid: BusinessentityId)(implicit c: Connection): Option[VendorRow] = map.get(businessentityid)
+
+  def selectByIds(businessentityids: Array[BusinessentityId])(implicit c: Connection): List[VendorRow] = businessentityids.flatMap(map.get).toList
+
+  def selectByIdsTracked(businessentityids: Array[BusinessentityId])(implicit c: Connection): Map[BusinessentityId, VendorRow] = {
     val byId = selectByIds(businessentityids).view.map(x => (x.businessentityid, x)).toMap
     businessentityids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[VendorFields, VendorRow] = {
-    UpdateBuilderMock(UpdateParams.empty, VendorFields.structure, map)
-  }
-  override def update(row: VendorRow)(implicit c: Connection): Option[VendorRow] = {
+
+  def update: UpdateBuilder[VendorFields, VendorRow] = UpdateBuilderMock(UpdateParams.empty, VendorFields.structure, map)
+
+  def update(row: VendorRow)(implicit c: Connection): Option[VendorRow] = {
     map.get(row.businessentityid).map { _ =>
       map.put(row.businessentityid, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: VendorRow)(implicit c: Connection): VendorRow = {
+
+  def upsert(unsaved: VendorRow)(implicit c: Connection): VendorRow = {
     map.put(unsaved.businessentityid, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[VendorRow])(implicit c: Connection): List[VendorRow] = {
+
+  def upsertBatch(unsaved: Iterable[VendorRow])(implicit c: Connection): List[VendorRow] = {
     unsaved.map { row =>
       map += (row.businessentityid -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[VendorRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[VendorRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.businessentityid -> row)
     }

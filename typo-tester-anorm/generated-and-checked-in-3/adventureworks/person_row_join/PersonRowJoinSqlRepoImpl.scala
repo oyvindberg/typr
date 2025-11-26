@@ -5,16 +5,16 @@
  */
 package adventureworks.person_row_join
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
+import anorm.SqlStringInterpolation
 
 class PersonRowJoinSqlRepoImpl extends PersonRowJoinSqlRepo {
-  override def apply()(using c: Connection): List[PersonRowJoinSqlRow] = {
+  def apply(using c: Connection): List[PersonRowJoinSqlRow] = {
     val sql =
       SQL"""SELECT s.businessentityid,
-                   (select array_agg(ROW(a.emailaddress, a.rowguid)) from person.emailaddress a where a.businessentityid = s.businessentityid) as email,
-                   (select ARRAY[ROW(a.emailaddress, a.rowguid)] from person.emailaddress a where a.businessentityid = s.businessentityid) as emails
-            FROM sales.salesperson s
+             (select array_agg(ROW(a.emailaddress, a.rowguid)) from person.emailaddress a where a.businessentityid = s.businessentityid) as email,
+             (select ARRAY[ROW(a.emailaddress, a.rowguid)] from person.emailaddress a where a.businessentityid = s.businessentityid) as emails
+      FROM sales.salesperson s
       """
     sql.as(PersonRowJoinSqlRow.rowParser(1).*)
   }

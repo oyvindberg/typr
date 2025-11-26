@@ -31,11 +31,11 @@ trait VproductmodelinstructionsViewFields {
 
 object VproductmodelinstructionsViewFields {
   lazy val structure: Relation[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] {
-  
+
     override lazy val fields: VproductmodelinstructionsViewFields = new VproductmodelinstructionsViewFields {
       override def productmodelid = Field[ProductmodelId, VproductmodelinstructionsViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def name = Field[Name, VproductmodelinstructionsViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
@@ -49,12 +49,11 @@ object VproductmodelinstructionsViewFields {
       override def rowguid = Field[TypoUUID, VproductmodelinstructionsViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, VproductmodelinstructionsViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VproductmodelinstructionsViewRow]] =
       List[FieldLike[?, VproductmodelinstructionsViewRow]](fields.productmodelid, fields.name, fields.instructions, fields.locationID, fields.setupHours, fields.machineHours, fields.laborHours, fields.lotSize, fields.step, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

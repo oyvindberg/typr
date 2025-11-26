@@ -29,40 +29,48 @@ case class PppViewRow(
 )
 
 object PppViewRow {
-  given jdbcDecoder: JdbcDecoder[PppViewRow] = new JdbcDecoder[PppViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PppViewRow) =
-      columIndex + 3 ->
-        PppViewRow(
-          productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          productphotoid = ProductphotoId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          primary = Flag.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[PppViewRow] = {
+    new JdbcDecoder[PppViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PppViewRow) =
+        columIndex + 3 ->
+          PppViewRow(
+            productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            productphotoid = ProductphotoId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            primary = Flag.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[PppViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
-    val productphotoid = jsonObj.get("productphotoid").toRight("Missing field 'productphotoid'").flatMap(_.as(using ProductphotoId.jsonDecoder))
-    val primary = jsonObj.get("primary").toRight("Missing field 'primary'").flatMap(_.as(using Flag.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (productid.isRight && productphotoid.isRight && primary.isRight && modifieddate.isRight)
-      Right(PppViewRow(productid = productid.toOption.get, productphotoid = productphotoid.toOption.get, primary = primary.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](productid, productphotoid, primary, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[PppViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
+      val productphotoid = jsonObj.get("productphotoid").toRight("Missing field 'productphotoid'").flatMap(_.as(using ProductphotoId.jsonDecoder))
+      val primary = jsonObj.get("primary").toRight("Missing field 'primary'").flatMap(_.as(using Flag.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (productid.isRight && productphotoid.isRight && primary.isRight && modifieddate.isRight)
+        Right(PppViewRow(productid = productid.toOption.get, productphotoid = productphotoid.toOption.get, primary = primary.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](productid, productphotoid, primary, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[PppViewRow] = new JsonEncoder[PppViewRow] {
-    override def unsafeEncode(a: PppViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""productphotoid":""")
-      ProductphotoId.jsonEncoder.unsafeEncode(a.productphotoid, indent, out)
-      out.write(",")
-      out.write(""""primary":""")
-      Flag.jsonEncoder.unsafeEncode(a.primary, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[PppViewRow] = {
+    new JsonEncoder[PppViewRow] {
+      override def unsafeEncode(a: PppViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""productphotoid":""")
+        ProductphotoId.jsonEncoder.unsafeEncode(a.productphotoid, indent, out)
+        out.write(",")
+        out.write(""""primary":""")
+        Flag.jsonEncoder.unsafeEncode(a.primary, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

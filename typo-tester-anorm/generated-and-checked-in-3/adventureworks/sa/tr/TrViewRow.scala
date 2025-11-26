@@ -44,45 +44,53 @@ case class TrViewRow(
 )
 
 object TrViewRow {
-  given reads: Reads[TrViewRow] = Reads[TrViewRow](json => JsResult.fromTry(
-      Try(
-        TrViewRow(
-          id = json.\("id").as(SalestaxrateId.reads),
-          salestaxrateid = json.\("salestaxrateid").as(SalestaxrateId.reads),
-          stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
-          taxtype = json.\("taxtype").as(TypoShort.reads),
-          taxrate = json.\("taxrate").as(Reads.bigDecReads),
-          name = json.\("name").as(Name.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[TrViewRow] = {
+    Reads[TrViewRow](json => JsResult.fromTry(
+        Try(
+          TrViewRow(
+            id = json.\("id").as(SalestaxrateId.reads),
+            salestaxrateid = json.\("salestaxrateid").as(SalestaxrateId.reads),
+            stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
+            taxtype = json.\("taxtype").as(TypoShort.reads),
+            taxrate = json.\("taxrate").as(Reads.bigDecReads),
+            name = json.\("name").as(Name.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TrViewRow] = RowParser[TrViewRow] { row =>
-    Success(
-      TrViewRow(
-        id = row(idx + 0)(using SalestaxrateId.column),
-        salestaxrateid = row(idx + 1)(using SalestaxrateId.column),
-        stateprovinceid = row(idx + 2)(using StateprovinceId.column),
-        taxtype = row(idx + 3)(using TypoShort.column),
-        taxrate = row(idx + 4)(using Column.columnToScalaBigDecimal),
-        name = row(idx + 5)(using Name.column),
-        rowguid = row(idx + 6)(using TypoUUID.column),
-        modifieddate = row(idx + 7)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[TrViewRow] = OWrites[TrViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> SalestaxrateId.writes.writes(o.id),
-      "salestaxrateid" -> SalestaxrateId.writes.writes(o.salestaxrateid),
-      "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
-      "taxtype" -> TypoShort.writes.writes(o.taxtype),
-      "taxrate" -> Writes.BigDecimalWrites.writes(o.taxrate),
-      "name" -> Name.writes.writes(o.name),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[TrViewRow] = {
+    RowParser[TrViewRow] { row =>
+      Success(
+        TrViewRow(
+          id = row(idx + 0)(using SalestaxrateId.column),
+          salestaxrateid = row(idx + 1)(using SalestaxrateId.column),
+          stateprovinceid = row(idx + 2)(using StateprovinceId.column),
+          taxtype = row(idx + 3)(using TypoShort.column),
+          taxrate = row(idx + 4)(using Column.columnToScalaBigDecimal),
+          name = row(idx + 5)(using Name.column),
+          rowguid = row(idx + 6)(using TypoUUID.column),
+          modifieddate = row(idx + 7)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[TrViewRow] = {
+    OWrites[TrViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> SalestaxrateId.writes.writes(o.id),
+        "salestaxrateid" -> SalestaxrateId.writes.writes(o.salestaxrateid),
+        "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
+        "taxtype" -> TypoShort.writes.writes(o.taxtype),
+        "taxrate" -> Writes.BigDecimalWrites.writes(o.taxrate),
+        "name" -> Name.writes.writes(o.name),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

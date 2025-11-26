@@ -46,16 +46,16 @@ trait PurchaseorderdetailFields {
     purchaseorderid.isEqual(compositeId.purchaseorderid).and(purchaseorderdetailid.isEqual(compositeId.purchaseorderdetailid))
   def compositeIdIn(compositeIds: Array[PurchaseorderdetailId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[PurchaseorderdetailId](purchaseorderid)(_.purchaseorderid)(using as[Array[PurchaseorderheaderId]](ToParameterValue(null, PurchaseorderheaderId.arrayToStatement), adventureworks.arrayParameterMetaData(PurchaseorderheaderId.parameterMetadata)), implicitly), TuplePart[PurchaseorderdetailId](purchaseorderdetailid)(_.purchaseorderdetailid)(using as[Array[Int]](ToParameterValue(null, adventureworks.IntArrayToStatement), adventureworks.arrayParameterMetaData(ParameterMetaData.IntParameterMetaData)), implicitly))
-  
+
 }
 
 object PurchaseorderdetailFields {
   lazy val structure: Relation[PurchaseorderdetailFields, PurchaseorderdetailRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PurchaseorderdetailFields, PurchaseorderdetailRow] {
-  
+
     override lazy val fields: PurchaseorderdetailFields = new PurchaseorderdetailFields {
       override def purchaseorderid = IdField[PurchaseorderheaderId, PurchaseorderdetailRow](_path, "purchaseorderid", None, Some("int4"), x => x.purchaseorderid, (row, value) => row.copy(purchaseorderid = value))
       override def purchaseorderdetailid = IdField[Int, PurchaseorderdetailRow](_path, "purchaseorderdetailid", None, Some("int4"), x => x.purchaseorderdetailid, (row, value) => row.copy(purchaseorderdetailid = value))
@@ -67,12 +67,11 @@ object PurchaseorderdetailFields {
       override def rejectedqty = Field[BigDecimal, PurchaseorderdetailRow](_path, "rejectedqty", None, Some("numeric"), x => x.rejectedqty, (row, value) => row.copy(rejectedqty = value))
       override def modifieddate = Field[TypoLocalDateTime, PurchaseorderdetailRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PurchaseorderdetailRow]] =
       List[FieldLike[?, PurchaseorderdetailRow]](fields.purchaseorderid, fields.purchaseorderdetailid, fields.duedate, fields.orderqty, fields.productid, fields.unitprice, fields.receivedqty, fields.rejectedqty, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

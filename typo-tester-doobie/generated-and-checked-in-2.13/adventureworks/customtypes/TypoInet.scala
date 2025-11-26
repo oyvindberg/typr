@@ -18,28 +18,45 @@ import typo.dsl.Bijection
 case class TypoInet(value: String)
 
 object TypoInet {
-  implicit lazy val arrayGet: Get[Array[TypoInet]] = Get.Advanced.array[AnyRef](NonEmptyList.one("inet[]"))
-    .map(_.map(v => TypoInet(v.asInstanceOf[PGobject].getValue)))
-  implicit lazy val arrayPut: Put[Array[TypoInet]] = Put.Advanced.array[AnyRef](NonEmptyList.one("inet[]"), "inet")
-    .contramap(_.map(v => {
-                            val obj = new PGobject
-                            obj.setType("inet")
-                            obj.setValue(v.value)
-                            obj
-                          }))
-  implicit lazy val bijection: Bijection[TypoInet, String] = Bijection[TypoInet, String](_.value)(TypoInet.apply)
+  implicit lazy val arrayGet: Get[Array[TypoInet]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("inet[]"))
+      .map(_.map(v => new TypoInet(v.asInstanceOf[PGobject].getValue)))
+  }
+
+  implicit lazy val arrayPut: Put[Array[TypoInet]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("inet[]"), "inet")
+      .contramap(_.map(v => {
+                              val obj = new PGobject()
+                              obj.setType("inet")
+                              obj.setValue(v.value)
+                              obj
+                            }))
+  }
+
+  implicit lazy val bijection: Bijection[TypoInet, String] = Bijection.apply[TypoInet, String](_.value)(TypoInet.apply)
+
   implicit lazy val decoder: Decoder[TypoInet] = Decoder.decodeString.map(TypoInet.apply)
+
   implicit lazy val encoder: Encoder[TypoInet] = Encoder.encodeString.contramap(_.value)
-  implicit lazy val get: Get[TypoInet] = Get.Advanced.other[PGobject](NonEmptyList.one("inet"))
-    .map(v => TypoInet(v.getValue))
-  implicit lazy val put: Put[TypoInet] = Put.Advanced.other[PGobject](NonEmptyList.one("inet")).contramap(v => {
-                                                                          val obj = new PGobject
-                                                                          obj.setType("inet")
-                                                                          obj.setValue(v.value)
-                                                                          obj
-                                                                        })
-  implicit lazy val text: Text[TypoInet] = new Text[TypoInet] {
-    override def unsafeEncode(v: TypoInet, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoInet, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val get: Get[TypoInet] = {
+    Get.Advanced.other[PGobject](NonEmptyList.one("inet"))
+      .map(v => new TypoInet(v.getValue))
+  }
+
+  implicit lazy val pgText: Text[TypoInet] = {
+    new Text[TypoInet] {
+      override def unsafeEncode(v: TypoInet, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoInet, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val put: Put[TypoInet] = {
+    Put.Advanced.other[PGobject](NonEmptyList.one("inet")).contramap(v => {
+      val obj = new PGobject()
+      obj.setType("inet")
+      obj.setValue(v.value)
+      obj
+    })
   }
 }

@@ -36,28 +36,32 @@ case class VvendorwithaddressesViewRow(
 
 object VvendorwithaddressesViewRow {
   given decoder: Decoder[VvendorwithaddressesViewRow] = Decoder.forProduct9[VvendorwithaddressesViewRow, BusinessentityId, Name, Name, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name]("businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname")(VvendorwithaddressesViewRow.apply)(using BusinessentityId.decoder, Name.decoder, Name.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Name.decoder, Decoder.decodeString, Name.decoder)
+
   given encoder: Encoder[VvendorwithaddressesViewRow] = Encoder.forProduct9[VvendorwithaddressesViewRow, BusinessentityId, Name, Name, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name]("businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname")(x => (x.businessentityid, x.name, x.addresstype, x.addressline1, x.addressline2, x.city, x.stateprovincename, x.postalcode, x.countryregionname))(using BusinessentityId.encoder, Name.encoder, Name.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Name.encoder, Encoder.encodeString, Name.encoder)
-  given read: Read[VvendorwithaddressesViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VvendorwithaddressesViewRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          name = arr(1).asInstanceOf[Name],
-          addresstype = arr(2).asInstanceOf[Name],
-          addressline1 = arr(3).asInstanceOf[/* max 60 chars */ String],
-          addressline2 = arr(4).asInstanceOf[Option[/* max 60 chars */ String]],
-          city = arr(5).asInstanceOf[/* max 30 chars */ String],
-          stateprovincename = arr(6).asInstanceOf[Name],
-          postalcode = arr(7).asInstanceOf[/* max 15 chars */ String],
-          countryregionname = arr(8).asInstanceOf[Name]
-    )
+
+  given read: Read[VvendorwithaddressesViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VvendorwithaddressesViewRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            name = arr(1).asInstanceOf[Name],
+            addresstype = arr(2).asInstanceOf[Name],
+            addressline1 = arr(3).asInstanceOf[/* max 60 chars */ String],
+            addressline2 = arr(4).asInstanceOf[Option[/* max 60 chars */ String]],
+            city = arr(5).asInstanceOf[/* max 30 chars */ String],
+            stateprovincename = arr(6).asInstanceOf[Name],
+            postalcode = arr(7).asInstanceOf[/* max 15 chars */ String],
+            countryregionname = arr(8).asInstanceOf[Name]
+      )
+    }
   }
 }

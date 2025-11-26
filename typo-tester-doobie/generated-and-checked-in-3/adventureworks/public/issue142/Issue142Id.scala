@@ -15,30 +15,43 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Type for the primary key of table `public.issue142`. It has some known values: 
-  *  - aa
-  *  - bb
-  */
+ *  - aa
+ *  - bb
+ */
+
 sealed abstract class Issue142Id(val value: String)
 
 object Issue142Id {
   def apply(underlying: String): Issue142Id =
     ByName.getOrElse(underlying, Unknown(underlying))
+  given put: Put[Issue142Id] = Meta.StringMeta.put.contramap(_.value)
+
+  given arrayPut: Put[Array[Issue142Id]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
+
+  given get: Get[Issue142Id] = Meta.StringMeta.get.map(Issue142Id.apply)
+
+  given arrayGet: Get[Array[Issue142Id]] = adventureworks.StringArrayMeta.get.map(_.map(Issue142Id.apply))
+
+  given write: Write[Issue142Id] = new Write.Single(put)
+
+  given read: Read[Issue142Id] = new Read.Single(get)
+
+  given pgText: Text[Issue142Id] = {
+    new Text[Issue142Id] {
+      override def unsafeEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given decoder: Decoder[Issue142Id] = Decoder.decodeString.map(Issue142Id.apply)
+
+  given encoder: Encoder[Issue142Id] = Encoder.encodeString.contramap(_.value)
+
   case object aa extends Issue142Id("aa")
+
   case object bb extends Issue142Id("bb")
   case class Unknown(override val value: String) extends Issue142Id(value)
-  val All: List[Issue142Id] = List(aa, bb)
-  val ByName: Map[String, Issue142Id] = All.map(x => (x.value, x)).toMap
-              
-  given arrayGet: Get[Array[Issue142Id]] = adventureworks.StringArrayMeta.get.map(_.map(Issue142Id.apply))
-  given arrayPut: Put[Array[Issue142Id]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given decoder: Decoder[Issue142Id] = Decoder.decodeString.map(Issue142Id.apply)
-  given encoder: Encoder[Issue142Id] = Encoder.encodeString.contramap(_.value)
-  given get: Get[Issue142Id] = Meta.StringMeta.get.map(Issue142Id.apply)
-  given put: Put[Issue142Id] = Meta.StringMeta.put.contramap(_.value)
-  given read: Read[Issue142Id] = new Read.Single(get)
-  given text: Text[Issue142Id] = new Text[Issue142Id] {
-    override def unsafeEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  given write: Write[Issue142Id] = new Write.Single(put)
+  val All: scala.List[Issue142Id] = scala.List(aa, bb)
+  val ByName: scala.collection.immutable.Map[String, Issue142Id] = All.map(x => (x.value, x)).toMap
+
 }

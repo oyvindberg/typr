@@ -6,16 +6,12 @@
 package adventureworks.person.vstateprovincecountryregion
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class VstateprovincecountryregionMVRepoImpl extends VstateprovincecountryregionMVRepo {
-  override def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] = {
-    SelectBuilderSql(""""person"."vstateprovincecountryregion"""", VstateprovincecountryregionMVFields.structure, VstateprovincecountryregionMVRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, VstateprovincecountryregionMVRow] = {
-    sql"""select "stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname" from "person"."vstateprovincecountryregion"""".query(VstateprovincecountryregionMVRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] = SelectBuilder.of(""""person"."vstateprovincecountryregion"""", VstateprovincecountryregionMVFields.structure, VstateprovincecountryregionMVRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, VstateprovincecountryregionMVRow] = sql"""select "stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname" from "person"."vstateprovincecountryregion"""".query(VstateprovincecountryregionMVRow.jdbcDecoder).selectStream()
 }

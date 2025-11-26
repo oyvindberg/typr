@@ -21,22 +21,21 @@ trait PmiViewFields {
 
 object PmiViewFields {
   lazy val structure: Relation[PmiViewFields, PmiViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PmiViewFields, PmiViewRow] {
-  
+
     override lazy val fields: PmiViewFields = new PmiViewFields {
       override def productmodelid = Field[ProductmodelId, PmiViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def illustrationid = Field[IllustrationId, PmiViewRow](_path, "illustrationid", None, None, x => x.illustrationid, (row, value) => row.copy(illustrationid = value))
       override def modifieddate = Field[TypoLocalDateTime, PmiViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PmiViewRow]] =
       List[FieldLike[?, PmiViewRow]](fields.productmodelid, fields.illustrationid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

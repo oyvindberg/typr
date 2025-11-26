@@ -50,54 +50,62 @@ case class SodViewRow(
 )
 
 object SodViewRow {
-  implicit lazy val reads: Reads[SodViewRow] = Reads[SodViewRow](json => JsResult.fromTry(
-      Try(
-        SodViewRow(
-          id = json.\("id").as(Reads.IntReads),
-          salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
-          salesorderdetailid = json.\("salesorderdetailid").as(Reads.IntReads),
-          carriertrackingnumber = json.\("carriertrackingnumber").toOption.map(_.as(Reads.StringReads)),
-          orderqty = json.\("orderqty").as(TypoShort.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
-          unitprice = json.\("unitprice").as(Reads.bigDecReads),
-          unitpricediscount = json.\("unitpricediscount").as(Reads.bigDecReads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[SodViewRow] = {
+    Reads[SodViewRow](json => JsResult.fromTry(
+        Try(
+          SodViewRow(
+            id = json.\("id").as(Reads.IntReads),
+            salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
+            salesorderdetailid = json.\("salesorderdetailid").as(Reads.IntReads),
+            carriertrackingnumber = json.\("carriertrackingnumber").toOption.map(_.as(Reads.StringReads)),
+            orderqty = json.\("orderqty").as(TypoShort.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
+            unitprice = json.\("unitprice").as(Reads.bigDecReads),
+            unitpricediscount = json.\("unitpricediscount").as(Reads.bigDecReads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SodViewRow] = RowParser[SodViewRow] { row =>
-    Success(
-      SodViewRow(
-        id = row(idx + 0)(Column.columnToInt),
-        salesorderid = row(idx + 1)(SalesorderheaderId.column),
-        salesorderdetailid = row(idx + 2)(Column.columnToInt),
-        carriertrackingnumber = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-        orderqty = row(idx + 4)(TypoShort.column),
-        productid = row(idx + 5)(ProductId.column),
-        specialofferid = row(idx + 6)(SpecialofferId.column),
-        unitprice = row(idx + 7)(Column.columnToScalaBigDecimal),
-        unitpricediscount = row(idx + 8)(Column.columnToScalaBigDecimal),
-        rowguid = row(idx + 9)(TypoUUID.column),
-        modifieddate = row(idx + 10)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[SodViewRow] = OWrites[SodViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> Writes.IntWrites.writes(o.id),
-      "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
-      "salesorderdetailid" -> Writes.IntWrites.writes(o.salesorderdetailid),
-      "carriertrackingnumber" -> Writes.OptionWrites(Writes.StringWrites).writes(o.carriertrackingnumber),
-      "orderqty" -> TypoShort.writes.writes(o.orderqty),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
-      "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
-      "unitpricediscount" -> Writes.BigDecimalWrites.writes(o.unitpricediscount),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SodViewRow] = {
+    RowParser[SodViewRow] { row =>
+      Success(
+        SodViewRow(
+          id = row(idx + 0)(Column.columnToInt),
+          salesorderid = row(idx + 1)(SalesorderheaderId.column),
+          salesorderdetailid = row(idx + 2)(Column.columnToInt),
+          carriertrackingnumber = row(idx + 3)(Column.columnToOption(Column.columnToString)),
+          orderqty = row(idx + 4)(TypoShort.column),
+          productid = row(idx + 5)(ProductId.column),
+          specialofferid = row(idx + 6)(SpecialofferId.column),
+          unitprice = row(idx + 7)(Column.columnToScalaBigDecimal),
+          unitpricediscount = row(idx + 8)(Column.columnToScalaBigDecimal),
+          rowguid = row(idx + 9)(TypoUUID.column),
+          modifieddate = row(idx + 10)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[SodViewRow] = {
+    OWrites[SodViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> Writes.IntWrites.writes(o.id),
+        "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
+        "salesorderdetailid" -> Writes.IntWrites.writes(o.salesorderdetailid),
+        "carriertrackingnumber" -> Writes.OptionWrites(Writes.StringWrites).writes(o.carriertrackingnumber),
+        "orderqty" -> TypoShort.writes.writes(o.orderqty),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
+        "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
+        "unitpricediscount" -> Writes.BigDecimalWrites.writes(o.unitpricediscount),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

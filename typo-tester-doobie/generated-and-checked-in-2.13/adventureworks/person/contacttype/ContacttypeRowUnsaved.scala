@@ -6,6 +6,7 @@
 package adventureworks.person.contacttype
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -17,32 +18,30 @@ case class ContacttypeRowUnsaved(
   /** Contact type description. */
   name: Name,
   /** Default: nextval('person.contacttype_contacttypeid_seq'::regclass)
-      Primary key for ContactType records. */
-  contacttypeid: Defaulted[ContacttypeId] = Defaulted.UseDefault,
+   * Primary key for ContactType records.
+   */
+  contacttypeid: Defaulted[ContacttypeId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(contacttypeidDefault: => ContacttypeId, modifieddateDefault: => TypoLocalDateTime): ContacttypeRow =
-    ContacttypeRow(
-      contacttypeid = contacttypeid match {
-                        case Defaulted.UseDefault => contacttypeidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    contacttypeidDefault: => ContacttypeId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ContacttypeRow = new ContacttypeRow(contacttypeid = contacttypeid.getOrElse(contacttypeidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ContacttypeRowUnsaved {
   implicit lazy val decoder: Decoder[ContacttypeRowUnsaved] = Decoder.forProduct3[ContacttypeRowUnsaved, Name, Defaulted[ContacttypeId], Defaulted[TypoLocalDateTime]]("name", "contacttypeid", "modifieddate")(ContacttypeRowUnsaved.apply)(Name.decoder, Defaulted.decoder(ContacttypeId.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[ContacttypeRowUnsaved] = Encoder.forProduct3[ContacttypeRowUnsaved, Name, Defaulted[ContacttypeId], Defaulted[TypoLocalDateTime]]("name", "contacttypeid", "modifieddate")(x => (x.name, x.contacttypeid, x.modifieddate))(Name.encoder, Defaulted.encoder(ContacttypeId.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[ContacttypeRowUnsaved] = Text.instance[ContacttypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ContacttypeId.text).unsafeEncode(row.contacttypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[ContacttypeRowUnsaved] = {
+    Text.instance[ContacttypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ContacttypeId.pgText).unsafeEncode(row.contacttypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

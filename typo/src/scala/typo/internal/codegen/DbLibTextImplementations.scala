@@ -2,12 +2,10 @@ package typo
 package internal
 package codegen
 
-import typo.sc.Code
-
 /** Put implementations of `Text` and `streamingInsert` for anorm and zio-jdbc here instead of upstreaming them for now
   */
 object DbLibTextImplementations {
-  def streamingInsertAnorm(Text: sc.Type.Qualified, dialect: Dialect) =
+  def streamingInsertAnorm(Text: jvm.Type.Qualified, dialect: Dialect) =
     code"""|import org.postgresql.PGConnection
            |import org.postgresql.util.PSQLException
            |
@@ -43,7 +41,7 @@ object DbLibTextImplementations {
            |}
            |""".stripMargin
 
-  def streamingInsertZio(Text: sc.Type.Qualified, dialect: Dialect) =
+  def streamingInsertZio(Text: jvm.Type.Qualified, dialect: Dialect) =
     code"""|import org.postgresql.PGConnection
            |import org.postgresql.copy.CopyIn
            |import org.postgresql.util.PSQLException
@@ -89,7 +87,7 @@ object DbLibTextImplementations {
            |}
            |""".stripMargin
 
-  def Text(dialect: Dialect): Code = {
+  def Text(dialect: Dialect): jvm.Code = {
     val implicitValOrGiven: String = dialect.valDefinition
     val implicitDefOrGiven: String = dialect.defDefinition
     val paramUsingOrUsing: String = dialect.paramDefinition

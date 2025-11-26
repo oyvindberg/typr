@@ -30,22 +30,26 @@ case class PchViewRow(
 
 object PchViewRow {
   given decoder: Decoder[PchViewRow] = Decoder.forProduct6[PchViewRow, ProductId, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "standardcost", "modifieddate")(PchViewRow.apply)(using ProductId.decoder, ProductId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PchViewRow] = Encoder.forProduct6[PchViewRow, ProductId, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "standardcost", "modifieddate")(x => (x.id, x.productid, x.startdate, x.enddate, x.standardcost, x.modifieddate))(using ProductId.encoder, ProductId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  given read: Read[PchViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PchViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PchViewRow(
-      id = arr(0).asInstanceOf[ProductId],
-          productid = arr(1).asInstanceOf[ProductId],
-          startdate = arr(2).asInstanceOf[TypoLocalDateTime],
-          enddate = arr(3).asInstanceOf[Option[TypoLocalDateTime]],
-          standardcost = arr(4).asInstanceOf[BigDecimal],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PchViewRow(
+        id = arr(0).asInstanceOf[ProductId],
+            productid = arr(1).asInstanceOf[ProductId],
+            startdate = arr(2).asInstanceOf[TypoLocalDateTime],
+            enddate = arr(3).asInstanceOf[Option[TypoLocalDateTime]],
+            standardcost = arr(4).asInstanceOf[BigDecimal],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

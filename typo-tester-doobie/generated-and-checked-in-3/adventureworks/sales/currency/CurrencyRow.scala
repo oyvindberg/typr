@@ -15,8 +15,9 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.currency
-    Lookup table containing standard ISO currencies.
-    Primary key: currencycode */
+ * Lookup table containing standard ISO currencies.
+ * Primary key: currencycode
+ */
 case class CurrencyRow(
   /** The ISO code for the Currency. */
   currencycode: CurrencyId,
@@ -24,37 +25,47 @@ case class CurrencyRow(
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = currencycode
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CurrencyRowUnsaved =
-     CurrencyRowUnsaved(currencycode, name, modifieddate)
- }
+) {
+  def id: CurrencyId = currencycode
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CurrencyRowUnsaved = new CurrencyRowUnsaved(currencycode, name, modifieddate)
+}
 
 object CurrencyRow {
   given decoder: Decoder[CurrencyRow] = Decoder.forProduct3[CurrencyRow, CurrencyId, Name, TypoLocalDateTime]("currencycode", "name", "modifieddate")(CurrencyRow.apply)(using CurrencyId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[CurrencyRow] = Encoder.forProduct3[CurrencyRow, CurrencyId, Name, TypoLocalDateTime]("currencycode", "name", "modifieddate")(x => (x.currencycode, x.name, x.modifieddate))(using CurrencyId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[CurrencyRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    CurrencyRow(
-      currencycode = arr(0).asInstanceOf[CurrencyId],
-          name = arr(1).asInstanceOf[Name],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[CurrencyRow] = {
+    Text.instance[CurrencyRow]{ (row, sb) =>
+      CurrencyId.pgText.unsafeEncode(row.currencycode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[CurrencyRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      CurrencyRow(
+        currencycode = arr(0).asInstanceOf[CurrencyId],
+            name = arr(1).asInstanceOf[Name],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[CurrencyRow] = {
+    new Write.Composite[CurrencyRow](
+      List(new Write.Single(CurrencyId.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.currencycode, a.name, a.modifieddate)
     )
   }
-  given text: Text[CurrencyRow] = Text.instance[CurrencyRow]{ (row, sb) =>
-    CurrencyId.text.unsafeEncode(row.currencycode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[CurrencyRow] = new Write.Composite[CurrencyRow](
-    List(new Write.Single(CurrencyId.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.currencycode, a.name, a.modifieddate)
-  )
 }

@@ -17,7 +17,9 @@ case class BusinessentityaddressId(
   addressid: AddressId,
   addresstypeid: AddresstypeId
 )
+
 object BusinessentityaddressId {
   implicit lazy val decoder: Decoder[BusinessentityaddressId] = Decoder.forProduct3[BusinessentityaddressId, BusinessentityId, AddressId, AddresstypeId]("businessentityid", "addressid", "addresstypeid")(BusinessentityaddressId.apply)(BusinessentityId.decoder, AddressId.decoder, AddresstypeId.decoder)
+
   implicit lazy val encoder: Encoder[BusinessentityaddressId] = Encoder.forProduct3[BusinessentityaddressId, BusinessentityId, AddressId, AddresstypeId]("businessentityid", "addressid", "addresstypeid")(x => (x.businessentityid, x.addressid, x.addresstypeid))(BusinessentityId.encoder, AddressId.encoder, AddresstypeId.encoder)
 }

@@ -22,26 +22,25 @@ trait OnlyPkColumnsFields {
     keyColumn1.isEqual(compositeId.keyColumn1).and(keyColumn2.isEqual(compositeId.keyColumn2))
   def compositeIdIn(compositeIds: Array[OnlyPkColumnsId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[OnlyPkColumnsId](keyColumn1)(_.keyColumn1)(using as[Array[String]](using adventureworks.StringArrayEncoder, PGType.forArray(using PGType.PGTypeString)), implicitly), TuplePart[OnlyPkColumnsId](keyColumn2)(_.keyColumn2)(using as[Array[Int]](using adventureworks.IntArrayEncoder, PGType.forArray(using PGType.PGTypeInt)), implicitly))
-  
+
 }
 
 object OnlyPkColumnsFields {
   lazy val structure: Relation[OnlyPkColumnsFields, OnlyPkColumnsRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[OnlyPkColumnsFields, OnlyPkColumnsRow] {
-  
+
     override lazy val fields: OnlyPkColumnsFields = new OnlyPkColumnsFields {
       override def keyColumn1 = IdField[String, OnlyPkColumnsRow](_path, "key_column_1", None, None, x => x.keyColumn1, (row, value) => row.copy(keyColumn1 = value))
       override def keyColumn2 = IdField[Int, OnlyPkColumnsRow](_path, "key_column_2", None, Some("int4"), x => x.keyColumn2, (row, value) => row.copy(keyColumn2 = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, OnlyPkColumnsRow]] =
       List[FieldLike[?, OnlyPkColumnsRow]](fields.keyColumn1, fields.keyColumn2)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

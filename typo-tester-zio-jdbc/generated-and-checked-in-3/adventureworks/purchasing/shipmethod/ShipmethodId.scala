@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `purchasing.shipmethod` */
-case class ShipmethodId(value: Int) extends AnyVal
+case class ShipmethodId(value: Int) extends scala.AnyVal
+
 object ShipmethodId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ShipmethodId]] = adventureworks.IntArrayDecoder.map(_.map(ShipmethodId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ShipmethodId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ShipmethodId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ShipmethodId, Int] = Bijection[ShipmethodId, Int](_.value)(ShipmethodId.apply)
+
+  given bijection: Bijection[ShipmethodId, Int] = Bijection.apply[ShipmethodId, Int](_.value)(ShipmethodId.apply)
+
   given jdbcDecoder: JdbcDecoder[ShipmethodId] = JdbcDecoder.intDecoder.map(ShipmethodId.apply)
+
   given jdbcEncoder: JdbcEncoder[ShipmethodId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ShipmethodId] = JsonDecoder.int.map(ShipmethodId.apply)
+
   given jsonEncoder: JsonEncoder[ShipmethodId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ShipmethodId] = PGType.PGTypeInt.as
-  given setter: Setter[ShipmethodId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ShipmethodId] = new Text[ShipmethodId] {
-    override def unsafeEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ShipmethodId] = {
+    new Text[ShipmethodId] {
+      override def unsafeEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ShipmethodId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ShipmethodId] = Setter.intSetter.contramap(_.value)
 }

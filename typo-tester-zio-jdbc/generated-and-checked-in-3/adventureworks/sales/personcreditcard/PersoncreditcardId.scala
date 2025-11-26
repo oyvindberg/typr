@@ -17,23 +17,29 @@ case class PersoncreditcardId(
   businessentityid: BusinessentityId,
   creditcardid: /* user-picked */ CustomCreditcardId
 )
+
 object PersoncreditcardId {
-  given jsonDecoder: JsonDecoder[PersoncreditcardId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val creditcardid = jsonObj.get("creditcardid").toRight("Missing field 'creditcardid'").flatMap(_.as(using CustomCreditcardId.jsonDecoder))
-    if (businessentityid.isRight && creditcardid.isRight)
-      Right(PersoncreditcardId(businessentityid = businessentityid.toOption.get, creditcardid = creditcardid.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, creditcardid).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[PersoncreditcardId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val creditcardid = jsonObj.get("creditcardid").toRight("Missing field 'creditcardid'").flatMap(_.as(using CustomCreditcardId.jsonDecoder))
+      if (businessentityid.isRight && creditcardid.isRight)
+        Right(PersoncreditcardId(businessentityid = businessentityid.toOption.get, creditcardid = creditcardid.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, creditcardid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[PersoncreditcardId] = new JsonEncoder[PersoncreditcardId] {
-    override def unsafeEncode(a: PersoncreditcardId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""creditcardid":""")
-      CustomCreditcardId.jsonEncoder.unsafeEncode(a.creditcardid, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[PersoncreditcardId] = {
+    new JsonEncoder[PersoncreditcardId] {
+      override def unsafeEncode(a: PersoncreditcardId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""creditcardid":""")
+        CustomCreditcardId.jsonEncoder.unsafeEncode(a.creditcardid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

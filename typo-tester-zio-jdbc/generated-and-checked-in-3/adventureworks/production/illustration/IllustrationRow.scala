@@ -17,59 +17,75 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: production.illustration
-    Bicycle assembly diagrams.
-    Primary key: illustrationid */
+ * Bicycle assembly diagrams.
+ * Primary key: illustrationid
+ */
 case class IllustrationRow(
   /** Primary key for Illustration records.
-      Default: nextval('production.illustration_illustrationid_seq'::regclass) */
+   * Default: nextval('production.illustration_illustrationid_seq'::regclass)
+   */
   illustrationid: IllustrationId,
   /** Illustrations used in manufacturing instructions. Stored as XML. */
   diagram: Option[TypoXml],
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = illustrationid
-   def toUnsavedRow(illustrationid: Defaulted[IllustrationId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): IllustrationRowUnsaved =
-     IllustrationRowUnsaved(diagram, illustrationid, modifieddate)
- }
+) {
+  def id: IllustrationId = illustrationid
+
+  def toUnsavedRow(
+    illustrationid: Defaulted[IllustrationId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): IllustrationRowUnsaved = new IllustrationRowUnsaved(diagram, illustrationid, modifieddate)
+}
 
 object IllustrationRow {
-  given jdbcDecoder: JdbcDecoder[IllustrationRow] = new JdbcDecoder[IllustrationRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, IllustrationRow) =
-      columIndex + 2 ->
-        IllustrationRow(
-          illustrationid = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          diagram = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 1, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2
-        )
-  }
-  given jsonDecoder: JsonDecoder[IllustrationRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(using IllustrationId.jsonDecoder))
-    val diagram = jsonObj.get("diagram").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(using JsonDecoder.option(using TypoXml.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (illustrationid.isRight && diagram.isRight && modifieddate.isRight)
-      Right(IllustrationRow(illustrationid = illustrationid.toOption.get, diagram = diagram.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](illustrationid, diagram, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[IllustrationRow] = new JsonEncoder[IllustrationRow] {
-    override def unsafeEncode(a: IllustrationRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""illustrationid":""")
-      IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
-      out.write(",")
-      out.write(""""diagram":""")
-      JsonEncoder.option(using TypoXml.jsonEncoder).unsafeEncode(a.diagram, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  given jdbcDecoder: JdbcDecoder[IllustrationRow] = {
+    new JdbcDecoder[IllustrationRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, IllustrationRow) =
+        columIndex + 2 ->
+          IllustrationRow(
+            illustrationid = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            diagram = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 1, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2
+          )
     }
   }
-  given text: Text[IllustrationRow] = Text.instance[IllustrationRow]{ (row, sb) =>
-    IllustrationId.text.unsafeEncode(row.illustrationid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.diagram, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  given jsonDecoder: JsonDecoder[IllustrationRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(using IllustrationId.jsonDecoder))
+      val diagram = jsonObj.get("diagram").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(using JsonDecoder.option(using TypoXml.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (illustrationid.isRight && diagram.isRight && modifieddate.isRight)
+        Right(IllustrationRow(illustrationid = illustrationid.toOption.get, diagram = diagram.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](illustrationid, diagram, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
+  }
+
+  given jsonEncoder: JsonEncoder[IllustrationRow] = {
+    new JsonEncoder[IllustrationRow] {
+      override def unsafeEncode(a: IllustrationRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""illustrationid":""")
+        IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
+        out.write(",")
+        out.write(""""diagram":""")
+        JsonEncoder.option(using TypoXml.jsonEncoder).unsafeEncode(a.diagram, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[IllustrationRow] = {
+    Text.instance[IllustrationRow]{ (row, sb) =>
+      IllustrationId.pgText.unsafeEncode(row.illustrationid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.diagram, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

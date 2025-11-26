@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `person.stateprovince` */
-case class StateprovinceId(value: Int) extends AnyVal
+case class StateprovinceId(value: Int) extends scala.AnyVal
+
 object StateprovinceId {
   given arrayJdbcDecoder: JdbcDecoder[Array[StateprovinceId]] = adventureworks.IntArrayDecoder.map(_.map(StateprovinceId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[StateprovinceId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[StateprovinceId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[StateprovinceId, Int] = Bijection[StateprovinceId, Int](_.value)(StateprovinceId.apply)
+
+  given bijection: Bijection[StateprovinceId, Int] = Bijection.apply[StateprovinceId, Int](_.value)(StateprovinceId.apply)
+
   given jdbcDecoder: JdbcDecoder[StateprovinceId] = JdbcDecoder.intDecoder.map(StateprovinceId.apply)
+
   given jdbcEncoder: JdbcEncoder[StateprovinceId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[StateprovinceId] = JsonDecoder.int.map(StateprovinceId.apply)
+
   given jsonEncoder: JsonEncoder[StateprovinceId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[StateprovinceId] = PGType.PGTypeInt.as
-  given setter: Setter[StateprovinceId] = Setter.intSetter.contramap(_.value)
-  given text: Text[StateprovinceId] = new Text[StateprovinceId] {
-    override def unsafeEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[StateprovinceId] = {
+    new Text[StateprovinceId] {
+      override def unsafeEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[StateprovinceId] = PGType.PGTypeInt.as
+
+  given setter: Setter[StateprovinceId] = Setter.intSetter.contramap(_.value)
 }

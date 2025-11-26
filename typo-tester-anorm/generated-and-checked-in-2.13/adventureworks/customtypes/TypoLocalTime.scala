@@ -23,36 +23,55 @@ case class TypoLocalTime(value: LocalTime)
 
 object TypoLocalTime {
   def apply(value: LocalTime): TypoLocalTime = new TypoLocalTime(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoLocalTime = apply(LocalTime.parse(str))
-  def now: TypoLocalTime = TypoLocalTime(LocalTime.now)
-  implicit lazy val arrayColumn: Column[Array[TypoLocalTime]] = Column.nonNull[Array[TypoLocalTime]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoLocalTime(LocalTime.parse(v.asInstanceOf[String]))))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLocalTime, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+
+  def apply(str: String): TypoLocalTime = new TypoLocalTime(LocalTime.parse(str))
+
+  implicit lazy val arrayColumn: Column[Array[TypoLocalTime]] = {
+    Column.nonNull[Array[TypoLocalTime]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoLocalTime(LocalTime.parse(v.asInstanceOf[String]))))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLocalTime, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   implicit lazy val arrayToStatement: ToStatement[Array[TypoLocalTime]] = ToStatement[Array[TypoLocalTime]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("time", v.map(v => v.value.toString))))
-  implicit lazy val bijection: Bijection[TypoLocalTime, LocalTime] = Bijection[TypoLocalTime, LocalTime](_.value)(TypoLocalTime.apply)
-  implicit lazy val column: Column[TypoLocalTime] = Column.nonNull[TypoLocalTime]((v1: Any, _) =>
-    v1 match {
-      case v: String => Right(TypoLocalTime(LocalTime.parse(v)))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+
+  implicit lazy val bijection: Bijection[TypoLocalTime, LocalTime] = Bijection.apply[TypoLocalTime, LocalTime](_.value)(TypoLocalTime.apply)
+
+  implicit lazy val column: Column[TypoLocalTime] = {
+    Column.nonNull[TypoLocalTime]((v1: Any, _) =>
+      v1 match {
+        case v: String => Right(new TypoLocalTime(LocalTime.parse(v)))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  def now: TypoLocalTime = new TypoLocalTime(LocalTime.now())
+
+  implicit lazy val parameterMetadata: ParameterMetaData[TypoLocalTime] = {
+    new ParameterMetaData[TypoLocalTime] {
+      override def sqlType: String = "time"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  implicit lazy val parameterMetadata: ParameterMetaData[TypoLocalTime] = new ParameterMetaData[TypoLocalTime] {
-    override def sqlType: String = "time"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  implicit lazy val pgText: Text[TypoLocalTime] = {
+    new Text[TypoLocalTime] {
+      override def unsafeEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[TypoLocalTime] = Reads.DefaultLocalTimeReads.map(TypoLocalTime.apply)
-  implicit lazy val text: Text[TypoLocalTime] = new Text[TypoLocalTime] {
-    override def unsafeEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[TypoLocalTime] = ToStatement[TypoLocalTime]((s, index, v) => s.setObject(index, v.value.toString))
+
   implicit lazy val writes: Writes[TypoLocalTime] = Writes.DefaultLocalTimeWrites.contramap(_.value)
 }

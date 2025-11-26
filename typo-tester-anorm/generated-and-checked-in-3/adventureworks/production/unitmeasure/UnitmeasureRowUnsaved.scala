@@ -7,6 +7,7 @@ package adventureworks.production.unitmeasure
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -24,41 +25,42 @@ case class UnitmeasureRowUnsaved(
   /** Unit of measure description. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): UnitmeasureRow =
-    UnitmeasureRow(
-      unitmeasurecode = unitmeasurecode,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): UnitmeasureRow = new UnitmeasureRow(unitmeasurecode = unitmeasurecode, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object UnitmeasureRowUnsaved {
-  given reads: Reads[UnitmeasureRowUnsaved] = Reads[UnitmeasureRowUnsaved](json => JsResult.fromTry(
-      Try(
-        UnitmeasureRowUnsaved(
-          unitmeasurecode = json.\("unitmeasurecode").as(UnitmeasureId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[UnitmeasureRowUnsaved] = Text.instance[UnitmeasureRowUnsaved]{ (row, sb) =>
-    UnitmeasureId.text.unsafeEncode(row.unitmeasurecode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  given pgText: Text[UnitmeasureRowUnsaved] = {
+    Text.instance[UnitmeasureRowUnsaved]{ (row, sb) =>
+      UnitmeasureId.pgText.unsafeEncode(row.unitmeasurecode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  given writes: OWrites[UnitmeasureRowUnsaved] = OWrites[UnitmeasureRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "unitmeasurecode" -> UnitmeasureId.writes.writes(o.unitmeasurecode),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  given reads: Reads[UnitmeasureRowUnsaved] = {
+    Reads[UnitmeasureRowUnsaved](json => JsResult.fromTry(
+        Try(
+          UnitmeasureRowUnsaved(
+            unitmeasurecode = json.\("unitmeasurecode").as(UnitmeasureId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[UnitmeasureRowUnsaved] = {
+    OWrites[UnitmeasureRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "unitmeasurecode" -> UnitmeasureId.writes.writes(o.unitmeasurecode),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

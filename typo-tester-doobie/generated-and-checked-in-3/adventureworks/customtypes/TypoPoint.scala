@@ -14,20 +14,37 @@ import io.circe.Encoder
 import org.postgresql.geometric.PGpoint
 
 /** Point datatype in PostgreSQL */
-case class TypoPoint(x: Double, y: Double)
+case class TypoPoint(
+  x: Double,
+  y: Double
+)
 
 object TypoPoint {
-  given arrayGet: Get[Array[TypoPoint]] = Get.Advanced.array[AnyRef](NonEmptyList.one("point[]"))
-    .map(_.map(v => TypoPoint(v.asInstanceOf[PGpoint].x, v.asInstanceOf[PGpoint].y)))
-  given arrayPut: Put[Array[TypoPoint]] = Put.Advanced.array[AnyRef](NonEmptyList.one("point[]"), "point")
-    .contramap(_.map(v => new PGpoint(v.x, v.y)))
-  given decoder: Decoder[TypoPoint] = Decoder.forProduct2[TypoPoint, Double, Double]("x", "y")(TypoPoint.apply)(using Decoder.decodeDouble, Decoder.decodeDouble)
-  given encoder: Encoder[TypoPoint] = Encoder.forProduct2[TypoPoint, Double, Double]("x", "y")(x => (x.x, x.y))(using Encoder.encodeDouble, Encoder.encodeDouble)
-  given get: Get[TypoPoint] = Get.Advanced.other[PGpoint](NonEmptyList.one("point"))
-    .map(v => TypoPoint(v.x, v.y))
-  given put: Put[TypoPoint] = Put.Advanced.other[PGpoint](NonEmptyList.one("point")).contramap(v => new PGpoint(v.x, v.y))
-  given text: Text[TypoPoint] = new Text[TypoPoint] {
-    override def unsafeEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"(${v.x},${v.y})", sb)
-    override def unsafeArrayEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"(${v.x},${v.y})", sb)
+  given arrayGet: Get[Array[TypoPoint]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("point[]"))
+      .map(_.map(v => new TypoPoint(v.asInstanceOf[PGpoint].x, v.asInstanceOf[PGpoint].y)))
   }
+
+  given arrayPut: Put[Array[TypoPoint]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("point[]"), "point")
+      .contramap(_.map(v => new PGpoint(v.x, v.y)))
+  }
+
+  given decoder: Decoder[TypoPoint] = Decoder.forProduct2[TypoPoint, Double, Double]("x", "y")(TypoPoint.apply)(using Decoder.decodeDouble, Decoder.decodeDouble)
+
+  given encoder: Encoder[TypoPoint] = Encoder.forProduct2[TypoPoint, Double, Double]("x", "y")(x => (x.x, x.y))(using Encoder.encodeDouble, Encoder.encodeDouble)
+
+  given get: Get[TypoPoint] = {
+    Get.Advanced.other[PGpoint](NonEmptyList.one("point"))
+      .map(v => new TypoPoint(v.x, v.y))
+  }
+
+  given pgText: Text[TypoPoint] = {
+    new Text[TypoPoint] {
+      override def unsafeEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"(${v.x},${v.y})", sb)
+      override def unsafeArrayEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"(${v.x},${v.y})", sb)
+    }
+  }
+
+  given put: Put[TypoPoint] = Put.Advanced.other[PGpoint](NonEmptyList.one("point")).contramap(v => new PGpoint(v.x, v.y))
 }

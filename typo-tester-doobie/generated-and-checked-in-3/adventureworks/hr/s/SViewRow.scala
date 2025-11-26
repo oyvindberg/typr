@@ -31,22 +31,26 @@ case class SViewRow(
 
 object SViewRow {
   given decoder: Decoder[SViewRow] = Decoder.forProduct6[SViewRow, ShiftId, ShiftId, Name, TypoLocalTime, TypoLocalTime, TypoLocalDateTime]("id", "shiftid", "name", "starttime", "endtime", "modifieddate")(SViewRow.apply)(using ShiftId.decoder, ShiftId.decoder, Name.decoder, TypoLocalTime.decoder, TypoLocalTime.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[SViewRow] = Encoder.forProduct6[SViewRow, ShiftId, ShiftId, Name, TypoLocalTime, TypoLocalTime, TypoLocalDateTime]("id", "shiftid", "name", "starttime", "endtime", "modifieddate")(x => (x.id, x.shiftid, x.name, x.starttime, x.endtime, x.modifieddate))(using ShiftId.encoder, ShiftId.encoder, Name.encoder, TypoLocalTime.encoder, TypoLocalTime.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ShiftId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[SViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ShiftId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SViewRow(
-      id = arr(0).asInstanceOf[ShiftId],
-          shiftid = arr(1).asInstanceOf[ShiftId],
-          name = arr(2).asInstanceOf[Name],
-          starttime = arr(3).asInstanceOf[TypoLocalTime],
-          endtime = arr(4).asInstanceOf[TypoLocalTime],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ShiftId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SViewRow(
+        id = arr(0).asInstanceOf[ShiftId],
+            shiftid = arr(1).asInstanceOf[ShiftId],
+            name = arr(2).asInstanceOf[Name],
+            starttime = arr(3).asInstanceOf[TypoLocalTime],
+            endtime = arr(4).asInstanceOf[TypoLocalTime],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

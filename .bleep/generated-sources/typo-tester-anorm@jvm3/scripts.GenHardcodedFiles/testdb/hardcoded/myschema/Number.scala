@@ -18,39 +18,52 @@ import play.api.libs.json.Writes
 import testdb.hardcoded.Text
 
 /** Enum `myschema.number`
-  *  - one
-  *  - two
-  *  - three
-  */
-sealed abstract class Number(val value: String)
+ *  - one
+ *  - two
+ *  - three
+ */
+
+sealed abstract class Number(val value: java.lang.String)
 
 object Number {
-  def apply(str: String): Either[String, Number] =
+  given arrayColumn: Column[Array[Number]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(Number.force))
+
+  given column: Column[Number] = Column.columnToString.mapResult(str => Number(str).left.map(SqlMappingError.apply))
+
+  given toStatement: ToStatement[Number] = ToStatement.stringToStatement.contramap(_.value)
+
+  given arrayToStatement: ToStatement[Array[Number]] = ToStatement[Array[Number]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.number", arr.map[AnyRef](_.value))))
+
+  given parameterMetadata: ParameterMetaData[Number] = {
+    new ParameterMetaData[Number] {
+      override def sqlType: String = "myschema.number"
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  given pgText: Text[Number] = {
+    new Text[Number] {
+      override def unsafeEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given reads: Reads[Number] = Reads[Number]{(value: JsValue) => value.validate(Reads.StringReads).flatMap(str => Number(str).fold(JsError.apply, JsSuccess(_)))}
+
+  given writes: Writes[Number] = Writes[Number](value => Writes.StringWrites.writes(value.value))
+  def apply(str: java.lang.String): scala.Either[java.lang.String, Number] =
     ByName.get(str).toRight(s"'$str' does not match any of the following legal values: $Names")
-  def force(str: String): Number =
+  def force(str: java.lang.String): Number =
     apply(str) match {
-      case Left(msg) => sys.error(msg)
-      case Right(value) => value
+      case scala.Left(msg) => sys.error(msg)
+      case scala.Right(value) => value
     }
   case object `_one` extends Number("one")
+
   case object `_two` extends Number("two")
+
   case object `_three` extends Number("three")
-  val All: List[Number] = List(`_one`, `_two`, `_three`)
-  val Names: String = All.map(_.value).mkString(", ")
-  val ByName: Map[String, Number] = All.map(x => (x.value, x)).toMap
-              
-  given arrayColumn: Column[Array[Number]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(Number.force))
-  given arrayToStatement: ToStatement[Array[Number]] = ToStatement[Array[Number]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.number", arr.map[AnyRef](_.value))))
-  given column: Column[Number] = Column.columnToString.mapResult(str => Number(str).left.map(SqlMappingError.apply))
-  given parameterMetadata: ParameterMetaData[Number] = new ParameterMetaData[Number] {
-    override def sqlType: String = "myschema.number"
-    override def jdbcType: Int = Types.OTHER
-  }
-  given reads: Reads[Number] = Reads[Number]{(value: JsValue) => value.validate(Reads.StringReads).flatMap(str => Number(str).fold(JsError.apply, JsSuccess(_)))}
-  given text: Text[Number] = new Text[Number] {
-    override def unsafeEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  given toStatement: ToStatement[Number] = ToStatement.stringToStatement.contramap(_.value)
-  given writes: Writes[Number] = Writes[Number](value => Writes.StringWrites.writes(value.value))
+  val All: scala.List[Number] = scala.List(`_one`, `_two`, `_three`)
+  val Names: java.lang.String = All.map(_.value).mkString(", ")
+  val ByName: scala.collection.immutable.Map[java.lang.String, Number] = All.map(x => (x.value, x)).toMap
 }

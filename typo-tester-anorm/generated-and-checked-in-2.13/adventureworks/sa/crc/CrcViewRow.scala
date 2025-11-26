@@ -29,30 +29,38 @@ case class CrcViewRow(
 )
 
 object CrcViewRow {
-  implicit lazy val reads: Reads[CrcViewRow] = Reads[CrcViewRow](json => JsResult.fromTry(
-      Try(
-        CrcViewRow(
-          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
-          currencycode = json.\("currencycode").as(CurrencyId.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[CrcViewRow] = {
+    Reads[CrcViewRow](json => JsResult.fromTry(
+        Try(
+          CrcViewRow(
+            countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+            currencycode = json.\("currencycode").as(CurrencyId.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CrcViewRow] = RowParser[CrcViewRow] { row =>
-    Success(
-      CrcViewRow(
-        countryregioncode = row(idx + 0)(CountryregionId.column),
-        currencycode = row(idx + 1)(CurrencyId.column),
-        modifieddate = row(idx + 2)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[CrcViewRow] = OWrites[CrcViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
-      "currencycode" -> CurrencyId.writes.writes(o.currencycode),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[CrcViewRow] = {
+    RowParser[CrcViewRow] { row =>
+      Success(
+        CrcViewRow(
+          countryregioncode = row(idx + 0)(CountryregionId.column),
+          currencycode = row(idx + 1)(CurrencyId.column),
+          modifieddate = row(idx + 2)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[CrcViewRow] = {
+    OWrites[CrcViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+        "currencycode" -> CurrencyId.writes.writes(o.currencycode),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

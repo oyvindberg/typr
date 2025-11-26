@@ -26,18 +26,22 @@ case class PersonDynamicSqlRow(
 
 object PersonDynamicSqlRow {
   given decoder: Decoder[PersonDynamicSqlRow] = Decoder.forProduct4[PersonDynamicSqlRow, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name]("title", "firstname", "middlename", "lastname")(PersonDynamicSqlRow.apply)(using Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder)
+
   given encoder: Encoder[PersonDynamicSqlRow] = Encoder.forProduct4[PersonDynamicSqlRow, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name]("title", "firstname", "middlename", "lastname")(x => (x.title, x.firstname, x.middlename, x.lastname))(using Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder)
-  given read: Read[PersonDynamicSqlRow] = new Read.CompositeOfInstances(Array(
-    new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PersonDynamicSqlRow(
-      title = arr(0).asInstanceOf[Option[/* max 8 chars */ String]],
-          firstname = arr(1).asInstanceOf[/* user-picked */ FirstName],
-          middlename = arr(2).asInstanceOf[Option[Name]],
-          lastname = arr(3).asInstanceOf[Name]
-    )
+
+  given read: Read[PersonDynamicSqlRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PersonDynamicSqlRow(
+        title = arr(0).asInstanceOf[Option[/* max 8 chars */ String]],
+            firstname = arr(1).asInstanceOf[/* user-picked */ FirstName],
+            middlename = arr(2).asInstanceOf[Option[Name]],
+            lastname = arr(3).asInstanceOf[Name]
+      )
+    }
   }
 }

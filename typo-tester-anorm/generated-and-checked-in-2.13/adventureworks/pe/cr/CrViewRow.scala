@@ -29,30 +29,38 @@ case class CrViewRow(
 )
 
 object CrViewRow {
-  implicit lazy val reads: Reads[CrViewRow] = Reads[CrViewRow](json => JsResult.fromTry(
-      Try(
-        CrViewRow(
-          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[CrViewRow] = {
+    Reads[CrViewRow](json => JsResult.fromTry(
+        Try(
+          CrViewRow(
+            countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CrViewRow] = RowParser[CrViewRow] { row =>
-    Success(
-      CrViewRow(
-        countryregioncode = row(idx + 0)(CountryregionId.column),
-        name = row(idx + 1)(Name.column),
-        modifieddate = row(idx + 2)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[CrViewRow] = OWrites[CrViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[CrViewRow] = {
+    RowParser[CrViewRow] { row =>
+      Success(
+        CrViewRow(
+          countryregioncode = row(idx + 0)(CountryregionId.column),
+          name = row(idx + 1)(Name.column),
+          modifieddate = row(idx + 2)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[CrViewRow] = {
+    OWrites[CrViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait VvendorwithaddressesViewRepo {
   def select: SelectBuilder[VvendorwithaddressesViewFields, VvendorwithaddressesViewRow]
+
   def selectAll: Stream[ConnectionIO, VvendorwithaddressesViewRow]
 }

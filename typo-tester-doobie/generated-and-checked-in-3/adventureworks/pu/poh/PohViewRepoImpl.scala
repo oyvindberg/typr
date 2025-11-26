@@ -6,16 +6,12 @@
 package adventureworks.pu.poh
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PohViewRepoImpl extends PohViewRepo {
-  override def select: SelectBuilder[PohViewFields, PohViewRow] = {
-    SelectBuilderSql(""""pu"."poh"""", PohViewFields.structure, PohViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PohViewRow] = {
-    sql"""select "id", "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate"::text, "shipdate"::text, "subtotal", "taxamt", "freight", "modifieddate"::text from "pu"."poh"""".query(using PohViewRow.read).stream
-  }
+  def select: SelectBuilder[PohViewFields, PohViewRow] = SelectBuilder.of(""""pu"."poh"""", PohViewFields.structure, PohViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PohViewRow] = sql"""select "id", "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate"::text, "shipdate"::text, "subtotal", "taxamt", "freight", "modifieddate"::text from "pu"."poh"""".query(using PohViewRow.read).stream
 }

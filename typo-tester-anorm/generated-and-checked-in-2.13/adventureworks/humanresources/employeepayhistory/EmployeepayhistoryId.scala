@@ -20,20 +20,26 @@ case class EmployeepayhistoryId(
   businessentityid: BusinessentityId,
   ratechangedate: TypoLocalDateTime
 )
+
 object EmployeepayhistoryId {
-  implicit lazy val reads: Reads[EmployeepayhistoryId] = Reads[EmployeepayhistoryId](json => JsResult.fromTry(
-      Try(
-        EmployeepayhistoryId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          ratechangedate = json.\("ratechangedate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[EmployeepayhistoryId] = {
+    Reads[EmployeepayhistoryId](json => JsResult.fromTry(
+        Try(
+          EmployeepayhistoryId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            ratechangedate = json.\("ratechangedate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[EmployeepayhistoryId] = OWrites[EmployeepayhistoryId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "ratechangedate" -> TypoLocalDateTime.writes.writes(o.ratechangedate)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[EmployeepayhistoryId] = {
+    OWrites[EmployeepayhistoryId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "ratechangedate" -> TypoLocalDateTime.writes.writes(o.ratechangedate)
+      ))
+    )
+  }
 }

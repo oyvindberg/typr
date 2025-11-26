@@ -20,20 +20,26 @@ case class EmployeepayhistoryId(
   businessentityid: BusinessentityId,
   ratechangedate: TypoLocalDateTime
 )
+
 object EmployeepayhistoryId {
-  given reads: Reads[EmployeepayhistoryId] = Reads[EmployeepayhistoryId](json => JsResult.fromTry(
-      Try(
-        EmployeepayhistoryId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          ratechangedate = json.\("ratechangedate").as(TypoLocalDateTime.reads)
+  given reads: Reads[EmployeepayhistoryId] = {
+    Reads[EmployeepayhistoryId](json => JsResult.fromTry(
+        Try(
+          EmployeepayhistoryId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            ratechangedate = json.\("ratechangedate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[EmployeepayhistoryId] = OWrites[EmployeepayhistoryId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "ratechangedate" -> TypoLocalDateTime.writes.writes(o.ratechangedate)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[EmployeepayhistoryId] = {
+    OWrites[EmployeepayhistoryId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "ratechangedate" -> TypoLocalDateTime.writes.writes(o.ratechangedate)
+      ))
+    )
+  }
 }

@@ -44,34 +44,38 @@ case class VvendorwithcontactsViewRow(
 
 object VvendorwithcontactsViewRow {
   implicit lazy val decoder: Decoder[VvendorwithcontactsViewRow] = Decoder.forProduct12[VvendorwithcontactsViewRow, BusinessentityId, Name, Name, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Option[Phone], Option[Name], Option[/* max 50 chars */ String], Int]("businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion")(VvendorwithcontactsViewRow.apply)(BusinessentityId.decoder, Name.decoder, Name.decoder, Decoder.decodeOption(Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(Name.decoder), Name.decoder, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Phone.decoder), Decoder.decodeOption(Name.decoder), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeInt)
+
   implicit lazy val encoder: Encoder[VvendorwithcontactsViewRow] = Encoder.forProduct12[VvendorwithcontactsViewRow, BusinessentityId, Name, Name, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Option[Phone], Option[Name], Option[/* max 50 chars */ String], Int]("businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion")(x => (x.businessentityid, x.name, x.contacttype, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.phonenumber, x.phonenumbertype, x.emailaddress, x.emailpromotion))(BusinessentityId.encoder, Name.encoder, Name.encoder, Encoder.encodeOption(Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(Name.encoder), Name.encoder, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Phone.encoder), Encoder.encodeOption(Name.encoder), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeInt)
-  implicit lazy val read: Read[VvendorwithcontactsViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Phone.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    VvendorwithcontactsViewRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          name = arr(1).asInstanceOf[Name],
-          contacttype = arr(2).asInstanceOf[Name],
-          title = arr(3).asInstanceOf[Option[/* max 8 chars */ String]],
-          firstname = arr(4).asInstanceOf[/* user-picked */ FirstName],
-          middlename = arr(5).asInstanceOf[Option[Name]],
-          lastname = arr(6).asInstanceOf[Name],
-          suffix = arr(7).asInstanceOf[Option[/* max 10 chars */ String]],
-          phonenumber = arr(8).asInstanceOf[Option[Phone]],
-          phonenumbertype = arr(9).asInstanceOf[Option[Name]],
-          emailaddress = arr(10).asInstanceOf[Option[/* max 50 chars */ String]],
-          emailpromotion = arr(11).asInstanceOf[Int]
-    )
+
+  implicit lazy val read: Read[VvendorwithcontactsViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Phone.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      VvendorwithcontactsViewRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            name = arr(1).asInstanceOf[Name],
+            contacttype = arr(2).asInstanceOf[Name],
+            title = arr(3).asInstanceOf[Option[/* max 8 chars */ String]],
+            firstname = arr(4).asInstanceOf[/* user-picked */ FirstName],
+            middlename = arr(5).asInstanceOf[Option[Name]],
+            lastname = arr(6).asInstanceOf[Name],
+            suffix = arr(7).asInstanceOf[Option[/* max 10 chars */ String]],
+            phonenumber = arr(8).asInstanceOf[Option[Phone]],
+            phonenumbertype = arr(9).asInstanceOf[Option[Name]],
+            emailaddress = arr(10).asInstanceOf[Option[/* max 50 chars */ String]],
+            emailpromotion = arr(11).asInstanceOf[Int]
+      )
+    }
   }
 }

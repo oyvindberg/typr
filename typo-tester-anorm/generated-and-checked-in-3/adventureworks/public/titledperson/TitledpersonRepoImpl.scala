@@ -9,38 +9,36 @@ import adventureworks.public.title.TitleId
 import adventureworks.public.title_domain.TitleDomainId
 import adventureworks.streamingInsert
 import anorm.ParameterValue
-import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class TitledpersonRepoImpl extends TitledpersonRepo {
-  override def delete: DeleteBuilder[TitledpersonFields, TitledpersonRow] = {
-    DeleteBuilder(""""public"."titledperson"""", TitledpersonFields.structure)
+  def delete: DeleteBuilder[TitledpersonFields, TitledpersonRow] = DeleteBuilder.of(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.rowParser(1).*)
+
+  def insert(unsaved: TitledpersonRow)(using c: Connection): TitledpersonRow = {
+  SQL"""insert into "public"."titledperson"("title_short", "title", "name")
+    values (${ParameterValue(unsaved.titleShort, null, TitleDomainId.toStatement)}::text, ${ParameterValue(unsaved.title, null, TitleId.toStatement)}, ${ParameterValue(unsaved.name, null, ToStatement.stringToStatement)})
+    returning "title_short", "title", "name"
+    """
+    .executeInsert(TitledpersonRow.rowParser(1).single)
   }
-  override def insert(unsaved: TitledpersonRow)(using c: Connection): TitledpersonRow = {
-    SQL"""insert into "public"."titledperson"("title_short", "title", "name")
-          values (${ParameterValue(unsaved.titleShort, null, TitleDomainId.toStatement)}::text, ${ParameterValue(unsaved.title, null, TitleId.toStatement)}, ${ParameterValue(unsaved.name, null, ToStatement.stringToStatement)})
-          returning "title_short", "title", "name"
-       """
-      .executeInsert(TitledpersonRow.rowParser(1).single)
-    
-  }
-  override def insertStreaming(unsaved: Iterator[TitledpersonRow], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "public"."titledperson"("title_short", "title", "name") FROM STDIN""", batchSize, unsaved)(using TitledpersonRow.text, c)
-  }
-  override def select: SelectBuilder[TitledpersonFields, TitledpersonRow] = {
-    SelectBuilderSql(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[TitledpersonRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[TitledpersonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "public"."titledperson"("title_short", "title", "name") FROM STDIN""", batchSize, unsaved)(using TitledpersonRow.pgText, c)
+
+  def select: SelectBuilder[TitledpersonFields, TitledpersonRow] = SelectBuilder.of(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.rowParser)
+
+  def selectAll(using c: Connection): List[TitledpersonRow] = {
     SQL"""select "title_short", "title", "name"
-          from "public"."titledperson"
-       """.as(TitledpersonRow.rowParser(1).*)
+    from "public"."titledperson"
+    """.as(TitledpersonRow.rowParser(1).*)
   }
-  override def update: UpdateBuilder[TitledpersonFields, TitledpersonRow] = {
-    UpdateBuilder(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.rowParser)
-  }
+
+  def update: UpdateBuilder[TitledpersonFields, TitledpersonRow] = UpdateBuilder.of(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.rowParser(1).*)
 }

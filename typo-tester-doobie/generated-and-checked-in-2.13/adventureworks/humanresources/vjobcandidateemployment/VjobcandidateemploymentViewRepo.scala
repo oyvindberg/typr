@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait VjobcandidateemploymentViewRepo {
   def select: SelectBuilder[VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow]
+
   def selectAll: Stream[ConnectionIO, VjobcandidateemploymentViewRow]
 }

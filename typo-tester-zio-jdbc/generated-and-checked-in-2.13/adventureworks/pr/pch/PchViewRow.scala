@@ -31,50 +31,58 @@ case class PchViewRow(
 )
 
 object PchViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[PchViewRow] = new JdbcDecoder[PchViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PchViewRow) =
-      columIndex + 5 ->
-        PchViewRow(
-          id = ProductId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          startdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          enddate = JdbcDecoder.optionDecoder(TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
-          standardcost = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 4, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[PchViewRow] = {
+    new JdbcDecoder[PchViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PchViewRow) =
+        columIndex + 5 ->
+          PchViewRow(
+            id = ProductId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            startdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            enddate = JdbcDecoder.optionDecoder(TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            standardcost = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 4, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[PchViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(ProductId.jsonDecoder))
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
-    val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDateTime.jsonDecoder)))
-    val standardcost = jsonObj.get("standardcost").toRight("Missing field 'standardcost'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && productid.isRight && startdate.isRight && enddate.isRight && standardcost.isRight && modifieddate.isRight)
-      Right(PchViewRow(id = id.toOption.get, productid = productid.toOption.get, startdate = startdate.toOption.get, enddate = enddate.toOption.get, standardcost = standardcost.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, productid, startdate, enddate, standardcost, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[PchViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(ProductId.jsonDecoder))
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
+      val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDateTime.jsonDecoder)))
+      val standardcost = jsonObj.get("standardcost").toRight("Missing field 'standardcost'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && productid.isRight && startdate.isRight && enddate.isRight && standardcost.isRight && modifieddate.isRight)
+        Right(PchViewRow(id = id.toOption.get, productid = productid.toOption.get, startdate = startdate.toOption.get, enddate = enddate.toOption.get, standardcost = standardcost.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, productid, startdate, enddate, standardcost, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[PchViewRow] = new JsonEncoder[PchViewRow] {
-    override def unsafeEncode(a: PchViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      ProductId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""startdate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
-      out.write(",")
-      out.write(""""enddate":""")
-      JsonEncoder.option(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.enddate, indent, out)
-      out.write(",")
-      out.write(""""standardcost":""")
-      JsonEncoder.scalaBigDecimal.unsafeEncode(a.standardcost, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[PchViewRow] = {
+    new JsonEncoder[PchViewRow] {
+      override def unsafeEncode(a: PchViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        ProductId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""startdate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
+        out.write(",")
+        out.write(""""enddate":""")
+        JsonEncoder.option(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        out.write(",")
+        out.write(""""standardcost":""")
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.standardcost, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

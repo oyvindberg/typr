@@ -1,8 +1,10 @@
 package typo
 package internal
 
+import typo.jvm.Comments
+
 sealed abstract class RepoMethod(val methodName: String, val tiebreaker: Int) {
-  val comment: Option[String] = None
+  val comment: jvm.Comments = jvm.Comments.Empty
 }
 
 object RepoMethod {
@@ -12,28 +14,28 @@ object RepoMethod {
   case class SelectAll(
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
-      rowType: sc.Type
+      rowType: jvm.Type
   ) extends Selector("selectAll")
 
   case class SelectBuilder(
       relName: db.RelationName,
-      fieldsType: sc.Type,
-      rowType: sc.Type
+      fieldsType: jvm.Type,
+      rowType: jvm.Type
   ) extends Selector("select")
 
   case class SelectById(
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
       id: IdComputed,
-      rowType: sc.Type
+      rowType: jvm.Type
   ) extends Selector("selectById")
 
   case class SelectByIds(
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
       idComputed: IdComputed,
-      idsParam: sc.Param,
-      rowType: sc.Type
+      idsParam: jvm.Param[jvm.Type],
+      rowType: jvm.Type
   ) extends Selector("selectByIds")
 
   case class SelectByIdsTracked(
@@ -44,37 +46,37 @@ object RepoMethod {
       relName: db.RelationName,
       keyColumns: NonEmptyList[ComputedColumn],
       allColumns: NonEmptyList[ComputedColumn],
-      rowType: sc.Type
+      rowType: jvm.Type
   ) extends Selector(s"selectByUnique${keyColumns.map(x => Naming.titleCase(x.name.value)).mkString("And")}")
 
   case class SelectByFieldValues(
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
-      fieldValueType: sc.Type.Qualified,
-      fieldValueOrIdsParam: sc.Param,
-      rowType: sc.Type
+      fieldValueType: jvm.Type.Qualified,
+      fieldValueOrIdsParam: jvm.Param[jvm.Type],
+      rowType: jvm.Type
   ) extends Selector("selectByFieldValues")
 
   case class UpdateBuilder(
       relName: db.RelationName,
-      fieldsType: sc.Type,
-      rowType: sc.Type
+      fieldsType: jvm.Type,
+      rowType: jvm.Type
   ) extends Mutator("update", 2)
 
   case class UpdateFieldValues(
       relName: db.RelationName,
       id: IdComputed,
-      varargs: sc.Param,
-      fieldValueType: sc.Type.Qualified,
+      varargs: jvm.Param[jvm.Type],
+      fieldValueType: jvm.Type.Qualified,
       cases: NonEmptyList[ComputedColumn],
-      rowType: sc.Type
+      rowType: jvm.Type
   ) extends Mutator("updateFieldValues")
 
   case class Update(
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
       id: IdComputed,
-      param: sc.Param,
+      param: jvm.Param[jvm.Type],
       writeableColumnsNotId: NonEmptyList[ComputedColumn]
   ) extends Mutator("update", 1)
 
@@ -82,8 +84,8 @@ object RepoMethod {
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
       id: IdComputed,
-      unsavedParam: sc.Param,
-      rowType: sc.Type,
+      unsavedParam: jvm.Param[jvm.Type],
+      rowType: jvm.Type,
       writeableColumnsWithId: NonEmptyList[ComputedColumn]
   ) extends Mutator("upsert")
 
@@ -91,24 +93,24 @@ object RepoMethod {
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
       id: IdComputed,
-      rowType: sc.Type,
+      rowType: jvm.Type,
       writeableColumnsWithId: NonEmptyList[ComputedColumn]
   ) extends Mutator("upsertBatch")
 
   case class UpsertStreaming(
       relName: db.RelationName,
       id: IdComputed,
-      rowType: sc.Type,
+      rowType: jvm.Type,
       writeableColumnsWithId: NonEmptyList[ComputedColumn]
   ) extends Mutator("upsertStreaming") {
-    override val comment: Option[String] = Some("/* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */")
+    override val comment = Comments(List("NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements"))
   }
 
   case class Insert(
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
-      unsavedParam: sc.Param,
-      rowType: sc.Type,
+      unsavedParam: jvm.Param[jvm.Type],
+      rowType: jvm.Type,
       writeableColumnsWithId: NonEmptyList[ComputedColumn]
   ) extends Mutator("insert", 2)
 
@@ -116,14 +118,14 @@ object RepoMethod {
       relName: db.RelationName,
       cols: NonEmptyList[ComputedColumn],
       unsaved: ComputedRowUnsaved,
-      unsavedParam: sc.Param,
+      unsavedParam: jvm.Param[jvm.Type],
       default: ComputedDefault,
-      rowType: sc.Type
+      rowType: jvm.Type
   ) extends Mutator("insert", 1)
 
   case class InsertStreaming(
       relName: db.RelationName,
-      rowType: sc.Type,
+      rowType: jvm.Type,
       writeableColumnsWithId: NonEmptyList[ComputedColumn]
   ) extends Mutator("insertStreaming")
 
@@ -131,7 +133,7 @@ object RepoMethod {
       relName: db.RelationName,
       unsaved: ComputedRowUnsaved
   ) extends Mutator("insertUnsavedStreaming") {
-    override val comment: Option[String] = Some("/* NOTE: this functionality requires PostgreSQL 16 or later! */")
+    override val comment = Comments(List("NOTE: this functionality requires PostgreSQL 16 or later!"))
   }
 
   case class Delete(
@@ -142,13 +144,13 @@ object RepoMethod {
   case class DeleteByIds(
       relName: db.RelationName,
       id: IdComputed,
-      idsParam: sc.Param
+      idsParam: jvm.Param[jvm.Type]
   ) extends Mutator("deleteByIds")
 
   case class DeleteBuilder(
       relName: db.RelationName,
-      fieldsType: sc.Type,
-      rowType: sc.Type
+      fieldsType: jvm.Type,
+      rowType: jvm.Type
   ) extends Mutator("delete")
 
   case class SqlFile(sqlFile: ComputedSqlFile) extends RepoMethod("apply", 0)

@@ -6,6 +6,7 @@
 package adventureworks.production.culture
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -19,26 +20,23 @@ case class CultureRowUnsaved(
   /** Culture description. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): CultureRow =
-    CultureRow(
-      cultureid = cultureid,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): CultureRow = new CultureRow(cultureid = cultureid, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object CultureRowUnsaved {
   implicit lazy val decoder: Decoder[CultureRowUnsaved] = Decoder.forProduct3[CultureRowUnsaved, CultureId, Name, Defaulted[TypoLocalDateTime]]("cultureid", "name", "modifieddate")(CultureRowUnsaved.apply)(CultureId.decoder, Name.decoder, Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[CultureRowUnsaved] = Encoder.forProduct3[CultureRowUnsaved, CultureId, Name, Defaulted[TypoLocalDateTime]]("cultureid", "name", "modifieddate")(x => (x.cultureid, x.name, x.modifieddate))(CultureId.encoder, Name.encoder, Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[CultureRowUnsaved] = Text.instance[CultureRowUnsaved]{ (row, sb) =>
-    CultureId.text.unsafeEncode(row.cultureid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[CultureRowUnsaved] = {
+    Text.instance[CultureRowUnsaved]{ (row, sb) =>
+      CultureId.pgText.unsafeEncode(row.cultureid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

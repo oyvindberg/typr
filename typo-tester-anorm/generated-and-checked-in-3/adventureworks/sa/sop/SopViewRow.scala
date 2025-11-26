@@ -34,36 +34,44 @@ case class SopViewRow(
 )
 
 object SopViewRow {
-  given reads: Reads[SopViewRow] = Reads[SopViewRow](json => JsResult.fromTry(
-      Try(
-        SopViewRow(
-          id = json.\("id").as(SpecialofferId.reads),
-          specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SopViewRow] = {
+    Reads[SopViewRow](json => JsResult.fromTry(
+        Try(
+          SopViewRow(
+            id = json.\("id").as(SpecialofferId.reads),
+            specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SopViewRow] = RowParser[SopViewRow] { row =>
-    Success(
-      SopViewRow(
-        id = row(idx + 0)(using SpecialofferId.column),
-        specialofferid = row(idx + 1)(using SpecialofferId.column),
-        productid = row(idx + 2)(using ProductId.column),
-        rowguid = row(idx + 3)(using TypoUUID.column),
-        modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SopViewRow] = OWrites[SopViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> SpecialofferId.writes.writes(o.id),
-      "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SopViewRow] = {
+    RowParser[SopViewRow] { row =>
+      Success(
+        SopViewRow(
+          id = row(idx + 0)(using SpecialofferId.column),
+          specialofferid = row(idx + 1)(using SpecialofferId.column),
+          productid = row(idx + 2)(using ProductId.column),
+          rowguid = row(idx + 3)(using TypoUUID.column),
+          modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SopViewRow] = {
+    OWrites[SopViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> SpecialofferId.writes.writes(o.id),
+        "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

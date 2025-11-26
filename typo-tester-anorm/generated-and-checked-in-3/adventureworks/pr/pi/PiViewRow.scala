@@ -43,45 +43,53 @@ case class PiViewRow(
 )
 
 object PiViewRow {
-  given reads: Reads[PiViewRow] = Reads[PiViewRow](json => JsResult.fromTry(
-      Try(
-        PiViewRow(
-          id = json.\("id").as(ProductId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          locationid = json.\("locationid").as(LocationId.reads),
-          shelf = json.\("shelf").as(Reads.StringReads),
-          bin = json.\("bin").as(TypoShort.reads),
-          quantity = json.\("quantity").as(TypoShort.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PiViewRow] = {
+    Reads[PiViewRow](json => JsResult.fromTry(
+        Try(
+          PiViewRow(
+            id = json.\("id").as(ProductId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            locationid = json.\("locationid").as(LocationId.reads),
+            shelf = json.\("shelf").as(Reads.StringReads),
+            bin = json.\("bin").as(TypoShort.reads),
+            quantity = json.\("quantity").as(TypoShort.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PiViewRow] = RowParser[PiViewRow] { row =>
-    Success(
-      PiViewRow(
-        id = row(idx + 0)(using ProductId.column),
-        productid = row(idx + 1)(using ProductId.column),
-        locationid = row(idx + 2)(using LocationId.column),
-        shelf = row(idx + 3)(using Column.columnToString),
-        bin = row(idx + 4)(using TypoShort.column),
-        quantity = row(idx + 5)(using TypoShort.column),
-        rowguid = row(idx + 6)(using TypoUUID.column),
-        modifieddate = row(idx + 7)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PiViewRow] = OWrites[PiViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductId.writes.writes(o.id),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "shelf" -> Writes.StringWrites.writes(o.shelf),
-      "bin" -> TypoShort.writes.writes(o.bin),
-      "quantity" -> TypoShort.writes.writes(o.quantity),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PiViewRow] = {
+    RowParser[PiViewRow] { row =>
+      Success(
+        PiViewRow(
+          id = row(idx + 0)(using ProductId.column),
+          productid = row(idx + 1)(using ProductId.column),
+          locationid = row(idx + 2)(using LocationId.column),
+          shelf = row(idx + 3)(using Column.columnToString),
+          bin = row(idx + 4)(using TypoShort.column),
+          quantity = row(idx + 5)(using TypoShort.column),
+          rowguid = row(idx + 6)(using TypoUUID.column),
+          modifieddate = row(idx + 7)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PiViewRow] = {
+    OWrites[PiViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductId.writes.writes(o.id),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "shelf" -> Writes.StringWrites.writes(o.shelf),
+        "bin" -> TypoShort.writes.writes(o.bin),
+        "quantity" -> TypoShort.writes.writes(o.quantity),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

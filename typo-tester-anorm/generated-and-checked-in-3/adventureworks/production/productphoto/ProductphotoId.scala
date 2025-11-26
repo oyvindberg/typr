@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.productphoto` */
-case class ProductphotoId(value: Int) extends AnyVal
+case class ProductphotoId(value: Int) extends scala.AnyVal
+
 object ProductphotoId {
   given arrayColumn: Column[Array[ProductphotoId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[ProductphotoId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[ProductphotoId, Int] = Bijection[ProductphotoId, Int](_.value)(ProductphotoId.apply)
+
+  given bijection: Bijection[ProductphotoId, Int] = Bijection.apply[ProductphotoId, Int](_.value)(ProductphotoId.apply)
+
   given column: Column[ProductphotoId] = Column.columnToInt.map(ProductphotoId.apply)
-  given parameterMetadata: ParameterMetaData[ProductphotoId] = new ParameterMetaData[ProductphotoId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[ProductphotoId] = {
+    new ParameterMetaData[ProductphotoId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[ProductphotoId] = {
+    new Text[ProductphotoId] {
+      override def unsafeEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[ProductphotoId] = Reads.IntReads.map(ProductphotoId.apply)
-  given text: Text[ProductphotoId] = new Text[ProductphotoId] {
-    override def unsafeEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[ProductphotoId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[ProductphotoId] = Writes.IntWrites.contramap(_.value)
 }

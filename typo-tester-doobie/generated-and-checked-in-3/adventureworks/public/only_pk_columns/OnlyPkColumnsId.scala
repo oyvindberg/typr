@@ -13,7 +13,9 @@ case class OnlyPkColumnsId(
   keyColumn1: String,
   keyColumn2: Int
 )
+
 object OnlyPkColumnsId {
   given decoder: Decoder[OnlyPkColumnsId] = Decoder.forProduct2[OnlyPkColumnsId, String, Int]("key_column_1", "key_column_2")(OnlyPkColumnsId.apply)(using Decoder.decodeString, Decoder.decodeInt)
+
   given encoder: Encoder[OnlyPkColumnsId] = Encoder.forProduct2[OnlyPkColumnsId, String, Int]("key_column_1", "key_column_2")(x => (x.keyColumn1, x.keyColumn2))(using Encoder.encodeString, Encoder.encodeInt)
 }

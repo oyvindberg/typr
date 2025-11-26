@@ -21,58 +21,76 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: sales.personcreditcard
-    Cross-reference table mapping people to their credit card information in the CreditCard table.
-    Composite primary key: businessentityid, creditcardid */
+ * Cross-reference table mapping people to their credit card information in the CreditCard table.
+ * Composite primary key: businessentityid, creditcardid
+ */
 case class PersoncreditcardRow(
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
-      Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
+   * Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]]
+   */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: PersoncreditcardId = PersoncreditcardId(businessentityid, creditcardid)
-   val id = compositeId
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): PersoncreditcardRowUnsaved =
-     PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate)
- }
+) {
+  def compositeId: PersoncreditcardId = new PersoncreditcardId(businessentityid, creditcardid)
+
+  def id: PersoncreditcardId = this.compositeId
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): PersoncreditcardRowUnsaved = new PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate)
+}
 
 object PersoncreditcardRow {
-  def apply(compositeId: PersoncreditcardId, modifieddate: TypoLocalDateTime) =
-    new PersoncreditcardRow(compositeId.businessentityid, compositeId.creditcardid, modifieddate)
-  given reads: Reads[PersoncreditcardRow] = Reads[PersoncreditcardRow](json => JsResult.fromTry(
-      Try(
-        PersoncreditcardRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  def apply(
+    compositeId: PersoncreditcardId,
+    modifieddate: TypoLocalDateTime
+  ): PersoncreditcardRow = new PersoncreditcardRow(compositeId.businessentityid, compositeId.creditcardid, modifieddate)
+
+  given pgText: Text[PersoncreditcardRow] = {
+    Text.instance[PersoncreditcardRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      /* user-picked */ CustomCreditcardId.pgText.unsafeEncode(row.creditcardid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[PersoncreditcardRow] = {
+    Reads[PersoncreditcardRow](json => JsResult.fromTry(
+        Try(
+          PersoncreditcardRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersoncreditcardRow] = RowParser[PersoncreditcardRow] { row =>
-    Success(
-      PersoncreditcardRow(
-        businessentityid = row(idx + 0)(using BusinessentityId.column),
-        creditcardid = row(idx + 1)(using /* user-picked */ CustomCreditcardId.column),
-        modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given text: Text[PersoncreditcardRow] = Text.instance[PersoncreditcardRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    /* user-picked */ CustomCreditcardId.text.unsafeEncode(row.creditcardid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[PersoncreditcardRow] = {
+    RowParser[PersoncreditcardRow] { row =>
+      Success(
+        PersoncreditcardRow(
+          businessentityid = row(idx + 0)(using BusinessentityId.column),
+          creditcardid = row(idx + 1)(using /* user-picked */ CustomCreditcardId.column),
+          modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[PersoncreditcardRow] = OWrites[PersoncreditcardRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given writes: OWrites[PersoncreditcardRow] = {
+    OWrites[PersoncreditcardRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

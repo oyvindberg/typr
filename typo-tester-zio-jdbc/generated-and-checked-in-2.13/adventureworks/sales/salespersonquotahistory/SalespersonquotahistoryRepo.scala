@@ -13,24 +13,48 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
+/** upsertBatch: Not implementable for zio-jdbc */
 trait SalespersonquotahistoryRepo {
   def delete: DeleteBuilder[SalespersonquotahistoryFields, SalespersonquotahistoryRow]
+
   def deleteById(compositeId: SalespersonquotahistoryId): ZIO[ZConnection, Throwable, Boolean]
+
   def deleteByIds(compositeIds: Array[SalespersonquotahistoryId]): ZIO[ZConnection, Throwable, Long]
+
   def insert(unsaved: SalespersonquotahistoryRow): ZIO[ZConnection, Throwable, SalespersonquotahistoryRow]
+
   def insert(unsaved: SalespersonquotahistoryRowUnsaved): ZIO[ZConnection, Throwable, SalespersonquotahistoryRow]
-  def insertStreaming(unsaved: ZStream[ZConnection, Throwable, SalespersonquotahistoryRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, SalespersonquotahistoryRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, SalespersonquotahistoryRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, SalespersonquotahistoryRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
   def select: SelectBuilder[SalespersonquotahistoryFields, SalespersonquotahistoryRow]
+
   def selectAll: ZStream[ZConnection, Throwable, SalespersonquotahistoryRow]
+
   def selectById(compositeId: SalespersonquotahistoryId): ZIO[ZConnection, Throwable, Option[SalespersonquotahistoryRow]]
+
   def selectByIds(compositeIds: Array[SalespersonquotahistoryId]): ZStream[ZConnection, Throwable, SalespersonquotahistoryRow]
+
   def selectByIdsTracked(compositeIds: Array[SalespersonquotahistoryId]): ZIO[ZConnection, Throwable, Map[SalespersonquotahistoryId, SalespersonquotahistoryRow]]
+
   def update: UpdateBuilder[SalespersonquotahistoryFields, SalespersonquotahistoryRow]
+
   def update(row: SalespersonquotahistoryRow): ZIO[ZConnection, Throwable, Option[SalespersonquotahistoryRow]]
+
   def upsert(unsaved: SalespersonquotahistoryRow): ZIO[ZConnection, Throwable, UpdateResult[SalespersonquotahistoryRow]]
-  // Not implementable for zio-jdbc: upsertBatch
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, SalespersonquotahistoryRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, SalespersonquotahistoryRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
 }

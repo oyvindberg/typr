@@ -6,6 +6,7 @@
 package adventureworks.production.productcosthistory
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import doobie.postgres.Text
@@ -15,44 +16,51 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.productcosthistory` which has not been persisted yet */
 case class ProductcosthistoryRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Product cost start date.
-      Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */
+   * Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
+   */
   startdate: TypoLocalDateTime,
   /** Product cost end date.
-      Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */
-  enddate: Option[TypoLocalDateTime],
+   * Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
+   */
+  enddate: Option[TypoLocalDateTime] = None,
   /** Standard cost of the product.
-      Constraint CK_ProductCostHistory_StandardCost affecting columns standardcost:  ((standardcost >= 0.00)) */
+   * Constraint CK_ProductCostHistory_StandardCost affecting columns standardcost:  ((standardcost >= 0.00))
+   */
   standardcost: BigDecimal,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): ProductcosthistoryRow =
-    ProductcosthistoryRow(
+  def toRow(modifieddateDefault: => TypoLocalDateTime): ProductcosthistoryRow = {
+    new ProductcosthistoryRow(
       productid = productid,
       startdate = startdate,
       enddate = enddate,
       standardcost = standardcost,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ProductcosthistoryRowUnsaved {
   implicit lazy val decoder: Decoder[ProductcosthistoryRowUnsaved] = Decoder.forProduct5[ProductcosthistoryRowUnsaved, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, Defaulted[TypoLocalDateTime]]("productid", "startdate", "enddate", "standardcost", "modifieddate")(ProductcosthistoryRowUnsaved.apply)(ProductId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(TypoLocalDateTime.decoder), Decoder.decodeBigDecimal, Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[ProductcosthistoryRowUnsaved] = Encoder.forProduct5[ProductcosthistoryRowUnsaved, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, Defaulted[TypoLocalDateTime]]("productid", "startdate", "enddate", "standardcost", "modifieddate")(x => (x.productid, x.startdate, x.enddate, x.standardcost, x.modifieddate))(ProductId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(TypoLocalDateTime.encoder), Encoder.encodeBigDecimal, Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[ProductcosthistoryRowUnsaved] = Text.instance[ProductcosthistoryRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.startdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoLocalDateTime.text).unsafeEncode(row.enddate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.standardcost, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[ProductcosthistoryRowUnsaved] = {
+    Text.instance[ProductcosthistoryRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.startdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoLocalDateTime.pgText).unsafeEncode(row.enddate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.standardcost, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

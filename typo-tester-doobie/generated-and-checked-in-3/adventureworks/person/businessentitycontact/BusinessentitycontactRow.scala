@@ -17,66 +17,104 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: person.businessentitycontact
-    Cross-reference table mapping stores, vendors, and employees to people
-    Composite primary key: businessentityid, personid, contacttypeid */
+ * Cross-reference table mapping stores, vendors, and employees to people
+ * Composite primary key: businessentityid, personid, contacttypeid
+ */
 case class BusinessentitycontactRow(
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary key. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   personid: BusinessentityId,
   /** Primary key.  Foreign key to ContactType.ContactTypeID.
-      Points to [[adventureworks.person.contacttype.ContacttypeRow.contacttypeid]] */
+   * Points to [[adventureworks.person.contacttype.ContacttypeRow.contacttypeid]]
+   */
   contacttypeid: ContacttypeId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: BusinessentitycontactId = BusinessentitycontactId(businessentityid, personid, contacttypeid)
-   val id = compositeId
-   def toUnsavedRow(rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): BusinessentitycontactRowUnsaved =
-     BusinessentitycontactRowUnsaved(businessentityid, personid, contacttypeid, rowguid, modifieddate)
- }
+) {
+  def compositeId: BusinessentitycontactId = new BusinessentitycontactId(businessentityid, personid, contacttypeid)
 
-object BusinessentitycontactRow {
-  def apply(compositeId: BusinessentitycontactId, rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new BusinessentitycontactRow(compositeId.businessentityid, compositeId.personid, compositeId.contacttypeid, rowguid, modifieddate)
-  given decoder: Decoder[BusinessentitycontactRow] = Decoder.forProduct5[BusinessentitycontactRow, BusinessentityId, BusinessentityId, ContacttypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate")(BusinessentitycontactRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, ContacttypeId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
-  given encoder: Encoder[BusinessentitycontactRow] = Encoder.forProduct5[BusinessentitycontactRow, BusinessentityId, BusinessentityId, ContacttypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate")(x => (x.businessentityid, x.personid, x.contacttypeid, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, ContacttypeId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[BusinessentitycontactRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ContacttypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    BusinessentitycontactRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          personid = arr(1).asInstanceOf[BusinessentityId],
-          contacttypeid = arr(2).asInstanceOf[ContacttypeId],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+  def id: BusinessentitycontactId = this.compositeId
+
+  def toUnsavedRow(
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): BusinessentitycontactRowUnsaved = {
+    new BusinessentitycontactRowUnsaved(
+      businessentityid,
+      personid,
+      contacttypeid,
+      rowguid,
+      modifieddate
     )
   }
-  given text: Text[BusinessentitycontactRow] = Text.instance[BusinessentitycontactRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    BusinessentityId.text.unsafeEncode(row.personid, sb)
-    sb.append(Text.DELIMETER)
-    ContacttypeId.text.unsafeEncode(row.contacttypeid, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object BusinessentitycontactRow {
+  def apply(
+    compositeId: BusinessentitycontactId,
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): BusinessentitycontactRow = {
+    new BusinessentitycontactRow(
+      compositeId.businessentityid,
+      compositeId.personid,
+      compositeId.contacttypeid,
+      rowguid,
+      modifieddate
+    )
   }
-  given write: Write[BusinessentitycontactRow] = new Write.Composite[BusinessentitycontactRow](
-    List(new Write.Single(BusinessentityId.put),
-         new Write.Single(BusinessentityId.put),
-         new Write.Single(ContacttypeId.put),
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.businessentityid, a.personid, a.contacttypeid, a.rowguid, a.modifieddate)
-  )
+
+  given decoder: Decoder[BusinessentitycontactRow] = Decoder.forProduct5[BusinessentitycontactRow, BusinessentityId, BusinessentityId, ContacttypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate")(BusinessentitycontactRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, ContacttypeId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
+  given encoder: Encoder[BusinessentitycontactRow] = Encoder.forProduct5[BusinessentitycontactRow, BusinessentityId, BusinessentityId, ContacttypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate")(x => (x.businessentityid, x.personid, x.contacttypeid, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, ContacttypeId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
+
+  given pgText: Text[BusinessentitycontactRow] = {
+    Text.instance[BusinessentitycontactRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      BusinessentityId.pgText.unsafeEncode(row.personid, sb)
+      sb.append(Text.DELIMETER)
+      ContacttypeId.pgText.unsafeEncode(row.contacttypeid, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[BusinessentitycontactRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ContacttypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      BusinessentitycontactRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            personid = arr(1).asInstanceOf[BusinessentityId],
+            contacttypeid = arr(2).asInstanceOf[ContacttypeId],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[BusinessentitycontactRow] = {
+    new Write.Composite[BusinessentitycontactRow](
+      List(new Write.Single(BusinessentityId.put),
+           new Write.Single(BusinessentityId.put),
+           new Write.Single(ContacttypeId.put),
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.businessentityid, a.personid, a.contacttypeid, a.rowguid, a.modifieddate)
+    )
+  }
 }

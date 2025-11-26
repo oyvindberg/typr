@@ -24,11 +24,11 @@ trait AtViewFields {
 
 object AtViewFields {
   lazy val structure: Relation[AtViewFields, AtViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[AtViewFields, AtViewRow] {
-  
+
     override lazy val fields: AtViewFields = new AtViewFields {
       override def id = Field[AddresstypeId, AtViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def addresstypeid = Field[AddresstypeId, AtViewRow](_path, "addresstypeid", None, None, x => x.addresstypeid, (row, value) => row.copy(addresstypeid = value))
@@ -36,12 +36,11 @@ object AtViewFields {
       override def rowguid = Field[TypoUUID, AtViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, AtViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, AtViewRow]] =
       List[FieldLike[?, AtViewRow]](fields.id, fields.addresstypeid, fields.name, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

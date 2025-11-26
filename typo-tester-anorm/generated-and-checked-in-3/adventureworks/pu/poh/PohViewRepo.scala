@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait PohViewRepo {
   def select: SelectBuilder[PohViewFields, PohViewRow]
+
   def selectAll(using c: Connection): List[PohViewRow]
 }

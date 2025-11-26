@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `purchasing.purchaseorderheader` */
-case class PurchaseorderheaderId(value: Int) extends AnyVal
+case class PurchaseorderheaderId(value: Int) extends scala.AnyVal
+
 object PurchaseorderheaderId {
   given arrayColumn: Column[Array[PurchaseorderheaderId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[PurchaseorderheaderId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[PurchaseorderheaderId, Int] = Bijection[PurchaseorderheaderId, Int](_.value)(PurchaseorderheaderId.apply)
+
+  given bijection: Bijection[PurchaseorderheaderId, Int] = Bijection.apply[PurchaseorderheaderId, Int](_.value)(PurchaseorderheaderId.apply)
+
   given column: Column[PurchaseorderheaderId] = Column.columnToInt.map(PurchaseorderheaderId.apply)
-  given parameterMetadata: ParameterMetaData[PurchaseorderheaderId] = new ParameterMetaData[PurchaseorderheaderId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[PurchaseorderheaderId] = {
+    new ParameterMetaData[PurchaseorderheaderId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[PurchaseorderheaderId] = {
+    new Text[PurchaseorderheaderId] {
+      override def unsafeEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[PurchaseorderheaderId] = Reads.IntReads.map(PurchaseorderheaderId.apply)
-  given text: Text[PurchaseorderheaderId] = new Text[PurchaseorderheaderId] {
-    override def unsafeEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[PurchaseorderheaderId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[PurchaseorderheaderId] = Writes.IntWrites.contramap(_.value)
 }

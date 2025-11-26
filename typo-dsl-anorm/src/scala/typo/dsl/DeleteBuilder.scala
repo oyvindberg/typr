@@ -1,6 +1,6 @@
 package typo.dsl
 
-import anorm.{RowParser, SQL, SimpleSql}
+import anorm.{ResultSetParser, RowParser, SQL, SimpleSql}
 import typo.dsl.Fragment.FragmentStringInterpolator
 
 import java.sql.Connection
@@ -19,38 +19,12 @@ trait DeleteBuilder[Fields, Row] {
 
   def sql: Option[Fragment]
   def execute()(implicit c: Connection): Int
+  def executeReturning()(implicit c: Connection): List[Row]
 }
 
 object DeleteBuilder {
-  def apply[Fields, Row](name: String, structure: Structure.Relation[Fields, Row]): DeleteBuilderSql[Fields, Row] =
-    DeleteBuilderSql(name, structure, DeleteParams.empty)
-
-  final case class DeleteBuilderSql[Fields, Row](
-      name: String,
-      structure: Structure.Relation[Fields, Row],
-      params: DeleteParams[Fields]
-  ) extends DeleteBuilder[Fields, Row] {
-    override def withParams(sqlParams: DeleteParams[Fields]): DeleteBuilder[Fields, Row] =
-      copy(params = sqlParams)
-
-    def mkSql(ctx: RenderCtx): Fragment = {
-      List[Iterable[Fragment]](
-        Some(frag"delete from ${Fragment(name)}"),
-        params.where
-          .map(w => w(structure.fields))
-          .reduceLeftOption(_.and(_))
-          .map { where => Fragment(" where ") ++ where.render(ctx, new AtomicInteger(0)) }
-      ).flatten.reduce(_ ++ _)
-    }
-
-    override def sql: Option[Fragment] =
-      Some(mkSql(RenderCtx.Empty))
-
-    override def execute()(implicit c: Connection): Int = {
-      val frag = mkSql(RenderCtx.Empty)
-      SimpleSql(SQL(frag.sql), frag.params.map(_.tupled).toMap, RowParser.successful).executeUpdate()
-    }
-  }
+  def of[Fields, Row](name: String, structure: Structure.Relation[Fields, Row], resultSetParser: ResultSetParser[List[Row]]): DeleteBuilderSql[Fields, Row] =
+    DeleteBuilderSql.Impl(name, structure, resultSetParser, DeleteParams.empty)
 
   final case class DeleteBuilderMock[Id, Fields, Row](
       params: DeleteParams[Fields],
@@ -63,15 +37,60 @@ object DeleteBuilder {
     override def sql: Option[Fragment] =
       None
 
-    override def execute()(implicit @nowarn c: Connection): Int = {
-      var changed: Int = 0
+    override def execute()(implicit c: Connection): Int =
+      executeReturning().size
+
+    override def executeReturning()(implicit @nowarn c: Connection): List[Row] = {
+      val changed = List.newBuilder[Row]
       map.foreach { case (id, row) =>
         if (params.where.forall(w => structure.untypedEval(w(structure.fields), row).getOrElse(false))) {
           map.remove(id): @nowarn
-          changed += 1
+          changed += row
         }
       }
-      changed
+      changed.result()
+    }
+  }
+}
+
+sealed trait DeleteBuilderSql[Fields, Row] extends DeleteBuilder[Fields, Row]
+
+object DeleteBuilderSql {
+  final case class Impl[Fields, Row](
+      name: String,
+      structure: Structure.Relation[Fields, Row],
+      resultSetParser: ResultSetParser[List[Row]],
+      params: DeleteParams[Fields]
+  ) extends DeleteBuilderSql[Fields, Row] {
+    override def withParams(sqlParams: DeleteParams[Fields]): DeleteBuilder[Fields, Row] =
+      copy(params = sqlParams)
+
+    def mkSql(ctx: RenderCtx, returning: Boolean): Fragment = {
+      val cols = structure.columns
+        .map(x => x.sqlReadCast.foldLeft("\"" + x.value(ctx) + "\"") { case (acc, cast) => s"$acc::$cast" })
+        .mkString(",")
+
+      List[Iterable[Fragment]](
+        Some(frag"delete from ${Fragment(name)}"),
+        params.where
+          .map(w => w(structure.fields))
+          .reduceLeftOption(_.and(_))
+          .map { where => Fragment(" where ") ++ where.render(ctx, new AtomicInteger(0)) },
+        if (returning) Some(frag" returning ${Fragment(cols)}") else None
+      ).flatten.reduce(_ ++ _)
+    }
+
+    override def sql: Option[Fragment] =
+      Some(mkSql(RenderCtx.Empty, returning = false))
+
+    override def execute()(implicit c: Connection): Int = {
+      val frag = mkSql(RenderCtx.Empty, returning = false)
+      SimpleSql(SQL(frag.sql), frag.params.map(_.tupled).toMap, RowParser.successful).executeUpdate()
+    }
+
+    override def executeReturning()(implicit c: Connection): List[Row] = {
+      val frag = mkSql(RenderCtx.Empty, returning = true)
+      SimpleSql(SQL(frag.sql), frag.params.map(_.tupled).toMap, RowParser.successful).as(resultSetParser)
     }
   }
 }

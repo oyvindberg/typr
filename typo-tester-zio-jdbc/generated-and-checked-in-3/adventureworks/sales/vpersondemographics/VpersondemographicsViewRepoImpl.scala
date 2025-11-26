@@ -6,16 +6,12 @@
 package adventureworks.sales.vpersondemographics
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class VpersondemographicsViewRepoImpl extends VpersondemographicsViewRepo {
-  override def select: SelectBuilder[VpersondemographicsViewFields, VpersondemographicsViewRow] = {
-    SelectBuilderSql(""""sales"."vpersondemographics"""", VpersondemographicsViewFields.structure, VpersondemographicsViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, VpersondemographicsViewRow] = {
-    sql"""select "businessentityid", "totalpurchaseytd"::numeric, "datefirstpurchase"::text, "birthdate"::text, "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned" from "sales"."vpersondemographics"""".query(using VpersondemographicsViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[VpersondemographicsViewFields, VpersondemographicsViewRow] = SelectBuilder.of(""""sales"."vpersondemographics"""", VpersondemographicsViewFields.structure, VpersondemographicsViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, VpersondemographicsViewRow] = sql"""select "businessentityid", "totalpurchaseytd"::numeric, "datefirstpurchase"::text, "birthdate"::text, "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned" from "sales"."vpersondemographics"""".query(using VpersondemographicsViewRow.jdbcDecoder).selectStream()
 }

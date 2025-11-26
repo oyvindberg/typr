@@ -38,11 +38,11 @@ trait EViewFields {
 
 object EViewFields {
   lazy val structure: Relation[EViewFields, EViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[EViewFields, EViewRow] {
-  
+
     override lazy val fields: EViewFields = new EViewFields {
       override def id = Field[BusinessentityId, EViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, EViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -61,12 +61,11 @@ object EViewFields {
       override def modifieddate = Field[TypoLocalDateTime, EViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
       override def organizationnode = OptField[String, EViewRow](_path, "organizationnode", None, None, x => x.organizationnode, (row, value) => row.copy(organizationnode = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, EViewRow]] =
       List[FieldLike[?, EViewRow]](fields.id, fields.businessentityid, fields.nationalidnumber, fields.loginid, fields.jobtitle, fields.birthdate, fields.maritalstatus, fields.gender, fields.hiredate, fields.salariedflag, fields.vacationhours, fields.sickleavehours, fields.currentflag, fields.rowguid, fields.modifieddate, fields.organizationnode)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

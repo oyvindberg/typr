@@ -25,7 +25,7 @@ trait UpdateBuilder[Fields, Row] {
 }
 
 object UpdateBuilder {
-  def apply[Fields, Row](name: String, structure: Structure.Relation[Fields, Row], rowParser: JdbcDecoder[Row]): UpdateBuilderSql[Fields, Row] =
+  def of[Fields, Row](name: String, structure: Structure.Relation[Fields, Row], rowParser: JdbcDecoder[Row]): UpdateBuilderSql[Fields, Row] =
     UpdateBuilderSql(name, structure, rowParser, UpdateParams.empty)
 
   final case class UpdateBuilderSql[Fields, Row](

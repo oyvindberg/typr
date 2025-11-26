@@ -12,22 +12,47 @@ import typo.dsl.UpdateBuilder
 
 trait JobcandidateRepo {
   def delete: DeleteBuilder[JobcandidateFields, JobcandidateRow]
+
   def deleteById(jobcandidateid: JobcandidateId)(implicit c: Connection): Boolean
+
   def deleteByIds(jobcandidateids: Array[JobcandidateId])(implicit c: Connection): Int
+
   def insert(unsaved: JobcandidateRow)(implicit c: Connection): JobcandidateRow
+
   def insert(unsaved: JobcandidateRowUnsaved)(implicit c: Connection): JobcandidateRow
-  def insertStreaming(unsaved: Iterator[JobcandidateRow], batchSize: Int = 10000)(implicit c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[JobcandidateRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[JobcandidateRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[JobcandidateRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
   def select: SelectBuilder[JobcandidateFields, JobcandidateRow]
+
   def selectAll(implicit c: Connection): List[JobcandidateRow]
+
   def selectById(jobcandidateid: JobcandidateId)(implicit c: Connection): Option[JobcandidateRow]
+
   def selectByIds(jobcandidateids: Array[JobcandidateId])(implicit c: Connection): List[JobcandidateRow]
+
   def selectByIdsTracked(jobcandidateids: Array[JobcandidateId])(implicit c: Connection): Map[JobcandidateId, JobcandidateRow]
+
   def update: UpdateBuilder[JobcandidateFields, JobcandidateRow]
+
   def update(row: JobcandidateRow)(implicit c: Connection): Option[JobcandidateRow]
+
   def upsert(unsaved: JobcandidateRow)(implicit c: Connection): JobcandidateRow
+
   def upsertBatch(unsaved: Iterable[JobcandidateRow])(implicit c: Connection): List[JobcandidateRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[JobcandidateRow], batchSize: Int = 10000)(implicit c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[JobcandidateRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int
 }

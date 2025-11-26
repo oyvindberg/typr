@@ -15,11 +15,13 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.salesreason
-    Lookup table of customer purchase reasons.
-    Primary key: salesreasonid */
+ * Lookup table of customer purchase reasons.
+ * Primary key: salesreasonid
+ */
 case class SalesreasonRow(
   /** Primary key for SalesReason records.
-      Default: nextval('sales.salesreason_salesreasonid_seq'::regclass) */
+   * Default: nextval('sales.salesreason_salesreasonid_seq'::regclass)
+   */
   salesreasonid: SalesreasonId,
   /** Sales reason description. */
   name: Name,
@@ -27,42 +29,62 @@ case class SalesreasonRow(
   reasontype: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = salesreasonid
-   def toUnsavedRow(salesreasonid: Defaulted[SalesreasonId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SalesreasonRowUnsaved =
-     SalesreasonRowUnsaved(name, reasontype, salesreasonid, modifieddate)
- }
+) {
+  def id: SalesreasonId = salesreasonid
+
+  def toUnsavedRow(
+    salesreasonid: Defaulted[SalesreasonId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): SalesreasonRowUnsaved = {
+    new SalesreasonRowUnsaved(
+      name,
+      reasontype,
+      salesreasonid,
+      modifieddate
+    )
+  }
+}
 
 object SalesreasonRow {
   given decoder: Decoder[SalesreasonRow] = Decoder.forProduct4[SalesreasonRow, SalesreasonId, Name, Name, TypoLocalDateTime]("salesreasonid", "name", "reasontype", "modifieddate")(SalesreasonRow.apply)(using SalesreasonId.decoder, Name.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[SalesreasonRow] = Encoder.forProduct4[SalesreasonRow, SalesreasonId, Name, Name, TypoLocalDateTime]("salesreasonid", "name", "reasontype", "modifieddate")(x => (x.salesreasonid, x.name, x.reasontype, x.modifieddate))(using SalesreasonId.encoder, Name.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SalesreasonRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SalesreasonId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SalesreasonRow(
-      salesreasonid = arr(0).asInstanceOf[SalesreasonId],
-          name = arr(1).asInstanceOf[Name],
-          reasontype = arr(2).asInstanceOf[Name],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[SalesreasonRow] = {
+    Text.instance[SalesreasonRow]{ (row, sb) =>
+      SalesreasonId.pgText.unsafeEncode(row.salesreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.reasontype, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[SalesreasonRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(SalesreasonId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SalesreasonRow(
+        salesreasonid = arr(0).asInstanceOf[SalesreasonId],
+            name = arr(1).asInstanceOf[Name],
+            reasontype = arr(2).asInstanceOf[Name],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[SalesreasonRow] = {
+    new Write.Composite[SalesreasonRow](
+      List(new Write.Single(SalesreasonId.put),
+           new Write.Single(Name.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.salesreasonid, a.name, a.reasontype, a.modifieddate)
     )
   }
-  given text: Text[SalesreasonRow] = Text.instance[SalesreasonRow]{ (row, sb) =>
-    SalesreasonId.text.unsafeEncode(row.salesreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.reasontype, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[SalesreasonRow] = new Write.Composite[SalesreasonRow](
-    List(new Write.Single(SalesreasonId.put),
-         new Write.Single(Name.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.salesreasonid, a.name, a.reasontype, a.modifieddate)
-  )
 }

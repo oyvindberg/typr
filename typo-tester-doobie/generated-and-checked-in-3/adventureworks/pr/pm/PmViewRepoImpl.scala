@@ -6,16 +6,12 @@
 package adventureworks.pr.pm
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PmViewRepoImpl extends PmViewRepo {
-  override def select: SelectBuilder[PmViewFields, PmViewRow] = {
-    SelectBuilderSql(""""pr"."pm"""", PmViewFields.structure, PmViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PmViewRow] = {
-    sql"""select "id", "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text from "pr"."pm"""".query(using PmViewRow.read).stream
-  }
+  def select: SelectBuilder[PmViewFields, PmViewRow] = SelectBuilder.of(""""pr"."pm"""", PmViewFields.structure, PmViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PmViewRow] = sql"""select "id", "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text from "pr"."pm"""".query(using PmViewRow.read).stream
 }

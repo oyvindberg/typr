@@ -41,11 +41,11 @@ trait SalespersonFields {
 
 object SalespersonFields {
   lazy val structure: Relation[SalespersonFields, SalespersonRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SalespersonFields, SalespersonRow] {
-  
+
     override lazy val fields: SalespersonFields = new SalespersonFields {
       override def businessentityid = IdField[BusinessentityId, SalespersonRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def territoryid = OptField[SalesterritoryId, SalespersonRow](_path, "territoryid", None, Some("int4"), x => x.territoryid, (row, value) => row.copy(territoryid = value))
@@ -57,12 +57,11 @@ object SalespersonFields {
       override def rowguid = Field[TypoUUID, SalespersonRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SalespersonRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SalespersonRow]] =
       List[FieldLike[?, SalespersonRow]](fields.businessentityid, fields.territoryid, fields.salesquota, fields.bonus, fields.commissionpct, fields.salesytd, fields.saleslastyear, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

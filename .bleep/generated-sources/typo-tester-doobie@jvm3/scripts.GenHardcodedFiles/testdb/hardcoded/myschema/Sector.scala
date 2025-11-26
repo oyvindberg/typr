@@ -17,37 +17,49 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Enum `myschema.sector`
-  *  - PUBLIC
-  *  - PRIVATE
-  *  - OTHER
-  */
-sealed abstract class Sector(val value: String)
+ *  - PUBLIC
+ *  - PRIVATE
+ *  - OTHER
+ */
+
+sealed abstract class Sector(val value: java.lang.String)
 
 object Sector {
-  def apply(str: String): Either[String, Sector] =
+  given put: Put[Sector] = Put.Advanced.one[Sector](JdbcType.Other, NonEmptyList.one("myschema.sector"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
+
+  given arrayPut: Put[Array[Sector]] = Put.Advanced.array[AnyRef](NonEmptyList.one("myschema.sector[]"), "myschema.sector").contramap(_.map(_.value))
+
+  given get: Get[Sector] = Meta.StringMeta.get.temap(Sector.apply)
+
+  given arrayGet: Get[Array[Sector]] = testdb.hardcoded.StringArrayMeta.get.map(_.map(force))
+
+  given write: Write[Sector] = new Write.Single(put)
+
+  given read: Read[Sector] = new Read.Single(get)
+
+  given pgText: Text[Sector] = {
+    new Text[Sector] {
+      override def unsafeEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given decoder: Decoder[Sector] = Decoder.decodeString.emap(Sector.apply)
+
+  given encoder: Encoder[Sector] = Encoder.encodeString.contramap(_.value)
+  def apply(str: java.lang.String): scala.Either[java.lang.String, Sector] =
     ByName.get(str).toRight(s"'$str' does not match any of the following legal values: $Names")
-  def force(str: String): Sector =
+  def force(str: java.lang.String): Sector =
     apply(str) match {
-      case Left(msg) => sys.error(msg)
-      case Right(value) => value
+      case scala.Left(msg) => sys.error(msg)
+      case scala.Right(value) => value
     }
   case object `_public` extends Sector("PUBLIC")
+
   case object `_private` extends Sector("PRIVATE")
+
   case object `_other` extends Sector("OTHER")
-  val All: List[Sector] = List(`_public`, `_private`, `_other`)
-  val Names: String = All.map(_.value).mkString(", ")
-  val ByName: Map[String, Sector] = All.map(x => (x.value, x)).toMap
-              
-  given arrayGet: Get[Array[Sector]] = testdb.hardcoded.StringArrayMeta.get.map(_.map(force))
-  given arrayPut: Put[Array[Sector]] = Put.Advanced.array[AnyRef](NonEmptyList.one("myschema.sector[]"), "myschema.sector").contramap(_.map(_.value))
-  given decoder: Decoder[Sector] = Decoder.decodeString.emap(Sector.apply)
-  given encoder: Encoder[Sector] = Encoder.encodeString.contramap(_.value)
-  given get: Get[Sector] = Meta.StringMeta.get.temap(Sector.apply)
-  given put: Put[Sector] = Put.Advanced.one[Sector](JdbcType.Other, NonEmptyList.one("myschema.sector"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
-  given read: Read[Sector] = new Read.Single(get)
-  given text: Text[Sector] = new Text[Sector] {
-    override def unsafeEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  given write: Write[Sector] = new Write.Single(put)
+  val All: scala.List[Sector] = scala.List(`_public`, `_private`, `_other`)
+  val Names: java.lang.String = All.map(_.value).mkString(", ")
+  val ByName: scala.collection.immutable.Map[java.lang.String, Sector] = All.map(x => (x.value, x)).toMap
 }

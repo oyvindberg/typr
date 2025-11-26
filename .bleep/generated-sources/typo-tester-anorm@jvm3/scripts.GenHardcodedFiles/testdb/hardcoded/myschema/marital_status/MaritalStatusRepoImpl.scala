@@ -11,49 +11,48 @@ import anorm.ParameterValue
 import anorm.RowParser
 import anorm.SQL
 import anorm.SimpleSql
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import scala.annotation.nowarn
 import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class MaritalStatusRepoImpl extends MaritalStatusRepo {
-  override def delete: DeleteBuilder[MaritalStatusFields, MaritalStatusRow] = {
-    DeleteBuilder(""""myschema"."marital_status"""", MaritalStatusFields.structure)
-  }
-  override def deleteById(id: MaritalStatusId)(using c: Connection): Boolean = {
-    SQL"""delete from "myschema"."marital_status" where "id" = ${ParameterValue(id, null, MaritalStatusId.toStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(ids: Array[MaritalStatusId])(using c: Connection): Int = {
+  def delete: DeleteBuilder[MaritalStatusFields, MaritalStatusRow] = DeleteBuilder.of(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.rowParser(1).*)
+
+  def deleteById(id: MaritalStatusId)(using c: Connection): Boolean = SQL"""delete from "myschema"."marital_status" where "id" = ${ParameterValue(id, null, MaritalStatusId.toStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(ids: Array[MaritalStatusId])(using c: Connection): Int = {
     SQL"""delete
-          from "myschema"."marital_status"
-          where "id" = ANY(${ParameterValue(ids, null, MaritalStatusId.arrayToStatement)})
-       """.executeUpdate()
-    
+    from "myschema"."marital_status"
+    where "id" = ANY(${ParameterValue(ids, null, MaritalStatusId.arrayToStatement)})
+    """.executeUpdate()
   }
-  override def insert(unsaved: MaritalStatusRow)(using c: Connection): MaritalStatusRow = {
-    SQL"""insert into "myschema"."marital_status"("id")
-          values (${ParameterValue(unsaved.id, null, MaritalStatusId.toStatement)}::int8)
-          returning "id"
-       """
-      .executeInsert(MaritalStatusRow.rowParser(1).single)
-    
+
+  def insert(unsaved: MaritalStatusRow)(using c: Connection): MaritalStatusRow = {
+  SQL"""insert into "myschema"."marital_status"("id")
+    values (${ParameterValue(unsaved.id, null, MaritalStatusId.toStatement)}::int8)
+    returning "id"
+    """
+    .executeInsert(MaritalStatusRow.rowParser(1).single)
   }
-  override def insertStreaming(unsaved: Iterator[MaritalStatusRow], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "myschema"."marital_status"("id") FROM STDIN""", batchSize, unsaved)(using MaritalStatusRow.text, c)
-  }
-  override def select: SelectBuilder[MaritalStatusFields, MaritalStatusRow] = {
-    SelectBuilderSql(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[MaritalStatusRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[MaritalStatusRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "myschema"."marital_status"("id") FROM STDIN""", batchSize, unsaved)(using MaritalStatusRow.pgText, c)
+
+  def select: SelectBuilder[MaritalStatusFields, MaritalStatusRow] = SelectBuilder.of(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.rowParser)
+
+  def selectAll(using c: Connection): List[MaritalStatusRow] = {
     SQL"""select "id"
-          from "myschema"."marital_status"
-       """.as(MaritalStatusRow.rowParser(1).*)
+    from "myschema"."marital_status"
+    """.as(MaritalStatusRow.rowParser(1).*)
   }
-  override def selectByFieldValues(fieldValues: List[MaritalStatusFieldOrIdValue[?]])(using c: Connection): List[MaritalStatusRow] = {
+
+  def selectByFieldValues(fieldValues: List[MaritalStatusFieldValue[?]])(using c: Connection): List[MaritalStatusRow] = {
     fieldValues match {
       case Nil => selectAll
       case nonEmpty =>
@@ -62,47 +61,68 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
         }
         val quote = '"'.toString
         val q = s"""select "id"
-                    from "myschema"."marital_status"
-                    where ${namedParameters.map(x => s"$quote${x.name}$quote = {${x.name}}").mkString(" AND ")}
-                 """
+                from "myschema"."marital_status"
+                where ${namedParameters.map(x => s"$quote${x.name}$quote = {${x.name}}").mkString(" AND ")}
+                """
         SimpleSql(SQL(q), namedParameters.map(_.tupled).toMap, RowParser.successful)
           .as(MaritalStatusRow.rowParser(1).*)
     }
-    
   }
-  override def selectById(id: MaritalStatusId)(using c: Connection): Option[MaritalStatusRow] = {
+
+  def selectById(id: MaritalStatusId)(using c: Connection): Option[MaritalStatusRow] = {
     SQL"""select "id"
-          from "myschema"."marital_status"
-          where "id" = ${ParameterValue(id, null, MaritalStatusId.toStatement)}
-       """.as(MaritalStatusRow.rowParser(1).singleOpt)
+    from "myschema"."marital_status"
+    where "id" = ${ParameterValue(id, null, MaritalStatusId.toStatement)}
+    """.as(MaritalStatusRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(ids: Array[MaritalStatusId])(using c: Connection): List[MaritalStatusRow] = {
+
+  def selectByIds(ids: Array[MaritalStatusId])(using c: Connection): List[MaritalStatusRow] = {
     SQL"""select "id"
-          from "myschema"."marital_status"
-          where "id" = ANY(${ParameterValue(ids, null, MaritalStatusId.arrayToStatement)})
-       """.as(MaritalStatusRow.rowParser(1).*)
-    
+    from "myschema"."marital_status"
+    where "id" = ANY(${ParameterValue(ids, null, MaritalStatusId.arrayToStatement)})
+    """.as(MaritalStatusRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(ids: Array[MaritalStatusId])(using c: Connection): Map[MaritalStatusId, MaritalStatusRow] = {
+
+  def selectByIdsTracked(ids: Array[MaritalStatusId])(using c: Connection): Map[MaritalStatusId, MaritalStatusRow] = {
     val byId = selectByIds(ids).view.map(x => (x.id, x)).toMap
     ids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[MaritalStatusFields, MaritalStatusRow] = {
-    UpdateBuilder(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.rowParser)
+
+  def update: UpdateBuilder[MaritalStatusFields, MaritalStatusRow] = UpdateBuilder.of(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.rowParser(1).*)
+
+  def updateFieldValues(
+    id: MaritalStatusId,
+    fieldValues: List[MaritalStatusFieldValue[?]]
+  )(using c: Connection): Boolean = {
+    fieldValues match {
+      case Nil => false
+      case nonEmpty =>
+        val namedParameters = nonEmpty.map{
+          case MaritalStatusFieldValue.id(value) => NamedParameter("id", ParameterValue(value, null, MaritalStatusId.toStatement))
+        }
+        val quote = '"'.toString
+        val q = s"""update "myschema"."marital_status"
+                set ${namedParameters.map(x => s"$quote${x.name}$quote = {${x.name}}").mkString(", ")}
+                where "id" = {id}
+                """
+        SimpleSql(SQL(q), namedParameters.map(_.tupled).toMap ++ List(("id", ParameterValue(id, null, MaritalStatusId.toStatement))), RowParser.successful)
+          .executeUpdate() > 0
+    }
   }
-  override def upsert(unsaved: MaritalStatusRow)(using c: Connection): MaritalStatusRow = {
-    SQL"""insert into "myschema"."marital_status"("id")
-          values (
-            ${ParameterValue(unsaved.id, null, MaritalStatusId.toStatement)}::int8
-          )
-          on conflict ("id")
-          do update set "id" = EXCLUDED."id"
-          returning "id"
-       """
-      .executeInsert(MaritalStatusRow.rowParser(1).single)
-    
+
+  def upsert(unsaved: MaritalStatusRow)(using c: Connection): MaritalStatusRow = {
+  SQL"""insert into "myschema"."marital_status"("id")
+    values (
+      ${ParameterValue(unsaved.id, null, MaritalStatusId.toStatement)}::int8
+    )
+    on conflict ("id")
+    do update set "id" = EXCLUDED."id"
+    returning "id"
+    """
+    .executeInsert(MaritalStatusRow.rowParser(1).single)
   }
-  override def upsertBatch(unsaved: Iterable[MaritalStatusRow])(using c: Connection): List[MaritalStatusRow] = {
+
+  def upsertBatch(unsaved: Iterable[MaritalStatusRow])(using c: Connection): List[MaritalStatusRow] = {
     def toNamedParameter(row: MaritalStatusRow): List[NamedParameter] = List(
       NamedParameter("id", ParameterValue(row.id, null, MaritalStatusId.toStatement))
     )
@@ -112,26 +132,30 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
         new anorm.testdb.hardcoded.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "myschema"."marital_status"("id")
-                values ({id}::int8)
-                on conflict ("id")
-                do nothing
-                returning "id"
-             """,
+            values ({id}::int8)
+            on conflict ("id")
+            do nothing
+            returning "id"
+            """,
             toNamedParameter(head),
             rest.map(toNamedParameter)*
           )
         ).executeReturning(MaritalStatusRow.rowParser(1).*)
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[MaritalStatusRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[MaritalStatusRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     SQL"""create temporary table marital_status_TEMP (like "myschema"."marital_status") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy marital_status_TEMP("id") from stdin""", batchSize, unsaved)(using MaritalStatusRow.text, c): @nowarn
+    streamingInsert(s"""copy marital_status_TEMP("id") from stdin""", batchSize, unsaved)(using MaritalStatusRow.pgText, c): @nowarn
     SQL"""insert into "myschema"."marital_status"("id")
-          select * from marital_status_TEMP
-          on conflict ("id")
-          do nothing
-          ;
-          drop table marital_status_TEMP;""".executeUpdate()
+    select * from marital_status_TEMP
+    on conflict ("id")
+    do nothing
+    ;
+    drop table marital_status_TEMP;""".executeUpdate()
   }
 }

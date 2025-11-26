@@ -6,16 +6,12 @@
 package adventureworks.pu.pod
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PodViewRepoImpl extends PodViewRepo {
-  override def select: SelectBuilder[PodViewFields, PodViewRow] = {
-    SelectBuilderSql(""""pu"."pod"""", PodViewFields.structure, PodViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PodViewRow] = {
-    sql"""select "id", "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text from "pu"."pod"""".query(using PodViewRow.read).stream
-  }
+  def select: SelectBuilder[PodViewFields, PodViewRow] = SelectBuilder.of(""""pu"."pod"""", PodViewFields.structure, PodViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PodViewRow] = sql"""select "id", "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text from "pu"."pod"""".query(using PodViewRow.read).stream
 }

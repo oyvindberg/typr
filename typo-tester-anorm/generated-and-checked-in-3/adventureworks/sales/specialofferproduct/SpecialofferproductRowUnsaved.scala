@@ -7,6 +7,7 @@ package adventureworks.sales.specialofferproduct
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
@@ -22,57 +23,66 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.specialofferproduct` which has not been persisted yet */
 case class SpecialofferproductRowUnsaved(
   /** Primary key for SpecialOfferProduct records.
-      Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
+   * Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]]
+   */
   specialofferid: SpecialofferId,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SpecialofferproductRow =
-    SpecialofferproductRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SpecialofferproductRow = {
+    new SpecialofferproductRow(
       specialofferid = specialofferid,
       productid = productid,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object SpecialofferproductRowUnsaved {
-  given reads: Reads[SpecialofferproductRowUnsaved] = Reads[SpecialofferproductRowUnsaved](json => JsResult.fromTry(
-      Try(
-        SpecialofferproductRowUnsaved(
-          specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[SpecialofferproductRowUnsaved] = Text.instance[SpecialofferproductRowUnsaved]{ (row, sb) =>
-    SpecialofferId.text.unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[SpecialofferproductRowUnsaved] = OWrites[SpecialofferproductRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object SpecialofferproductRowUnsaved {
+  given pgText: Text[SpecialofferproductRowUnsaved] = {
+    Text.instance[SpecialofferproductRowUnsaved]{ (row, sb) =>
+      SpecialofferId.pgText.unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[SpecialofferproductRowUnsaved] = {
+    Reads[SpecialofferproductRowUnsaved](json => JsResult.fromTry(
+        Try(
+          SpecialofferproductRowUnsaved(
+            specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[SpecialofferproductRowUnsaved] = {
+    OWrites[SpecialofferproductRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

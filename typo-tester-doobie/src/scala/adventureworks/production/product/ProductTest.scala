@@ -69,7 +69,6 @@ class ProductTest extends SnapshotTest {
           sellstartdate = TypoLocalDateTime(LocalDateTime.now().plusDays(1).withNano(0)),
           sellenddate = Some(TypoLocalDateTime(LocalDateTime.now().plusDays(10).withNano(0))),
           discontinueddate = Some(TypoLocalDateTime(LocalDateTime.now().plusDays(100).withNano(0))),
-          productid = Defaulted.UseDefault,
           makeflag = Defaulted.Provided(Flag(true)),
           finishedgoodsflag = Defaulted.Provided(Flag(true)),
           rowguid = Defaulted.Provided(TypoUUID.randomUUID),

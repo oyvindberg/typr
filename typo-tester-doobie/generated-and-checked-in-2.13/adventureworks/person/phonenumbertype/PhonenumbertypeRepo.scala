@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait PhonenumbertypeRepo {
   def delete: DeleteBuilder[PhonenumbertypeFields, PhonenumbertypeRow]
+
   def deleteById(phonenumbertypeid: PhonenumbertypeId): ConnectionIO[Boolean]
+
   def deleteByIds(phonenumbertypeids: Array[PhonenumbertypeId]): ConnectionIO[Int]
+
   def insert(unsaved: PhonenumbertypeRow): ConnectionIO[PhonenumbertypeRow]
+
   def insert(unsaved: PhonenumbertypeRowUnsaved): ConnectionIO[PhonenumbertypeRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, PhonenumbertypeRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, PhonenumbertypeRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, PhonenumbertypeRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, PhonenumbertypeRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[PhonenumbertypeFields, PhonenumbertypeRow]
+
   def selectAll: Stream[ConnectionIO, PhonenumbertypeRow]
+
   def selectById(phonenumbertypeid: PhonenumbertypeId): ConnectionIO[Option[PhonenumbertypeRow]]
+
   def selectByIds(phonenumbertypeids: Array[PhonenumbertypeId]): Stream[ConnectionIO, PhonenumbertypeRow]
+
   def selectByIdsTracked(phonenumbertypeids: Array[PhonenumbertypeId]): ConnectionIO[Map[PhonenumbertypeId, PhonenumbertypeRow]]
+
   def update: UpdateBuilder[PhonenumbertypeFields, PhonenumbertypeRow]
+
   def update(row: PhonenumbertypeRow): ConnectionIO[Option[PhonenumbertypeRow]]
+
   def upsert(unsaved: PhonenumbertypeRow): ConnectionIO[PhonenumbertypeRow]
+
   def upsertBatch(unsaved: List[PhonenumbertypeRow]): Stream[ConnectionIO, PhonenumbertypeRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, PhonenumbertypeRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, PhonenumbertypeRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

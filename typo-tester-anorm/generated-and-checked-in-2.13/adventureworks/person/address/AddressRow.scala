@@ -24,11 +24,13 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: person.address
-    Street address information for customers, employees, and vendors.
-    Primary key: addressid */
+ * Street address information for customers, employees, and vendors.
+ * Primary key: addressid
+ */
 case class AddressRow(
   /** Primary key for Address records.
-      Default: nextval('person.address_addressid_seq'::regclass) */
+   * Default: nextval('person.address_addressid_seq'::regclass)
+   */
   addressid: AddressId,
   /** First street address line. */
   addressline1: /* max 60 chars */ String,
@@ -37,7 +39,8 @@ case class AddressRow(
   /** Name of the city. */
   city: /* max 30 chars */ String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
-      Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
+   * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
+   */
   stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
   postalcode: /* max 15 chars */ String,
@@ -47,74 +50,101 @@ case class AddressRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = addressid
-   def toUnsavedRow(addressid: Defaulted[AddressId], rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): AddressRowUnsaved =
-     AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate)
- }
+) {
+  def id: AddressId = addressid
 
-object AddressRow {
-  implicit lazy val reads: Reads[AddressRow] = Reads[AddressRow](json => JsResult.fromTry(
-      Try(
-        AddressRow(
-          addressid = json.\("addressid").as(AddressId.reads),
-          addressline1 = json.\("addressline1").as(Reads.StringReads),
-          addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
-          city = json.\("city").as(Reads.StringReads),
-          stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
-          postalcode = json.\("postalcode").as(Reads.StringReads),
-          spatiallocation = json.\("spatiallocation").toOption.map(_.as(TypoBytea.reads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[AddressRow] = RowParser[AddressRow] { row =>
-    Success(
-      AddressRow(
-        addressid = row(idx + 0)(AddressId.column),
-        addressline1 = row(idx + 1)(Column.columnToString),
-        addressline2 = row(idx + 2)(Column.columnToOption(Column.columnToString)),
-        city = row(idx + 3)(Column.columnToString),
-        stateprovinceid = row(idx + 4)(StateprovinceId.column),
-        postalcode = row(idx + 5)(Column.columnToString),
-        spatiallocation = row(idx + 6)(Column.columnToOption(TypoBytea.column)),
-        rowguid = row(idx + 7)(TypoUUID.column),
-        modifieddate = row(idx + 8)(TypoLocalDateTime.column)
-      )
+  def toUnsavedRow(
+    addressid: Defaulted[AddressId],
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): AddressRowUnsaved = {
+    new AddressRowUnsaved(
+      addressline1,
+      addressline2,
+      city,
+      stateprovinceid,
+      postalcode,
+      spatiallocation,
+      addressid,
+      rowguid,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[AddressRow] = Text.instance[AddressRow]{ (row, sb) =>
-    AddressId.text.unsafeEncode(row.addressid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.addressline1, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.addressline2, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.city, sb)
-    sb.append(Text.DELIMETER)
-    StateprovinceId.text.unsafeEncode(row.stateprovinceid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.postalcode, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoBytea.text).unsafeEncode(row.spatiallocation, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object AddressRow {
+  implicit lazy val pgText: Text[AddressRow] = {
+    Text.instance[AddressRow]{ (row, sb) =>
+      AddressId.pgText.unsafeEncode(row.addressid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.addressline1, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.addressline2, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.city, sb)
+      sb.append(Text.DELIMETER)
+      StateprovinceId.pgText.unsafeEncode(row.stateprovinceid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.postalcode, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoBytea.pgText).unsafeEncode(row.spatiallocation, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[AddressRow] = OWrites[AddressRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "addressid" -> AddressId.writes.writes(o.addressid),
-      "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-      "addressline2" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addressline2),
-      "city" -> Writes.StringWrites.writes(o.city),
-      "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
-      "postalcode" -> Writes.StringWrites.writes(o.postalcode),
-      "spatiallocation" -> Writes.OptionWrites(TypoBytea.writes).writes(o.spatiallocation),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[AddressRow] = {
+    Reads[AddressRow](json => JsResult.fromTry(
+        Try(
+          AddressRow(
+            addressid = json.\("addressid").as(AddressId.reads),
+            addressline1 = json.\("addressline1").as(Reads.StringReads),
+            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            city = json.\("city").as(Reads.StringReads),
+            stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
+            postalcode = json.\("postalcode").as(Reads.StringReads),
+            spatiallocation = json.\("spatiallocation").toOption.map(_.as(TypoBytea.reads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[AddressRow] = {
+    RowParser[AddressRow] { row =>
+      Success(
+        AddressRow(
+          addressid = row(idx + 0)(AddressId.column),
+          addressline1 = row(idx + 1)(Column.columnToString),
+          addressline2 = row(idx + 2)(Column.columnToOption(Column.columnToString)),
+          city = row(idx + 3)(Column.columnToString),
+          stateprovinceid = row(idx + 4)(StateprovinceId.column),
+          postalcode = row(idx + 5)(Column.columnToString),
+          spatiallocation = row(idx + 6)(Column.columnToOption(TypoBytea.column)),
+          rowguid = row(idx + 7)(TypoUUID.column),
+          modifieddate = row(idx + 8)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[AddressRow] = {
+    OWrites[AddressRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "addressid" -> AddressId.writes.writes(o.addressid),
+        "addressline1" -> Writes.StringWrites.writes(o.addressline1),
+        "addressline2" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addressline2),
+        "city" -> Writes.StringWrites.writes(o.city),
+        "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
+        "postalcode" -> Writes.StringWrites.writes(o.postalcode),
+        "spatiallocation" -> Writes.OptionWrites(TypoBytea.writes).writes(o.spatiallocation),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -13,9 +13,12 @@ import zio.jdbc.ZConnection
 import zio.jdbc.sqlInterpolator
 
 class UpdatePersonSqlRepoImpl extends UpdatePersonSqlRepo {
-  override def apply(suffix: String, cutoff: Option[TypoLocalDateTime]): ZIO[ZConnection, Throwable, Long] = {
+  def apply(
+    suffix: String,
+    cutoff: Option[TypoLocalDateTime]
+  ): ZIO[ZConnection, Throwable, Long] = {
     sql"""update person.person
-          set firstname = firstname || '-' || ${Segment.paramSegment(suffix)(Setter.stringSetter)}
-          where modifieddate < ${Segment.paramSegment(cutoff)(Setter.optionParamSetter(TypoLocalDateTime.setter))}::timestamp""".update
+    set firstname = firstname || '-' || ${Segment.paramSegment(suffix)(Setter.stringSetter)}
+    where modifieddate < ${Segment.paramSegment(cutoff)(Setter.optionParamSetter(TypoLocalDateTime.setter))}::timestamp""".update
   }
 }

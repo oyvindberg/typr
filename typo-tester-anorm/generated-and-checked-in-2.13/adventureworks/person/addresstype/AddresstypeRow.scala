@@ -21,11 +21,13 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: person.addresstype
-    Types of addresses stored in the Address table.
-    Primary key: addresstypeid */
+ * Types of addresses stored in the Address table.
+ * Primary key: addresstypeid
+ */
 case class AddresstypeRow(
   /** Primary key for AddressType records.
-      Default: nextval('person.addresstype_addresstypeid_seq'::regclass) */
+   * Default: nextval('person.addresstype_addresstypeid_seq'::regclass)
+   */
   addresstypeid: AddresstypeId,
   /** Address type description. For example, Billing, Home, or Shipping. */
   name: Name,
@@ -33,49 +35,71 @@ case class AddresstypeRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = addresstypeid
-   def toUnsavedRow(addresstypeid: Defaulted[AddresstypeId], rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): AddresstypeRowUnsaved =
-     AddresstypeRowUnsaved(name, addresstypeid, rowguid, modifieddate)
- }
+) {
+  def id: AddresstypeId = addresstypeid
 
-object AddresstypeRow {
-  implicit lazy val reads: Reads[AddresstypeRow] = Reads[AddresstypeRow](json => JsResult.fromTry(
-      Try(
-        AddresstypeRow(
-          addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads),
-          name = json.\("name").as(Name.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[AddresstypeRow] = RowParser[AddresstypeRow] { row =>
-    Success(
-      AddresstypeRow(
-        addresstypeid = row(idx + 0)(AddresstypeId.column),
-        name = row(idx + 1)(Name.column),
-        rowguid = row(idx + 2)(TypoUUID.column),
-        modifieddate = row(idx + 3)(TypoLocalDateTime.column)
-      )
+  def toUnsavedRow(
+    addresstypeid: Defaulted[AddresstypeId],
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): AddresstypeRowUnsaved = {
+    new AddresstypeRowUnsaved(
+      name,
+      addresstypeid,
+      rowguid,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[AddresstypeRow] = Text.instance[AddresstypeRow]{ (row, sb) =>
-    AddresstypeId.text.unsafeEncode(row.addresstypeid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object AddresstypeRow {
+  implicit lazy val pgText: Text[AddresstypeRow] = {
+    Text.instance[AddresstypeRow]{ (row, sb) =>
+      AddresstypeId.pgText.unsafeEncode(row.addresstypeid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[AddresstypeRow] = OWrites[AddresstypeRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid),
-      "name" -> Name.writes.writes(o.name),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[AddresstypeRow] = {
+    Reads[AddresstypeRow](json => JsResult.fromTry(
+        Try(
+          AddresstypeRow(
+            addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads),
+            name = json.\("name").as(Name.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[AddresstypeRow] = {
+    RowParser[AddresstypeRow] { row =>
+      Success(
+        AddresstypeRow(
+          addresstypeid = row(idx + 0)(AddresstypeId.column),
+          name = row(idx + 1)(Name.column),
+          rowguid = row(idx + 2)(TypoUUID.column),
+          modifieddate = row(idx + 3)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[AddresstypeRow] = {
+    OWrites[AddresstypeRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid),
+        "name" -> Name.writes.writes(o.name),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

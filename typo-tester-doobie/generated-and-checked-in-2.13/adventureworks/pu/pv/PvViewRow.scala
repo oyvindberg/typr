@@ -44,34 +44,38 @@ case class PvViewRow(
 
 object PvViewRow {
   implicit lazy val decoder: Decoder[PvViewRow] = Decoder.forProduct12[PvViewRow, ProductId, ProductId, BusinessentityId, Int, BigDecimal, Option[BigDecimal], Option[TypoLocalDateTime], Int, Int, Option[Int], UnitmeasureId, TypoLocalDateTime]("id", "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate")(PvViewRow.apply)(ProductId.decoder, ProductId.decoder, BusinessentityId.decoder, Decoder.decodeInt, Decoder.decodeBigDecimal, Decoder.decodeOption(Decoder.decodeBigDecimal), Decoder.decodeOption(TypoLocalDateTime.decoder), Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeOption(Decoder.decodeInt), UnitmeasureId.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[PvViewRow] = Encoder.forProduct12[PvViewRow, ProductId, ProductId, BusinessentityId, Int, BigDecimal, Option[BigDecimal], Option[TypoLocalDateTime], Int, Int, Option[Int], UnitmeasureId, TypoLocalDateTime]("id", "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate")(x => (x.id, x.productid, x.businessentityid, x.averageleadtime, x.standardprice, x.lastreceiptcost, x.lastreceiptdate, x.minorderqty, x.maxorderqty, x.onorderqty, x.unitmeasurecode, x.modifieddate))(ProductId.encoder, ProductId.encoder, BusinessentityId.encoder, Encoder.encodeInt, Encoder.encodeBigDecimal, Encoder.encodeOption(Encoder.encodeBigDecimal), Encoder.encodeOption(TypoLocalDateTime.encoder), Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeOption(Encoder.encodeInt), UnitmeasureId.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[PvViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[PvViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    PvViewRow(
-      id = arr(0).asInstanceOf[ProductId],
-          productid = arr(1).asInstanceOf[ProductId],
-          businessentityid = arr(2).asInstanceOf[BusinessentityId],
-          averageleadtime = arr(3).asInstanceOf[Int],
-          standardprice = arr(4).asInstanceOf[BigDecimal],
-          lastreceiptcost = arr(5).asInstanceOf[Option[BigDecimal]],
-          lastreceiptdate = arr(6).asInstanceOf[Option[TypoLocalDateTime]],
-          minorderqty = arr(7).asInstanceOf[Int],
-          maxorderqty = arr(8).asInstanceOf[Int],
-          onorderqty = arr(9).asInstanceOf[Option[Int]],
-          unitmeasurecode = arr(10).asInstanceOf[UnitmeasureId],
-          modifieddate = arr(11).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      PvViewRow(
+        id = arr(0).asInstanceOf[ProductId],
+            productid = arr(1).asInstanceOf[ProductId],
+            businessentityid = arr(2).asInstanceOf[BusinessentityId],
+            averageleadtime = arr(3).asInstanceOf[Int],
+            standardprice = arr(4).asInstanceOf[BigDecimal],
+            lastreceiptcost = arr(5).asInstanceOf[Option[BigDecimal]],
+            lastreceiptdate = arr(6).asInstanceOf[Option[TypoLocalDateTime]],
+            minorderqty = arr(7).asInstanceOf[Int],
+            maxorderqty = arr(8).asInstanceOf[Int],
+            onorderqty = arr(9).asInstanceOf[Option[Int]],
+            unitmeasurecode = arr(10).asInstanceOf[UnitmeasureId],
+            modifieddate = arr(11).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

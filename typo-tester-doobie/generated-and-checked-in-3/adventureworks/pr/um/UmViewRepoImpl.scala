@@ -6,16 +6,12 @@
 package adventureworks.pr.um
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class UmViewRepoImpl extends UmViewRepo {
-  override def select: SelectBuilder[UmViewFields, UmViewRow] = {
-    SelectBuilderSql(""""pr"."um"""", UmViewFields.structure, UmViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, UmViewRow] = {
-    sql"""select "id", "unitmeasurecode", "name", "modifieddate"::text from "pr"."um"""".query(using UmViewRow.read).stream
-  }
+  def select: SelectBuilder[UmViewFields, UmViewRow] = SelectBuilder.of(""""pr"."um"""", UmViewFields.structure, UmViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, UmViewRow] = sql"""select "id", "unitmeasurecode", "name", "modifieddate"::text from "pr"."um"""".query(using UmViewRow.read).stream
 }

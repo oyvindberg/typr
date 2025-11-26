@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait BeaViewRepo {
   def select: SelectBuilder[BeaViewFields, BeaViewRow]
+
   def selectAll: Stream[ConnectionIO, BeaViewRow]
 }

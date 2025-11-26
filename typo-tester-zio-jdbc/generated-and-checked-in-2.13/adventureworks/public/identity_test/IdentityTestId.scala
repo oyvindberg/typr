@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `public.identity-test` */
-case class IdentityTestId(value: /* max 250 chars */ String) extends AnyVal
+case class IdentityTestId(value: /* max 250 chars */ String) extends scala.AnyVal
+
 object IdentityTestId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[IdentityTestId]] = adventureworks.StringArrayDecoder.map(_.map(IdentityTestId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[IdentityTestId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[IdentityTestId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+
+  implicit lazy val bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection.apply[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[IdentityTestId] = JdbcDecoder.stringDecoder.map(IdentityTestId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[IdentityTestId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[IdentityTestId] = JsonDecoder.string.map(IdentityTestId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[IdentityTestId] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val pgType: PGType[IdentityTestId] = PGType.PGTypeString.as
-  implicit lazy val setter: Setter[IdentityTestId] = Setter.stringSetter.contramap(_.value)
-  implicit lazy val text: Text[IdentityTestId] = new Text[IdentityTestId] {
-    override def unsafeEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[IdentityTestId] = {
+    new Text[IdentityTestId] {
+      override def unsafeEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[IdentityTestId] = PGType.PGTypeString.as
+
+  implicit lazy val setter: Setter[IdentityTestId] = Setter.stringSetter.contramap(_.value)
 }

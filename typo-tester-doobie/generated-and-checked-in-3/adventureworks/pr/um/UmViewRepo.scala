@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait UmViewRepo {
   def select: SelectBuilder[UmViewFields, UmViewRow]
+
   def selectAll: Stream[ConnectionIO, UmViewRow]
 }

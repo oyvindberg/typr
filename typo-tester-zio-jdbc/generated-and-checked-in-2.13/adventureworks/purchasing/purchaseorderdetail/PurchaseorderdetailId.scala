@@ -16,23 +16,29 @@ case class PurchaseorderdetailId(
   purchaseorderid: PurchaseorderheaderId,
   purchaseorderdetailid: Int
 )
+
 object PurchaseorderdetailId {
-  implicit lazy val jsonDecoder: JsonDecoder[PurchaseorderdetailId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val purchaseorderid = jsonObj.get("purchaseorderid").toRight("Missing field 'purchaseorderid'").flatMap(_.as(PurchaseorderheaderId.jsonDecoder))
-    val purchaseorderdetailid = jsonObj.get("purchaseorderdetailid").toRight("Missing field 'purchaseorderdetailid'").flatMap(_.as(JsonDecoder.int))
-    if (purchaseorderid.isRight && purchaseorderdetailid.isRight)
-      Right(PurchaseorderdetailId(purchaseorderid = purchaseorderid.toOption.get, purchaseorderdetailid = purchaseorderdetailid.toOption.get))
-    else Left(List[Either[String, Any]](purchaseorderid, purchaseorderdetailid).flatMap(_.left.toOption).mkString(", "))
+  implicit lazy val jsonDecoder: JsonDecoder[PurchaseorderdetailId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val purchaseorderid = jsonObj.get("purchaseorderid").toRight("Missing field 'purchaseorderid'").flatMap(_.as(PurchaseorderheaderId.jsonDecoder))
+      val purchaseorderdetailid = jsonObj.get("purchaseorderdetailid").toRight("Missing field 'purchaseorderdetailid'").flatMap(_.as(JsonDecoder.int))
+      if (purchaseorderid.isRight && purchaseorderdetailid.isRight)
+        Right(PurchaseorderdetailId(purchaseorderid = purchaseorderid.toOption.get, purchaseorderdetailid = purchaseorderdetailid.toOption.get))
+      else Left(List[Either[String, Any]](purchaseorderid, purchaseorderdetailid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[PurchaseorderdetailId] = new JsonEncoder[PurchaseorderdetailId] {
-    override def unsafeEncode(a: PurchaseorderdetailId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""purchaseorderid":""")
-      PurchaseorderheaderId.jsonEncoder.unsafeEncode(a.purchaseorderid, indent, out)
-      out.write(",")
-      out.write(""""purchaseorderdetailid":""")
-      JsonEncoder.int.unsafeEncode(a.purchaseorderdetailid, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[PurchaseorderdetailId] = {
+    new JsonEncoder[PurchaseorderdetailId] {
+      override def unsafeEncode(a: PurchaseorderdetailId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""purchaseorderid":""")
+        PurchaseorderheaderId.jsonEncoder.unsafeEncode(a.purchaseorderid, indent, out)
+        out.write(",")
+        out.write(""""purchaseorderdetailid":""")
+        JsonEncoder.int.unsafeEncode(a.purchaseorderdetailid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

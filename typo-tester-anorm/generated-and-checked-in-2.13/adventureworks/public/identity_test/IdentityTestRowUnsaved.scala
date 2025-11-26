@@ -7,6 +7,7 @@ package adventureworks.public.identity_test
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -20,37 +21,41 @@ import scala.util.Try
 case class IdentityTestRowUnsaved(
   name: IdentityTestId,
   /** Identity BY DEFAULT, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
-  defaultGenerated: Defaulted[Int]
+  defaultGenerated: Defaulted[Int] = new UseDefault()
 ) {
-  def toRow(defaultGeneratedDefault: => Int, alwaysGeneratedDefault: => Int): IdentityTestRow =
-    IdentityTestRow(
-      alwaysGenerated = alwaysGeneratedDefault,
-      defaultGenerated = defaultGenerated match {
-                           case Defaulted.UseDefault => defaultGeneratedDefault
-                           case Defaulted.Provided(value) => value
-                         },
-      name = name
-    )
+  def toRow(
+    defaultGeneratedDefault: => Int,
+    alwaysGeneratedDefault: => Int
+  ): IdentityTestRow = new IdentityTestRow(alwaysGenerated = alwaysGeneratedDefault, defaultGenerated = defaultGenerated.getOrElse(defaultGeneratedDefault), name = name)
 }
+
 object IdentityTestRowUnsaved {
-  implicit lazy val reads: Reads[IdentityTestRowUnsaved] = Reads[IdentityTestRowUnsaved](json => JsResult.fromTry(
-      Try(
-        IdentityTestRowUnsaved(
-          name = json.\("name").as(IdentityTestId.reads),
-          defaultGenerated = json.\("default_generated").as(Defaulted.reads(Reads.IntReads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[IdentityTestRowUnsaved] = Text.instance[IdentityTestRowUnsaved]{ (row, sb) =>
-    IdentityTestId.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.intInstance).unsafeEncode(row.defaultGenerated, sb)
+  implicit lazy val pgText: Text[IdentityTestRowUnsaved] = {
+    Text.instance[IdentityTestRowUnsaved]{ (row, sb) =>
+      IdentityTestId.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.intInstance).unsafeEncode(row.defaultGenerated, sb)
+    }
   }
-  implicit lazy val writes: OWrites[IdentityTestRowUnsaved] = OWrites[IdentityTestRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> IdentityTestId.writes.writes(o.name),
-      "default_generated" -> Defaulted.writes(Writes.IntWrites).writes(o.defaultGenerated)
-    ))
-  )
+
+  implicit lazy val reads: Reads[IdentityTestRowUnsaved] = {
+    Reads[IdentityTestRowUnsaved](json => JsResult.fromTry(
+        Try(
+          IdentityTestRowUnsaved(
+            name = json.\("name").as(IdentityTestId.reads),
+            defaultGenerated = json.\("default_generated").as(Defaulted.reads(Reads.IntReads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[IdentityTestRowUnsaved] = {
+    OWrites[IdentityTestRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> IdentityTestId.writes.writes(o.name),
+        "default_generated" -> Defaulted.writes(Writes.IntWrites).writes(o.defaultGenerated)
+      ))
+    )
+  }
 }

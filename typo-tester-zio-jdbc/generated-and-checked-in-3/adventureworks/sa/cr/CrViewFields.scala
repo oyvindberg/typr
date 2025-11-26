@@ -25,11 +25,11 @@ trait CrViewFields {
 
 object CrViewFields {
   lazy val structure: Relation[CrViewFields, CrViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CrViewFields, CrViewRow] {
-  
+
     override lazy val fields: CrViewFields = new CrViewFields {
       override def currencyrateid = Field[CurrencyrateId, CrViewRow](_path, "currencyrateid", None, None, x => x.currencyrateid, (row, value) => row.copy(currencyrateid = value))
       override def currencyratedate = Field[TypoLocalDateTime, CrViewRow](_path, "currencyratedate", Some("text"), None, x => x.currencyratedate, (row, value) => row.copy(currencyratedate = value))
@@ -39,12 +39,11 @@ object CrViewFields {
       override def endofdayrate = Field[BigDecimal, CrViewRow](_path, "endofdayrate", None, None, x => x.endofdayrate, (row, value) => row.copy(endofdayrate = value))
       override def modifieddate = Field[TypoLocalDateTime, CrViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CrViewRow]] =
       List[FieldLike[?, CrViewRow]](fields.currencyrateid, fields.currencyratedate, fields.fromcurrencycode, fields.tocurrencycode, fields.averagerate, fields.endofdayrate, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -10,5 +10,8 @@ import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
 trait UpdatePersonReturningSqlRepo {
-  def apply(suffix: /* nullability unknown */ Option[String], cutoff: /* nullability unknown */ Option[TypoLocalDateTime]): ZStream[ZConnection, Throwable, UpdatePersonReturningSqlRow]
+  def apply(
+    suffix: /* nullability unknown */ Option[String],
+    cutoff: /* nullability unknown */ Option[TypoLocalDateTime]
+  ): ZStream[ZConnection, Throwable, UpdatePersonReturningSqlRow]
 }

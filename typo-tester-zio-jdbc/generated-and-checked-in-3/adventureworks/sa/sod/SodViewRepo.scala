@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait SodViewRepo {
   def select: SelectBuilder[SodViewFields, SodViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, SodViewRow]
 }

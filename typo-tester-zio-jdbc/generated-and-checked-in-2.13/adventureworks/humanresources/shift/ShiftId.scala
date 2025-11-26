@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `humanresources.shift` */
-case class ShiftId(value: Int) extends AnyVal
+case class ShiftId(value: Int) extends scala.AnyVal
+
 object ShiftId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[ShiftId]] = adventureworks.IntArrayDecoder.map(_.map(ShiftId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[ShiftId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[ShiftId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[ShiftId, Int] = Bijection[ShiftId, Int](_.value)(ShiftId.apply)
+
+  implicit lazy val bijection: Bijection[ShiftId, Int] = Bijection.apply[ShiftId, Int](_.value)(ShiftId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[ShiftId] = JdbcDecoder.intDecoder.map(ShiftId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[ShiftId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[ShiftId] = JsonDecoder.int.map(ShiftId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[ShiftId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val pgType: PGType[ShiftId] = PGType.PGTypeInt.as
-  implicit lazy val setter: Setter[ShiftId] = Setter.intSetter.contramap(_.value)
-  implicit lazy val text: Text[ShiftId] = new Text[ShiftId] {
-    override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[ShiftId] = {
+    new Text[ShiftId] {
+      override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[ShiftId] = PGType.PGTypeInt.as
+
+  implicit lazy val setter: Setter[ShiftId] = Setter.intSetter.contramap(_.value)
 }

@@ -44,11 +44,11 @@ trait BillofmaterialsFields {
 
 object BillofmaterialsFields {
   lazy val structure: Relation[BillofmaterialsFields, BillofmaterialsRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[BillofmaterialsFields, BillofmaterialsRow] {
-  
+
     override lazy val fields: BillofmaterialsFields = new BillofmaterialsFields {
       override def billofmaterialsid = IdField[Int, BillofmaterialsRow](_path, "billofmaterialsid", None, Some("int4"), x => x.billofmaterialsid, (row, value) => row.copy(billofmaterialsid = value))
       override def productassemblyid = OptField[ProductId, BillofmaterialsRow](_path, "productassemblyid", None, Some("int4"), x => x.productassemblyid, (row, value) => row.copy(productassemblyid = value))
@@ -60,12 +60,11 @@ object BillofmaterialsFields {
       override def perassemblyqty = Field[BigDecimal, BillofmaterialsRow](_path, "perassemblyqty", None, Some("numeric"), x => x.perassemblyqty, (row, value) => row.copy(perassemblyqty = value))
       override def modifieddate = Field[TypoLocalDateTime, BillofmaterialsRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, BillofmaterialsRow]] =
       List[FieldLike[?, BillofmaterialsRow]](fields.billofmaterialsid, fields.productassemblyid, fields.componentid, fields.startdate, fields.enddate, fields.unitmeasurecode, fields.bomlevel, fields.perassemblyqty, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

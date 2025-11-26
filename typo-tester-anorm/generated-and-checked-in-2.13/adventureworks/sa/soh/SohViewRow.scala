@@ -88,99 +88,107 @@ case class SohViewRow(
 )
 
 object SohViewRow {
-  implicit lazy val reads: Reads[SohViewRow] = Reads[SohViewRow](json => JsResult.fromTry(
-      Try(
-        SohViewRow(
-          id = json.\("id").as(SalesorderheaderId.reads),
-          salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
-          revisionnumber = json.\("revisionnumber").as(TypoShort.reads),
-          orderdate = json.\("orderdate").as(TypoLocalDateTime.reads),
-          duedate = json.\("duedate").as(TypoLocalDateTime.reads),
-          shipdate = json.\("shipdate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          status = json.\("status").as(TypoShort.reads),
-          onlineorderflag = json.\("onlineorderflag").as(Flag.reads),
-          purchaseordernumber = json.\("purchaseordernumber").toOption.map(_.as(OrderNumber.reads)),
-          accountnumber = json.\("accountnumber").toOption.map(_.as(AccountNumber.reads)),
-          customerid = json.\("customerid").as(CustomerId.reads),
-          salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
-          territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
-          billtoaddressid = json.\("billtoaddressid").as(AddressId.reads),
-          shiptoaddressid = json.\("shiptoaddressid").as(AddressId.reads),
-          shipmethodid = json.\("shipmethodid").as(ShipmethodId.reads),
-          creditcardid = json.\("creditcardid").toOption.map(_.as(CustomCreditcardId.reads)),
-          creditcardapprovalcode = json.\("creditcardapprovalcode").toOption.map(_.as(Reads.StringReads)),
-          currencyrateid = json.\("currencyrateid").toOption.map(_.as(CurrencyrateId.reads)),
-          subtotal = json.\("subtotal").as(Reads.bigDecReads),
-          taxamt = json.\("taxamt").as(Reads.bigDecReads),
-          freight = json.\("freight").as(Reads.bigDecReads),
-          totaldue = json.\("totaldue").toOption.map(_.as(Reads.bigDecReads)),
-          comment = json.\("comment").toOption.map(_.as(Reads.StringReads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[SohViewRow] = {
+    Reads[SohViewRow](json => JsResult.fromTry(
+        Try(
+          SohViewRow(
+            id = json.\("id").as(SalesorderheaderId.reads),
+            salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
+            revisionnumber = json.\("revisionnumber").as(TypoShort.reads),
+            orderdate = json.\("orderdate").as(TypoLocalDateTime.reads),
+            duedate = json.\("duedate").as(TypoLocalDateTime.reads),
+            shipdate = json.\("shipdate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            status = json.\("status").as(TypoShort.reads),
+            onlineorderflag = json.\("onlineorderflag").as(Flag.reads),
+            purchaseordernumber = json.\("purchaseordernumber").toOption.map(_.as(OrderNumber.reads)),
+            accountnumber = json.\("accountnumber").toOption.map(_.as(AccountNumber.reads)),
+            customerid = json.\("customerid").as(CustomerId.reads),
+            salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
+            territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
+            billtoaddressid = json.\("billtoaddressid").as(AddressId.reads),
+            shiptoaddressid = json.\("shiptoaddressid").as(AddressId.reads),
+            shipmethodid = json.\("shipmethodid").as(ShipmethodId.reads),
+            creditcardid = json.\("creditcardid").toOption.map(_.as(CustomCreditcardId.reads)),
+            creditcardapprovalcode = json.\("creditcardapprovalcode").toOption.map(_.as(Reads.StringReads)),
+            currencyrateid = json.\("currencyrateid").toOption.map(_.as(CurrencyrateId.reads)),
+            subtotal = json.\("subtotal").as(Reads.bigDecReads),
+            taxamt = json.\("taxamt").as(Reads.bigDecReads),
+            freight = json.\("freight").as(Reads.bigDecReads),
+            totaldue = json.\("totaldue").toOption.map(_.as(Reads.bigDecReads)),
+            comment = json.\("comment").toOption.map(_.as(Reads.StringReads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SohViewRow] = RowParser[SohViewRow] { row =>
-    Success(
-      SohViewRow(
-        id = row(idx + 0)(SalesorderheaderId.column),
-        salesorderid = row(idx + 1)(SalesorderheaderId.column),
-        revisionnumber = row(idx + 2)(TypoShort.column),
-        orderdate = row(idx + 3)(TypoLocalDateTime.column),
-        duedate = row(idx + 4)(TypoLocalDateTime.column),
-        shipdate = row(idx + 5)(Column.columnToOption(TypoLocalDateTime.column)),
-        status = row(idx + 6)(TypoShort.column),
-        onlineorderflag = row(idx + 7)(Flag.column),
-        purchaseordernumber = row(idx + 8)(Column.columnToOption(OrderNumber.column)),
-        accountnumber = row(idx + 9)(Column.columnToOption(AccountNumber.column)),
-        customerid = row(idx + 10)(CustomerId.column),
-        salespersonid = row(idx + 11)(Column.columnToOption(BusinessentityId.column)),
-        territoryid = row(idx + 12)(Column.columnToOption(SalesterritoryId.column)),
-        billtoaddressid = row(idx + 13)(AddressId.column),
-        shiptoaddressid = row(idx + 14)(AddressId.column),
-        shipmethodid = row(idx + 15)(ShipmethodId.column),
-        creditcardid = row(idx + 16)(Column.columnToOption(CustomCreditcardId.column)),
-        creditcardapprovalcode = row(idx + 17)(Column.columnToOption(Column.columnToString)),
-        currencyrateid = row(idx + 18)(Column.columnToOption(CurrencyrateId.column)),
-        subtotal = row(idx + 19)(Column.columnToScalaBigDecimal),
-        taxamt = row(idx + 20)(Column.columnToScalaBigDecimal),
-        freight = row(idx + 21)(Column.columnToScalaBigDecimal),
-        totaldue = row(idx + 22)(Column.columnToOption(Column.columnToScalaBigDecimal)),
-        comment = row(idx + 23)(Column.columnToOption(Column.columnToString)),
-        rowguid = row(idx + 24)(TypoUUID.column),
-        modifieddate = row(idx + 25)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[SohViewRow] = OWrites[SohViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> SalesorderheaderId.writes.writes(o.id),
-      "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
-      "revisionnumber" -> TypoShort.writes.writes(o.revisionnumber),
-      "orderdate" -> TypoLocalDateTime.writes.writes(o.orderdate),
-      "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
-      "shipdate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.shipdate),
-      "status" -> TypoShort.writes.writes(o.status),
-      "onlineorderflag" -> Flag.writes.writes(o.onlineorderflag),
-      "purchaseordernumber" -> Writes.OptionWrites(OrderNumber.writes).writes(o.purchaseordernumber),
-      "accountnumber" -> Writes.OptionWrites(AccountNumber.writes).writes(o.accountnumber),
-      "customerid" -> CustomerId.writes.writes(o.customerid),
-      "salespersonid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.salespersonid),
-      "territoryid" -> Writes.OptionWrites(SalesterritoryId.writes).writes(o.territoryid),
-      "billtoaddressid" -> AddressId.writes.writes(o.billtoaddressid),
-      "shiptoaddressid" -> AddressId.writes.writes(o.shiptoaddressid),
-      "shipmethodid" -> ShipmethodId.writes.writes(o.shipmethodid),
-      "creditcardid" -> Writes.OptionWrites(CustomCreditcardId.writes).writes(o.creditcardid),
-      "creditcardapprovalcode" -> Writes.OptionWrites(Writes.StringWrites).writes(o.creditcardapprovalcode),
-      "currencyrateid" -> Writes.OptionWrites(CurrencyrateId.writes).writes(o.currencyrateid),
-      "subtotal" -> Writes.BigDecimalWrites.writes(o.subtotal),
-      "taxamt" -> Writes.BigDecimalWrites.writes(o.taxamt),
-      "freight" -> Writes.BigDecimalWrites.writes(o.freight),
-      "totaldue" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.totaldue),
-      "comment" -> Writes.OptionWrites(Writes.StringWrites).writes(o.comment),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SohViewRow] = {
+    RowParser[SohViewRow] { row =>
+      Success(
+        SohViewRow(
+          id = row(idx + 0)(SalesorderheaderId.column),
+          salesorderid = row(idx + 1)(SalesorderheaderId.column),
+          revisionnumber = row(idx + 2)(TypoShort.column),
+          orderdate = row(idx + 3)(TypoLocalDateTime.column),
+          duedate = row(idx + 4)(TypoLocalDateTime.column),
+          shipdate = row(idx + 5)(Column.columnToOption(TypoLocalDateTime.column)),
+          status = row(idx + 6)(TypoShort.column),
+          onlineorderflag = row(idx + 7)(Flag.column),
+          purchaseordernumber = row(idx + 8)(Column.columnToOption(OrderNumber.column)),
+          accountnumber = row(idx + 9)(Column.columnToOption(AccountNumber.column)),
+          customerid = row(idx + 10)(CustomerId.column),
+          salespersonid = row(idx + 11)(Column.columnToOption(BusinessentityId.column)),
+          territoryid = row(idx + 12)(Column.columnToOption(SalesterritoryId.column)),
+          billtoaddressid = row(idx + 13)(AddressId.column),
+          shiptoaddressid = row(idx + 14)(AddressId.column),
+          shipmethodid = row(idx + 15)(ShipmethodId.column),
+          creditcardid = row(idx + 16)(Column.columnToOption(CustomCreditcardId.column)),
+          creditcardapprovalcode = row(idx + 17)(Column.columnToOption(Column.columnToString)),
+          currencyrateid = row(idx + 18)(Column.columnToOption(CurrencyrateId.column)),
+          subtotal = row(idx + 19)(Column.columnToScalaBigDecimal),
+          taxamt = row(idx + 20)(Column.columnToScalaBigDecimal),
+          freight = row(idx + 21)(Column.columnToScalaBigDecimal),
+          totaldue = row(idx + 22)(Column.columnToOption(Column.columnToScalaBigDecimal)),
+          comment = row(idx + 23)(Column.columnToOption(Column.columnToString)),
+          rowguid = row(idx + 24)(TypoUUID.column),
+          modifieddate = row(idx + 25)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[SohViewRow] = {
+    OWrites[SohViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> SalesorderheaderId.writes.writes(o.id),
+        "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
+        "revisionnumber" -> TypoShort.writes.writes(o.revisionnumber),
+        "orderdate" -> TypoLocalDateTime.writes.writes(o.orderdate),
+        "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
+        "shipdate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.shipdate),
+        "status" -> TypoShort.writes.writes(o.status),
+        "onlineorderflag" -> Flag.writes.writes(o.onlineorderflag),
+        "purchaseordernumber" -> Writes.OptionWrites(OrderNumber.writes).writes(o.purchaseordernumber),
+        "accountnumber" -> Writes.OptionWrites(AccountNumber.writes).writes(o.accountnumber),
+        "customerid" -> CustomerId.writes.writes(o.customerid),
+        "salespersonid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.salespersonid),
+        "territoryid" -> Writes.OptionWrites(SalesterritoryId.writes).writes(o.territoryid),
+        "billtoaddressid" -> AddressId.writes.writes(o.billtoaddressid),
+        "shiptoaddressid" -> AddressId.writes.writes(o.shiptoaddressid),
+        "shipmethodid" -> ShipmethodId.writes.writes(o.shipmethodid),
+        "creditcardid" -> Writes.OptionWrites(CustomCreditcardId.writes).writes(o.creditcardid),
+        "creditcardapprovalcode" -> Writes.OptionWrites(Writes.StringWrites).writes(o.creditcardapprovalcode),
+        "currencyrateid" -> Writes.OptionWrites(CurrencyrateId.writes).writes(o.currencyrateid),
+        "subtotal" -> Writes.BigDecimalWrites.writes(o.subtotal),
+        "taxamt" -> Writes.BigDecimalWrites.writes(o.taxamt),
+        "freight" -> Writes.BigDecimalWrites.writes(o.freight),
+        "totaldue" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.totaldue),
+        "comment" -> Writes.OptionWrites(Writes.StringWrites).writes(o.comment),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

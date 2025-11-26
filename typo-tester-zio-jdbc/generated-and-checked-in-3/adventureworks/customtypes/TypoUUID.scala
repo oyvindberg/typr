@@ -21,51 +21,73 @@ import zio.json.JsonEncoder
 case class TypoUUID(value: UUID)
 
 object TypoUUID {
-  def apply(str: String): TypoUUID = TypoUUID(UUID.fromString(str))
-  def randomUUID: TypoUUID = TypoUUID(UUID.randomUUID())
-  given arrayJdbcDecoder: JdbcDecoder[Array[TypoUUID]] = JdbcDecoder[Array[TypoUUID]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoUUID(x.asInstanceOf[UUID]))
-    },
-    "Array[java.util.UUID]"
-  )
+  def apply(str: String): TypoUUID = new TypoUUID(UUID.fromString(str))
+
+  given arrayJdbcDecoder: JdbcDecoder[Array[TypoUUID]] = {
+    JdbcDecoder[Array[TypoUUID]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoUUID(x.asInstanceOf[UUID]))
+      },
+      "Array[java.util.UUID]"
+    )
+  }
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TypoUUID]] = JdbcEncoder.singleParamEncoder(using arraySetter)
-  given arraySetter: Setter[Array[TypoUUID]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "uuid",
-        v.map { vv =>
-          vv.value
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  given bijection: Bijection[TypoUUID, UUID] = Bijection[TypoUUID, UUID](_.value)(TypoUUID.apply)
-  given jdbcDecoder: JdbcDecoder[TypoUUID] = JdbcDecoder[TypoUUID](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoUUID(v.asInstanceOf[UUID])
-    },
-    "java.util.UUID"
-  )
-  given jdbcEncoder: JdbcEncoder[TypoUUID] = JdbcEncoder.singleParamEncoder(using setter)
-  given jsonDecoder: JsonDecoder[TypoUUID] = JsonDecoder.uuid.map(TypoUUID.apply)
-  given jsonEncoder: JsonEncoder[TypoUUID] = JsonEncoder.uuid.contramap(_.value)
-  given pgType: PGType[TypoUUID] = PGType.instance[TypoUUID]("uuid", Types.OTHER)
-  given setter: Setter[TypoUUID] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  given arraySetter: Setter[Array[TypoUUID]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value
-      )
-    },
-    "uuid"
-  )
-  given text: Text[TypoUUID] = new Text[TypoUUID] {
-    override def unsafeEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+        ps.getConnection.createArrayOf(
+          "uuid",
+          v.map { vv =>
+            vv.value
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  given bijection: Bijection[TypoUUID, UUID] = Bijection.apply[TypoUUID, UUID](_.value)(TypoUUID.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoUUID] = {
+    JdbcDecoder[TypoUUID](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoUUID(v.asInstanceOf[UUID])
+      },
+      "java.util.UUID"
+    )
+  }
+
+  given jdbcEncoder: JdbcEncoder[TypoUUID] = JdbcEncoder.singleParamEncoder(using setter)
+
+  given jsonDecoder: JsonDecoder[TypoUUID] = JsonDecoder.uuid.map(TypoUUID.apply)
+
+  given jsonEncoder: JsonEncoder[TypoUUID] = JsonEncoder.uuid.contramap(_.value)
+
+  given pgText: Text[TypoUUID] = {
+    new Text[TypoUUID] {
+      override def unsafeEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given pgType: PGType[TypoUUID] = PGType.instance[TypoUUID]("uuid", Types.OTHER)
+
+  def randomUUID: TypoUUID = new TypoUUID(UUID.randomUUID())
+
+  given setter: Setter[TypoUUID] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value
+        )
+      },
+      "uuid"
+    )
   }
 }

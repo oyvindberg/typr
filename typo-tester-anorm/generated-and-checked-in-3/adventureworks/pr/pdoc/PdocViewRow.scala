@@ -31,33 +31,41 @@ case class PdocViewRow(
 )
 
 object PdocViewRow {
-  given reads: Reads[PdocViewRow] = Reads[PdocViewRow](json => JsResult.fromTry(
-      Try(
-        PdocViewRow(
-          id = json.\("id").as(ProductId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads),
-          documentnode = json.\("documentnode").as(DocumentId.reads)
+  given reads: Reads[PdocViewRow] = {
+    Reads[PdocViewRow](json => JsResult.fromTry(
+        Try(
+          PdocViewRow(
+            id = json.\("id").as(ProductId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads),
+            documentnode = json.\("documentnode").as(DocumentId.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PdocViewRow] = RowParser[PdocViewRow] { row =>
-    Success(
-      PdocViewRow(
-        id = row(idx + 0)(using ProductId.column),
-        productid = row(idx + 1)(using ProductId.column),
-        modifieddate = row(idx + 2)(using TypoLocalDateTime.column),
-        documentnode = row(idx + 3)(using DocumentId.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PdocViewRow] = OWrites[PdocViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductId.writes.writes(o.id),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate),
-      "documentnode" -> DocumentId.writes.writes(o.documentnode)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PdocViewRow] = {
+    RowParser[PdocViewRow] { row =>
+      Success(
+        PdocViewRow(
+          id = row(idx + 0)(using ProductId.column),
+          productid = row(idx + 1)(using ProductId.column),
+          modifieddate = row(idx + 2)(using TypoLocalDateTime.column),
+          documentnode = row(idx + 3)(using DocumentId.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PdocViewRow] = {
+    OWrites[PdocViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductId.writes.writes(o.id),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate),
+        "documentnode" -> DocumentId.writes.writes(o.documentnode)
+      ))
+    )
+  }
 }

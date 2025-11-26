@@ -27,22 +27,26 @@ case class VsalespersonsalesbyfiscalyearsdataViewRow(
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
   given decoder: Decoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Decoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], /* nullability unknown */ Option[String], /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(using Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Name.decoder, Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeOption(using Decoder.decodeBigDecimal))
+
   given encoder: Encoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Encoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], /* nullability unknown */ Option[String], /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(x => (x.salespersonid, x.fullname, x.jobtitle, x.salesterritory, x.salestotal, x.fiscalyear))(using Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Name.encoder, Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeOption(using Encoder.encodeBigDecimal))
-  given read: Read[VsalespersonsalesbyfiscalyearsdataViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VsalespersonsalesbyfiscalyearsdataViewRow(
-      salespersonid = arr(0).asInstanceOf[Option[BusinessentityId]],
-          fullname = arr(1).asInstanceOf[/* nullability unknown */ Option[String]],
-          jobtitle = arr(2).asInstanceOf[/* max 50 chars */ String],
-          salesterritory = arr(3).asInstanceOf[Name],
-          salestotal = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-          fiscalyear = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]]
-    )
+
+  given read: Read[VsalespersonsalesbyfiscalyearsdataViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VsalespersonsalesbyfiscalyearsdataViewRow(
+        salespersonid = arr(0).asInstanceOf[Option[BusinessentityId]],
+            fullname = arr(1).asInstanceOf[/* nullability unknown */ Option[String]],
+            jobtitle = arr(2).asInstanceOf[/* max 50 chars */ String],
+            salesterritory = arr(3).asInstanceOf[Name],
+            salestotal = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
+            fiscalyear = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]]
+      )
+    }
   }
 }

@@ -17,79 +17,88 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class ProductphotoRepoMock(toRow: Function1[ProductphotoRowUnsaved, ProductphotoRow],
-                           map: scala.collection.mutable.Map[ProductphotoId, ProductphotoRow] = scala.collection.mutable.Map.empty) extends ProductphotoRepo {
-  override def delete: DeleteBuilder[ProductphotoFields, ProductphotoRow] = {
-    DeleteBuilderMock(DeleteParams.empty, ProductphotoFields.structure, map)
-  }
-  override def deleteById(productphotoid: ProductphotoId)(using c: Connection): Boolean = {
-    map.remove(productphotoid).isDefined
-  }
-  override def deleteByIds(productphotoids: Array[ProductphotoId])(using c: Connection): Int = {
-    productphotoids.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: ProductphotoRow)(using c: Connection): ProductphotoRow = {
+case class ProductphotoRepoMock(
+  toRow: ProductphotoRowUnsaved => ProductphotoRow,
+  map: scala.collection.mutable.Map[ProductphotoId, ProductphotoRow] = scala.collection.mutable.Map.empty[ProductphotoId, ProductphotoRow]
+) extends ProductphotoRepo {
+  def delete: DeleteBuilder[ProductphotoFields, ProductphotoRow] = DeleteBuilderMock(DeleteParams.empty, ProductphotoFields.structure, map)
+
+  def deleteById(productphotoid: ProductphotoId)(using c: Connection): Boolean = map.remove(productphotoid).isDefined
+
+  def deleteByIds(productphotoids: Array[ProductphotoId])(using c: Connection): Int = productphotoids.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: ProductphotoRow)(using c: Connection): ProductphotoRow = {
     val _ = if (map.contains(unsaved.productphotoid))
       sys.error(s"id ${unsaved.productphotoid} already exists")
     else
       map.put(unsaved.productphotoid, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: ProductphotoRowUnsaved)(using c: Connection): ProductphotoRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[ProductphotoRow], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  def insert(unsaved: ProductphotoRowUnsaved)(using c: Connection): ProductphotoRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[ProductphotoRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.productphotoid -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[ProductphotoRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[ProductphotoRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.productphotoid -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[ProductphotoFields, ProductphotoRow] = {
-    SelectBuilderMock(ProductphotoFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(using c: Connection): List[ProductphotoRow] = {
-    map.values.toList
-  }
-  override def selectById(productphotoid: ProductphotoId)(using c: Connection): Option[ProductphotoRow] = {
-    map.get(productphotoid)
-  }
-  override def selectByIds(productphotoids: Array[ProductphotoId])(using c: Connection): List[ProductphotoRow] = {
-    productphotoids.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(productphotoids: Array[ProductphotoId])(using c: Connection): Map[ProductphotoId, ProductphotoRow] = {
+
+  def select: SelectBuilder[ProductphotoFields, ProductphotoRow] = SelectBuilderMock(ProductphotoFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(using c: Connection): List[ProductphotoRow] = map.values.toList
+
+  def selectById(productphotoid: ProductphotoId)(using c: Connection): Option[ProductphotoRow] = map.get(productphotoid)
+
+  def selectByIds(productphotoids: Array[ProductphotoId])(using c: Connection): List[ProductphotoRow] = productphotoids.flatMap(map.get).toList
+
+  def selectByIdsTracked(productphotoids: Array[ProductphotoId])(using c: Connection): Map[ProductphotoId, ProductphotoRow] = {
     val byId = selectByIds(productphotoids).view.map(x => (x.productphotoid, x)).toMap
     productphotoids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[ProductphotoFields, ProductphotoRow] = {
-    UpdateBuilderMock(UpdateParams.empty, ProductphotoFields.structure, map)
-  }
-  override def update(row: ProductphotoRow)(using c: Connection): Option[ProductphotoRow] = {
+
+  def update: UpdateBuilder[ProductphotoFields, ProductphotoRow] = UpdateBuilderMock(UpdateParams.empty, ProductphotoFields.structure, map)
+
+  def update(row: ProductphotoRow)(using c: Connection): Option[ProductphotoRow] = {
     map.get(row.productphotoid).map { _ =>
       map.put(row.productphotoid, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: ProductphotoRow)(using c: Connection): ProductphotoRow = {
+
+  def upsert(unsaved: ProductphotoRow)(using c: Connection): ProductphotoRow = {
     map.put(unsaved.productphotoid, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[ProductphotoRow])(using c: Connection): List[ProductphotoRow] = {
+
+  def upsertBatch(unsaved: Iterable[ProductphotoRow])(using c: Connection): List[ProductphotoRow] = {
     unsaved.map { row =>
       map += (row.productphotoid -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[ProductphotoRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[ProductphotoRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.productphotoid -> row)
     }

@@ -8,21 +8,24 @@ package adventureworks.update_person_returning
 import adventureworks.customtypes.TypoLocalDateTime
 import anorm.ParameterMetaData
 import anorm.ParameterValue
-import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
+import anorm.SqlStringInterpolation
 
 class UpdatePersonReturningSqlRepoImpl extends UpdatePersonReturningSqlRepo {
-  override def apply(suffix: /* nullability unknown */ Option[String], cutoff: /* nullability unknown */ Option[TypoLocalDateTime])(implicit c: Connection): List[UpdatePersonReturningSqlRow] = {
+  def apply(
+    suffix: /* nullability unknown */ Option[String],
+    cutoff: /* nullability unknown */ Option[TypoLocalDateTime]
+  )(implicit c: Connection): List[UpdatePersonReturningSqlRow] = {
     val sql =
       SQL"""with row as (
-              update person.person
-              set firstname = firstname || '-' || ${ParameterValue(suffix, null, ToStatement.optionToStatement(ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}
-              where modifieddate < ${ParameterValue(cutoff, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp
-              returning firstname, modifieddate
-            )
-            select row."firstname", row."modifieddate"::text
-            from row"""
+        update person.person
+      set firstname = firstname || '-' || ${ParameterValue(suffix, null, ToStatement.optionToStatement(ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}
+      where modifieddate < ${ParameterValue(cutoff, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp
+      returning firstname, modifieddate
+      )
+      select row."firstname", row."modifieddate"::text
+      from row"""
     sql.as(UpdatePersonReturningSqlRow.rowParser(1).*)
   }
 }

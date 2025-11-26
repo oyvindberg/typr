@@ -6,6 +6,7 @@
 package adventureworks.production.productcategory
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
@@ -18,40 +19,42 @@ case class ProductcategoryRowUnsaved(
   /** Category description. */
   name: Name,
   /** Default: nextval('production.productcategory_productcategoryid_seq'::regclass)
-      Primary key for ProductCategory records. */
-  productcategoryid: Defaulted[ProductcategoryId] = Defaulted.UseDefault,
+   * Primary key for ProductCategory records.
+   */
+  productcategoryid: Defaulted[ProductcategoryId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productcategoryidDefault: => ProductcategoryId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductcategoryRow =
-    ProductcategoryRow(
+  def toRow(
+    productcategoryidDefault: => ProductcategoryId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductcategoryRow = {
+    new ProductcategoryRow(
+      productcategoryid = productcategoryid.getOrElse(productcategoryidDefault),
       name = name,
-      productcategoryid = productcategoryid match {
-                            case Defaulted.UseDefault => productcategoryidDefault
-                            case Defaulted.Provided(value) => value
-                          },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ProductcategoryRowUnsaved {
   given decoder: Decoder[ProductcategoryRowUnsaved] = Decoder.forProduct4[ProductcategoryRowUnsaved, Name, Defaulted[ProductcategoryId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "productcategoryid", "rowguid", "modifieddate")(ProductcategoryRowUnsaved.apply)(using Name.decoder, Defaulted.decoder(using ProductcategoryId.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ProductcategoryRowUnsaved] = Encoder.forProduct4[ProductcategoryRowUnsaved, Name, Defaulted[ProductcategoryId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "productcategoryid", "rowguid", "modifieddate")(x => (x.name, x.productcategoryid, x.rowguid, x.modifieddate))(using Name.encoder, Defaulted.encoder(using ProductcategoryId.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ProductcategoryRowUnsaved] = Text.instance[ProductcategoryRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ProductcategoryId.text).unsafeEncode(row.productcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ProductcategoryRowUnsaved] = {
+    Text.instance[ProductcategoryRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ProductcategoryId.pgText).unsafeEncode(row.productcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

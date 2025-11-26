@@ -7,10 +7,18 @@ package testdb.hardcoded.myschema.football_club
 
 
 
-sealed abstract class FootballClubFieldOrIdValue[T](val name: String, val value: T)
-sealed abstract class FootballClubFieldValue[T](name: String, value: T) extends FootballClubFieldOrIdValue(name, value)
+sealed trait FootballClubFieldValue[T] {
+  def name: String
+
+  def value: T
+}
 
 object FootballClubFieldValue {
-  case class id(override val value: FootballClubId) extends FootballClubFieldOrIdValue("id", value)
-  case class name(override val value: /* max 100 chars */ String) extends FootballClubFieldValue("name", value)
+  case class id(value: FootballClubId) extends FootballClubFieldValue[FootballClubId] {
+    def name: String = "id"
+  }
+
+  case class name(value: /* max 100 chars */ String) extends FootballClubFieldValue[/* max 100 chars */ String] {
+    def name: String = "name"
+  }
 }

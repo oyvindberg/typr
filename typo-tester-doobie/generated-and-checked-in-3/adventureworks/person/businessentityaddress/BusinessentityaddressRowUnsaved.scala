@@ -6,6 +6,7 @@
 package adventureworks.person.businessentityaddress
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
@@ -18,46 +19,52 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `person.businessentityaddress` which has not been persisted yet */
 case class BusinessentityaddressRowUnsaved(
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary key. Foreign key to Address.AddressID.
-      Points to [[adventureworks.person.address.AddressRow.addressid]] */
+   * Points to [[adventureworks.person.address.AddressRow.addressid]]
+   */
   addressid: AddressId,
   /** Primary key. Foreign key to AddressType.AddressTypeID.
-      Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]] */
+   * Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]]
+   */
   addresstypeid: AddresstypeId,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): BusinessentityaddressRow =
-    BusinessentityaddressRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): BusinessentityaddressRow = {
+    new BusinessentityaddressRow(
       businessentityid = businessentityid,
       addressid = addressid,
       addresstypeid = addresstypeid,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object BusinessentityaddressRowUnsaved {
   given decoder: Decoder[BusinessentityaddressRowUnsaved] = Decoder.forProduct5[BusinessentityaddressRowUnsaved, BusinessentityId, AddressId, AddresstypeId, Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(BusinessentityaddressRowUnsaved.apply)(using BusinessentityId.decoder, AddressId.decoder, AddresstypeId.decoder, Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[BusinessentityaddressRowUnsaved] = Encoder.forProduct5[BusinessentityaddressRowUnsaved, BusinessentityId, AddressId, AddresstypeId, Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(x => (x.businessentityid, x.addressid, x.addresstypeid, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, AddressId.encoder, AddresstypeId.encoder, Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[BusinessentityaddressRowUnsaved] = Text.instance[BusinessentityaddressRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    AddressId.text.unsafeEncode(row.addressid, sb)
-    sb.append(Text.DELIMETER)
-    AddresstypeId.text.unsafeEncode(row.addresstypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[BusinessentityaddressRowUnsaved] = {
+    Text.instance[BusinessentityaddressRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      AddressId.pgText.unsafeEncode(row.addressid, sb)
+      sb.append(Text.DELIMETER)
+      AddresstypeId.pgText.unsafeEncode(row.addresstypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

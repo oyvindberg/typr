@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait PaViewRepo {
   def select: SelectBuilder[PaViewFields, PaViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, PaViewRow]
 }

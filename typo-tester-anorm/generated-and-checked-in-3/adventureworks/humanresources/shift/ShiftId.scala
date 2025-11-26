@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `humanresources.shift` */
-case class ShiftId(value: Int) extends AnyVal
+case class ShiftId(value: Int) extends scala.AnyVal
+
 object ShiftId {
   given arrayColumn: Column[Array[ShiftId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[ShiftId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[ShiftId, Int] = Bijection[ShiftId, Int](_.value)(ShiftId.apply)
+
+  given bijection: Bijection[ShiftId, Int] = Bijection.apply[ShiftId, Int](_.value)(ShiftId.apply)
+
   given column: Column[ShiftId] = Column.columnToInt.map(ShiftId.apply)
-  given parameterMetadata: ParameterMetaData[ShiftId] = new ParameterMetaData[ShiftId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[ShiftId] = {
+    new ParameterMetaData[ShiftId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[ShiftId] = {
+    new Text[ShiftId] {
+      override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[ShiftId] = Reads.IntReads.map(ShiftId.apply)
-  given text: Text[ShiftId] = new Text[ShiftId] {
-    override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[ShiftId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[ShiftId] = Writes.IntWrites.contramap(_.value)
 }

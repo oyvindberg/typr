@@ -64,13 +64,6 @@ sealed trait SelectBuilderSql[Fields, Row] extends SelectBuilder[Fields, Row] {
 }
 
 object SelectBuilderSql {
-  def apply[Fields, Row](
-      name: String,
-      structure: Structure.Relation[Fields, Row],
-      rowParser: Read[Row]
-  ): SelectBuilderSql[Fields, Row] =
-    Relation(name, structure, rowParser, SelectParams.empty)
-
   final case class Relation[Fields, Row](
       name: String,
       structure: Structure.Relation[Fields, Row],

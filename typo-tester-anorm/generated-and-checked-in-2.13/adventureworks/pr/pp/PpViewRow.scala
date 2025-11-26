@@ -39,42 +39,50 @@ case class PpViewRow(
 )
 
 object PpViewRow {
-  implicit lazy val reads: Reads[PpViewRow] = Reads[PpViewRow](json => JsResult.fromTry(
-      Try(
-        PpViewRow(
-          id = json.\("id").as(ProductphotoId.reads),
-          productphotoid = json.\("productphotoid").as(ProductphotoId.reads),
-          thumbnailphoto = json.\("thumbnailphoto").toOption.map(_.as(TypoBytea.reads)),
-          thumbnailphotofilename = json.\("thumbnailphotofilename").toOption.map(_.as(Reads.StringReads)),
-          largephoto = json.\("largephoto").toOption.map(_.as(TypoBytea.reads)),
-          largephotofilename = json.\("largephotofilename").toOption.map(_.as(Reads.StringReads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[PpViewRow] = {
+    Reads[PpViewRow](json => JsResult.fromTry(
+        Try(
+          PpViewRow(
+            id = json.\("id").as(ProductphotoId.reads),
+            productphotoid = json.\("productphotoid").as(ProductphotoId.reads),
+            thumbnailphoto = json.\("thumbnailphoto").toOption.map(_.as(TypoBytea.reads)),
+            thumbnailphotofilename = json.\("thumbnailphotofilename").toOption.map(_.as(Reads.StringReads)),
+            largephoto = json.\("largephoto").toOption.map(_.as(TypoBytea.reads)),
+            largephotofilename = json.\("largephotofilename").toOption.map(_.as(Reads.StringReads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PpViewRow] = RowParser[PpViewRow] { row =>
-    Success(
-      PpViewRow(
-        id = row(idx + 0)(ProductphotoId.column),
-        productphotoid = row(idx + 1)(ProductphotoId.column),
-        thumbnailphoto = row(idx + 2)(Column.columnToOption(TypoBytea.column)),
-        thumbnailphotofilename = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-        largephoto = row(idx + 4)(Column.columnToOption(TypoBytea.column)),
-        largephotofilename = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-        modifieddate = row(idx + 6)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PpViewRow] = OWrites[PpViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductphotoId.writes.writes(o.id),
-      "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid),
-      "thumbnailphoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.thumbnailphoto),
-      "thumbnailphotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.thumbnailphotofilename),
-      "largephoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.largephoto),
-      "largephotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.largephotofilename),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PpViewRow] = {
+    RowParser[PpViewRow] { row =>
+      Success(
+        PpViewRow(
+          id = row(idx + 0)(ProductphotoId.column),
+          productphotoid = row(idx + 1)(ProductphotoId.column),
+          thumbnailphoto = row(idx + 2)(Column.columnToOption(TypoBytea.column)),
+          thumbnailphotofilename = row(idx + 3)(Column.columnToOption(Column.columnToString)),
+          largephoto = row(idx + 4)(Column.columnToOption(TypoBytea.column)),
+          largephotofilename = row(idx + 5)(Column.columnToOption(Column.columnToString)),
+          modifieddate = row(idx + 6)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PpViewRow] = {
+    OWrites[PpViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductphotoId.writes.writes(o.id),
+        "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid),
+        "thumbnailphoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.thumbnailphoto),
+        "thumbnailphotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.thumbnailphotofilename),
+        "largephoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.largephoto),
+        "largephotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.largephotofilename),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

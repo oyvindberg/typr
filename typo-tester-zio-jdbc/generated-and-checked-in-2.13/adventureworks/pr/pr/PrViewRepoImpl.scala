@@ -6,16 +6,12 @@
 package adventureworks.pr.pr
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PrViewRepoImpl extends PrViewRepo {
-  override def select: SelectBuilder[PrViewFields, PrViewRow] = {
-    SelectBuilderSql(""""pr"."pr"""", PrViewFields.structure, PrViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PrViewRow] = {
-    sql"""select "id", "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text from "pr"."pr"""".query(PrViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[PrViewFields, PrViewRow] = SelectBuilder.of(""""pr"."pr"""", PrViewFields.structure, PrViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, PrViewRow] = sql"""select "id", "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text from "pr"."pr"""".query(PrViewRow.jdbcDecoder).selectStream()
 }

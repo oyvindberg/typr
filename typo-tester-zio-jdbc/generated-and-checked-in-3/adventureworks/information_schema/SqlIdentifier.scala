@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `information_schema.sql_identifier`
-  * No constraint
-  */
+ * No constraint
+ */
 case class SqlIdentifier(value: String)
+
 object SqlIdentifier {
   given arrayJdbcDecoder: JdbcDecoder[Array[SqlIdentifier]] = adventureworks.StringArrayDecoder.map(_.map(SqlIdentifier.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[SqlIdentifier]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[SqlIdentifier]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[SqlIdentifier, String] = Bijection[SqlIdentifier, String](_.value)(SqlIdentifier.apply)
+
+  given bijection: Bijection[SqlIdentifier, String] = Bijection.apply[SqlIdentifier, String](_.value)(SqlIdentifier.apply)
+
   given jdbcDecoder: JdbcDecoder[SqlIdentifier] = JdbcDecoder.stringDecoder.map(SqlIdentifier.apply)
+
   given jdbcEncoder: JdbcEncoder[SqlIdentifier] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[SqlIdentifier] = JsonDecoder.string.map(SqlIdentifier.apply)
+
   given jsonEncoder: JsonEncoder[SqlIdentifier] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[SqlIdentifier] = PGType.instance(""""information_schema"."sql_identifier"""", Types.OTHER)
-  given setter: Setter[SqlIdentifier] = Setter.stringSetter.contramap(_.value)
-  given text: Text[SqlIdentifier] = new Text[SqlIdentifier] {
-    override def unsafeEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[SqlIdentifier] = {
+    new Text[SqlIdentifier] {
+      override def unsafeEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[SqlIdentifier] = PGType.instance(""""information_schema"."sql_identifier"""", Types.OTHER)
+
+  given setter: Setter[SqlIdentifier] = Setter.stringSetter.contramap(_.value)
 }

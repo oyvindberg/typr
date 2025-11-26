@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.countryregion` */
-case class CountryregionId(value: /* max 3 chars */ String) extends AnyVal
+case class CountryregionId(value: /* max 3 chars */ String) extends scala.AnyVal
+
 object CountryregionId {
   given arrayColumn: Column[Array[CountryregionId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[CountryregionId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  given bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
+
+  given bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection.apply[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
+
   given column: Column[CountryregionId] = Column.columnToString.map(CountryregionId.apply)
-  given parameterMetadata: ParameterMetaData[CountryregionId] = new ParameterMetaData[CountryregionId] {
-    override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[CountryregionId] = {
+    new ParameterMetaData[CountryregionId] {
+      override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[CountryregionId] = {
+    new Text[CountryregionId] {
+      override def unsafeEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[CountryregionId] = Reads.StringReads.map(CountryregionId.apply)
-  given text: Text[CountryregionId] = new Text[CountryregionId] {
-    override def unsafeEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[CountryregionId] = ToStatement.stringToStatement.contramap(_.value)
+
   given writes: Writes[CountryregionId] = Writes.StringWrites.contramap(_.value)
 }

@@ -6,6 +6,7 @@
 package adventureworks.humanresources.shift
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
 import adventureworks.public.Name
@@ -22,38 +23,42 @@ case class ShiftRowUnsaved(
   /** Shift end time. */
   endtime: TypoLocalTime,
   /** Default: nextval('humanresources.shift_shiftid_seq'::regclass)
-      Primary key for Shift records. */
-  shiftid: Defaulted[ShiftId] = Defaulted.UseDefault,
+   * Primary key for Shift records.
+   */
+  shiftid: Defaulted[ShiftId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(shiftidDefault: => ShiftId, modifieddateDefault: => TypoLocalDateTime): ShiftRow =
-    ShiftRow(
+  def toRow(
+    shiftidDefault: => ShiftId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ShiftRow = {
+    new ShiftRow(
+      shiftid = shiftid.getOrElse(shiftidDefault),
       name = name,
       starttime = starttime,
       endtime = endtime,
-      shiftid = shiftid match {
-                  case Defaulted.UseDefault => shiftidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ShiftRowUnsaved {
   given decoder: Decoder[ShiftRowUnsaved] = Decoder.forProduct5[ShiftRowUnsaved, Name, TypoLocalTime, TypoLocalTime, Defaulted[ShiftId], Defaulted[TypoLocalDateTime]]("name", "starttime", "endtime", "shiftid", "modifieddate")(ShiftRowUnsaved.apply)(using Name.decoder, TypoLocalTime.decoder, TypoLocalTime.decoder, Defaulted.decoder(using ShiftId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ShiftRowUnsaved] = Encoder.forProduct5[ShiftRowUnsaved, Name, TypoLocalTime, TypoLocalTime, Defaulted[ShiftId], Defaulted[TypoLocalDateTime]]("name", "starttime", "endtime", "shiftid", "modifieddate")(x => (x.name, x.starttime, x.endtime, x.shiftid, x.modifieddate))(using Name.encoder, TypoLocalTime.encoder, TypoLocalTime.encoder, Defaulted.encoder(using ShiftId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ShiftRowUnsaved] = Text.instance[ShiftRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalTime.text.unsafeEncode(row.starttime, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalTime.text.unsafeEncode(row.endtime, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ShiftId.text).unsafeEncode(row.shiftid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ShiftRowUnsaved] = {
+    Text.instance[ShiftRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalTime.pgText.unsafeEncode(row.starttime, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalTime.pgText.unsafeEncode(row.endtime, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ShiftId.pgText).unsafeEncode(row.shiftid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

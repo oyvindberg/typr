@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait EViewRepo {
   def select: SelectBuilder[EViewFields, EViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, EViewRow]
 }

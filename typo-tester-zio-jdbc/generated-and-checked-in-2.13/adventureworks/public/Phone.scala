@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `public.Phone`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Phone(value: String)
+
 object Phone {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[Phone]] = adventureworks.StringArrayDecoder.map(_.map(Phone.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[Phone]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[Phone]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[Phone, String] = Bijection[Phone, String](_.value)(Phone.apply)
+
+  implicit lazy val bijection: Bijection[Phone, String] = Bijection.apply[Phone, String](_.value)(Phone.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[Phone] = JdbcDecoder.stringDecoder.map(Phone.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[Phone] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[Phone] = JsonDecoder.string.map(Phone.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[Phone] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val pgType: PGType[Phone] = PGType.instance(""""public"."Phone"""", Types.OTHER)
-  implicit lazy val setter: Setter[Phone] = Setter.stringSetter.contramap(_.value)
-  implicit lazy val text: Text[Phone] = new Text[Phone] {
-    override def unsafeEncode(v: Phone, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Phone, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[Phone] = {
+    new Text[Phone] {
+      override def unsafeEncode(v: Phone, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Phone, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[Phone] = PGType.instance(""""public"."Phone"""", Types.OTHER)
+
+  implicit lazy val setter: Setter[Phone] = Setter.stringSetter.contramap(_.value)
 }

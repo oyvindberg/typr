@@ -6,16 +6,12 @@
 package adventureworks.sa.sod
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class SodViewRepoImpl extends SodViewRepo {
-  override def select: SelectBuilder[SodViewFields, SodViewRow] = {
-    SelectBuilderSql(""""sa"."sod"""", SodViewFields.structure, SodViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, SodViewRow] = {
-    sql"""select "id", "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"::text from "sa"."sod"""".query(using SodViewRow.read).stream
-  }
+  def select: SelectBuilder[SodViewFields, SodViewRow] = SelectBuilder.of(""""sa"."sod"""", SodViewFields.structure, SodViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, SodViewRow] = sql"""select "id", "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"::text from "sa"."sod"""".query(using SodViewRow.read).stream
 }

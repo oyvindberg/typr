@@ -7,6 +7,7 @@ package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
@@ -22,55 +23,65 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productmodelproductdescriptionculture` which has not been persisted yet */
 case class ProductmodelproductdescriptioncultureRowUnsaved(
   /** Primary key. Foreign key to ProductModel.ProductModelID.
-      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
+   * Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]]
+   */
   productmodelid: ProductmodelId,
   /** Primary key. Foreign key to ProductDescription.ProductDescriptionID.
-      Points to [[adventureworks.production.productdescription.ProductdescriptionRow.productdescriptionid]] */
+   * Points to [[adventureworks.production.productdescription.ProductdescriptionRow.productdescriptionid]]
+   */
   productdescriptionid: ProductdescriptionId,
   /** Culture identification number. Foreign key to Culture.CultureID.
-      Points to [[adventureworks.production.culture.CultureRow.cultureid]] */
+   * Points to [[adventureworks.production.culture.CultureRow.cultureid]]
+   */
   cultureid: CultureId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): ProductmodelproductdescriptioncultureRow =
-    ProductmodelproductdescriptioncultureRow(
+  def toRow(modifieddateDefault: => TypoLocalDateTime): ProductmodelproductdescriptioncultureRow = {
+    new ProductmodelproductdescriptioncultureRow(
       productmodelid = productmodelid,
       productdescriptionid = productdescriptionid,
       cultureid = cultureid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ProductmodelproductdescriptioncultureRowUnsaved {
-  implicit lazy val reads: Reads[ProductmodelproductdescriptioncultureRowUnsaved] = Reads[ProductmodelproductdescriptioncultureRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductmodelproductdescriptioncultureRowUnsaved(
-          productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
-          productdescriptionid = json.\("productdescriptionid").as(ProductdescriptionId.reads),
-          cultureid = json.\("cultureid").as(CultureId.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ProductmodelproductdescriptioncultureRowUnsaved] = Text.instance[ProductmodelproductdescriptioncultureRowUnsaved]{ (row, sb) =>
-    ProductmodelId.text.unsafeEncode(row.productmodelid, sb)
-    sb.append(Text.DELIMETER)
-    ProductdescriptionId.text.unsafeEncode(row.productdescriptionid, sb)
-    sb.append(Text.DELIMETER)
-    CultureId.text.unsafeEncode(row.cultureid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[ProductmodelproductdescriptioncultureRowUnsaved] = OWrites[ProductmodelproductdescriptioncultureRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
-      "productdescriptionid" -> ProductdescriptionId.writes.writes(o.productdescriptionid),
-      "cultureid" -> CultureId.writes.writes(o.cultureid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ProductmodelproductdescriptioncultureRowUnsaved {
+  implicit lazy val pgText: Text[ProductmodelproductdescriptioncultureRowUnsaved] = {
+    Text.instance[ProductmodelproductdescriptioncultureRowUnsaved]{ (row, sb) =>
+      ProductmodelId.pgText.unsafeEncode(row.productmodelid, sb)
+      sb.append(Text.DELIMETER)
+      ProductdescriptionId.pgText.unsafeEncode(row.productdescriptionid, sb)
+      sb.append(Text.DELIMETER)
+      CultureId.pgText.unsafeEncode(row.cultureid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[ProductmodelproductdescriptioncultureRowUnsaved] = {
+    Reads[ProductmodelproductdescriptioncultureRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductmodelproductdescriptioncultureRowUnsaved(
+            productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
+            productdescriptionid = json.\("productdescriptionid").as(ProductdescriptionId.reads),
+            cultureid = json.\("cultureid").as(CultureId.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductmodelproductdescriptioncultureRowUnsaved] = {
+    OWrites[ProductmodelproductdescriptioncultureRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
+        "productdescriptionid" -> ProductdescriptionId.writes.writes(o.productdescriptionid),
+        "cultureid" -> CultureId.writes.writes(o.cultureid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

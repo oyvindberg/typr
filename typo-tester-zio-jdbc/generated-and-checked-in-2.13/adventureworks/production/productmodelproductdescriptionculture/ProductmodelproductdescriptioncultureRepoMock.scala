@@ -21,32 +21,34 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class ProductmodelproductdescriptioncultureRepoMock(toRow: Function1[ProductmodelproductdescriptioncultureRowUnsaved, ProductmodelproductdescriptioncultureRow],
-                                                    map: scala.collection.mutable.Map[ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow] = scala.collection.mutable.Map.empty) extends ProductmodelproductdescriptioncultureRepo {
-  override def delete: DeleteBuilder[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] = {
-    DeleteBuilderMock(DeleteParams.empty, ProductmodelproductdescriptioncultureFields.structure, map)
+case class ProductmodelproductdescriptioncultureRepoMock(
+  toRow: ProductmodelproductdescriptioncultureRowUnsaved => ProductmodelproductdescriptioncultureRow,
+  map: scala.collection.mutable.Map[ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow] = scala.collection.mutable.Map.empty[ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow]
+) extends ProductmodelproductdescriptioncultureRepo {
+  def delete: DeleteBuilder[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] = DeleteBuilderMock(DeleteParams.empty, ProductmodelproductdescriptioncultureFields.structure, map)
+
+  def deleteById(compositeId: ProductmodelproductdescriptioncultureId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(compositeId).isDefined)
+
+  def deleteByIds(compositeIds: Array[ProductmodelproductdescriptioncultureId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(compositeIds.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: ProductmodelproductdescriptioncultureRow): ZIO[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.compositeId))
+        sys.error(s"id ${unsaved.compositeId} already exists")
+      else
+        map.put(unsaved.compositeId, unsaved)
+
+    unsaved
   }
-  override def deleteById(compositeId: ProductmodelproductdescriptioncultureId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(compositeId).isDefined)
   }
-  override def deleteByIds(compositeIds: Array[ProductmodelproductdescriptioncultureId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(compositeIds.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: ProductmodelproductdescriptioncultureRow): ZIO[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.compositeId))
-          sys.error(s"id ${unsaved.compositeId} already exists")
-        else
-          map.put(unsaved.compositeId, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: ProductmodelproductdescriptioncultureRowUnsaved): ZIO[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insert(unsaved: ProductmodelproductdescriptioncultureRowUnsaved): ZIO[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.compositeId -> row)
@@ -54,8 +56,12 @@ class ProductmodelproductdescriptioncultureRepoMock(toRow: Function1[Productmode
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
       ZIO.succeed {
         val row = toRow(unsavedRow)
@@ -64,28 +70,25 @@ class ProductmodelproductdescriptioncultureRepoMock(toRow: Function1[Productmode
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] = {
-    SelectBuilderMock(ProductmodelproductdescriptioncultureFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(compositeId: ProductmodelproductdescriptioncultureId): ZIO[ZConnection, Throwable, Option[ProductmodelproductdescriptioncultureRow]] = {
-    ZIO.succeed(map.get(compositeId))
-  }
-  override def selectByIds(compositeIds: Array[ProductmodelproductdescriptioncultureId]): ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = {
-    ZStream.fromIterable(compositeIds.flatMap(map.get))
-  }
-  override def selectByIdsTracked(compositeIds: Array[ProductmodelproductdescriptioncultureId]): ZIO[ZConnection, Throwable, Map[ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow]] = {
+
+  def select: SelectBuilder[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] = SelectBuilderMock(ProductmodelproductdescriptioncultureFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = ZStream.fromIterable(map.values)
+
+  def selectById(compositeId: ProductmodelproductdescriptioncultureId): ZIO[ZConnection, Throwable, Option[ProductmodelproductdescriptioncultureRow]] = ZIO.succeed(map.get(compositeId))
+
+  def selectByIds(compositeIds: Array[ProductmodelproductdescriptioncultureId]): ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow] = ZStream.fromIterable(compositeIds.flatMap(map.get))
+
+  def selectByIdsTracked(compositeIds: Array[ProductmodelproductdescriptioncultureId]): ZIO[ZConnection, Throwable, Map[ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow]] = {
     selectByIds(compositeIds).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] = {
-    UpdateBuilderMock(UpdateParams.empty, ProductmodelproductdescriptioncultureFields.structure, map)
-  }
-  override def update(row: ProductmodelproductdescriptioncultureRow): ZIO[ZConnection, Throwable, Option[ProductmodelproductdescriptioncultureRow]] = {
+
+  def update: UpdateBuilder[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] = UpdateBuilderMock(UpdateParams.empty, ProductmodelproductdescriptioncultureFields.structure, map)
+
+  def update(row: ProductmodelproductdescriptioncultureRow): ZIO[ZConnection, Throwable, Option[ProductmodelproductdescriptioncultureRow]] = {
     ZIO.succeed {
       map.get(row.compositeId).map { _ =>
         map.put(row.compositeId, row): @nowarn
@@ -93,14 +96,19 @@ class ProductmodelproductdescriptioncultureRepoMock(toRow: Function1[Productmode
       }
     }
   }
-  override def upsert(unsaved: ProductmodelproductdescriptioncultureRow): ZIO[ZConnection, Throwable, UpdateResult[ProductmodelproductdescriptioncultureRow]] = {
+
+  def upsert(unsaved: ProductmodelproductdescriptioncultureRow): ZIO[ZConnection, Throwable, UpdateResult[ProductmodelproductdescriptioncultureRow]] = {
     ZIO.succeed {
       map.put(unsaved.compositeId, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, ProductmodelproductdescriptioncultureRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.compositeId -> row)

@@ -6,16 +6,12 @@
 package adventureworks.production.vproductmodelinstructions
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class VproductmodelinstructionsViewRepoImpl extends VproductmodelinstructionsViewRepo {
-  override def select: SelectBuilder[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] = {
-    SelectBuilderSql(""""production"."vproductmodelinstructions"""", VproductmodelinstructionsViewFields.structure, VproductmodelinstructionsViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, VproductmodelinstructionsViewRow] = {
-    sql"""select "productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate"::text from "production"."vproductmodelinstructions"""".query(using VproductmodelinstructionsViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] = SelectBuilder.of(""""production"."vproductmodelinstructions"""", VproductmodelinstructionsViewFields.structure, VproductmodelinstructionsViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, VproductmodelinstructionsViewRow] = sql"""select "productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate"::text from "production"."vproductmodelinstructions"""".query(using VproductmodelinstructionsViewRow.jdbcDecoder).selectStream()
 }

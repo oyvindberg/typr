@@ -12,7 +12,6 @@ import anorm.ParameterValue
 import anorm.RowParser
 import anorm.SQL
 import anorm.SimpleSql
-import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
@@ -24,32 +23,30 @@ import testdb.hardcoded.myschema.marital_status.MaritalStatusId
 import testdb.hardcoded.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class PersonRepoImpl extends PersonRepo {
-  override def delete: DeleteBuilder[PersonFields, PersonRow] = {
-    DeleteBuilder(""""myschema"."person"""", PersonFields.structure)
-  }
-  override def deleteById(id: PersonId)(using c: Connection): Boolean = {
-    SQL"""delete from "myschema"."person" where "id" = ${ParameterValue(id, null, PersonId.toStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(ids: Array[PersonId])(using c: Connection): Int = {
+  def delete: DeleteBuilder[PersonFields, PersonRow] = DeleteBuilder.of(""""myschema"."person"""", PersonFields.structure, PersonRow.rowParser(1).*)
+
+  def deleteById(id: PersonId)(using c: Connection): Boolean = SQL"""delete from "myschema"."person" where "id" = ${ParameterValue(id, null, PersonId.toStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(ids: Array[PersonId])(using c: Connection): Int = {
     SQL"""delete
-          from "myschema"."person"
-          where "id" = ANY(${ParameterValue(ids, null, PersonId.arrayToStatement)})
-       """.executeUpdate()
-    
+    from "myschema"."person"
+    where "id" = ANY(${ParameterValue(ids, null, PersonId.arrayToStatement)})
+    """.executeUpdate()
   }
-  override def insert(unsaved: PersonRow)(using c: Connection): PersonRow = {
-    SQL"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
-          values (${ParameterValue(unsaved.id, null, PersonId.toStatement)}::int8, ${ParameterValue(unsaved.favouriteFootballClubId, null, FootballClubId.toStatement)}, ${ParameterValue(unsaved.name, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.nickName, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}, ${ParameterValue(unsaved.blogUrl, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}, ${ParameterValue(unsaved.email, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.phone, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.likesPizza, null, ToStatement.booleanToStatement)}, ${ParameterValue(unsaved.maritalStatusId, null, MaritalStatusId.toStatement)}, ${ParameterValue(unsaved.workEmail, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}, ${ParameterValue(unsaved.favoriteNumber, null, Number.toStatement)}::myschema.number)
-          returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-       """
-      .executeInsert(PersonRow.rowParser(1).single)
-    
+
+  def insert(unsaved: PersonRow)(using c: Connection): PersonRow = {
+  SQL"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
+    values (${ParameterValue(unsaved.id, null, PersonId.toStatement)}::int8, ${ParameterValue(unsaved.favouriteFootballClubId, null, FootballClubId.toStatement)}, ${ParameterValue(unsaved.name, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.nickName, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}, ${ParameterValue(unsaved.blogUrl, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}, ${ParameterValue(unsaved.email, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.phone, null, ToStatement.stringToStatement)}, ${ParameterValue(unsaved.likesPizza, null, ToStatement.booleanToStatement)}, ${ParameterValue(unsaved.maritalStatusId, null, MaritalStatusId.toStatement)}, ${ParameterValue(unsaved.workEmail, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))}, ${ParameterValue(unsaved.favoriteNumber, null, Number.toStatement)}::myschema.number)
+    returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
+    """
+    .executeInsert(PersonRow.rowParser(1).single)
   }
-  override def insert(unsaved: PersonRowUnsaved)(using c: Connection): PersonRow = {
+
+  def insert(unsaved: PersonRowUnsaved)(using c: Connection): PersonRow = {
     val namedParameters = List(
       Some((NamedParameter("favourite_football_club_id", ParameterValue(unsaved.favouriteFootballClubId, null, FootballClubId.toStatement)), "")),
       Some((NamedParameter("name", ParameterValue(unsaved.name, null, ToStatement.stringToStatement)), "")),
@@ -60,50 +57,54 @@ class PersonRepoImpl extends PersonRepo {
       Some((NamedParameter("likes_pizza", ParameterValue(unsaved.likesPizza, null, ToStatement.booleanToStatement)), "")),
       Some((NamedParameter("work_email", ParameterValue(unsaved.workEmail, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))), "")),
       unsaved.id match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("id", ParameterValue(value, null, PersonId.toStatement)), "::int8"))
       },
       unsaved.maritalStatusId match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("marital_status_id", ParameterValue(value, null, MaritalStatusId.toStatement)), ""))
       },
       unsaved.favoriteNumber match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("favorite_number", ParameterValue(value, null, Number.toStatement)), "::myschema.number"))
       }
     ).flatten
     val quote = '"'.toString
     if (namedParameters.isEmpty) {
       SQL"""insert into "myschema"."person" default values
-            returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-         """
+      returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
+      """
         .executeInsert(PersonRow.rowParser(1).single)
     } else {
       val q = s"""insert into "myschema"."person"(${namedParameters.map{case (x, _) => quote + x.name + quote}.mkString(", ")})
-                  values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
-                  returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-               """
+              values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
+              returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
+              """
       SimpleSql(SQL(q), namedParameters.map { case (np, _) => np.tupled }.toMap, RowParser.successful)
         .executeInsert(PersonRow.rowParser(1).single)
     }
-    
   }
-  override def insertStreaming(unsaved: Iterator[PersonRow], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number") FROM STDIN""", batchSize, unsaved)(using PersonRow.text, c)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[PersonRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "myschema"."person"("favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "work_email", "id", "marital_status_id", "favorite_number") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using PersonRowUnsaved.text, c)
-  }
-  override def select: SelectBuilder[PersonFields, PersonRow] = {
-    SelectBuilderSql(""""myschema"."person"""", PersonFields.structure, PersonRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[PersonRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[PersonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number") FROM STDIN""", batchSize, unsaved)(using PersonRow.pgText, c)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[PersonRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "myschema"."person"("favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "work_email", "id", "marital_status_id", "favorite_number") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using PersonRowUnsaved.pgText, c)
+
+  def select: SelectBuilder[PersonFields, PersonRow] = SelectBuilder.of(""""myschema"."person"""", PersonFields.structure, PersonRow.rowParser)
+
+  def selectAll(using c: Connection): List[PersonRow] = {
     SQL"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-          from "myschema"."person"
-       """.as(PersonRow.rowParser(1).*)
+    from "myschema"."person"
+    """.as(PersonRow.rowParser(1).*)
   }
-  override def selectByFieldValues(fieldValues: List[PersonFieldOrIdValue[?]])(using c: Connection): List[PersonRow] = {
+
+  def selectByFieldValues(fieldValues: List[PersonFieldValue[?]])(using c: Connection): List[PersonRow] = {
     fieldValues match {
       case Nil => selectAll
       case nonEmpty =>
@@ -123,56 +124,62 @@ class PersonRepoImpl extends PersonRepo {
         }
         val quote = '"'.toString
         val q = s"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-                    from "myschema"."person"
-                    where ${namedParameters.map(x => s"$quote${x.name}$quote = {${x.name}}").mkString(" AND ")}
-                 """
+                from "myschema"."person"
+                where ${namedParameters.map(x => s"$quote${x.name}$quote = {${x.name}}").mkString(" AND ")}
+                """
         SimpleSql(SQL(q), namedParameters.map(_.tupled).toMap, RowParser.successful)
           .as(PersonRow.rowParser(1).*)
     }
-    
   }
-  override def selectById(id: PersonId)(using c: Connection): Option[PersonRow] = {
+
+  def selectById(id: PersonId)(using c: Connection): Option[PersonRow] = {
     SQL"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-          from "myschema"."person"
-          where "id" = ${ParameterValue(id, null, PersonId.toStatement)}
-       """.as(PersonRow.rowParser(1).singleOpt)
+    from "myschema"."person"
+    where "id" = ${ParameterValue(id, null, PersonId.toStatement)}
+    """.as(PersonRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(ids: Array[PersonId])(using c: Connection): List[PersonRow] = {
+
+  def selectByIds(ids: Array[PersonId])(using c: Connection): List[PersonRow] = {
     SQL"""select "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-          from "myschema"."person"
-          where "id" = ANY(${ParameterValue(ids, null, PersonId.arrayToStatement)})
-       """.as(PersonRow.rowParser(1).*)
-    
+    from "myschema"."person"
+    where "id" = ANY(${ParameterValue(ids, null, PersonId.arrayToStatement)})
+    """.as(PersonRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(ids: Array[PersonId])(using c: Connection): Map[PersonId, PersonRow] = {
+
+  def selectByIdsTracked(ids: Array[PersonId])(using c: Connection): Map[PersonId, PersonRow] = {
     val byId = selectByIds(ids).view.map(x => (x.id, x)).toMap
     ids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[PersonFields, PersonRow] = {
-    UpdateBuilder(""""myschema"."person"""", PersonFields.structure, PersonRow.rowParser)
-  }
-  override def update(row: PersonRow)(using c: Connection): Option[PersonRow] = {
+
+  def update: UpdateBuilder[PersonFields, PersonRow] = UpdateBuilder.of(""""myschema"."person"""", PersonFields.structure, PersonRow.rowParser(1).*)
+
+  def update(row: PersonRow)(using c: Connection): Option[PersonRow] = {
     val id = row.id
     SQL"""update "myschema"."person"
-          set "favourite_football_club_id" = ${ParameterValue(row.favouriteFootballClubId, null, FootballClubId.toStatement)},
-              "name" = ${ParameterValue(row.name, null, ToStatement.stringToStatement)},
-              "nick_name" = ${ParameterValue(row.nickName, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
-              "blog_url" = ${ParameterValue(row.blogUrl, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
-              "email" = ${ParameterValue(row.email, null, ToStatement.stringToStatement)},
-              "phone" = ${ParameterValue(row.phone, null, ToStatement.stringToStatement)},
-              "likes_pizza" = ${ParameterValue(row.likesPizza, null, ToStatement.booleanToStatement)},
-              "marital_status_id" = ${ParameterValue(row.maritalStatusId, null, MaritalStatusId.toStatement)},
-              "work_email" = ${ParameterValue(row.workEmail, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
-              "favorite_number" = ${ParameterValue(row.favoriteNumber, null, Number.toStatement)}::myschema.number
-          where "id" = ${ParameterValue(id, null, PersonId.toStatement)}
-          returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-       """.executeInsert(PersonRow.rowParser(1).singleOpt)
+    set "favourite_football_club_id" = ${ParameterValue(row.favouriteFootballClubId, null, FootballClubId.toStatement)},
+    "name" = ${ParameterValue(row.name, null, ToStatement.stringToStatement)},
+    "nick_name" = ${ParameterValue(row.nickName, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
+    "blog_url" = ${ParameterValue(row.blogUrl, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
+    "email" = ${ParameterValue(row.email, null, ToStatement.stringToStatement)},
+    "phone" = ${ParameterValue(row.phone, null, ToStatement.stringToStatement)},
+    "likes_pizza" = ${ParameterValue(row.likesPizza, null, ToStatement.booleanToStatement)},
+    "marital_status_id" = ${ParameterValue(row.maritalStatusId, null, MaritalStatusId.toStatement)},
+    "work_email" = ${ParameterValue(row.workEmail, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
+    "favorite_number" = ${ParameterValue(row.favoriteNumber, null, Number.toStatement)}::myschema.number
+    where "id" = ${ParameterValue(id, null, PersonId.toStatement)}
+    returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
+    """.executeInsert(PersonRow.rowParser(1).singleOpt)
   }
-  override def updateFieldValues(id: PersonId, fieldValues: List[PersonFieldValue[?]])(using c: Connection): Boolean = {
+
+  def updateFieldValues(
+    id: PersonId,
+    fieldValues: List[PersonFieldValue[?]]
+  )(using c: Connection): Boolean = {
     fieldValues match {
       case Nil => false
       case nonEmpty =>
         val namedParameters = nonEmpty.map{
+          case PersonFieldValue.id(value) => NamedParameter("id", ParameterValue(value, null, PersonId.toStatement))
           case PersonFieldValue.favouriteFootballClubId(value) => NamedParameter("favourite_football_club_id", ParameterValue(value, null, FootballClubId.toStatement))
           case PersonFieldValue.name(value) => NamedParameter("name", ParameterValue(value, null, ToStatement.stringToStatement))
           case PersonFieldValue.nickName(value) => NamedParameter("nick_name", ParameterValue(value, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData)))
@@ -187,47 +194,47 @@ class PersonRepoImpl extends PersonRepo {
         }
         val quote = '"'.toString
         val q = s"""update "myschema"."person"
-                    set ${namedParameters.map(x => s"$quote${x.name}$quote = {${x.name}}").mkString(", ")}
-                    where "id" = {id}
-                 """
+                set ${namedParameters.map(x => s"$quote${x.name}$quote = {${x.name}}").mkString(", ")}
+                where "id" = {id}
+                """
         SimpleSql(SQL(q), namedParameters.map(_.tupled).toMap ++ List(("id", ParameterValue(id, null, PersonId.toStatement))), RowParser.successful)
           .executeUpdate() > 0
     }
-    
   }
-  override def upsert(unsaved: PersonRow)(using c: Connection): PersonRow = {
-    SQL"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
-          values (
-            ${ParameterValue(unsaved.id, null, PersonId.toStatement)}::int8,
-            ${ParameterValue(unsaved.favouriteFootballClubId, null, FootballClubId.toStatement)},
-            ${ParameterValue(unsaved.name, null, ToStatement.stringToStatement)},
-            ${ParameterValue(unsaved.nickName, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
-            ${ParameterValue(unsaved.blogUrl, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
-            ${ParameterValue(unsaved.email, null, ToStatement.stringToStatement)},
-            ${ParameterValue(unsaved.phone, null, ToStatement.stringToStatement)},
-            ${ParameterValue(unsaved.likesPizza, null, ToStatement.booleanToStatement)},
-            ${ParameterValue(unsaved.maritalStatusId, null, MaritalStatusId.toStatement)},
-            ${ParameterValue(unsaved.workEmail, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
-            ${ParameterValue(unsaved.favoriteNumber, null, Number.toStatement)}::myschema.number
-          )
-          on conflict ("id")
-          do update set
-            "favourite_football_club_id" = EXCLUDED."favourite_football_club_id",
-            "name" = EXCLUDED."name",
-            "nick_name" = EXCLUDED."nick_name",
-            "blog_url" = EXCLUDED."blog_url",
-            "email" = EXCLUDED."email",
-            "phone" = EXCLUDED."phone",
-            "likes_pizza" = EXCLUDED."likes_pizza",
-            "marital_status_id" = EXCLUDED."marital_status_id",
-            "work_email" = EXCLUDED."work_email",
-            "favorite_number" = EXCLUDED."favorite_number"
-          returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-       """
-      .executeInsert(PersonRow.rowParser(1).single)
-    
+
+  def upsert(unsaved: PersonRow)(using c: Connection): PersonRow = {
+  SQL"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
+    values (
+      ${ParameterValue(unsaved.id, null, PersonId.toStatement)}::int8,
+    ${ParameterValue(unsaved.favouriteFootballClubId, null, FootballClubId.toStatement)},
+    ${ParameterValue(unsaved.name, null, ToStatement.stringToStatement)},
+    ${ParameterValue(unsaved.nickName, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
+    ${ParameterValue(unsaved.blogUrl, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
+    ${ParameterValue(unsaved.email, null, ToStatement.stringToStatement)},
+    ${ParameterValue(unsaved.phone, null, ToStatement.stringToStatement)},
+    ${ParameterValue(unsaved.likesPizza, null, ToStatement.booleanToStatement)},
+    ${ParameterValue(unsaved.maritalStatusId, null, MaritalStatusId.toStatement)},
+    ${ParameterValue(unsaved.workEmail, null, ToStatement.optionToStatement(using ToStatement.stringToStatement, ParameterMetaData.StringParameterMetaData))},
+    ${ParameterValue(unsaved.favoriteNumber, null, Number.toStatement)}::myschema.number
+    )
+    on conflict ("id")
+    do update set
+      "favourite_football_club_id" = EXCLUDED."favourite_football_club_id",
+    "name" = EXCLUDED."name",
+    "nick_name" = EXCLUDED."nick_name",
+    "blog_url" = EXCLUDED."blog_url",
+    "email" = EXCLUDED."email",
+    "phone" = EXCLUDED."phone",
+    "likes_pizza" = EXCLUDED."likes_pizza",
+    "marital_status_id" = EXCLUDED."marital_status_id",
+    "work_email" = EXCLUDED."work_email",
+    "favorite_number" = EXCLUDED."favorite_number"
+    returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
+    """
+    .executeInsert(PersonRow.rowParser(1).single)
   }
-  override def upsertBatch(unsaved: Iterable[PersonRow])(using c: Connection): List[PersonRow] = {
+
+  def upsertBatch(unsaved: Iterable[PersonRow])(using c: Connection): List[PersonRow] = {
     def toNamedParameter(row: PersonRow): List[NamedParameter] = List(
       NamedParameter("id", ParameterValue(row.id, null, PersonId.toStatement)),
       NamedParameter("favourite_football_club_id", ParameterValue(row.favouriteFootballClubId, null, FootballClubId.toStatement)),
@@ -247,36 +254,10 @@ class PersonRepoImpl extends PersonRepo {
         new anorm.testdb.hardcoded.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
-                values ({id}::int8, {favourite_football_club_id}, {name}, {nick_name}, {blog_url}, {email}, {phone}, {likes_pizza}, {marital_status_id}, {work_email}, {favorite_number}::myschema.number)
-                on conflict ("id")
-                do update set
-                  "favourite_football_club_id" = EXCLUDED."favourite_football_club_id",
-                  "name" = EXCLUDED."name",
-                  "nick_name" = EXCLUDED."nick_name",
-                  "blog_url" = EXCLUDED."blog_url",
-                  "email" = EXCLUDED."email",
-                  "phone" = EXCLUDED."phone",
-                  "likes_pizza" = EXCLUDED."likes_pizza",
-                  "marital_status_id" = EXCLUDED."marital_status_id",
-                  "work_email" = EXCLUDED."work_email",
-                  "favorite_number" = EXCLUDED."favorite_number"
-                returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
-             """,
-            toNamedParameter(head),
-            rest.map(toNamedParameter)*
-          )
-        ).executeReturning(PersonRow.rowParser(1).*)
-    }
-  }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[PersonRow], batchSize: Int = 10000)(using c: Connection): Int = {
-    SQL"""create temporary table person_TEMP (like "myschema"."person") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy person_TEMP("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number") from stdin""", batchSize, unsaved)(using PersonRow.text, c): @nowarn
-    SQL"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
-          select * from person_TEMP
-          on conflict ("id")
-          do update set
-            "favourite_football_club_id" = EXCLUDED."favourite_football_club_id",
+            values ({id}::int8, {favourite_football_club_id}, {name}, {nick_name}, {blog_url}, {email}, {phone}, {likes_pizza}, {marital_status_id}, {work_email}, {favorite_number}::myschema.number)
+            on conflict ("id")
+            do update set
+              "favourite_football_club_id" = EXCLUDED."favourite_football_club_id",
             "name" = EXCLUDED."name",
             "nick_name" = EXCLUDED."nick_name",
             "blog_url" = EXCLUDED."blog_url",
@@ -286,7 +267,37 @@ class PersonRepoImpl extends PersonRepo {
             "marital_status_id" = EXCLUDED."marital_status_id",
             "work_email" = EXCLUDED."work_email",
             "favorite_number" = EXCLUDED."favorite_number"
-          ;
-          drop table person_TEMP;""".executeUpdate()
+            returning "id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number"
+            """,
+            toNamedParameter(head),
+            rest.map(toNamedParameter)*
+          )
+        ).executeReturning(PersonRow.rowParser(1).*)
+    }
+  }
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[PersonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
+    SQL"""create temporary table person_TEMP (like "myschema"."person") on commit drop""".execute(): @nowarn
+    streamingInsert(s"""copy person_TEMP("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number") from stdin""", batchSize, unsaved)(using PersonRow.pgText, c): @nowarn
+    SQL"""insert into "myschema"."person"("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "favorite_number")
+    select * from person_TEMP
+    on conflict ("id")
+    do update set
+      "favourite_football_club_id" = EXCLUDED."favourite_football_club_id",
+    "name" = EXCLUDED."name",
+    "nick_name" = EXCLUDED."nick_name",
+    "blog_url" = EXCLUDED."blog_url",
+    "email" = EXCLUDED."email",
+    "phone" = EXCLUDED."phone",
+    "likes_pizza" = EXCLUDED."likes_pizza",
+    "marital_status_id" = EXCLUDED."marital_status_id",
+    "work_email" = EXCLUDED."work_email",
+    "favorite_number" = EXCLUDED."favorite_number"
+    ;
+    drop table person_TEMP;""".executeUpdate()
   }
 }

@@ -20,54 +20,70 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: person.phonenumbertype
-    Type of phone number of a person.
-    Primary key: phonenumbertypeid */
+ * Type of phone number of a person.
+ * Primary key: phonenumbertypeid
+ */
 case class PhonenumbertypeRow(
   /** Primary key for telephone number type records.
-      Default: nextval('person.phonenumbertype_phonenumbertypeid_seq'::regclass) */
+   * Default: nextval('person.phonenumbertype_phonenumbertypeid_seq'::regclass)
+   */
   phonenumbertypeid: PhonenumbertypeId,
   /** Name of the telephone number type */
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = phonenumbertypeid
-   def toUnsavedRow(phonenumbertypeid: Defaulted[PhonenumbertypeId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): PhonenumbertypeRowUnsaved =
-     PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate)
- }
+) {
+  def id: PhonenumbertypeId = phonenumbertypeid
+
+  def toUnsavedRow(
+    phonenumbertypeid: Defaulted[PhonenumbertypeId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): PhonenumbertypeRowUnsaved = new PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate)
+}
 
 object PhonenumbertypeRow {
-  implicit lazy val reads: Reads[PhonenumbertypeRow] = Reads[PhonenumbertypeRow](json => JsResult.fromTry(
-      Try(
-        PhonenumbertypeRow(
-          phonenumbertypeid = json.\("phonenumbertypeid").as(PhonenumbertypeId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val pgText: Text[PhonenumbertypeRow] = {
+    Text.instance[PhonenumbertypeRow]{ (row, sb) =>
+      PhonenumbertypeId.pgText.unsafeEncode(row.phonenumbertypeid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[PhonenumbertypeRow] = {
+    Reads[PhonenumbertypeRow](json => JsResult.fromTry(
+        Try(
+          PhonenumbertypeRow(
+            phonenumbertypeid = json.\("phonenumbertypeid").as(PhonenumbertypeId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PhonenumbertypeRow] = RowParser[PhonenumbertypeRow] { row =>
-    Success(
-      PhonenumbertypeRow(
-        phonenumbertypeid = row(idx + 0)(PhonenumbertypeId.column),
-        name = row(idx + 1)(Name.column),
-        modifieddate = row(idx + 2)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[PhonenumbertypeRow] = Text.instance[PhonenumbertypeRow]{ (row, sb) =>
-    PhonenumbertypeId.text.unsafeEncode(row.phonenumbertypeid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[PhonenumbertypeRow] = {
+    RowParser[PhonenumbertypeRow] { row =>
+      Success(
+        PhonenumbertypeRow(
+          phonenumbertypeid = row(idx + 0)(PhonenumbertypeId.column),
+          name = row(idx + 1)(Name.column),
+          modifieddate = row(idx + 2)(TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[PhonenumbertypeRow] = OWrites[PhonenumbertypeRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "phonenumbertypeid" -> PhonenumbertypeId.writes.writes(o.phonenumbertypeid),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[PhonenumbertypeRow] = {
+    OWrites[PhonenumbertypeRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "phonenumbertypeid" -> PhonenumbertypeId.writes.writes(o.phonenumbertypeid),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

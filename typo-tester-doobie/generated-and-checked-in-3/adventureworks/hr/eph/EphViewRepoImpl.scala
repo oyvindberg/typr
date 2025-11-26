@@ -6,16 +6,12 @@
 package adventureworks.hr.eph
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class EphViewRepoImpl extends EphViewRepo {
-  override def select: SelectBuilder[EphViewFields, EphViewRow] = {
-    SelectBuilderSql(""""hr"."eph"""", EphViewFields.structure, EphViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, EphViewRow] = {
-    sql"""select "id", "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text from "hr"."eph"""".query(using EphViewRow.read).stream
-  }
+  def select: SelectBuilder[EphViewFields, EphViewRow] = SelectBuilder.of(""""hr"."eph"""", EphViewFields.structure, EphViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, EphViewRow] = sql"""select "id", "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text from "hr"."eph"""".query(using EphViewRow.read).stream
 }

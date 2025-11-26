@@ -34,24 +34,28 @@ case class EdhViewRow(
 
 object EdhViewRow {
   implicit lazy val decoder: Decoder[EdhViewRow] = Decoder.forProduct7[EdhViewRow, BusinessentityId, BusinessentityId, DepartmentId, ShiftId, TypoLocalDate, Option[TypoLocalDate], TypoLocalDateTime]("id", "businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")(EdhViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, DepartmentId.decoder, ShiftId.decoder, TypoLocalDate.decoder, Decoder.decodeOption(TypoLocalDate.decoder), TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[EdhViewRow] = Encoder.forProduct7[EdhViewRow, BusinessentityId, BusinessentityId, DepartmentId, ShiftId, TypoLocalDate, Option[TypoLocalDate], TypoLocalDateTime]("id", "businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")(x => (x.id, x.businessentityid, x.departmentid, x.shiftid, x.startdate, x.enddate, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, DepartmentId.encoder, ShiftId.encoder, TypoLocalDate.encoder, Encoder.encodeOption(TypoLocalDate.encoder), TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[EdhViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[EdhViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ShiftId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    EdhViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          departmentid = arr(2).asInstanceOf[DepartmentId],
-          shiftid = arr(3).asInstanceOf[ShiftId],
-          startdate = arr(4).asInstanceOf[TypoLocalDate],
-          enddate = arr(5).asInstanceOf[Option[TypoLocalDate]],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ShiftId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      EdhViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            departmentid = arr(2).asInstanceOf[DepartmentId],
+            shiftid = arr(3).asInstanceOf[ShiftId],
+            startdate = arr(4).asInstanceOf[TypoLocalDate],
+            enddate = arr(5).asInstanceOf[Option[TypoLocalDate]],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

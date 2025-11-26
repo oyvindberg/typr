@@ -22,22 +22,28 @@ case class SalesterritoryhistoryId(
   startdate: TypoLocalDateTime,
   territoryid: SalesterritoryId
 )
+
 object SalesterritoryhistoryId {
-  implicit lazy val reads: Reads[SalesterritoryhistoryId] = Reads[SalesterritoryhistoryId](json => JsResult.fromTry(
-      Try(
-        SalesterritoryhistoryId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-          territoryid = json.\("territoryid").as(SalesterritoryId.reads)
+  implicit lazy val reads: Reads[SalesterritoryhistoryId] = {
+    Reads[SalesterritoryhistoryId](json => JsResult.fromTry(
+        Try(
+          SalesterritoryhistoryId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads),
+            territoryid = json.\("territoryid").as(SalesterritoryId.reads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[SalesterritoryhistoryId] = OWrites[SalesterritoryhistoryId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-      "territoryid" -> SalesterritoryId.writes.writes(o.territoryid)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[SalesterritoryhistoryId] = {
+    OWrites[SalesterritoryhistoryId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
+        "territoryid" -> SalesterritoryId.writes.writes(o.territoryid)
+      ))
+    )
+  }
 }

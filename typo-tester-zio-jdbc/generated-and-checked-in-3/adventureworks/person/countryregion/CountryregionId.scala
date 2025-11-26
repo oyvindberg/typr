@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `person.countryregion` */
-case class CountryregionId(value: /* max 3 chars */ String) extends AnyVal
+case class CountryregionId(value: /* max 3 chars */ String) extends scala.AnyVal
+
 object CountryregionId {
   given arrayJdbcDecoder: JdbcDecoder[Array[CountryregionId]] = adventureworks.StringArrayDecoder.map(_.map(CountryregionId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[CountryregionId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[CountryregionId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
+
+  given bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection.apply[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
+
   given jdbcDecoder: JdbcDecoder[CountryregionId] = JdbcDecoder.stringDecoder.map(CountryregionId.apply)
+
   given jdbcEncoder: JdbcEncoder[CountryregionId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[CountryregionId] = JsonDecoder.string.map(CountryregionId.apply)
+
   given jsonEncoder: JsonEncoder[CountryregionId] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[CountryregionId] = PGType.PGTypeString.as
-  given setter: Setter[CountryregionId] = Setter.stringSetter.contramap(_.value)
-  given text: Text[CountryregionId] = new Text[CountryregionId] {
-    override def unsafeEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CountryregionId] = {
+    new Text[CountryregionId] {
+      override def unsafeEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CountryregionId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[CountryregionId] = PGType.PGTypeString.as
+
+  given setter: Setter[CountryregionId] = Setter.stringSetter.contramap(_.value)
 }

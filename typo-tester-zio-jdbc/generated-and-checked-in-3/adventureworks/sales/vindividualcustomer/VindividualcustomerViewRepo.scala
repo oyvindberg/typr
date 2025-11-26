@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VindividualcustomerViewRepo {
   def select: SelectBuilder[VindividualcustomerViewFields, VindividualcustomerViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VindividualcustomerViewRow]
 }

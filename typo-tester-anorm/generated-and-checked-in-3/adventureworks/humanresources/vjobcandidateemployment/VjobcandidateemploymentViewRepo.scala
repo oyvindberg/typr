@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait VjobcandidateemploymentViewRepo {
   def select: SelectBuilder[VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow]
+
   def selectAll(using c: Connection): List[VjobcandidateemploymentViewRow]
 }

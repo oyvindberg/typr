@@ -12,28 +12,37 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.title
-    Primary key: code */
-case class TitleRow(
-  code: TitleId
-){
-   val id = code
- }
+ * Primary key: code
+ */
+case class TitleRow(code: TitleId) {
+  def id: TitleId = code
+}
 
 object TitleRow {
   implicit lazy val decoder: Decoder[TitleRow] = Decoder.forProduct1[TitleRow, TitleId]("code")(TitleRow.apply)(TitleId.decoder)
+
   implicit lazy val encoder: Encoder[TitleRow] = Encoder.forProduct1[TitleRow, TitleId]("code")(x => (x.code))(TitleId.encoder)
-  implicit lazy val read: Read[TitleRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(TitleId.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    TitleRow(
-      code = arr(0).asInstanceOf[TitleId]
+
+  implicit lazy val pgText: Text[TitleRow] = {
+    Text.instance[TitleRow]{ (row, sb) =>
+      TitleId.pgText.unsafeEncode(row.code, sb)
+    }
+  }
+
+  implicit lazy val read: Read[TitleRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(TitleId.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      TitleRow(
+        code = arr(0).asInstanceOf[TitleId]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[TitleRow] = {
+    new Write.Composite[TitleRow](
+      List(new Write.Single(TitleId.put)),
+      a => List(a.code)
     )
   }
-  implicit lazy val text: Text[TitleRow] = Text.instance[TitleRow]{ (row, sb) =>
-    TitleId.text.unsafeEncode(row.code, sb)
-  }
-  implicit lazy val write: Write[TitleRow] = new Write.Composite[TitleRow](
-    List(new Write.Single(TitleId.put)),
-    a => List(a.code)
-  )
 }

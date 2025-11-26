@@ -22,23 +22,22 @@ trait CViewFields {
 
 object CViewFields {
   lazy val structure: Relation[CViewFields, CViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CViewFields, CViewRow] {
-  
+
     override lazy val fields: CViewFields = new CViewFields {
       override def id = Field[CultureId, CViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def cultureid = Field[CultureId, CViewRow](_path, "cultureid", None, None, x => x.cultureid, (row, value) => row.copy(cultureid = value))
       override def name = Field[Name, CViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, CViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CViewRow]] =
       List[FieldLike[?, CViewRow]](fields.id, fields.cultureid, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

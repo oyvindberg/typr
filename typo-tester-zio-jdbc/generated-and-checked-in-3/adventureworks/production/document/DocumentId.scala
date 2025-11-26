@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.document` */
-case class DocumentId(value: String) extends AnyVal
+case class DocumentId(value: String) extends scala.AnyVal
+
 object DocumentId {
   given arrayJdbcDecoder: JdbcDecoder[Array[DocumentId]] = adventureworks.StringArrayDecoder.map(_.map(DocumentId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[DocumentId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[DocumentId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[DocumentId, String] = Bijection[DocumentId, String](_.value)(DocumentId.apply)
+
+  given bijection: Bijection[DocumentId, String] = Bijection.apply[DocumentId, String](_.value)(DocumentId.apply)
+
   given jdbcDecoder: JdbcDecoder[DocumentId] = JdbcDecoder.stringDecoder.map(DocumentId.apply)
+
   given jdbcEncoder: JdbcEncoder[DocumentId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[DocumentId] = JsonDecoder.string.map(DocumentId.apply)
+
   given jsonEncoder: JsonEncoder[DocumentId] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[DocumentId] = PGType.PGTypeString.as
-  given setter: Setter[DocumentId] = Setter.stringSetter.contramap(_.value)
-  given text: Text[DocumentId] = new Text[DocumentId] {
-    override def unsafeEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[DocumentId] = {
+    new Text[DocumentId] {
+      override def unsafeEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[DocumentId] = PGType.PGTypeString.as
+
+  given setter: Setter[DocumentId] = Setter.stringSetter.contramap(_.value)
 }

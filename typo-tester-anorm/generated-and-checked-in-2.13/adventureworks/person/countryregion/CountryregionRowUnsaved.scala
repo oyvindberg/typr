@@ -7,6 +7,7 @@ package adventureworks.person.countryregion
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -24,41 +25,42 @@ case class CountryregionRowUnsaved(
   /** Country or region name. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow =
-    CountryregionRow(
-      countryregioncode = countryregioncode,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow = new CountryregionRow(countryregioncode = countryregioncode, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object CountryregionRowUnsaved {
-  implicit lazy val reads: Reads[CountryregionRowUnsaved] = Reads[CountryregionRowUnsaved](json => JsResult.fromTry(
-      Try(
-        CountryregionRowUnsaved(
-          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[CountryregionRowUnsaved] = Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
-    CountryregionId.text.unsafeEncode(row.countryregioncode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  implicit lazy val pgText: Text[CountryregionRowUnsaved] = {
+    Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
+      CountryregionId.pgText.unsafeEncode(row.countryregioncode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[CountryregionRowUnsaved] = OWrites[CountryregionRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[CountryregionRowUnsaved] = {
+    Reads[CountryregionRowUnsaved](json => JsResult.fromTry(
+        Try(
+          CountryregionRowUnsaved(
+            countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[CountryregionRowUnsaved] = {
+    OWrites[CountryregionRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -7,6 +7,7 @@ package adventureworks.humanresources.employee
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -25,7 +26,8 @@ import scala.util.Try
 /** This class corresponds to a row in table `humanresources.employee` which has not been persisted yet */
 case class EmployeeRowUnsaved(
   /** Primary key for Employee records.  Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Unique national identification number such as a social security number. */
   nationalidnumber: /* max 15 chars */ String,
@@ -34,41 +36,58 @@ case class EmployeeRowUnsaved(
   /** Work title such as Buyer or Sales Representative. */
   jobtitle: /* max 50 chars */ String,
   /** Date of birth.
-      Constraint CK_Employee_BirthDate affecting columns birthdate:  (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval)))) */
+   * Constraint CK_Employee_BirthDate affecting columns birthdate:  (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
+   */
   birthdate: TypoLocalDate,
   /** M = Married, S = Single
-      Constraint CK_Employee_MaritalStatus affecting columns maritalstatus:  ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text]))) */
+   * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus:  ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
+   */
   maritalstatus: /* bpchar, max 1 chars */ String,
   /** M = Male, F = Female
-      Constraint CK_Employee_Gender affecting columns gender:  ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text]))) */
+   * Constraint CK_Employee_Gender affecting columns gender:  ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
+   */
   gender: /* bpchar, max 1 chars */ String,
   /** Employee hired on this date.
-      Constraint CK_Employee_HireDate affecting columns hiredate:  (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval)))) */
+   * Constraint CK_Employee_HireDate affecting columns hiredate:  (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
+   */
   hiredate: TypoLocalDate,
   /** Default: true
-      Job classification. 0 = Hourly, not exempt from collective bargaining. 1 = Salaried, exempt from collective bargaining. */
-  salariedflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * Job classification. 0 = Hourly, not exempt from collective bargaining. 1 = Salaried, exempt from collective bargaining.
+   */
+  salariedflag: Defaulted[Flag] = new UseDefault(),
   /** Default: 0
-      Number of available vacation hours.
-      Constraint CK_Employee_VacationHours affecting columns vacationhours:  (((vacationhours >= '-40'::integer) AND (vacationhours <= 240))) */
-  vacationhours: Defaulted[TypoShort] = Defaulted.UseDefault,
+   * Number of available vacation hours.
+   * Constraint CK_Employee_VacationHours affecting columns vacationhours:  (((vacationhours >= '-40'::integer) AND (vacationhours <= 240)))
+   */
+  vacationhours: Defaulted[TypoShort] = new UseDefault(),
   /** Default: 0
-      Number of available sick leave hours.
-      Constraint CK_Employee_SickLeaveHours affecting columns sickleavehours:  (((sickleavehours >= 0) AND (sickleavehours <= 120))) */
-  sickleavehours: Defaulted[TypoShort] = Defaulted.UseDefault,
+   * Number of available sick leave hours.
+   * Constraint CK_Employee_SickLeaveHours affecting columns sickleavehours:  (((sickleavehours >= 0) AND (sickleavehours <= 120)))
+   */
+  sickleavehours: Defaulted[TypoShort] = new UseDefault(),
   /** Default: true
-      0 = Inactive, 1 = Active */
-  currentflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = Inactive, 1 = Active
+   */
+  currentflag: Defaulted[Flag] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Where the employee is located in corporate hierarchy. */
-  organizationnode: Defaulted[Option[String]] = Defaulted.UseDefault
+   * Where the employee is located in corporate hierarchy.
+   */
+  organizationnode: Defaulted[Option[String]] = new UseDefault()
 ) {
-  def toRow(salariedflagDefault: => Flag, vacationhoursDefault: => TypoShort, sickleavehoursDefault: => TypoShort, currentflagDefault: => Flag, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime, organizationnodeDefault: => Option[String]): EmployeeRow =
-    EmployeeRow(
+  def toRow(
+    salariedflagDefault: => Flag,
+    vacationhoursDefault: => TypoShort,
+    sickleavehoursDefault: => TypoShort,
+    currentflagDefault: => Flag,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime,
+    organizationnodeDefault: => Option[String]
+  ): EmployeeRow = {
+    new EmployeeRow(
       businessentityid = businessentityid,
       nationalidnumber = nationalidnumber,
       loginid = loginid,
@@ -77,107 +96,96 @@ case class EmployeeRowUnsaved(
       maritalstatus = maritalstatus,
       gender = gender,
       hiredate = hiredate,
-      salariedflag = salariedflag match {
-                       case Defaulted.UseDefault => salariedflagDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      vacationhours = vacationhours match {
-                        case Defaulted.UseDefault => vacationhoursDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      sickleavehours = sickleavehours match {
-                         case Defaulted.UseDefault => sickleavehoursDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      currentflag = currentflag match {
-                      case Defaulted.UseDefault => currentflagDefault
-                      case Defaulted.Provided(value) => value
-                    },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      organizationnode = organizationnode match {
-                           case Defaulted.UseDefault => organizationnodeDefault
-                           case Defaulted.Provided(value) => value
-                         }
+      salariedflag = salariedflag.getOrElse(salariedflagDefault),
+      vacationhours = vacationhours.getOrElse(vacationhoursDefault),
+      sickleavehours = sickleavehours.getOrElse(sickleavehoursDefault),
+      currentflag = currentflag.getOrElse(currentflagDefault),
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault),
+      organizationnode = organizationnode.getOrElse(organizationnodeDefault)
     )
-}
-object EmployeeRowUnsaved {
-  implicit lazy val reads: Reads[EmployeeRowUnsaved] = Reads[EmployeeRowUnsaved](json => JsResult.fromTry(
-      Try(
-        EmployeeRowUnsaved(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          nationalidnumber = json.\("nationalidnumber").as(Reads.StringReads),
-          loginid = json.\("loginid").as(Reads.StringReads),
-          jobtitle = json.\("jobtitle").as(Reads.StringReads),
-          birthdate = json.\("birthdate").as(TypoLocalDate.reads),
-          maritalstatus = json.\("maritalstatus").as(Reads.StringReads),
-          gender = json.\("gender").as(Reads.StringReads),
-          hiredate = json.\("hiredate").as(TypoLocalDate.reads),
-          salariedflag = json.\("salariedflag").as(Defaulted.reads(Flag.reads)),
-          vacationhours = json.\("vacationhours").as(Defaulted.reads(TypoShort.reads)),
-          sickleavehours = json.\("sickleavehours").as(Defaulted.reads(TypoShort.reads)),
-          currentflag = json.\("currentflag").as(Defaulted.reads(Flag.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads)),
-          organizationnode = json.\("organizationnode").as(Defaulted.readsOpt(Reads.StringReads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[EmployeeRowUnsaved] = Text.instance[EmployeeRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.nationalidnumber, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.loginid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.jobtitle, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDate.text.unsafeEncode(row.birthdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.maritalstatus, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.gender, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDate.text.unsafeEncode(row.hiredate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Flag.text).unsafeEncode(row.salariedflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoShort.text).unsafeEncode(row.vacationhours, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoShort.text).unsafeEncode(row.sickleavehours, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Flag.text).unsafeEncode(row.currentflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.option(Text.stringInstance)).unsafeEncode(row.organizationnode, sb)
   }
-  implicit lazy val writes: OWrites[EmployeeRowUnsaved] = OWrites[EmployeeRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "nationalidnumber" -> Writes.StringWrites.writes(o.nationalidnumber),
-      "loginid" -> Writes.StringWrites.writes(o.loginid),
-      "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
-      "birthdate" -> TypoLocalDate.writes.writes(o.birthdate),
-      "maritalstatus" -> Writes.StringWrites.writes(o.maritalstatus),
-      "gender" -> Writes.StringWrites.writes(o.gender),
-      "hiredate" -> TypoLocalDate.writes.writes(o.hiredate),
-      "salariedflag" -> Defaulted.writes(Flag.writes).writes(o.salariedflag),
-      "vacationhours" -> Defaulted.writes(TypoShort.writes).writes(o.vacationhours),
-      "sickleavehours" -> Defaulted.writes(TypoShort.writes).writes(o.sickleavehours),
-      "currentflag" -> Defaulted.writes(Flag.writes).writes(o.currentflag),
-      "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate),
-      "organizationnode" -> Defaulted.writes(Writes.OptionWrites(Writes.StringWrites)).writes(o.organizationnode)
-    ))
-  )
+}
+
+object EmployeeRowUnsaved {
+  implicit lazy val pgText: Text[EmployeeRowUnsaved] = {
+    Text.instance[EmployeeRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.nationalidnumber, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.loginid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.jobtitle, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDate.pgText.unsafeEncode(row.birthdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.maritalstatus, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.gender, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDate.pgText.unsafeEncode(row.hiredate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Flag.pgText).unsafeEncode(row.salariedflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoShort.pgText).unsafeEncode(row.vacationhours, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoShort.pgText).unsafeEncode(row.sickleavehours, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Flag.pgText).unsafeEncode(row.currentflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.option(Text.stringInstance)).unsafeEncode(row.organizationnode, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[EmployeeRowUnsaved] = {
+    Reads[EmployeeRowUnsaved](json => JsResult.fromTry(
+        Try(
+          EmployeeRowUnsaved(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            nationalidnumber = json.\("nationalidnumber").as(Reads.StringReads),
+            loginid = json.\("loginid").as(Reads.StringReads),
+            jobtitle = json.\("jobtitle").as(Reads.StringReads),
+            birthdate = json.\("birthdate").as(TypoLocalDate.reads),
+            maritalstatus = json.\("maritalstatus").as(Reads.StringReads),
+            gender = json.\("gender").as(Reads.StringReads),
+            hiredate = json.\("hiredate").as(TypoLocalDate.reads),
+            salariedflag = json.\("salariedflag").as(Defaulted.reads(Flag.reads)),
+            vacationhours = json.\("vacationhours").as(Defaulted.reads(TypoShort.reads)),
+            sickleavehours = json.\("sickleavehours").as(Defaulted.reads(TypoShort.reads)),
+            currentflag = json.\("currentflag").as(Defaulted.reads(Flag.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads)),
+            organizationnode = json.\("organizationnode").as(Defaulted.readsOpt(Reads.StringReads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[EmployeeRowUnsaved] = {
+    OWrites[EmployeeRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "nationalidnumber" -> Writes.StringWrites.writes(o.nationalidnumber),
+        "loginid" -> Writes.StringWrites.writes(o.loginid),
+        "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
+        "birthdate" -> TypoLocalDate.writes.writes(o.birthdate),
+        "maritalstatus" -> Writes.StringWrites.writes(o.maritalstatus),
+        "gender" -> Writes.StringWrites.writes(o.gender),
+        "hiredate" -> TypoLocalDate.writes.writes(o.hiredate),
+        "salariedflag" -> Defaulted.writes(Flag.writes).writes(o.salariedflag),
+        "vacationhours" -> Defaulted.writes(TypoShort.writes).writes(o.vacationhours),
+        "sickleavehours" -> Defaulted.writes(TypoShort.writes).writes(o.sickleavehours),
+        "currentflag" -> Defaulted.writes(Flag.writes).writes(o.currentflag),
+        "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate),
+        "organizationnode" -> Defaulted.writes(Writes.OptionWrites(Writes.StringWrites)).writes(o.organizationnode)
+      ))
+    )
+  }
 }

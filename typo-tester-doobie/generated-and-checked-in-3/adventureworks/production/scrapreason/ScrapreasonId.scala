@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.scrapreason` */
-case class ScrapreasonId(value: Int) extends AnyVal
+case class ScrapreasonId(value: Int) extends scala.AnyVal
+
 object ScrapreasonId {
   given arrayGet: Get[Array[ScrapreasonId]] = adventureworks.IntegerArrayMeta.get.map(_.map(ScrapreasonId.apply))
+
   given arrayPut: Put[Array[ScrapreasonId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[ScrapreasonId, Int] = Bijection[ScrapreasonId, Int](_.value)(ScrapreasonId.apply)
+
+  given bijection: Bijection[ScrapreasonId, Int] = Bijection.apply[ScrapreasonId, Int](_.value)(ScrapreasonId.apply)
+
   given decoder: Decoder[ScrapreasonId] = Decoder.decodeInt.map(ScrapreasonId.apply)
+
   given encoder: Encoder[ScrapreasonId] = Encoder.encodeInt.contramap(_.value)
+
   given get: Get[ScrapreasonId] = Meta.IntMeta.get.map(ScrapreasonId.apply)
-  given put: Put[ScrapreasonId] = Meta.IntMeta.put.contramap(_.value)
-  given text: Text[ScrapreasonId] = new Text[ScrapreasonId] {
-    override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ScrapreasonId] = {
+    new Text[ScrapreasonId] {
+      override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[ScrapreasonId] = Meta.IntMeta.put.contramap(_.value)
 }

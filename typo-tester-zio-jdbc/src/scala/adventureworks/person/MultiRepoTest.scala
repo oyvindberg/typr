@@ -3,11 +3,18 @@ package adventureworks.person
 import adventureworks.person.address.*
 import adventureworks.person.addresstype.*
 import adventureworks.person.businessentityaddress.*
+import adventureworks.person.countryregion.CountryregionId
 import adventureworks.person.person.*
 import adventureworks.public.Name
+import adventureworks.userdefined.FirstName
+import adventureworks.{DomainInsert, TestInsert, withConnection}
+import org.scalactic.TypeCheckedTripleEquals
+import org.scalatest.funsuite.AnyFunSuite
 import zio.{Chunk, ZIO}
 import zio.jdbc.ZConnection
 import zio.prelude.ForEachOps
+
+import scala.util.Random
 
 case class PersonWithAddresses(person: PersonRow, addresses: Map[Name, AddressRow])
 
@@ -24,10 +31,10 @@ case class PersonWithAddressesRepo(
     *
     * and the given addresses are attached with the chosen type
     */
-  def upsert(pa: PersonWithAddresses): ZIO[ZConnection, Throwable, Chunk[BusinessentityaddressRow]] = {
+  def syncAddresses(pa: PersonWithAddresses): ZIO[ZConnection, Throwable, Chunk[BusinessentityaddressRow]] = {
     for {
       // update person
-      _ <- personRepo.upsert(pa.person)
+      _ <- personRepo.update(pa.person)
       // update stored addresses
       _ <- Chunk.fromIterable(pa.addresses.values).forEach { address => addressRepo.update(address).map(_ => ()) }
       // addresses are stored in `PersonWithAddress` by a `Name` which means what type of address it is.
@@ -61,5 +68,58 @@ case class PersonWithAddressesRepo(
         }
       }
     } yield currentAttachedAddresses
+  }
+}
+
+class PersonWithAddressesTest extends AnyFunSuite with TypeCheckedTripleEquals {
+  test("works") {
+    withConnection {
+      val testInsert = new TestInsert(new Random(1), DomainInsert)
+      for {
+        businessentityRow <- testInsert.personBusinessentity()
+        personRow <- testInsert.personPerson(businessentityRow.businessentityid, persontype = "SC", FirstName("name"))
+        countryregionRow <- testInsert.personCountryregion(CountryregionId("NOR"))
+        salesterritoryRow <- testInsert.salesSalesterritory(countryregionRow.countryregioncode)
+        stateprovinceRow <- testInsert.personStateprovince(countryregionRow.countryregioncode, salesterritoryRow.territoryid)
+        addressRow1 <- testInsert.personAddress(stateprovinceRow.stateprovinceid)
+        addressRow2 <- testInsert.personAddress(stateprovinceRow.stateprovinceid)
+        addressRow3 <- testInsert.personAddress(stateprovinceRow.stateprovinceid)
+
+        businessentityaddressRepo = new BusinessentityaddressRepoImpl
+        repo = PersonWithAddressesRepo(
+          personRepo = new PersonRepoImpl,
+          businessentityAddressRepo = businessentityaddressRepo,
+          addresstypeRepo = new AddresstypeRepoImpl,
+          addressRepo = new AddressRepoImpl
+        )
+
+        _ <- repo.syncAddresses(PersonWithAddresses(personRow, Map(Name("HOME") -> addressRow1, Name("OFFICE") -> addressRow2)))
+
+        fetchBAs = businessentityaddressRepo.select.where(p => p.addressid in Array(addressRow1.addressid, addressRow2.addressid, addressRow3.addressid)).orderBy(_.addressid.asc).toChunk
+
+        bas1 <- fetchBAs
+        _ <- ZIO.succeed {
+          val Chunk(
+            BusinessentityaddressRow(personRow.businessentityid, addressRow1.addressid, _, _, _),
+            BusinessentityaddressRow(personRow.businessentityid, addressRow2.addressid, _, _, _)
+          ) = bas1: @unchecked
+        }
+
+        // check that it's idempotent
+        _ <- repo.syncAddresses(PersonWithAddresses(personRow, Map(Name("HOME") -> addressRow1, Name("OFFICE") -> addressRow2)))
+        bas2 <- fetchBAs
+        _ <- ZIO.succeed(assert(bas2.size == 2))
+
+        // remove one
+        _ <- repo.syncAddresses(PersonWithAddresses(personRow, Map(Name("HOME") -> addressRow1)))
+        bas3 <- fetchBAs
+        _ <- ZIO.succeed(assert(bas3.size == 1))
+
+        // add one
+        _ <- repo.syncAddresses(PersonWithAddresses(personRow, Map(Name("HOME") -> addressRow1, Name("VACATION") -> addressRow3)))
+        bas4 <- fetchBAs
+        _ <- ZIO.succeed(assert(bas4.size == 2))
+      } yield ()
+    }
   }
 }

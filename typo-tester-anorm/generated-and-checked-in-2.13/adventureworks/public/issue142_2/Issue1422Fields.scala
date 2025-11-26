@@ -23,20 +23,19 @@ trait Issue1422Fields {
 
 object Issue1422Fields {
   lazy val structure: Relation[Issue1422Fields, Issue1422Row] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[Issue1422Fields, Issue1422Row] {
-  
+
     override lazy val fields: Issue1422Fields = new Issue1422Fields {
       override def tabellkode = IdField[Issue142Id, Issue1422Row](_path, "tabellkode", None, None, x => x.tabellkode, (row, value) => row.copy(tabellkode = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, Issue1422Row]] =
       List[FieldLike[?, Issue1422Row]](fields.tabellkode)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

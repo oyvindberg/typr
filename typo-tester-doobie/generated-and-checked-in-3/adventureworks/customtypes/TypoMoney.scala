@@ -17,18 +17,33 @@ import typo.dsl.Bijection
 case class TypoMoney(value: BigDecimal)
 
 object TypoMoney {
-  given arrayGet: Get[Array[TypoMoney]] = Get.Advanced.array[AnyRef](NonEmptyList.one("money[]"))
-    .map(_.map(v => TypoMoney(BigDecimal(v.asInstanceOf[java.math.BigDecimal]))))
-  given arrayPut: Put[Array[TypoMoney]] = Put.Advanced.array[AnyRef](NonEmptyList.one("money[]"), "money")
-    .contramap(_.map(v => v.value.bigDecimal))
-  given bijection: Bijection[TypoMoney, BigDecimal] = Bijection[TypoMoney, BigDecimal](_.value)(TypoMoney.apply)
-  given decoder: Decoder[TypoMoney] = Decoder.decodeBigDecimal.map(TypoMoney.apply)
-  given encoder: Encoder[TypoMoney] = Encoder.encodeBigDecimal.contramap(_.value)
-  given get: Get[TypoMoney] = Get.Advanced.other[java.math.BigDecimal](NonEmptyList.one("money"))
-    .map(v => TypoMoney(BigDecimal(v)))
-  given put: Put[TypoMoney] = Put.Advanced.other[java.math.BigDecimal](NonEmptyList.one("money")).contramap(v => v.value.bigDecimal)
-  given text: Text[TypoMoney] = new Text[TypoMoney] {
-    override def unsafeEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeArrayEncode(v.value, sb)
+  given arrayGet: Get[Array[TypoMoney]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("money[]"))
+      .map(_.map(v => new TypoMoney(BigDecimal(v.asInstanceOf[java.math.BigDecimal]))))
   }
+
+  given arrayPut: Put[Array[TypoMoney]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("money[]"), "money")
+      .contramap(_.map(v => v.value.bigDecimal))
+  }
+
+  given bijection: Bijection[TypoMoney, BigDecimal] = Bijection.apply[TypoMoney, BigDecimal](_.value)(TypoMoney.apply)
+
+  given decoder: Decoder[TypoMoney] = Decoder.decodeBigDecimal.map(TypoMoney.apply)
+
+  given encoder: Encoder[TypoMoney] = Encoder.encodeBigDecimal.contramap(_.value)
+
+  given get: Get[TypoMoney] = {
+    Get.Advanced.other[java.math.BigDecimal](NonEmptyList.one("money"))
+      .map(v => new TypoMoney(BigDecimal(v)))
+  }
+
+  given pgText: Text[TypoMoney] = {
+    new Text[TypoMoney] {
+      override def unsafeEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given put: Put[TypoMoney] = Put.Advanced.other[java.math.BigDecimal](NonEmptyList.one("money")).contramap(v => v.value.bigDecimal)
 }

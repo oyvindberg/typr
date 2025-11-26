@@ -5,18 +5,16 @@
  */
 package adventureworks.humanresources.vemployee
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class VemployeeViewRepoImpl extends VemployeeViewRepo {
-  override def select: SelectBuilder[VemployeeViewFields, VemployeeViewRow] = {
-    SelectBuilderSql(""""humanresources"."vemployee"""", VemployeeViewFields.structure, VemployeeViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[VemployeeViewRow] = {
+  def select: SelectBuilder[VemployeeViewFields, VemployeeViewRow] = SelectBuilder.of(""""humanresources"."vemployee"""", VemployeeViewFields.structure, VemployeeViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[VemployeeViewRow] = {
     SQL"""select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "additionalcontactinfo"
-          from "humanresources"."vemployee"
-       """.as(VemployeeViewRow.rowParser(1).*)
+    from "humanresources"."vemployee"
+    """.as(VemployeeViewRow.rowParser(1).*)
   }
 }

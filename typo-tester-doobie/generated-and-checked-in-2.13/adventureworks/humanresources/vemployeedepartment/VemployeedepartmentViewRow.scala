@@ -40,30 +40,34 @@ case class VemployeedepartmentViewRow(
 
 object VemployeedepartmentViewRow {
   implicit lazy val decoder: Decoder[VemployeedepartmentViewRow] = Decoder.forProduct10[VemployeedepartmentViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], /* max 50 chars */ String, Name, Name, TypoLocalDate]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "department", "groupname", "startdate")(VemployeedepartmentViewRow.apply)(BusinessentityId.decoder, Decoder.decodeOption(Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(Name.decoder), Name.decoder, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeString, Name.decoder, Name.decoder, TypoLocalDate.decoder)
+
   implicit lazy val encoder: Encoder[VemployeedepartmentViewRow] = Encoder.forProduct10[VemployeedepartmentViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], /* max 50 chars */ String, Name, Name, TypoLocalDate]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "department", "groupname", "startdate")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.jobtitle, x.department, x.groupname, x.startdate))(BusinessentityId.encoder, Encoder.encodeOption(Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(Name.encoder), Name.encoder, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeString, Name.encoder, Name.encoder, TypoLocalDate.encoder)
-  implicit lazy val read: Read[VemployeedepartmentViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    VemployeedepartmentViewRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          title = arr(1).asInstanceOf[Option[/* max 8 chars */ String]],
-          firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
-          middlename = arr(3).asInstanceOf[Option[Name]],
-          lastname = arr(4).asInstanceOf[Name],
-          suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
-          jobtitle = arr(6).asInstanceOf[/* max 50 chars */ String],
-          department = arr(7).asInstanceOf[Name],
-          groupname = arr(8).asInstanceOf[Name],
-          startdate = arr(9).asInstanceOf[TypoLocalDate]
-    )
+
+  implicit lazy val read: Read[VemployeedepartmentViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      VemployeedepartmentViewRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            title = arr(1).asInstanceOf[Option[/* max 8 chars */ String]],
+            firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
+            middlename = arr(3).asInstanceOf[Option[Name]],
+            lastname = arr(4).asInstanceOf[Name],
+            suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
+            jobtitle = arr(6).asInstanceOf[/* max 50 chars */ String],
+            department = arr(7).asInstanceOf[Name],
+            groupname = arr(8).asInstanceOf[Name],
+            startdate = arr(9).asInstanceOf[TypoLocalDate]
+      )
+    }
   }
 }

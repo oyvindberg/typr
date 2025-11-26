@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.w
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class WViewRepoImpl extends WViewRepo {
-  override def select: SelectBuilder[WViewFields, WViewRow] = {
-    SelectBuilderSql(""""pr"."w"""", WViewFields.structure, WViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[WViewRow] = {
+  def select: SelectBuilder[WViewFields, WViewRow] = SelectBuilder.of(""""pr"."w"""", WViewFields.structure, WViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[WViewRow] = {
     SQL"""select "id", "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
-          from "pr"."w"
-       """.as(WViewRow.rowParser(1).*)
+    from "pr"."w"
+    """.as(WViewRow.rowParser(1).*)
   }
 }

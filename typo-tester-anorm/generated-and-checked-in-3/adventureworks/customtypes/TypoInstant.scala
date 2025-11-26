@@ -26,38 +26,58 @@ import typo.dsl.Bijection
 case class TypoInstant(value: Instant)
 
 object TypoInstant {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter
   def apply(value: Instant): TypoInstant = new TypoInstant(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoInstant = apply(OffsetDateTime.parse(str, parser).toInstant)
-  def now = TypoInstant(Instant.now)
-  given arrayColumn: Column[Array[TypoInstant]] = Column.nonNull[Array[TypoInstant]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoInstant(v.asInstanceOf[String])))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoInstant, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+
+  def apply(str: String): TypoInstant = new TypoInstant(OffsetDateTime.parse(str, parser).toInstant())
+
+  given arrayColumn: Column[Array[TypoInstant]] = {
+    Column.nonNull[Array[TypoInstant]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => apply(v.asInstanceOf[String])))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoInstant, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   given arrayToStatement: ToStatement[Array[TypoInstant]] = ToStatement[Array[TypoInstant]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("timestamptz", v.map(v => v.value.toString))))
-  given bijection: Bijection[TypoInstant, Instant] = Bijection[TypoInstant, Instant](_.value)(TypoInstant.apply)
-  given column: Column[TypoInstant] = Column.nonNull[TypoInstant]((v1: Any, _) =>
-    v1 match {
-      case v: String => Right(TypoInstant(v))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+
+  given bijection: Bijection[TypoInstant, Instant] = Bijection.apply[TypoInstant, Instant](_.value)(TypoInstant.apply)
+
+  given column: Column[TypoInstant] = {
+    Column.nonNull[TypoInstant]((v1: Any, _) =>
+      v1 match {
+        case v: String => Right(apply(v))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  def now: TypoInstant = new TypoInstant(Instant.now())
+
+  given parameterMetadata: ParameterMetaData[TypoInstant] = {
+    new ParameterMetaData[TypoInstant] {
+      override def sqlType: String = "timestamptz"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  given parameterMetadata: ParameterMetaData[TypoInstant] = new ParameterMetaData[TypoInstant] {
-    override def sqlType: String = "timestamptz"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
+
+  given pgText: Text[TypoInstant] = {
+    new Text[TypoInstant] {
+      override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
   given reads: Reads[TypoInstant] = Reads.DefaultInstantReads.map(TypoInstant.apply)
-  given text: Text[TypoInstant] = new Text[TypoInstant] {
-    override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
+
   given toStatement: ToStatement[TypoInstant] = ToStatement[TypoInstant]((s, index, v) => s.setObject(index, v.value.toString))
+
   given writes: Writes[TypoInstant] = Writes.DefaultInstantWrites.contramap(_.value)
 }

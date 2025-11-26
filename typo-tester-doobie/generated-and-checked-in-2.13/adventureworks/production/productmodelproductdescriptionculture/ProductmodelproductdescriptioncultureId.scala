@@ -17,7 +17,9 @@ case class ProductmodelproductdescriptioncultureId(
   productdescriptionid: ProductdescriptionId,
   cultureid: CultureId
 )
+
 object ProductmodelproductdescriptioncultureId {
   implicit lazy val decoder: Decoder[ProductmodelproductdescriptioncultureId] = Decoder.forProduct3[ProductmodelproductdescriptioncultureId, ProductmodelId, ProductdescriptionId, CultureId]("productmodelid", "productdescriptionid", "cultureid")(ProductmodelproductdescriptioncultureId.apply)(ProductmodelId.decoder, ProductdescriptionId.decoder, CultureId.decoder)
+
   implicit lazy val encoder: Encoder[ProductmodelproductdescriptioncultureId] = Encoder.forProduct3[ProductmodelproductdescriptioncultureId, ProductmodelId, ProductdescriptionId, CultureId]("productmodelid", "productdescriptionid", "cultureid")(x => (x.productmodelid, x.productdescriptionid, x.cultureid))(ProductmodelId.encoder, ProductdescriptionId.encoder, CultureId.encoder)
 }

@@ -18,79 +18,88 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class EmployeeRepoMock(toRow: Function1[EmployeeRowUnsaved, EmployeeRow],
-                       map: scala.collection.mutable.Map[BusinessentityId, EmployeeRow] = scala.collection.mutable.Map.empty) extends EmployeeRepo {
-  override def delete: DeleteBuilder[EmployeeFields, EmployeeRow] = {
-    DeleteBuilderMock(DeleteParams.empty, EmployeeFields.structure, map)
-  }
-  override def deleteById(businessentityid: BusinessentityId)(using c: Connection): Boolean = {
-    map.remove(businessentityid).isDefined
-  }
-  override def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = {
-    businessentityids.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: EmployeeRow)(using c: Connection): EmployeeRow = {
+case class EmployeeRepoMock(
+  toRow: EmployeeRowUnsaved => EmployeeRow,
+  map: scala.collection.mutable.Map[BusinessentityId, EmployeeRow] = scala.collection.mutable.Map.empty[BusinessentityId, EmployeeRow]
+) extends EmployeeRepo {
+  def delete: DeleteBuilder[EmployeeFields, EmployeeRow] = DeleteBuilderMock(DeleteParams.empty, EmployeeFields.structure, map)
+
+  def deleteById(businessentityid: BusinessentityId)(using c: Connection): Boolean = map.remove(businessentityid).isDefined
+
+  def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = businessentityids.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: EmployeeRow)(using c: Connection): EmployeeRow = {
     val _ = if (map.contains(unsaved.businessentityid))
       sys.error(s"id ${unsaved.businessentityid} already exists")
     else
       map.put(unsaved.businessentityid, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: EmployeeRowUnsaved)(using c: Connection): EmployeeRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[EmployeeRow], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  def insert(unsaved: EmployeeRowUnsaved)(using c: Connection): EmployeeRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[EmployeeRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.businessentityid -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[EmployeeRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[EmployeeRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.businessentityid -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[EmployeeFields, EmployeeRow] = {
-    SelectBuilderMock(EmployeeFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(using c: Connection): List[EmployeeRow] = {
-    map.values.toList
-  }
-  override def selectById(businessentityid: BusinessentityId)(using c: Connection): Option[EmployeeRow] = {
-    map.get(businessentityid)
-  }
-  override def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[EmployeeRow] = {
-    businessentityids.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(businessentityids: Array[BusinessentityId])(using c: Connection): Map[BusinessentityId, EmployeeRow] = {
+
+  def select: SelectBuilder[EmployeeFields, EmployeeRow] = SelectBuilderMock(EmployeeFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(using c: Connection): List[EmployeeRow] = map.values.toList
+
+  def selectById(businessentityid: BusinessentityId)(using c: Connection): Option[EmployeeRow] = map.get(businessentityid)
+
+  def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[EmployeeRow] = businessentityids.flatMap(map.get).toList
+
+  def selectByIdsTracked(businessentityids: Array[BusinessentityId])(using c: Connection): Map[BusinessentityId, EmployeeRow] = {
     val byId = selectByIds(businessentityids).view.map(x => (x.businessentityid, x)).toMap
     businessentityids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[EmployeeFields, EmployeeRow] = {
-    UpdateBuilderMock(UpdateParams.empty, EmployeeFields.structure, map)
-  }
-  override def update(row: EmployeeRow)(using c: Connection): Option[EmployeeRow] = {
+
+  def update: UpdateBuilder[EmployeeFields, EmployeeRow] = UpdateBuilderMock(UpdateParams.empty, EmployeeFields.structure, map)
+
+  def update(row: EmployeeRow)(using c: Connection): Option[EmployeeRow] = {
     map.get(row.businessentityid).map { _ =>
       map.put(row.businessentityid, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: EmployeeRow)(using c: Connection): EmployeeRow = {
+
+  def upsert(unsaved: EmployeeRow)(using c: Connection): EmployeeRow = {
     map.put(unsaved.businessentityid, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[EmployeeRow])(using c: Connection): List[EmployeeRow] = {
+
+  def upsertBatch(unsaved: Iterable[EmployeeRow])(using c: Connection): List[EmployeeRow] = {
     unsaved.map { row =>
       map += (row.businessentityid -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[EmployeeRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[EmployeeRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.businessentityid -> row)
     }

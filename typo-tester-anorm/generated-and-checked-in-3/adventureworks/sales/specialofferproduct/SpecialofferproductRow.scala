@@ -22,65 +22,101 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: sales.specialofferproduct
-    Cross-reference table mapping products to special offer discounts.
-    Composite primary key: specialofferid, productid */
+ * Cross-reference table mapping products to special offer discounts.
+ * Composite primary key: specialofferid, productid
+ */
 case class SpecialofferproductRow(
   /** Primary key for SpecialOfferProduct records.
-      Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
+   * Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]]
+   */
   specialofferid: SpecialofferId,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: SpecialofferproductId = SpecialofferproductId(specialofferid, productid)
-   val id = compositeId
-   def toUnsavedRow(rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SpecialofferproductRowUnsaved =
-     SpecialofferproductRowUnsaved(specialofferid, productid, rowguid, modifieddate)
- }
+) {
+  def compositeId: SpecialofferproductId = new SpecialofferproductId(specialofferid, productid)
 
-object SpecialofferproductRow {
-  def apply(compositeId: SpecialofferproductId, rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new SpecialofferproductRow(compositeId.specialofferid, compositeId.productid, rowguid, modifieddate)
-  given reads: Reads[SpecialofferproductRow] = Reads[SpecialofferproductRow](json => JsResult.fromTry(
-      Try(
-        SpecialofferproductRow(
-          specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SpecialofferproductRow] = RowParser[SpecialofferproductRow] { row =>
-    Success(
-      SpecialofferproductRow(
-        specialofferid = row(idx + 0)(using SpecialofferId.column),
-        productid = row(idx + 1)(using ProductId.column),
-        rowguid = row(idx + 2)(using TypoUUID.column),
-        modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
-      )
+  def id: SpecialofferproductId = this.compositeId
+
+  def toUnsavedRow(
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): SpecialofferproductRowUnsaved = {
+    new SpecialofferproductRowUnsaved(
+      specialofferid,
+      productid,
+      rowguid,
+      modifieddate
     )
   }
-  given text: Text[SpecialofferproductRow] = Text.instance[SpecialofferproductRow]{ (row, sb) =>
-    SpecialofferId.text.unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object SpecialofferproductRow {
+  def apply(
+    compositeId: SpecialofferproductId,
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): SpecialofferproductRow = {
+    new SpecialofferproductRow(
+      compositeId.specialofferid,
+      compositeId.productid,
+      rowguid,
+      modifieddate
+    )
   }
-  given writes: OWrites[SpecialofferproductRow] = OWrites[SpecialofferproductRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given pgText: Text[SpecialofferproductRow] = {
+    Text.instance[SpecialofferproductRow]{ (row, sb) =>
+      SpecialofferId.pgText.unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[SpecialofferproductRow] = {
+    Reads[SpecialofferproductRow](json => JsResult.fromTry(
+        Try(
+          SpecialofferproductRow(
+            specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[SpecialofferproductRow] = {
+    RowParser[SpecialofferproductRow] { row =>
+      Success(
+        SpecialofferproductRow(
+          specialofferid = row(idx + 0)(using SpecialofferId.column),
+          productid = row(idx + 1)(using ProductId.column),
+          rowguid = row(idx + 2)(using TypoUUID.column),
+          modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SpecialofferproductRow] = {
+    OWrites[SpecialofferproductRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -3,74 +3,205 @@ package internal
 
 /** Keep those files among `allFiles` which are part of or reachable (through type references) from `entryPoints`. */
 object minimize {
-  def apply(allFiles: List[sc.File], entryPoints: Iterable[sc.File]): List[sc.File] = {
+  def apply(allFiles: List[jvm.File], entryPoints: Iterable[jvm.File]): List[jvm.File] = {
     val filesByQident = allFiles.iterator.map(x => (x.tpe.value, x)).toMap
-    val toKeep: Set[sc.QIdent] = {
-      val b = collection.mutable.HashSet.empty[sc.QIdent]
+    val toKeep: Set[jvm.QIdent] = {
+      val b = collection.mutable.HashSet.empty[jvm.QIdent]
       b ++= entryPoints.map(_.tpe.value)
       entryPoints.foreach { f =>
-        def goTree(tree: sc.Tree): Unit = {
+        def goTree(tree: jvm.Tree): Unit = {
           tree match {
-            case sc.Ident(_) => ()
-            case x: sc.QIdent =>
+            case jvm.IgnoreResult(expr) =>
+              go(expr)
+            case jvm.TypeSwitch(value, cases) =>
+              go(value)
+              cases.foreach { c =>
+                goTree(c.tpe)
+                goTree(c.ident)
+                go(c.body)
+              }
+            case jvm.IfExpr(pred, thenp, elsep) =>
+              go(pred)
+              go(thenp)
+              go(elsep)
+            case jvm.ConstructorMethodRef(tpe) =>
+              goTree(tpe)
+            case jvm.ClassOf(tpe) =>
+              goTree(tpe)
+            case jvm.Call(target, argGroups) =>
+              go(target)
+              argGroups.foreach(group => group.args.foreach(goTree))
+            case jvm.Ident(_) => ()
+            case x: jvm.QIdent =>
               if (!b(x)) {
                 b += x
                 filesByQident.get(x).foreach(f => go(f.contents))
               }
-
-            case sc.Param(_, tpe, maybeCode) =>
+            case jvm.New(target, args) =>
+              go(target)
+              args.foreach(goTree)
+            case jvm.NewWithBody(tpe, members) =>
+              goTree(tpe)
+              members.foreach(goTree)
+            case jvm.InferredTargs(target) =>
+              go(target)
+            case jvm.GenericMethodCall(target, _, typeArgs, args) =>
+              go(target)
+              typeArgs.foreach(goTree)
+              args.foreach(goTree)
+            case jvm.Lambda0(body) =>
+              go(body)
+            case jvm.Lambda1(_, body) =>
+              go(body)
+            case jvm.Lambda2(_, _, body) =>
+              go(body)
+            case jvm.ByName(body) =>
+              go(body)
+            case jvm.TypedLambda1(paramType, _, body) =>
+              goTree(paramType)
+              go(body)
+            case jvm.FieldGetterRef(rowType, _) =>
+              goTree(rowType)
+            case jvm.SelfNullary(_) =>
+              ()
+            case jvm.TypedFactoryCall(tpe, typeArgs, args) =>
+              goTree(tpe)
+              typeArgs.foreach(goTree)
+              args.foreach(goTree)
+            case jvm.Select(target, name) =>
+              go(target)
+              goTree(name)
+            case jvm.ArrayIndex(target, _) =>
+              go(target)
+            case jvm.ApplyNullary(target, name) =>
+              go(target)
+              goTree(name)
+            case jvm.Arg.Pos(value) =>
+              go(value)
+            case jvm.Arg.Named(_, value) =>
+              go(value)
+            case jvm.Param(_, _, tpe, maybeCode) =>
               goTree(tpe)
               maybeCode.foreach(go)
-            case sc.Params(params) =>
-              params.foreach(goTree)
-            case sc.StrLit(_) => ()
-            case sc.Summon(tpe) =>
+            case jvm.StrLit(_) => ()
+            case jvm.LocalVar(name, tpe, value) =>
+              goTree(name)
+              tpe.foreach(goTree)
+              go(value)
+            case jvm.MethodRef(tpe, name) =>
               goTree(tpe)
-            case sc.StringInterpolate(i, prefix, content) =>
+              goTree(name)
+            case jvm.Summon(tpe) =>
+              goTree(tpe)
+            case jvm.StringInterpolate(i, prefix, content) =>
               goTree(i)
               goTree(prefix)
               go(content)
-            case sc.Given(tparams, name, implicitParams, tpe, body) =>
+            case jvm.Given(tparams, name, implicitParams, tpe, body) =>
               tparams.foreach(goTree)
               goTree(name)
               implicitParams.foreach(goTree)
               goTree(tpe)
               go(body)
-            case sc.Value(tparams, name, params, implicitParams, tpe, body) =>
+            case jvm.Value(name, tpe, body, _, _) =>
+              goTree(name)
+              goTree(tpe)
+              body.foreach(go)
+            case jvm.Method(_, tparams, name, params, implicitParams, tpe, body) =>
               tparams.foreach(goTree)
               goTree(name)
               params.foreach(goTree)
               implicitParams.foreach(goTree)
               goTree(tpe)
-              go(body)
-            case sc.Obj(name, members, body) =>
-              goTree(name)
-              members.foreach(goTree)
               body.foreach(go)
-            case sc.Type.Wildcard =>
+            case jvm.Enum(_, tpe, _, instances) =>
+              goTree(tpe)
+              instances.foreach(goTree)
+            case jvm.Class(_, _, _, tparams, params, implicitParams, extends_, implements, members, staticMembers) =>
+              tparams.foreach(goTree)
+              params.foreach(goTree)
+              implicitParams.foreach(goTree)
+              extends_.foreach(goTree)
+              implements.foreach(goTree)
+              members.foreach(goTree)
+              staticMembers.foreach(goTree)
+            case jvm.NestedClass(_, _, _, params, extends_, superArgs, members) =>
+              params.foreach(goTree)
+              extends_.foreach(goTree)
+              superArgs.foreach(goTree)
+              members.foreach(goTree)
+            case jvm.Adt.Record(_, _, _, tparams, params, implicitParams, extends_, implements, members, staticMembers) =>
+              tparams.foreach(goTree)
+              params.foreach(goTree)
+              implicitParams.foreach(goTree)
+              extends_.foreach(goTree)
+              implements.foreach(goTree)
+              members.foreach(goTree)
+              staticMembers.foreach(goTree)
+            case jvm.Adt.Sum(_, _, tparams, members, implements, subtypes, staticMembers) =>
+              tparams.foreach(goTree)
+              members.foreach(goTree)
+              implements.foreach(goTree)
+              subtypes.foreach(goTree)
+              staticMembers.foreach(goTree)
+            case jvm.Type.Wildcard =>
               ()
-            case sc.Type.TApply(underlying, targs) =>
+            case jvm.Type.TApply(underlying, targs) =>
               goTree(underlying)
               targs.foreach(goTree)
-            case sc.Type.ArrayOf(value)           => goTree(value)
-            case sc.Type.Qualified(value)         => goTree(value)
-            case sc.Type.Abstract(_)              => ()
-            case sc.Type.Commented(underlying, _) => goTree(underlying)
-            case sc.Type.UserDefined(underlying)  => goTree(underlying)
-            case sc.Type.ByName(underlying)       => goTree(underlying)
+            case jvm.Type.ArrayOf(value) =>
+              goTree(value)
+            case jvm.Type.Qualified(value) =>
+              goTree(value)
+            case jvm.Type.Abstract(_) =>
+              ()
+            case jvm.Type.Commented(underlying, _) =>
+              goTree(underlying)
+            case jvm.Type.UserDefined(underlying) =>
+              goTree(underlying)
+            case jvm.Type.Void =>
+              ()
+            case jvm.Apply0(f) =>
+              goTree(f)
+            case jvm.Apply1(f, arg1) =>
+              goTree(f)
+              go(arg1)
+            case jvm.Apply2(f, arg1, arg2) =>
+              goTree(f)
+              go(arg1)
+              go(arg2)
+            case jvm.Type.Function0(ret) =>
+              goTree(ret)
+            case jvm.Type.Function1(tpe1, ret) =>
+              goTree(tpe1)
+              goTree(ret)
+            case jvm.Type.Function2(tpe1, tpe2, ret) =>
+              goTree(tpe1)
+              goTree(tpe2)
+              goTree(ret)
+            case jvm.OpenEnum(_, tpe, underlyingType, values, staticMembers) => {
+              goTree(tpe)
+              goTree(underlyingType)
+              values.toList.foreach { case (_, expr) => go(expr) }
+              staticMembers.foreach(goTree)
+            }
+            case jvm.RuntimeInterpolation(value) =>
+              go(value)
           }
         }
 
-        def go(code: sc.Code): Unit = {
+        def go(code: jvm.Code): Unit = {
           code match {
-            case sc.Code.Interpolated(_, args) =>
+            case jvm.Code.Interpolated(_, args) =>
               args.foreach(go)
-            case sc.Code.Combined(codes) =>
+            case jvm.Code.Combined(codes) =>
               codes.foreach(go)
-            case sc.Code.Str(_) =>
+            case jvm.Code.Str(_) =>
               ()
-            case sc.Code.Tree(tree) =>
+            case jvm.Code.Tree(tree) =>
               goTree(tree)
+            case jvm.Code.Indented(content) =>
+              go(content)
           }
         }
 

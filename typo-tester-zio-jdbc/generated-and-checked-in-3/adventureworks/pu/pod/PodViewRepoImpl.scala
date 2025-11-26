@@ -6,16 +6,12 @@
 package adventureworks.pu.pod
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PodViewRepoImpl extends PodViewRepo {
-  override def select: SelectBuilder[PodViewFields, PodViewRow] = {
-    SelectBuilderSql(""""pu"."pod"""", PodViewFields.structure, PodViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PodViewRow] = {
-    sql"""select "id", "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text from "pu"."pod"""".query(using PodViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[PodViewFields, PodViewRow] = SelectBuilder.of(""""pu"."pod"""", PodViewFields.structure, PodViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, PodViewRow] = sql"""select "id", "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text from "pu"."pod"""".query(using PodViewRow.jdbcDecoder).selectStream()
 }

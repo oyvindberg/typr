@@ -35,32 +35,36 @@ case class VproductmodelinstructionsViewRow(
 
 object VproductmodelinstructionsViewRow {
   given decoder: Decoder[VproductmodelinstructionsViewRow] = Decoder.forProduct11[VproductmodelinstructionsViewRow, ProductmodelId, Name, /* nullability unknown */ Option[String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 1024 chars */ String], TypoUUID, TypoLocalDateTime]("productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate")(VproductmodelinstructionsViewRow.apply)(using ProductmodelId.decoder, Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeInt), Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeOption(using Decoder.decodeInt), Decoder.decodeOption(using Decoder.decodeString), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[VproductmodelinstructionsViewRow] = Encoder.forProduct11[VproductmodelinstructionsViewRow, ProductmodelId, Name, /* nullability unknown */ Option[String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 1024 chars */ String], TypoUUID, TypoLocalDateTime]("productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate")(x => (x.productmodelid, x.name, x.instructions, x.locationID, x.setupHours, x.machineHours, x.laborHours, x.lotSize, x.step, x.rowguid, x.modifieddate))(using ProductmodelId.encoder, Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeInt), Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeOption(using Encoder.encodeInt), Encoder.encodeOption(using Encoder.encodeString), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[VproductmodelinstructionsViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VproductmodelinstructionsViewRow(
-      productmodelid = arr(0).asInstanceOf[ProductmodelId],
-          name = arr(1).asInstanceOf[Name],
-          instructions = arr(2).asInstanceOf[/* nullability unknown */ Option[String]],
-          locationID = arr(3).asInstanceOf[/* nullability unknown */ Option[Int]],
-          setupHours = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-          machineHours = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-          laborHours = arr(6).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-          lotSize = arr(7).asInstanceOf[/* nullability unknown */ Option[Int]],
-          step = arr(8).asInstanceOf[/* nullability unknown */ Option[/* max 1024 chars */ String]],
-          rowguid = arr(9).asInstanceOf[TypoUUID],
-          modifieddate = arr(10).asInstanceOf[TypoLocalDateTime]
-    )
+
+  given read: Read[VproductmodelinstructionsViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VproductmodelinstructionsViewRow(
+        productmodelid = arr(0).asInstanceOf[ProductmodelId],
+            name = arr(1).asInstanceOf[Name],
+            instructions = arr(2).asInstanceOf[/* nullability unknown */ Option[String]],
+            locationID = arr(3).asInstanceOf[/* nullability unknown */ Option[Int]],
+            setupHours = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
+            machineHours = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
+            laborHours = arr(6).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
+            lotSize = arr(7).asInstanceOf[/* nullability unknown */ Option[Int]],
+            step = arr(8).asInstanceOf[/* nullability unknown */ Option[/* max 1024 chars */ String]],
+            rowguid = arr(9).asInstanceOf[TypoUUID],
+            modifieddate = arr(10).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

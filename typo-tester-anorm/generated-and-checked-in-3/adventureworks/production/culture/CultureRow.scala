@@ -20,8 +20,9 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: production.culture
-    Lookup table containing the languages in which some AdventureWorks data is stored.
-    Primary key: cultureid */
+ * Lookup table containing the languages in which some AdventureWorks data is stored.
+ * Primary key: cultureid
+ */
 case class CultureRow(
   /** Primary key for Culture records. */
   cultureid: CultureId,
@@ -29,44 +30,55 @@ case class CultureRow(
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = cultureid
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CultureRowUnsaved =
-     CultureRowUnsaved(cultureid, name, modifieddate)
- }
+) {
+  def id: CultureId = cultureid
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CultureRowUnsaved = new CultureRowUnsaved(cultureid, name, modifieddate)
+}
 
 object CultureRow {
-  given reads: Reads[CultureRow] = Reads[CultureRow](json => JsResult.fromTry(
-      Try(
-        CultureRow(
-          cultureid = json.\("cultureid").as(CultureId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given pgText: Text[CultureRow] = {
+    Text.instance[CultureRow]{ (row, sb) =>
+      CultureId.pgText.unsafeEncode(row.cultureid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[CultureRow] = {
+    Reads[CultureRow](json => JsResult.fromTry(
+        Try(
+          CultureRow(
+            cultureid = json.\("cultureid").as(CultureId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CultureRow] = RowParser[CultureRow] { row =>
-    Success(
-      CultureRow(
-        cultureid = row(idx + 0)(using CultureId.column),
-        name = row(idx + 1)(using Name.column),
-        modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given text: Text[CultureRow] = Text.instance[CultureRow]{ (row, sb) =>
-    CultureId.text.unsafeEncode(row.cultureid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[CultureRow] = {
+    RowParser[CultureRow] { row =>
+      Success(
+        CultureRow(
+          cultureid = row(idx + 0)(using CultureId.column),
+          name = row(idx + 1)(using Name.column),
+          modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[CultureRow] = OWrites[CultureRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "cultureid" -> CultureId.writes.writes(o.cultureid),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given writes: OWrites[CultureRow] = {
+    OWrites[CultureRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "cultureid" -> CultureId.writes.writes(o.cultureid),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.stateprovince` */
-case class StateprovinceId(value: Int) extends AnyVal
+case class StateprovinceId(value: Int) extends scala.AnyVal
+
 object StateprovinceId {
   given arrayColumn: Column[Array[StateprovinceId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[StateprovinceId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[StateprovinceId, Int] = Bijection[StateprovinceId, Int](_.value)(StateprovinceId.apply)
+
+  given bijection: Bijection[StateprovinceId, Int] = Bijection.apply[StateprovinceId, Int](_.value)(StateprovinceId.apply)
+
   given column: Column[StateprovinceId] = Column.columnToInt.map(StateprovinceId.apply)
-  given parameterMetadata: ParameterMetaData[StateprovinceId] = new ParameterMetaData[StateprovinceId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[StateprovinceId] = {
+    new ParameterMetaData[StateprovinceId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[StateprovinceId] = {
+    new Text[StateprovinceId] {
+      override def unsafeEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[StateprovinceId] = Reads.IntReads.map(StateprovinceId.apply)
-  given text: Text[StateprovinceId] = new Text[StateprovinceId] {
-    override def unsafeEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[StateprovinceId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[StateprovinceId] = Writes.IntWrites.contramap(_.value)
 }

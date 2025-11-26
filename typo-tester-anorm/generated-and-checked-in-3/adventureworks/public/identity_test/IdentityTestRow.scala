@@ -20,49 +20,61 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.identity-test
-    Primary key: name */
+ * Primary key: name
+ */
 case class IdentityTestRow(
   /** Identity ALWAYS, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
   alwaysGenerated: Int,
   /** Identity BY DEFAULT, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
   defaultGenerated: Int,
   name: IdentityTestId
-){
-   val id = name
-   def toUnsavedRow(defaultGenerated: Defaulted[Int] = Defaulted.Provided(this.defaultGenerated)): IdentityTestRowUnsaved =
-     IdentityTestRowUnsaved(name, defaultGenerated)
- }
+) {
+  def id: IdentityTestId = name
+
+  def toUnsavedRow(defaultGenerated: Defaulted[Int] = Defaulted.Provided(this.defaultGenerated)): IdentityTestRowUnsaved = new IdentityTestRowUnsaved(name, defaultGenerated)
+}
 
 object IdentityTestRow {
-  given reads: Reads[IdentityTestRow] = Reads[IdentityTestRow](json => JsResult.fromTry(
-      Try(
-        IdentityTestRow(
-          alwaysGenerated = json.\("always_generated").as(Reads.IntReads),
-          defaultGenerated = json.\("default_generated").as(Reads.IntReads),
-          name = json.\("name").as(IdentityTestId.reads)
+  given pgText: Text[IdentityTestRow] = {
+    Text.instance[IdentityTestRow]{ (row, sb) =>
+      Text.intInstance.unsafeEncode(row.defaultGenerated, sb)
+      sb.append(Text.DELIMETER)
+      IdentityTestId.pgText.unsafeEncode(row.name, sb)
+    }
+  }
+
+  given reads: Reads[IdentityTestRow] = {
+    Reads[IdentityTestRow](json => JsResult.fromTry(
+        Try(
+          IdentityTestRow(
+            alwaysGenerated = json.\("always_generated").as(Reads.IntReads),
+            defaultGenerated = json.\("default_generated").as(Reads.IntReads),
+            name = json.\("name").as(IdentityTestId.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[IdentityTestRow] = RowParser[IdentityTestRow] { row =>
-    Success(
-      IdentityTestRow(
-        alwaysGenerated = row(idx + 0)(using Column.columnToInt),
-        defaultGenerated = row(idx + 1)(using Column.columnToInt),
-        name = row(idx + 2)(using IdentityTestId.column)
-      )
+      ),
     )
   }
-  given text: Text[IdentityTestRow] = Text.instance[IdentityTestRow]{ (row, sb) =>
-    Text.intInstance.unsafeEncode(row.defaultGenerated, sb)
-    sb.append(Text.DELIMETER)
-    IdentityTestId.text.unsafeEncode(row.name, sb)
+
+  def rowParser(idx: Int): RowParser[IdentityTestRow] = {
+    RowParser[IdentityTestRow] { row =>
+      Success(
+        IdentityTestRow(
+          alwaysGenerated = row(idx + 0)(using Column.columnToInt),
+          defaultGenerated = row(idx + 1)(using Column.columnToInt),
+          name = row(idx + 2)(using IdentityTestId.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[IdentityTestRow] = OWrites[IdentityTestRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "always_generated" -> Writes.IntWrites.writes(o.alwaysGenerated),
-      "default_generated" -> Writes.IntWrites.writes(o.defaultGenerated),
-      "name" -> IdentityTestId.writes.writes(o.name)
-    ))
-  )
+
+  given writes: OWrites[IdentityTestRow] = {
+    OWrites[IdentityTestRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "always_generated" -> Writes.IntWrites.writes(o.alwaysGenerated),
+        "default_generated" -> Writes.IntWrites.writes(o.defaultGenerated),
+        "name" -> IdentityTestId.writes.writes(o.name)
+      ))
+    )
+  }
 }

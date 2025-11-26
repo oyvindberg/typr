@@ -22,39 +22,57 @@ import typo.dsl.Bijection
 case class TypoXml(value: String)
 
 object TypoXml {
-  given arrayColumn: Column[Array[TypoXml]] = Column.nonNull[Array[TypoXml]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoXml(v.asInstanceOf[PGobject].getValue)))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoXml, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
-  given arrayToStatement: ToStatement[Array[TypoXml]] = ToStatement[Array[TypoXml]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("xml", v.map(v => {
-                                                                                                                   val obj = new PGobject
-                                                                                                                   obj.setType("xml")
-                                                                                                                   obj.setValue(v.value)
-                                                                                                                   obj
-                                                                                                                 }))))
-  given bijection: Bijection[TypoXml, String] = Bijection[TypoXml, String](_.value)(TypoXml.apply)
-  given column: Column[TypoXml] = Column.nonNull[TypoXml]((v1: Any, _) =>
-    v1 match {
-      case v: PgSQLXML => Right(TypoXml(v.getString))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgSQLXML, got ${other.getClass.getName}"))
-    }
-  )
-  given parameterMetadata: ParameterMetaData[TypoXml] = new ParameterMetaData[TypoXml] {
-    override def sqlType: String = "xml"
-    override def jdbcType: Int = Types.OTHER
+  given arrayColumn: Column[Array[TypoXml]] = {
+    Column.nonNull[Array[TypoXml]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoXml(v.asInstanceOf[PGobject].getValue)))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoXml, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
   }
+
+  given arrayToStatement: ToStatement[Array[TypoXml]] = {
+    ToStatement[Array[TypoXml]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("xml", v.map(v => {
+      val obj = new PGobject()
+      obj.setType("xml")
+      obj.setValue(v.value)
+      obj
+    }))))
+  }
+
+  given bijection: Bijection[TypoXml, String] = Bijection.apply[TypoXml, String](_.value)(TypoXml.apply)
+
+  given column: Column[TypoXml] = {
+    Column.nonNull[TypoXml]((v1: Any, _) =>
+      v1 match {
+        case v: PgSQLXML => Right(new TypoXml(v.getString))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgSQLXML, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  given parameterMetadata: ParameterMetaData[TypoXml] = {
+    new ParameterMetaData[TypoXml] {
+      override def sqlType: String = "xml"
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  given pgText: Text[TypoXml] = {
+    new Text[TypoXml] {
+      override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString(), sb)
+      override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString(), sb)
+    }
+  }
+
   given reads: Reads[TypoXml] = Reads.StringReads.map(TypoXml.apply)
-  given text: Text[TypoXml] = new Text[TypoXml] {
-    override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
+
   given toStatement: ToStatement[TypoXml] = ToStatement[TypoXml]((s, index, v) => s.setObject(index, v.value))
+
   given writes: Writes[TypoXml] = Writes.StringWrites.contramap(_.value)
 }

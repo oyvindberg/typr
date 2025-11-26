@@ -6,16 +6,12 @@
 package adventureworks.production.vproductmodelinstructions
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VproductmodelinstructionsViewRepoImpl extends VproductmodelinstructionsViewRepo {
-  override def select: SelectBuilder[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] = {
-    SelectBuilderSql(""""production"."vproductmodelinstructions"""", VproductmodelinstructionsViewFields.structure, VproductmodelinstructionsViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VproductmodelinstructionsViewRow] = {
-    sql"""select "productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate"::text from "production"."vproductmodelinstructions"""".query(using VproductmodelinstructionsViewRow.read).stream
-  }
+  def select: SelectBuilder[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow] = SelectBuilder.of(""""production"."vproductmodelinstructions"""", VproductmodelinstructionsViewFields.structure, VproductmodelinstructionsViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, VproductmodelinstructionsViewRow] = sql"""select "productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate"::text from "production"."vproductmodelinstructions"""".query(using VproductmodelinstructionsViewRow.read).stream
 }

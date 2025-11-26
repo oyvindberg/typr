@@ -13,30 +13,38 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: public.issue142
-    Primary key: tabellkode */
-case class Issue142Row(
-  tabellkode: Issue142Id
-){
-   val id = tabellkode
- }
+ * Primary key: tabellkode
+ */
+case class Issue142Row(tabellkode: Issue142Id) {
+  def id: Issue142Id = tabellkode
+}
 
 object Issue142Row {
   implicit lazy val jdbcDecoder: JdbcDecoder[Issue142Row] = Issue142Id.jdbcDecoder.map(v => Issue142Row(tabellkode = v))
-  implicit lazy val jsonDecoder: JsonDecoder[Issue142Row] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val tabellkode = jsonObj.get("tabellkode").toRight("Missing field 'tabellkode'").flatMap(_.as(Issue142Id.jsonDecoder))
-    if (tabellkode.isRight)
-      Right(Issue142Row(tabellkode = tabellkode.toOption.get))
-    else Left(List[Either[String, Any]](tabellkode).flatMap(_.left.toOption).mkString(", "))
-  }
-  implicit lazy val jsonEncoder: JsonEncoder[Issue142Row] = new JsonEncoder[Issue142Row] {
-    override def unsafeEncode(a: Issue142Row, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""tabellkode":""")
-      Issue142Id.jsonEncoder.unsafeEncode(a.tabellkode, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonDecoder: JsonDecoder[Issue142Row] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val tabellkode = jsonObj.get("tabellkode").toRight("Missing field 'tabellkode'").flatMap(_.as(Issue142Id.jsonDecoder))
+      if (tabellkode.isRight)
+        Right(Issue142Row(tabellkode = tabellkode.toOption.get))
+      else Left(List[Either[String, Any]](tabellkode).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[Issue142Row] = Text.instance[Issue142Row]{ (row, sb) =>
-    Issue142Id.text.unsafeEncode(row.tabellkode, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[Issue142Row] = {
+    new JsonEncoder[Issue142Row] {
+      override def unsafeEncode(a: Issue142Row, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""tabellkode":""")
+        Issue142Id.jsonEncoder.unsafeEncode(a.tabellkode, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[Issue142Row] = {
+    Text.instance[Issue142Row]{ (row, sb) =>
+      Issue142Id.pgText.unsafeEncode(row.tabellkode, sb)
+    }
   }
 }

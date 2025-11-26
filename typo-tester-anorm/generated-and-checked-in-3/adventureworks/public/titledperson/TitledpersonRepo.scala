@@ -12,9 +12,17 @@ import typo.dsl.UpdateBuilder
 
 trait TitledpersonRepo {
   def delete: DeleteBuilder[TitledpersonFields, TitledpersonRow]
+
   def insert(unsaved: TitledpersonRow)(using c: Connection): TitledpersonRow
-  def insertStreaming(unsaved: Iterator[TitledpersonRow], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[TitledpersonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[TitledpersonFields, TitledpersonRow]
+
   def selectAll(using c: Connection): List[TitledpersonRow]
+
   def update: UpdateBuilder[TitledpersonFields, TitledpersonRow]
 }

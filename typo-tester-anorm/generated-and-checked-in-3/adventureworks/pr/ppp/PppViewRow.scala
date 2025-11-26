@@ -32,33 +32,41 @@ case class PppViewRow(
 )
 
 object PppViewRow {
-  given reads: Reads[PppViewRow] = Reads[PppViewRow](json => JsResult.fromTry(
-      Try(
-        PppViewRow(
-          productid = json.\("productid").as(ProductId.reads),
-          productphotoid = json.\("productphotoid").as(ProductphotoId.reads),
-          primary = json.\("primary").as(Flag.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PppViewRow] = {
+    Reads[PppViewRow](json => JsResult.fromTry(
+        Try(
+          PppViewRow(
+            productid = json.\("productid").as(ProductId.reads),
+            productphotoid = json.\("productphotoid").as(ProductphotoId.reads),
+            primary = json.\("primary").as(Flag.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PppViewRow] = RowParser[PppViewRow] { row =>
-    Success(
-      PppViewRow(
-        productid = row(idx + 0)(using ProductId.column),
-        productphotoid = row(idx + 1)(using ProductphotoId.column),
-        primary = row(idx + 2)(using Flag.column),
-        modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PppViewRow] = OWrites[PppViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid),
-      "primary" -> Flag.writes.writes(o.primary),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PppViewRow] = {
+    RowParser[PppViewRow] { row =>
+      Success(
+        PppViewRow(
+          productid = row(idx + 0)(using ProductId.column),
+          productphotoid = row(idx + 1)(using ProductphotoId.column),
+          primary = row(idx + 2)(using Flag.column),
+          modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PppViewRow] = {
+    OWrites[PppViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid),
+        "primary" -> Flag.writes.writes(o.primary),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

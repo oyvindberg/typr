@@ -1,15 +1,13 @@
 $schema: https://raw.githubusercontent.com/oyvindberg/bleep/master/schema.json
 $version: 0.0.13
 jvm:
-  name: graalvm-community:21.0.2
+  name: graalvm-community:25.0.0
 projects:
-  # these tests do not depend on running codegen, just unit tests and so on
   tests:
     dependencies: org.scalatest::scalatest:3.2.18
     dependsOn: typo
     extends: template-scala-3-stable
     isTestProject: true
-  # main project
   typo:
     cross:
       jvm212:
@@ -28,18 +26,49 @@ projects:
       mainClass: com.foo.App
     sources: ./generated-and-checked-in
   typo-dsl-anorm:
-    dependencies: org.playframework.anorm::anorm:2.7.0
+    dependsOn: typo-runtime-anorm
     extends: template-cross
     sources: ../typo-dsl-shared
+  typo-dsl-java:
+    dependsOn: typo-runtime-java
+    java:
+      options: -proc:none --release 24
+    platform:
+      name: jvm
   typo-dsl-doobie:
-    dependencies: org.tpolecat::doobie-postgres:1.0.0-RC9
+    dependsOn: typo-runtime-doobie
     extends: template-cross
     sources: ../typo-dsl-shared
   typo-dsl-zio-jdbc:
-    dependencies: dev.zio::zio-jdbc:0.1.2
+    dependsOn: typo-runtime-zio-jdbc
     extends: template-cross
     sources: ../typo-dsl-shared
-  # scripts for publishing, codegen and so on
+  typo-runtime-anorm:
+    dependencies: org.playframework.anorm::anorm:2.7.0
+    dependsOn: typo-runtime-java
+    extends: template-cross
+  typo-runtime-doobie:
+    dependencies: org.tpolecat::doobie-postgres:1.0.0-RC9
+    dependsOn: typo-runtime-java
+    extends: template-cross
+  typo-runtime-java:
+    java:
+      options: -proc:none
+    sourcegen:
+      project: typo-scripts
+      main: scripts.GeneratedRowParsers
+    dependencies:
+      - org.postgresql:postgresql:42.7.3
+      - net.hamnaberg.json:immutable-json-ast:7.0.1
+    platform:
+      name: jvm
+  typo-runtime-scala:
+    dependsOn: typo-runtime-java
+    extends: template-scala-3-stable
+  typo-runtime-zio-jdbc:
+    dependencies: dev.zio::zio-jdbc:0.1.2
+    dependsOn: typo-runtime-java
+    extends: template-cross
   typo-scripts:
     dependencies: build.bleep::bleep-plugin-ci-release:${BLEEP_VERSION}
     dependsOn: typo
@@ -56,7 +85,6 @@ projects:
     - typo-tester-anorm
     extends: template-scala-3-stable
     scala:
-      version: 3.5.0
       strict: false
   # scripts generate code into the tester projects, and there are hand-written tests inside as well
   typo-tester-anorm:
@@ -67,7 +95,6 @@ projects:
         sources: ./generated-and-checked-in-3
     dependencies:
     - com.typesafe.play::play-json:2.10.6
-    - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: typo-dsl-anorm
     extends: template-cross
@@ -83,11 +110,37 @@ projects:
         sources: ./generated-and-checked-in-3
     dependencies:
     - io.circe::circe-core:0.14.7
-    - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: typo-dsl-doobie
     extends: template-cross-scala-3-newest
     isTestProject: true
+    sourcegen:
+      main: scripts.GenHardcodedFiles
+      project: typo-scripts
+    sources: ./generated-and-checked-in
+  typo-tester-typo-java:
+    dependencies:
+    - junit:junit:4.13.2
+    - com.novocode:junit-interface:0.11
+    dependsOn: typo-dsl-java
+    isTestProject: true
+    java:
+      options: -proc:none
+    platform:
+      name: jvm
+    sources: ./generated-and-checked-in
+    sourcegen:
+      main: scripts.GenHardcodedFiles
+      project: typo-scripts
+  typo-tester-typo-scala:
+    dependencies:
+    - org.scalatest::scalatest:3.2.18
+    dependsOn:
+    - typo-dsl-java
+    - typo-runtime-scala
+    extends: template-scala-3-stable
+    isTestProject: true
+    sources: ./generated-and-checked-in
     sourcegen:
       main: scripts.GenHardcodedFiles
       project: typo-scripts
@@ -102,7 +155,6 @@ projects:
         sources: ./generated-and-checked-in-3
     dependencies:
     - dev.zio::zio-json:0.7.0
-    - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: typo-dsl-zio-jdbc
     extends: template-cross-scala-3-newest
@@ -137,6 +189,8 @@ templates:
   template-common:
     platform:
       name: jvm
+    java:
+      options: -Xlint:unchecked -Xlint:deprecation
     scala:
       options: -Xfatal-warnings -encoding utf8 -feature -unchecked
       strict: true
@@ -167,4 +221,4 @@ templates:
     extends: template-common
     scala:
       options: -source 3.7
-      version: 3.7.2
+      version: 3.7.3

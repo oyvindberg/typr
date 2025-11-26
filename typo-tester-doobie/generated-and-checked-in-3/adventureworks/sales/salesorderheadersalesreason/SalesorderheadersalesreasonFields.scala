@@ -37,27 +37,26 @@ trait SalesorderheadersalesreasonFields {
     salesorderid.isEqual(compositeId.salesorderid).and(salesreasonid.isEqual(compositeId.salesreasonid))
   def compositeIdIn(compositeIds: Array[SalesorderheadersalesreasonId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[SalesorderheadersalesreasonId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId]](using SalesorderheaderId.arrayPut), implicitly), TuplePart[SalesorderheadersalesreasonId](salesreasonid)(_.salesreasonid)(using as[Array[SalesreasonId]](using SalesreasonId.arrayPut), implicitly))
-  
+
 }
 
 object SalesorderheadersalesreasonFields {
   lazy val structure: Relation[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] {
-  
+
     override lazy val fields: SalesorderheadersalesreasonFields = new SalesorderheadersalesreasonFields {
       override def salesorderid = IdField[SalesorderheaderId, SalesorderheadersalesreasonRow](_path, "salesorderid", None, Some("int4"), x => x.salesorderid, (row, value) => row.copy(salesorderid = value))
       override def salesreasonid = IdField[SalesreasonId, SalesorderheadersalesreasonRow](_path, "salesreasonid", None, Some("int4"), x => x.salesreasonid, (row, value) => row.copy(salesreasonid = value))
       override def modifieddate = Field[TypoLocalDateTime, SalesorderheadersalesreasonRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SalesorderheadersalesreasonRow]] =
       List[FieldLike[?, SalesorderheadersalesreasonRow]](fields.salesorderid, fields.salesreasonid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

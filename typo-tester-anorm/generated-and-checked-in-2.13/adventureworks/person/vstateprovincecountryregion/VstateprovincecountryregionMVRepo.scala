@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait VstateprovincecountryregionMVRepo {
   def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow]
+
   def selectAll(implicit c: Connection): List[VstateprovincecountryregionMVRow]
 }

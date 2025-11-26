@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait BomViewRepo {
   def select: SelectBuilder[BomViewFields, BomViewRow]
+
   def selectAll: Stream[ConnectionIO, BomViewRow]
 }

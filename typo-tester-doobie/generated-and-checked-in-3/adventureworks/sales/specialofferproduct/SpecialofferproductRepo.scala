@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait SpecialofferproductRepo {
   def delete: DeleteBuilder[SpecialofferproductFields, SpecialofferproductRow]
+
   def deleteById(compositeId: SpecialofferproductId): ConnectionIO[Boolean]
+
   def deleteByIds(compositeIds: Array[SpecialofferproductId]): ConnectionIO[Int]
+
   def insert(unsaved: SpecialofferproductRow): ConnectionIO[SpecialofferproductRow]
+
   def insert(unsaved: SpecialofferproductRowUnsaved): ConnectionIO[SpecialofferproductRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, SpecialofferproductRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, SpecialofferproductRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, SpecialofferproductRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, SpecialofferproductRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[SpecialofferproductFields, SpecialofferproductRow]
+
   def selectAll: Stream[ConnectionIO, SpecialofferproductRow]
+
   def selectById(compositeId: SpecialofferproductId): ConnectionIO[Option[SpecialofferproductRow]]
+
   def selectByIds(compositeIds: Array[SpecialofferproductId]): Stream[ConnectionIO, SpecialofferproductRow]
+
   def selectByIdsTracked(compositeIds: Array[SpecialofferproductId]): ConnectionIO[Map[SpecialofferproductId, SpecialofferproductRow]]
+
   def update: UpdateBuilder[SpecialofferproductFields, SpecialofferproductRow]
+
   def update(row: SpecialofferproductRow): ConnectionIO[Option[SpecialofferproductRow]]
+
   def upsert(unsaved: SpecialofferproductRow): ConnectionIO[SpecialofferproductRow]
+
   def upsertBatch(unsaved: List[SpecialofferproductRow]): Stream[ConnectionIO, SpecialofferproductRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, SpecialofferproductRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, SpecialofferproductRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

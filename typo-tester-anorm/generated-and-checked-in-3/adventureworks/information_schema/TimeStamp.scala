@@ -16,23 +16,36 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Domain `information_schema.time_stamp`
-  * No constraint
-  */
+ * No constraint
+ */
 case class TimeStamp(value: TypoInstant)
+
 object TimeStamp {
   given arrayColumn: Column[Array[TimeStamp]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[TimeStamp]] = TypoInstant.arrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[TimeStamp, TypoInstant] = Bijection[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
+
+  given bijection: Bijection[TimeStamp, TypoInstant] = Bijection.apply[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
+
   given column: Column[TimeStamp] = TypoInstant.column.map(TimeStamp.apply)
-  given parameterMetadata: ParameterMetaData[TimeStamp] = new ParameterMetaData[TimeStamp] {
-    override def sqlType: String = """"information_schema"."time_stamp""""
-    override def jdbcType: Int = Types.OTHER
+
+  given parameterMetadata: ParameterMetaData[TimeStamp] = {
+    new ParameterMetaData[TimeStamp] {
+      override def sqlType: String = """"information_schema"."time_stamp""""
+      override def jdbcType: Int = Types.OTHER
+    }
   }
+
+  given pgText: Text[TimeStamp] = {
+    new Text[TimeStamp] {
+      override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.pgText.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.pgText.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[TimeStamp] = TypoInstant.reads.map(TimeStamp.apply)
-  given text: Text[TimeStamp] = new Text[TimeStamp] {
-    override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[TimeStamp] = TypoInstant.toStatement.contramap(_.value)
+
   given writes: Writes[TimeStamp] = TypoInstant.writes.contramap(_.value)
 }

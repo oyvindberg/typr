@@ -25,11 +25,11 @@ trait CreditcardFields {
 
 object CreditcardFields {
   lazy val structure: Relation[CreditcardFields, CreditcardRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CreditcardFields, CreditcardRow] {
-  
+
     override lazy val fields: CreditcardFields = new CreditcardFields {
       override def creditcardid = IdField[/* user-picked */ CustomCreditcardId, CreditcardRow](_path, "creditcardid", None, Some("int4"), x => x.creditcardid, (row, value) => row.copy(creditcardid = value))
       override def cardtype = Field[/* max 50 chars */ String, CreditcardRow](_path, "cardtype", None, None, x => x.cardtype, (row, value) => row.copy(cardtype = value))
@@ -38,12 +38,11 @@ object CreditcardFields {
       override def expyear = Field[TypoShort, CreditcardRow](_path, "expyear", None, Some("int2"), x => x.expyear, (row, value) => row.copy(expyear = value))
       override def modifieddate = Field[TypoLocalDateTime, CreditcardRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CreditcardRow]] =
       List[FieldLike[?, CreditcardRow]](fields.creditcardid, fields.cardtype, fields.cardnumber, fields.expmonth, fields.expyear, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

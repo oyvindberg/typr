@@ -34,16 +34,16 @@ trait SalespersonquotahistoryFields {
     businessentityid.isEqual(compositeId.businessentityid).and(quotadate.isEqual(compositeId.quotadate))
   def compositeIdIn(compositeIds: Array[SalespersonquotahistoryId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[SalespersonquotahistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](using BusinessentityId.arrayPut), implicitly), TuplePart[SalespersonquotahistoryId](quotadate)(_.quotadate)(using as[Array[TypoLocalDateTime]](using TypoLocalDateTime.arrayPut), implicitly))
-  
+
 }
 
 object SalespersonquotahistoryFields {
   lazy val structure: Relation[SalespersonquotahistoryFields, SalespersonquotahistoryRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SalespersonquotahistoryFields, SalespersonquotahistoryRow] {
-  
+
     override lazy val fields: SalespersonquotahistoryFields = new SalespersonquotahistoryFields {
       override def businessentityid = IdField[BusinessentityId, SalespersonquotahistoryRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def quotadate = IdField[TypoLocalDateTime, SalespersonquotahistoryRow](_path, "quotadate", Some("text"), Some("timestamp"), x => x.quotadate, (row, value) => row.copy(quotadate = value))
@@ -51,12 +51,11 @@ object SalespersonquotahistoryFields {
       override def rowguid = Field[TypoUUID, SalespersonquotahistoryRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SalespersonquotahistoryRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SalespersonquotahistoryRow]] =
       List[FieldLike[?, SalespersonquotahistoryRow]](fields.businessentityid, fields.quotadate, fields.salesquota, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

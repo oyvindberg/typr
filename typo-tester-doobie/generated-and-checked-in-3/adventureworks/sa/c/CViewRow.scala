@@ -34,24 +34,28 @@ case class CViewRow(
 
 object CViewRow {
   given decoder: Decoder[CViewRow] = Decoder.forProduct7[CViewRow, CustomerId, CustomerId, Option[BusinessentityId], Option[BusinessentityId], Option[SalesterritoryId], TypoUUID, TypoLocalDateTime]("id", "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")(CViewRow.apply)(using CustomerId.decoder, CustomerId.decoder, Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using SalesterritoryId.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[CViewRow] = Encoder.forProduct7[CViewRow, CustomerId, CustomerId, Option[BusinessentityId], Option[BusinessentityId], Option[SalesterritoryId], TypoUUID, TypoLocalDateTime]("id", "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")(x => (x.id, x.customerid, x.personid, x.storeid, x.territoryid, x.rowguid, x.modifieddate))(using CustomerId.encoder, CustomerId.encoder, Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using SalesterritoryId.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[CViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(CustomerId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[CViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(CustomerId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(SalesterritoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    CViewRow(
-      id = arr(0).asInstanceOf[CustomerId],
-          customerid = arr(1).asInstanceOf[CustomerId],
-          personid = arr(2).asInstanceOf[Option[BusinessentityId]],
-          storeid = arr(3).asInstanceOf[Option[BusinessentityId]],
-          territoryid = arr(4).asInstanceOf[Option[SalesterritoryId]],
-          rowguid = arr(5).asInstanceOf[TypoUUID],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(CustomerId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(SalesterritoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      CViewRow(
+        id = arr(0).asInstanceOf[CustomerId],
+            customerid = arr(1).asInstanceOf[CustomerId],
+            personid = arr(2).asInstanceOf[Option[BusinessentityId]],
+            storeid = arr(3).asInstanceOf[Option[BusinessentityId]],
+            territoryid = arr(4).asInstanceOf[Option[SalesterritoryId]],
+            rowguid = arr(5).asInstanceOf[TypoUUID],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

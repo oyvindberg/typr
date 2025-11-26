@@ -21,8 +21,9 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: production.transactionhistoryarchive
-    Transactions for previous years.
-    Primary key: transactionid */
+ * Transactions for previous years.
+ * Primary key: transactionid
+ */
 case class TransactionhistoryarchiveRow(
   /** Primary key for TransactionHistoryArchive records. */
   transactionid: TransactionhistoryarchiveId,
@@ -31,13 +32,16 @@ case class TransactionhistoryarchiveRow(
   /** Purchase order, sales order, or work order identification number. */
   referenceorderid: Int,
   /** Line number associated with the purchase order, sales order, or work order.
-      Default: 0 */
+   * Default: 0
+   */
   referenceorderlineid: Int,
   /** Date and time of the transaction.
-      Default: now() */
+   * Default: now()
+   */
   transactiondate: TypoLocalDateTime,
   /** W = Work Order, S = Sales Order, P = Purchase Order
-      Constraint CK_TransactionHistoryArchive_TransactionType affecting columns transactiontype: ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text]))) */
+   * Constraint CK_TransactionHistoryArchive_TransactionType affecting columns transactiontype: ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
+   */
   transactiontype: /* bpchar, max 1 chars */ String,
   /** Product quantity. */
   quantity: Int,
@@ -45,74 +49,101 @@ case class TransactionhistoryarchiveRow(
   actualcost: BigDecimal,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = transactionid
-   def toUnsavedRow(referenceorderlineid: Defaulted[Int] = Defaulted.Provided(this.referenceorderlineid), transactiondate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.transactiondate), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): TransactionhistoryarchiveRowUnsaved =
-     TransactionhistoryarchiveRowUnsaved(transactionid, productid, referenceorderid, transactiontype, quantity, actualcost, referenceorderlineid, transactiondate, modifieddate)
- }
+) {
+  def id: TransactionhistoryarchiveId = transactionid
 
-object TransactionhistoryarchiveRow {
-  implicit lazy val reads: Reads[TransactionhistoryarchiveRow] = Reads[TransactionhistoryarchiveRow](json => JsResult.fromTry(
-      Try(
-        TransactionhistoryarchiveRow(
-          transactionid = json.\("transactionid").as(TransactionhistoryarchiveId.reads),
-          productid = json.\("productid").as(Reads.IntReads),
-          referenceorderid = json.\("referenceorderid").as(Reads.IntReads),
-          referenceorderlineid = json.\("referenceorderlineid").as(Reads.IntReads),
-          transactiondate = json.\("transactiondate").as(TypoLocalDateTime.reads),
-          transactiontype = json.\("transactiontype").as(Reads.StringReads),
-          quantity = json.\("quantity").as(Reads.IntReads),
-          actualcost = json.\("actualcost").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TransactionhistoryarchiveRow] = RowParser[TransactionhistoryarchiveRow] { row =>
-    Success(
-      TransactionhistoryarchiveRow(
-        transactionid = row(idx + 0)(TransactionhistoryarchiveId.column),
-        productid = row(idx + 1)(Column.columnToInt),
-        referenceorderid = row(idx + 2)(Column.columnToInt),
-        referenceorderlineid = row(idx + 3)(Column.columnToInt),
-        transactiondate = row(idx + 4)(TypoLocalDateTime.column),
-        transactiontype = row(idx + 5)(Column.columnToString),
-        quantity = row(idx + 6)(Column.columnToInt),
-        actualcost = row(idx + 7)(Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 8)(TypoLocalDateTime.column)
-      )
+  def toUnsavedRow(
+    referenceorderlineid: Defaulted[Int] = Defaulted.Provided(this.referenceorderlineid),
+    transactiondate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.transactiondate),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): TransactionhistoryarchiveRowUnsaved = {
+    new TransactionhistoryarchiveRowUnsaved(
+      transactionid,
+      productid,
+      referenceorderid,
+      transactiontype,
+      quantity,
+      actualcost,
+      referenceorderlineid,
+      transactiondate,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[TransactionhistoryarchiveRow] = Text.instance[TransactionhistoryarchiveRow]{ (row, sb) =>
-    TransactionhistoryarchiveId.text.unsafeEncode(row.transactionid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.referenceorderid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.referenceorderlineid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.transactiondate, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.transactiontype, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.quantity, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.actualcost, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object TransactionhistoryarchiveRow {
+  implicit lazy val pgText: Text[TransactionhistoryarchiveRow] = {
+    Text.instance[TransactionhistoryarchiveRow]{ (row, sb) =>
+      TransactionhistoryarchiveId.pgText.unsafeEncode(row.transactionid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.referenceorderid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.referenceorderlineid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.transactiondate, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.transactiontype, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.quantity, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.actualcost, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[TransactionhistoryarchiveRow] = OWrites[TransactionhistoryarchiveRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "transactionid" -> TransactionhistoryarchiveId.writes.writes(o.transactionid),
-      "productid" -> Writes.IntWrites.writes(o.productid),
-      "referenceorderid" -> Writes.IntWrites.writes(o.referenceorderid),
-      "referenceorderlineid" -> Writes.IntWrites.writes(o.referenceorderlineid),
-      "transactiondate" -> TypoLocalDateTime.writes.writes(o.transactiondate),
-      "transactiontype" -> Writes.StringWrites.writes(o.transactiontype),
-      "quantity" -> Writes.IntWrites.writes(o.quantity),
-      "actualcost" -> Writes.BigDecimalWrites.writes(o.actualcost),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[TransactionhistoryarchiveRow] = {
+    Reads[TransactionhistoryarchiveRow](json => JsResult.fromTry(
+        Try(
+          TransactionhistoryarchiveRow(
+            transactionid = json.\("transactionid").as(TransactionhistoryarchiveId.reads),
+            productid = json.\("productid").as(Reads.IntReads),
+            referenceorderid = json.\("referenceorderid").as(Reads.IntReads),
+            referenceorderlineid = json.\("referenceorderlineid").as(Reads.IntReads),
+            transactiondate = json.\("transactiondate").as(TypoLocalDateTime.reads),
+            transactiontype = json.\("transactiontype").as(Reads.StringReads),
+            quantity = json.\("quantity").as(Reads.IntReads),
+            actualcost = json.\("actualcost").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[TransactionhistoryarchiveRow] = {
+    RowParser[TransactionhistoryarchiveRow] { row =>
+      Success(
+        TransactionhistoryarchiveRow(
+          transactionid = row(idx + 0)(TransactionhistoryarchiveId.column),
+          productid = row(idx + 1)(Column.columnToInt),
+          referenceorderid = row(idx + 2)(Column.columnToInt),
+          referenceorderlineid = row(idx + 3)(Column.columnToInt),
+          transactiondate = row(idx + 4)(TypoLocalDateTime.column),
+          transactiontype = row(idx + 5)(Column.columnToString),
+          quantity = row(idx + 6)(Column.columnToInt),
+          actualcost = row(idx + 7)(Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 8)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[TransactionhistoryarchiveRow] = {
+    OWrites[TransactionhistoryarchiveRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "transactionid" -> TransactionhistoryarchiveId.writes.writes(o.transactionid),
+        "productid" -> Writes.IntWrites.writes(o.productid),
+        "referenceorderid" -> Writes.IntWrites.writes(o.referenceorderid),
+        "referenceorderlineid" -> Writes.IntWrites.writes(o.referenceorderlineid),
+        "transactiondate" -> TypoLocalDateTime.writes.writes(o.transactiondate),
+        "transactiontype" -> Writes.StringWrites.writes(o.transactiontype),
+        "quantity" -> Writes.IntWrites.writes(o.quantity),
+        "actualcost" -> Writes.BigDecimalWrites.writes(o.actualcost),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -42,32 +42,36 @@ case class VemployeedepartmenthistoryViewRow(
 
 object VemployeedepartmenthistoryViewRow {
   given decoder: Decoder[VemployeedepartmenthistoryViewRow] = Decoder.forProduct11[VemployeedepartmenthistoryViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Name, Name, Name, TypoLocalDate, Option[TypoLocalDate]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate", "enddate")(VemployeedepartmenthistoryViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Name.decoder, Name.decoder, Name.decoder, TypoLocalDate.decoder, Decoder.decodeOption(using TypoLocalDate.decoder))
+
   given encoder: Encoder[VemployeedepartmenthistoryViewRow] = Encoder.forProduct11[VemployeedepartmenthistoryViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Name, Name, Name, TypoLocalDate, Option[TypoLocalDate]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate", "enddate")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.shift, x.department, x.groupname, x.startdate, x.enddate))(using BusinessentityId.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Name.encoder, Name.encoder, Name.encoder, TypoLocalDate.encoder, Encoder.encodeOption(using TypoLocalDate.encoder))
-  given read: Read[VemployeedepartmenthistoryViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VemployeedepartmenthistoryViewRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          title = arr(1).asInstanceOf[Option[/* max 8 chars */ String]],
-          firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
-          middlename = arr(3).asInstanceOf[Option[Name]],
-          lastname = arr(4).asInstanceOf[Name],
-          suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
-          shift = arr(6).asInstanceOf[Name],
-          department = arr(7).asInstanceOf[Name],
-          groupname = arr(8).asInstanceOf[Name],
-          startdate = arr(9).asInstanceOf[TypoLocalDate],
-          enddate = arr(10).asInstanceOf[Option[TypoLocalDate]]
-    )
+
+  given read: Read[VemployeedepartmenthistoryViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VemployeedepartmenthistoryViewRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            title = arr(1).asInstanceOf[Option[/* max 8 chars */ String]],
+            firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
+            middlename = arr(3).asInstanceOf[Option[Name]],
+            lastname = arr(4).asInstanceOf[Name],
+            suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
+            shift = arr(6).asInstanceOf[Name],
+            department = arr(7).asInstanceOf[Name],
+            groupname = arr(8).asInstanceOf[Name],
+            startdate = arr(9).asInstanceOf[TypoLocalDate],
+            enddate = arr(10).asInstanceOf[Option[TypoLocalDate]]
+      )
+    }
   }
 }

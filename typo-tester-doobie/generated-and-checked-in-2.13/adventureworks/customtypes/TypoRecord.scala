@@ -18,28 +18,45 @@ import typo.dsl.Bijection
 case class TypoRecord(value: String)
 
 object TypoRecord {
-  implicit lazy val arrayGet: Get[Array[TypoRecord]] = Get.Advanced.array[AnyRef](NonEmptyList.one("record[]"))
-    .map(_.map(v => TypoRecord(v.asInstanceOf[PGobject].getValue)))
-  implicit lazy val arrayPut: Put[Array[TypoRecord]] = Put.Advanced.array[AnyRef](NonEmptyList.one("record[]"), "record")
-    .contramap(_.map(v => {
-                            val obj = new PGobject
-                            obj.setType("record")
-                            obj.setValue(v.value)
-                            obj
-                          }))
-  implicit lazy val bijection: Bijection[TypoRecord, String] = Bijection[TypoRecord, String](_.value)(TypoRecord.apply)
+  implicit lazy val arrayGet: Get[Array[TypoRecord]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("record[]"))
+      .map(_.map(v => new TypoRecord(v.asInstanceOf[PGobject].getValue)))
+  }
+
+  implicit lazy val arrayPut: Put[Array[TypoRecord]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("record[]"), "record")
+      .contramap(_.map(v => {
+                              val obj = new PGobject()
+                              obj.setType("record")
+                              obj.setValue(v.value)
+                              obj
+                            }))
+  }
+
+  implicit lazy val bijection: Bijection[TypoRecord, String] = Bijection.apply[TypoRecord, String](_.value)(TypoRecord.apply)
+
   implicit lazy val decoder: Decoder[TypoRecord] = Decoder.decodeString.map(TypoRecord.apply)
+
   implicit lazy val encoder: Encoder[TypoRecord] = Encoder.encodeString.contramap(_.value)
-  implicit lazy val get: Get[TypoRecord] = Get.Advanced.other[PGobject](NonEmptyList.one("record"))
-    .map(v => TypoRecord(v.getValue))
-  implicit lazy val put: Put[TypoRecord] = Put.Advanced.other[PGobject](NonEmptyList.one("record")).contramap(v => {
-                                                                            val obj = new PGobject
-                                                                            obj.setType("record")
-                                                                            obj.setValue(v.value)
-                                                                            obj
-                                                                          })
-  implicit lazy val text: Text[TypoRecord] = new Text[TypoRecord] {
-    override def unsafeEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val get: Get[TypoRecord] = {
+    Get.Advanced.other[PGobject](NonEmptyList.one("record"))
+      .map(v => new TypoRecord(v.getValue))
+  }
+
+  implicit lazy val pgText: Text[TypoRecord] = {
+    new Text[TypoRecord] {
+      override def unsafeEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val put: Put[TypoRecord] = {
+    Put.Advanced.other[PGobject](NonEmptyList.one("record")).contramap(v => {
+      val obj = new PGobject()
+      obj.setType("record")
+      obj.setValue(v.value)
+      obj
+    })
   }
 }

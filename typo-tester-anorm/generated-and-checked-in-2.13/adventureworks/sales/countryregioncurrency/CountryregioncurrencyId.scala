@@ -20,20 +20,26 @@ case class CountryregioncurrencyId(
   countryregioncode: CountryregionId,
   currencycode: CurrencyId
 )
+
 object CountryregioncurrencyId {
-  implicit lazy val reads: Reads[CountryregioncurrencyId] = Reads[CountryregioncurrencyId](json => JsResult.fromTry(
-      Try(
-        CountryregioncurrencyId(
-          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
-          currencycode = json.\("currencycode").as(CurrencyId.reads)
+  implicit lazy val reads: Reads[CountryregioncurrencyId] = {
+    Reads[CountryregioncurrencyId](json => JsResult.fromTry(
+        Try(
+          CountryregioncurrencyId(
+            countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+            currencycode = json.\("currencycode").as(CurrencyId.reads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[CountryregioncurrencyId] = OWrites[CountryregioncurrencyId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
-      "currencycode" -> CurrencyId.writes.writes(o.currencycode)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[CountryregioncurrencyId] = {
+    OWrites[CountryregioncurrencyId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+        "currencycode" -> CurrencyId.writes.writes(o.currencycode)
+      ))
+    )
+  }
 }

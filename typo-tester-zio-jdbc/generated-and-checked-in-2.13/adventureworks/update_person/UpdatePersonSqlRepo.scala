@@ -10,5 +10,8 @@ import zio.ZIO
 import zio.jdbc.ZConnection
 
 trait UpdatePersonSqlRepo {
-  def apply(suffix: String, cutoff: Option[TypoLocalDateTime]): ZIO[ZConnection, Throwable, Long]
+  def apply(
+    suffix: String,
+    cutoff: Option[TypoLocalDateTime]
+  ): ZIO[ZConnection, Throwable, Long]
 }

@@ -6,16 +6,12 @@
 package adventureworks.pu.sm
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class SmViewRepoImpl extends SmViewRepo {
-  override def select: SelectBuilder[SmViewFields, SmViewRow] = {
-    SelectBuilderSql(""""pu"."sm"""", SmViewFields.structure, SmViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, SmViewRow] = {
-    sql"""select "id", "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate"::text from "pu"."sm"""".query(SmViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[SmViewFields, SmViewRow] = SelectBuilder.of(""""pu"."sm"""", SmViewFields.structure, SmViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, SmViewRow] = sql"""select "id", "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate"::text from "pu"."sm"""".query(SmViewRow.jdbcDecoder).selectStream()
 }

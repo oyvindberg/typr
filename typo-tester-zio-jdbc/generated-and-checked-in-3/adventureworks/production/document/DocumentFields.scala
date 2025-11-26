@@ -42,11 +42,11 @@ trait DocumentFields {
 
 object DocumentFields {
   lazy val structure: Relation[DocumentFields, DocumentRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[DocumentFields, DocumentRow] {
-  
+
     override lazy val fields: DocumentFields = new DocumentFields {
       override def title = Field[/* max 50 chars */ String, DocumentRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
       override def owner = Field[BusinessentityId, DocumentRow](_path, "owner", None, Some("int4"), x => x.owner, (row, value) => row.copy(owner = value))
@@ -62,12 +62,11 @@ object DocumentFields {
       override def modifieddate = Field[TypoLocalDateTime, DocumentRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
       override def documentnode = IdField[DocumentId, DocumentRow](_path, "documentnode", None, None, x => x.documentnode, (row, value) => row.copy(documentnode = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, DocumentRow]] =
       List[FieldLike[?, DocumentRow]](fields.title, fields.owner, fields.folderflag, fields.filename, fields.fileextension, fields.revision, fields.changenumber, fields.status, fields.documentsummary, fields.document, fields.rowguid, fields.modifieddate, fields.documentnode)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -19,44 +19,57 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.only_pk_columns
-    Composite primary key: key_column_1, key_column_2 */
+ * Composite primary key: key_column_1, key_column_2
+ */
 case class OnlyPkColumnsRow(
   keyColumn1: String,
   keyColumn2: Int
-){
-   val compositeId: OnlyPkColumnsId = OnlyPkColumnsId(keyColumn1, keyColumn2)
-   val id = compositeId
- }
+) {
+  def compositeId: OnlyPkColumnsId = new OnlyPkColumnsId(keyColumn1, keyColumn2)
+
+  def id: OnlyPkColumnsId = this.compositeId
+}
 
 object OnlyPkColumnsRow {
-  def apply(compositeId: OnlyPkColumnsId) =
-    new OnlyPkColumnsRow(compositeId.keyColumn1, compositeId.keyColumn2)
-  implicit lazy val reads: Reads[OnlyPkColumnsRow] = Reads[OnlyPkColumnsRow](json => JsResult.fromTry(
-      Try(
-        OnlyPkColumnsRow(
-          keyColumn1 = json.\("key_column_1").as(Reads.StringReads),
-          keyColumn2 = json.\("key_column_2").as(Reads.IntReads)
+  def apply(compositeId: OnlyPkColumnsId): OnlyPkColumnsRow = new OnlyPkColumnsRow(compositeId.keyColumn1, compositeId.keyColumn2)
+
+  implicit lazy val pgText: Text[OnlyPkColumnsRow] = {
+    Text.instance[OnlyPkColumnsRow]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.keyColumn1, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.keyColumn2, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[OnlyPkColumnsRow] = {
+    Reads[OnlyPkColumnsRow](json => JsResult.fromTry(
+        Try(
+          OnlyPkColumnsRow(
+            keyColumn1 = json.\("key_column_1").as(Reads.StringReads),
+            keyColumn2 = json.\("key_column_2").as(Reads.IntReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[OnlyPkColumnsRow] = RowParser[OnlyPkColumnsRow] { row =>
-    Success(
-      OnlyPkColumnsRow(
-        keyColumn1 = row(idx + 0)(Column.columnToString),
-        keyColumn2 = row(idx + 1)(Column.columnToInt)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[OnlyPkColumnsRow] = Text.instance[OnlyPkColumnsRow]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.keyColumn1, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.keyColumn2, sb)
+
+  def rowParser(idx: Int): RowParser[OnlyPkColumnsRow] = {
+    RowParser[OnlyPkColumnsRow] { row =>
+      Success(
+        OnlyPkColumnsRow(
+          keyColumn1 = row(idx + 0)(Column.columnToString),
+          keyColumn2 = row(idx + 1)(Column.columnToInt)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[OnlyPkColumnsRow] = OWrites[OnlyPkColumnsRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "key_column_1" -> Writes.StringWrites.writes(o.keyColumn1),
-      "key_column_2" -> Writes.IntWrites.writes(o.keyColumn2)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[OnlyPkColumnsRow] = {
+    OWrites[OnlyPkColumnsRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "key_column_1" -> Writes.StringWrites.writes(o.keyColumn1),
+        "key_column_2" -> Writes.IntWrites.writes(o.keyColumn2)
+      ))
+    )
+  }
 }

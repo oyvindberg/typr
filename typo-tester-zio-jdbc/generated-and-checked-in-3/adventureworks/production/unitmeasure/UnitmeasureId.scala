@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.unitmeasure` */
-case class UnitmeasureId(value: /* bpchar, max 3 chars */ String) extends AnyVal
+case class UnitmeasureId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+
 object UnitmeasureId {
   given arrayJdbcDecoder: JdbcDecoder[Array[UnitmeasureId]] = adventureworks.StringArrayDecoder.map(_.map(UnitmeasureId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[UnitmeasureId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[UnitmeasureId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[UnitmeasureId, /* bpchar, max 3 chars */ String] = Bijection[UnitmeasureId, /* bpchar, max 3 chars */ String](_.value)(UnitmeasureId.apply)
+
+  given bijection: Bijection[UnitmeasureId, /* bpchar, max 3 chars */ String] = Bijection.apply[UnitmeasureId, /* bpchar, max 3 chars */ String](_.value)(UnitmeasureId.apply)
+
   given jdbcDecoder: JdbcDecoder[UnitmeasureId] = JdbcDecoder.stringDecoder.map(UnitmeasureId.apply)
+
   given jdbcEncoder: JdbcEncoder[UnitmeasureId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[UnitmeasureId] = JsonDecoder.string.map(UnitmeasureId.apply)
+
   given jsonEncoder: JsonEncoder[UnitmeasureId] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[UnitmeasureId] = PGType.PGTypeString.as
-  given setter: Setter[UnitmeasureId] = Setter.stringSetter.contramap(_.value)
-  given text: Text[UnitmeasureId] = new Text[UnitmeasureId] {
-    override def unsafeEncode(v: UnitmeasureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: UnitmeasureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[UnitmeasureId] = {
+    new Text[UnitmeasureId] {
+      override def unsafeEncode(v: UnitmeasureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: UnitmeasureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[UnitmeasureId] = PGType.PGTypeString.as
+
+  given setter: Setter[UnitmeasureId] = Setter.stringSetter.contramap(_.value)
 }

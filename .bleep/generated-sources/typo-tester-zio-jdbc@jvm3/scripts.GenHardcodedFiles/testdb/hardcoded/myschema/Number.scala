@@ -17,55 +17,72 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Enum `myschema.number`
-  *  - one
-  *  - two
-  *  - three
-  */
-sealed abstract class Number(val value: String)
+ *  - one
+ *  - two
+ *  - three
+ */
+
+sealed abstract class Number(val value: java.lang.String)
 
 object Number {
-  def apply(str: String): Either[String, Number] =
-    ByName.get(str).toRight(s"'$str' does not match any of the following legal values: $Names")
-  def force(str: String): Number =
-    apply(str) match {
-      case Left(msg) => sys.error(msg)
-      case Right(value) => value
-    }
-  case object `_one` extends Number("one")
-  case object `_two` extends Number("two")
-  case object `_three` extends Number("three")
-  val All: List[Number] = List(`_one`, `_two`, `_three`)
-  val Names: String = All.map(_.value).mkString(", ")
-  val ByName: Map[String, Number] = All.map(x => (x.value, x)).toMap
-              
+  given arraySetter: Setter[Array[Number]] = {
+    Setter.forSqlType[Array[Number]](
+        (ps, i, v) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.number", v.map(x => x.value))),
+        java.sql.Types.ARRAY
+      )
+  }
+
   given arrayJdbcDecoder: JdbcDecoder[Array[Number]] = testdb.hardcoded.StringArrayDecoder.map(a => if (a == null) null else a.map(force))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[Number]] = JdbcEncoder.singleParamEncoder(using arraySetter)
-  given arraySetter: Setter[Array[Number]] = Setter.forSqlType[Array[Number]](
-      (ps, i, v) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.number", v.map(x => x.value))),
-      java.sql.Types.ARRAY
-    )
-  given jdbcDecoder: JdbcDecoder[Number] = JdbcDecoder.stringDecoder.flatMap { s =>
-    new JdbcDecoder[Number] {
-      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, Number) = {
-        def error(msg: String): JdbcDecoderError =
-          JdbcDecoderError(
-            message = s"Error decoding Number from ResultSet",
-            cause = new RuntimeException(msg),
-            metadata = rs.getMetaData,
-            row = rs.getRow
-          )
+
+  given jdbcEncoder: JdbcEncoder[Number] = JdbcEncoder.stringEncoder.contramap(_.value)
+
+  given jdbcDecoder: JdbcDecoder[Number] = {
+    JdbcDecoder.stringDecoder.flatMap { s =>
+      new JdbcDecoder[Number] {
+        override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, Number) = {
+          def error(msg: String): JdbcDecoderError =
+            JdbcDecoderError(
+              message = s"Error decoding Number from ResultSet",
+              cause = new RuntimeException(msg),
+              metadata = rs.getMetaData,
+              row = rs.getRow
+            )
   
-        Number.apply(s).fold(e => throw error(e), (columIndex, _))
+          Number.apply(s).fold(e => throw error(e), (columIndex, _))
+        }
       }
     }
   }
-  given jdbcEncoder: JdbcEncoder[Number] = JdbcEncoder.stringEncoder.contramap(_.value)
-  given jsonDecoder: JsonDecoder[Number] = JsonDecoder.string.mapOrFail(Number.apply)
-  given jsonEncoder: JsonEncoder[Number] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[Number] = PGType.instance[Number]("myschema.number", Types.OTHER)
+
   given setter: Setter[Number] = Setter.stringSetter.contramap(_.value)
-  given text: Text[Number] = new Text[Number] {
-    override def unsafeEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgType: PGType[Number] = PGType.instance[Number]("myschema.number", Types.OTHER)
+
+  given pgText: Text[Number] = {
+    new Text[Number] {
+      override def unsafeEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Number, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given jsonDecoder: JsonDecoder[Number] = JsonDecoder.string.mapOrFail(Number.apply)
+
+  given jsonEncoder: JsonEncoder[Number] = JsonEncoder.string.contramap(_.value)
+  def apply(str: java.lang.String): scala.Either[java.lang.String, Number] =
+    ByName.get(str).toRight(s"'$str' does not match any of the following legal values: $Names")
+  def force(str: java.lang.String): Number =
+    apply(str) match {
+      case scala.Left(msg) => sys.error(msg)
+      case scala.Right(value) => value
+    }
+  case object `_one` extends Number("one")
+
+  case object `_two` extends Number("two")
+
+  case object `_three` extends Number("three")
+  val All: scala.List[Number] = scala.List(`_one`, `_two`, `_three`)
+  val Names: java.lang.String = All.map(_.value).mkString(", ")
+  val ByName: scala.collection.immutable.Map[java.lang.String, Number] = All.map(x => (x.value, x)).toMap
 }

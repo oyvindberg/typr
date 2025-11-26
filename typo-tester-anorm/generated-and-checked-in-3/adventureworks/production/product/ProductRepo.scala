@@ -12,22 +12,47 @@ import typo.dsl.UpdateBuilder
 
 trait ProductRepo {
   def delete: DeleteBuilder[ProductFields, ProductRow]
+
   def deleteById(productid: ProductId)(using c: Connection): Boolean
+
   def deleteByIds(productids: Array[ProductId])(using c: Connection): Int
+
   def insert(unsaved: ProductRow)(using c: Connection): ProductRow
+
   def insert(unsaved: ProductRowUnsaved)(using c: Connection): ProductRow
-  def insertStreaming(unsaved: Iterator[ProductRow], batchSize: Int = 10000)(using c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[ProductRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[ProductRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[ProductRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[ProductFields, ProductRow]
+
   def selectAll(using c: Connection): List[ProductRow]
+
   def selectById(productid: ProductId)(using c: Connection): Option[ProductRow]
+
   def selectByIds(productids: Array[ProductId])(using c: Connection): List[ProductRow]
+
   def selectByIdsTracked(productids: Array[ProductId])(using c: Connection): Map[ProductId, ProductRow]
+
   def update: UpdateBuilder[ProductFields, ProductRow]
+
   def update(row: ProductRow)(using c: Connection): Option[ProductRow]
+
   def upsert(unsaved: ProductRow)(using c: Connection): ProductRow
+
   def upsertBatch(unsaved: Iterable[ProductRow])(using c: Connection): List[ProductRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[ProductRow], batchSize: Int = 10000)(using c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[ProductRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int
 }

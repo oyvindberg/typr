@@ -7,6 +7,7 @@ package adventureworks.humanresources.shift
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
 import adventureworks.public.Name
@@ -27,57 +28,65 @@ case class ShiftRowUnsaved(
   /** Shift end time. */
   endtime: TypoLocalTime,
   /** Default: nextval('humanresources.shift_shiftid_seq'::regclass)
-      Primary key for Shift records. */
-  shiftid: Defaulted[ShiftId] = Defaulted.UseDefault,
+   * Primary key for Shift records.
+   */
+  shiftid: Defaulted[ShiftId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(shiftidDefault: => ShiftId, modifieddateDefault: => TypoLocalDateTime): ShiftRow =
-    ShiftRow(
+  def toRow(
+    shiftidDefault: => ShiftId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ShiftRow = {
+    new ShiftRow(
+      shiftid = shiftid.getOrElse(shiftidDefault),
       name = name,
       starttime = starttime,
       endtime = endtime,
-      shiftid = shiftid match {
-                  case Defaulted.UseDefault => shiftidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ShiftRowUnsaved {
-  given reads: Reads[ShiftRowUnsaved] = Reads[ShiftRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ShiftRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          starttime = json.\("starttime").as(TypoLocalTime.reads),
-          endtime = json.\("endtime").as(TypoLocalTime.reads),
-          shiftid = json.\("shiftid").as(Defaulted.reads(using ShiftId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[ShiftRowUnsaved] = Text.instance[ShiftRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalTime.text.unsafeEncode(row.starttime, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalTime.text.unsafeEncode(row.endtime, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ShiftId.text).unsafeEncode(row.shiftid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[ShiftRowUnsaved] = OWrites[ShiftRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "starttime" -> TypoLocalTime.writes.writes(o.starttime),
-      "endtime" -> TypoLocalTime.writes.writes(o.endtime),
-      "shiftid" -> Defaulted.writes(using ShiftId.writes).writes(o.shiftid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ShiftRowUnsaved {
+  given pgText: Text[ShiftRowUnsaved] = {
+    Text.instance[ShiftRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalTime.pgText.unsafeEncode(row.starttime, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalTime.pgText.unsafeEncode(row.endtime, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ShiftId.pgText).unsafeEncode(row.shiftid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[ShiftRowUnsaved] = {
+    Reads[ShiftRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ShiftRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            starttime = json.\("starttime").as(TypoLocalTime.reads),
+            endtime = json.\("endtime").as(TypoLocalTime.reads),
+            shiftid = json.\("shiftid").as(Defaulted.reads(using ShiftId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[ShiftRowUnsaved] = {
+    OWrites[ShiftRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "starttime" -> TypoLocalTime.writes.writes(o.starttime),
+        "endtime" -> TypoLocalTime.writes.writes(o.endtime),
+        "shiftid" -> Defaulted.writes(using ShiftId.writes).writes(o.shiftid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

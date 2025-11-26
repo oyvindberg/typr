@@ -6,16 +6,12 @@
 package adventureworks.pr.bom
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class BomViewRepoImpl extends BomViewRepo {
-  override def select: SelectBuilder[BomViewFields, BomViewRow] = {
-    SelectBuilderSql(""""pr"."bom"""", BomViewFields.structure, BomViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, BomViewRow] = {
-    sql"""select "id", "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text from "pr"."bom"""".query(BomViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[BomViewFields, BomViewRow] = SelectBuilder.of(""""pr"."bom"""", BomViewFields.structure, BomViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, BomViewRow] = sql"""select "id", "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text from "pr"."bom"""".query(BomViewRow.jdbcDecoder).selectStream()
 }

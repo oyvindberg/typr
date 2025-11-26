@@ -37,39 +37,47 @@ case class SpqhViewRow(
 )
 
 object SpqhViewRow {
-  implicit lazy val reads: Reads[SpqhViewRow] = Reads[SpqhViewRow](json => JsResult.fromTry(
-      Try(
-        SpqhViewRow(
-          id = json.\("id").as(BusinessentityId.reads),
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          quotadate = json.\("quotadate").as(TypoLocalDateTime.reads),
-          salesquota = json.\("salesquota").as(Reads.bigDecReads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[SpqhViewRow] = {
+    Reads[SpqhViewRow](json => JsResult.fromTry(
+        Try(
+          SpqhViewRow(
+            id = json.\("id").as(BusinessentityId.reads),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            quotadate = json.\("quotadate").as(TypoLocalDateTime.reads),
+            salesquota = json.\("salesquota").as(Reads.bigDecReads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SpqhViewRow] = RowParser[SpqhViewRow] { row =>
-    Success(
-      SpqhViewRow(
-        id = row(idx + 0)(BusinessentityId.column),
-        businessentityid = row(idx + 1)(BusinessentityId.column),
-        quotadate = row(idx + 2)(TypoLocalDateTime.column),
-        salesquota = row(idx + 3)(Column.columnToScalaBigDecimal),
-        rowguid = row(idx + 4)(TypoUUID.column),
-        modifieddate = row(idx + 5)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[SpqhViewRow] = OWrites[SpqhViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> BusinessentityId.writes.writes(o.id),
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "quotadate" -> TypoLocalDateTime.writes.writes(o.quotadate),
-      "salesquota" -> Writes.BigDecimalWrites.writes(o.salesquota),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SpqhViewRow] = {
+    RowParser[SpqhViewRow] { row =>
+      Success(
+        SpqhViewRow(
+          id = row(idx + 0)(BusinessentityId.column),
+          businessentityid = row(idx + 1)(BusinessentityId.column),
+          quotadate = row(idx + 2)(TypoLocalDateTime.column),
+          salesquota = row(idx + 3)(Column.columnToScalaBigDecimal),
+          rowguid = row(idx + 4)(TypoUUID.column),
+          modifieddate = row(idx + 5)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[SpqhViewRow] = {
+    OWrites[SpqhViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> BusinessentityId.writes.writes(o.id),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "quotadate" -> TypoLocalDateTime.writes.writes(o.quotadate),
+        "salesquota" -> Writes.BigDecimalWrites.writes(o.salesquota),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

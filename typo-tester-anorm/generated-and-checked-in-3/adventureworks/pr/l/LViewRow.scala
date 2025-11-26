@@ -37,39 +37,47 @@ case class LViewRow(
 )
 
 object LViewRow {
-  given reads: Reads[LViewRow] = Reads[LViewRow](json => JsResult.fromTry(
-      Try(
-        LViewRow(
-          id = json.\("id").as(LocationId.reads),
-          locationid = json.\("locationid").as(LocationId.reads),
-          name = json.\("name").as(Name.reads),
-          costrate = json.\("costrate").as(Reads.bigDecReads),
-          availability = json.\("availability").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[LViewRow] = {
+    Reads[LViewRow](json => JsResult.fromTry(
+        Try(
+          LViewRow(
+            id = json.\("id").as(LocationId.reads),
+            locationid = json.\("locationid").as(LocationId.reads),
+            name = json.\("name").as(Name.reads),
+            costrate = json.\("costrate").as(Reads.bigDecReads),
+            availability = json.\("availability").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[LViewRow] = RowParser[LViewRow] { row =>
-    Success(
-      LViewRow(
-        id = row(idx + 0)(using LocationId.column),
-        locationid = row(idx + 1)(using LocationId.column),
-        name = row(idx + 2)(using Name.column),
-        costrate = row(idx + 3)(using Column.columnToScalaBigDecimal),
-        availability = row(idx + 4)(using Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[LViewRow] = OWrites[LViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> LocationId.writes.writes(o.id),
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "name" -> Name.writes.writes(o.name),
-      "costrate" -> Writes.BigDecimalWrites.writes(o.costrate),
-      "availability" -> Writes.BigDecimalWrites.writes(o.availability),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[LViewRow] = {
+    RowParser[LViewRow] { row =>
+      Success(
+        LViewRow(
+          id = row(idx + 0)(using LocationId.column),
+          locationid = row(idx + 1)(using LocationId.column),
+          name = row(idx + 2)(using Name.column),
+          costrate = row(idx + 3)(using Column.columnToScalaBigDecimal),
+          availability = row(idx + 4)(using Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[LViewRow] = {
+    OWrites[LViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> LocationId.writes.writes(o.id),
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "name" -> Name.writes.writes(o.name),
+        "costrate" -> Writes.BigDecimalWrites.writes(o.costrate),
+        "availability" -> Writes.BigDecimalWrites.writes(o.availability),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -17,79 +17,88 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class WorkorderRepoMock(toRow: Function1[WorkorderRowUnsaved, WorkorderRow],
-                        map: scala.collection.mutable.Map[WorkorderId, WorkorderRow] = scala.collection.mutable.Map.empty) extends WorkorderRepo {
-  override def delete: DeleteBuilder[WorkorderFields, WorkorderRow] = {
-    DeleteBuilderMock(DeleteParams.empty, WorkorderFields.structure, map)
-  }
-  override def deleteById(workorderid: WorkorderId)(using c: Connection): Boolean = {
-    map.remove(workorderid).isDefined
-  }
-  override def deleteByIds(workorderids: Array[WorkorderId])(using c: Connection): Int = {
-    workorderids.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: WorkorderRow)(using c: Connection): WorkorderRow = {
+case class WorkorderRepoMock(
+  toRow: WorkorderRowUnsaved => WorkorderRow,
+  map: scala.collection.mutable.Map[WorkorderId, WorkorderRow] = scala.collection.mutable.Map.empty[WorkorderId, WorkorderRow]
+) extends WorkorderRepo {
+  def delete: DeleteBuilder[WorkorderFields, WorkorderRow] = DeleteBuilderMock(DeleteParams.empty, WorkorderFields.structure, map)
+
+  def deleteById(workorderid: WorkorderId)(using c: Connection): Boolean = map.remove(workorderid).isDefined
+
+  def deleteByIds(workorderids: Array[WorkorderId])(using c: Connection): Int = workorderids.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: WorkorderRow)(using c: Connection): WorkorderRow = {
     val _ = if (map.contains(unsaved.workorderid))
       sys.error(s"id ${unsaved.workorderid} already exists")
     else
       map.put(unsaved.workorderid, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: WorkorderRowUnsaved)(using c: Connection): WorkorderRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[WorkorderRow], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  def insert(unsaved: WorkorderRowUnsaved)(using c: Connection): WorkorderRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[WorkorderRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.workorderid -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[WorkorderRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[WorkorderRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.workorderid -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[WorkorderFields, WorkorderRow] = {
-    SelectBuilderMock(WorkorderFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(using c: Connection): List[WorkorderRow] = {
-    map.values.toList
-  }
-  override def selectById(workorderid: WorkorderId)(using c: Connection): Option[WorkorderRow] = {
-    map.get(workorderid)
-  }
-  override def selectByIds(workorderids: Array[WorkorderId])(using c: Connection): List[WorkorderRow] = {
-    workorderids.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(workorderids: Array[WorkorderId])(using c: Connection): Map[WorkorderId, WorkorderRow] = {
+
+  def select: SelectBuilder[WorkorderFields, WorkorderRow] = SelectBuilderMock(WorkorderFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(using c: Connection): List[WorkorderRow] = map.values.toList
+
+  def selectById(workorderid: WorkorderId)(using c: Connection): Option[WorkorderRow] = map.get(workorderid)
+
+  def selectByIds(workorderids: Array[WorkorderId])(using c: Connection): List[WorkorderRow] = workorderids.flatMap(map.get).toList
+
+  def selectByIdsTracked(workorderids: Array[WorkorderId])(using c: Connection): Map[WorkorderId, WorkorderRow] = {
     val byId = selectByIds(workorderids).view.map(x => (x.workorderid, x)).toMap
     workorderids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[WorkorderFields, WorkorderRow] = {
-    UpdateBuilderMock(UpdateParams.empty, WorkorderFields.structure, map)
-  }
-  override def update(row: WorkorderRow)(using c: Connection): Option[WorkorderRow] = {
+
+  def update: UpdateBuilder[WorkorderFields, WorkorderRow] = UpdateBuilderMock(UpdateParams.empty, WorkorderFields.structure, map)
+
+  def update(row: WorkorderRow)(using c: Connection): Option[WorkorderRow] = {
     map.get(row.workorderid).map { _ =>
       map.put(row.workorderid, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: WorkorderRow)(using c: Connection): WorkorderRow = {
+
+  def upsert(unsaved: WorkorderRow)(using c: Connection): WorkorderRow = {
     map.put(unsaved.workorderid, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[WorkorderRow])(using c: Connection): List[WorkorderRow] = {
+
+  def upsertBatch(unsaved: Iterable[WorkorderRow])(using c: Connection): List[WorkorderRow] = {
     unsaved.map { row =>
       map += (row.workorderid -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[WorkorderRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[WorkorderRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.workorderid -> row)
     }

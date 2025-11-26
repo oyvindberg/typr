@@ -6,6 +6,7 @@
 package adventureworks.person.addresstype
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
@@ -18,40 +19,42 @@ case class AddresstypeRowUnsaved(
   /** Address type description. For example, Billing, Home, or Shipping. */
   name: Name,
   /** Default: nextval('person.addresstype_addresstypeid_seq'::regclass)
-      Primary key for AddressType records. */
-  addresstypeid: Defaulted[AddresstypeId] = Defaulted.UseDefault,
+   * Primary key for AddressType records.
+   */
+  addresstypeid: Defaulted[AddresstypeId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(addresstypeidDefault: => AddresstypeId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): AddresstypeRow =
-    AddresstypeRow(
-      addresstypeid = addresstypeid match {
-                        case Defaulted.UseDefault => addresstypeidDefault
-                        case Defaulted.Provided(value) => value
-                      },
+  def toRow(
+    addresstypeidDefault: => AddresstypeId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): AddresstypeRow = {
+    new AddresstypeRow(
+      addresstypeid = addresstypeid.getOrElse(addresstypeidDefault),
       name = name,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object AddresstypeRowUnsaved {
   implicit lazy val decoder: Decoder[AddresstypeRowUnsaved] = Decoder.forProduct4[AddresstypeRowUnsaved, Name, Defaulted[AddresstypeId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "addresstypeid", "rowguid", "modifieddate")(AddresstypeRowUnsaved.apply)(Name.decoder, Defaulted.decoder(AddresstypeId.decoder), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[AddresstypeRowUnsaved] = Encoder.forProduct4[AddresstypeRowUnsaved, Name, Defaulted[AddresstypeId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "addresstypeid", "rowguid", "modifieddate")(x => (x.name, x.addresstypeid, x.rowguid, x.modifieddate))(Name.encoder, Defaulted.encoder(AddresstypeId.encoder), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[AddresstypeRowUnsaved] = Text.instance[AddresstypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(AddresstypeId.text).unsafeEncode(row.addresstypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[AddresstypeRowUnsaved] = {
+    Text.instance[AddresstypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(AddresstypeId.pgText).unsafeEncode(row.addresstypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

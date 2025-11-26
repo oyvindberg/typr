@@ -8,22 +8,25 @@ package adventureworks.update_person_returning
 import adventureworks.customtypes.TypoLocalDateTime
 import doobie.free.connection.ConnectionIO
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
-import doobie.syntax.string.toSqlInterpolator
 import doobie.util.Write
 import doobie.util.meta.Meta
 import fs2.Stream
+import doobie.syntax.string.toSqlInterpolator
 
 class UpdatePersonReturningSqlRepoImpl extends UpdatePersonReturningSqlRepo {
-  override def apply(suffix: /* nullability unknown */ Option[String], cutoff: /* nullability unknown */ Option[TypoLocalDateTime]): Stream[ConnectionIO, UpdatePersonReturningSqlRow] = {
+  def apply(
+    suffix: /* nullability unknown */ Option[String],
+    cutoff: /* nullability unknown */ Option[TypoLocalDateTime]
+  ): Stream[ConnectionIO, UpdatePersonReturningSqlRow] = {
     val sql =
       sql"""with row as (
-              update person.person
-              set firstname = firstname || '-' || ${fromWrite(suffix)(new Write.SingleOpt(Meta.StringMeta.put))}
-              where modifieddate < ${fromWrite(cutoff)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp
-              returning firstname, modifieddate
-            )
-            select row."firstname", row."modifieddate"::text
-            from row"""
+        update person.person
+      set firstname = firstname || '-' || ${fromWrite(suffix)(new Write.SingleOpt(Meta.StringMeta.put))}
+      where modifieddate < ${fromWrite(cutoff)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp
+      returning firstname, modifieddate
+      )
+      select row."firstname", row."modifieddate"::text
+      from row"""
     sql.query(UpdatePersonReturningSqlRow.read).stream
   }
 }

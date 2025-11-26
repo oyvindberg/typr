@@ -9,7 +9,7 @@ import scala.collection.immutable
 import scala.collection.immutable.SortedMap
 
 object generate {
-  private type Files = Map[sc.Type.Qualified, sc.File]
+  private type Files = Map[jvm.Type.Qualified, jvm.File]
 
   // use this constructor if you need to run `typo` multiple times with different options but same database/scripts
   def apply(
@@ -20,20 +20,32 @@ object generate {
   ): List[Generated] = {
     Banner.maybePrint(publicOptions)
     val metaDb = publicOptions.rewriteDatabase(metaDb0)
-    val pkg = sc.Type.Qualified(publicOptions.pkg).value
-    val customTypesPackage = pkg / sc.Ident("customtypes")
+    val pkg = jvm.Type.Qualified(publicOptions.pkg).value
+    val customTypesPackage = pkg / jvm.Ident("customtypes")
 
     val default: ComputedDefault =
-      ComputedDefault(publicOptions.naming(customTypesPackage))
+      ComputedDefault(publicOptions.naming(customTypesPackage, publicOptions.lang))
 
-    val naming = publicOptions.naming(pkg)
+    val naming = publicOptions.naming(pkg, publicOptions.lang)
+    val language = publicOptions.lang
+
+    def requireScala(lib: String): LangScala = language match {
+      case s: LangScala => s
+      case _            => sys.error(s"You have chosen to generate code for ${lib}, which is a scala library. You need to pick scala as language")
+    }
+
     val options = InternalOptions(
       dbLib = publicOptions.dbLib.map {
-        case DbLibName.Anorm  => new DbLibAnorm(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, publicOptions.dialect)
-        case DbLibName.Doobie => new DbLibDoobie(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, publicOptions.fixVerySlowImplicit, publicOptions.dialect)
+        case DbLibName.Anorm =>
+          new DbLibAnorm(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, requireScala("anorm"))
+        case DbLibName.Doobie =>
+          new DbLibDoobie(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, publicOptions.fixVerySlowImplicit, requireScala("doobie"))
+        case DbLibName.Typo =>
+          new DbLibTypo(pkg, language, default, publicOptions.enableStreamingInserts)
         case DbLibName.ZioJdbc =>
-          new DbLibZioJdbc(pkg, publicOptions.inlineImplicits, dslEnabled = publicOptions.enableDsl, default, publicOptions.enableStreamingInserts, publicOptions.dialect)
+          new DbLibZioJdbc(pkg, publicOptions.inlineImplicits, dslEnabled = publicOptions.enableDsl, default, publicOptions.enableStreamingInserts, requireScala("zio-jdbc"))
       },
+      lang = language,
       debugTypes = publicOptions.debugTypes,
       enableDsl = publicOptions.enableDsl,
       enableFieldValue = publicOptions.enableFieldValue,
@@ -43,24 +55,23 @@ object generate {
       generateMockRepos = publicOptions.generateMockRepos,
       enablePrimaryKeyType = publicOptions.enablePrimaryKeyType,
       jsonLibs = publicOptions.jsonLibs.map {
-        case JsonLibName.Circe    => JsonLibCirce(pkg, default, publicOptions.inlineImplicits, publicOptions.dialect)
-        case JsonLibName.PlayJson => JsonLibPlay(pkg, default, publicOptions.inlineImplicits, publicOptions.dialect)
-        case JsonLibName.ZioJson  => JsonLibZioJson(pkg, default, publicOptions.inlineImplicits, publicOptions.dialect)
+        case JsonLibName.Circe    => JsonLibCirce(pkg, default, publicOptions.inlineImplicits, requireScala("circe"))
+        case JsonLibName.PlayJson => JsonLibPlay(pkg, default, publicOptions.inlineImplicits, requireScala("play-json"))
+        case JsonLibName.ZioJson  => JsonLibZioJson(pkg, default, publicOptions.inlineImplicits, requireScala("zio-json"))
       },
       keepDependencies = publicOptions.keepDependencies,
       logger = publicOptions.logger,
       naming = naming,
       pkg = pkg,
       readonlyRepo = publicOptions.readonlyRepo,
-      typeOverride = publicOptions.typeOverride,
-      dialect = publicOptions.dialect
+      typeOverride = publicOptions.typeOverride
     )
-    val customTypes = new CustomTypes(customTypesPackage, publicOptions.dialect)
-    val scalaTypeMapper = TypeMapperScala(options.typeOverride, publicOptions.nullabilityOverride, naming, customTypes)
+    val customTypes = new CustomTypes(customTypesPackage, language)
+    val scalaTypeMapper = TypeMapperJvmOld(language, options.typeOverride, publicOptions.nullabilityOverride, naming, customTypes)
     val enums = metaDb.enums.map(ComputedStringEnum(naming))
     val domains = metaDb.domains.map(ComputedDomain(naming, scalaTypeMapper))
     val domainsByName = domains.map(d => (d.underlying.name, d)).toMap
-    val projectsWithFiles: ProjectGraph[Files, List[sc.File]] =
+    val projectsWithFiles: ProjectGraph[Files, List[jvm.File]] =
       graph.valueFromProject { project =>
         val isRoot = graph == project
         val selector = project.value
@@ -69,15 +80,15 @@ object generate {
         val computedLazyRelations: SortedMap[db.RelationName, Lazy[HasSource]] =
           rewriteDependentData(metaDb.relations).apply[HasSource] {
             case (_, dbTable: db.Table, eval) =>
-              ComputedTable(options, default, dbTable, naming, scalaTypeMapper, eval, openEnumsByTable)
+              ComputedTable(language, options, default, dbTable, naming, scalaTypeMapper, eval, openEnumsByTable)
             case (_, dbView: db.View, eval) =>
-              ComputedView(options.logger, dbView, naming, metaDb.typeMapperDb, scalaTypeMapper, eval, options.enableFieldValue.include(dbView.name), options.enableDsl, options.dialect)
+              ComputedView(language, options.logger, dbView, naming, metaDb.typeMapperDb, scalaTypeMapper, eval, options.enableFieldValue.include(dbView.name), options.enableDsl)
           }
 
         // note, these statements will force the evaluation of some of the lazy values
         val computedSqlFiles: List[ComputedSqlFile] =
           project.scripts.map { sqlScript =>
-            ComputedSqlFile(options.logger, sqlScript, options.pkg, naming, metaDb.typeMapperDb, scalaTypeMapper, computedLazyRelations.get, options.dialect)
+            ComputedSqlFile(options.logger, sqlScript, options.pkg, naming, metaDb.typeMapperDb, scalaTypeMapper, computedLazyRelations.get, options.lang)
           }
 
         computedLazyRelations.foreach { case (relName, lazyValue) =>
@@ -94,32 +105,32 @@ object generate {
           computedRelations.iterator.collect { case x: ComputedTable => (x.dbTable.name, x) }.toMap
 
         // yeah, sorry about the naming overload. this is a list of output files generated for each input sql file
-        val sqlFileFiles: List[sc.File] =
-          computedSqlFiles.flatMap(x => FilesSqlFile(x, naming, options).all)
+        val sqlFileFiles: List[jvm.File] =
+          computedSqlFiles.flatMap(x => FilesSqlFile(language, x, naming, options).all)
 
         val relationFilesByName = computedRelations.flatMap {
-          case viewComputed: ComputedView => FilesView(viewComputed, options).all.map(x => (viewComputed.view.name, x))
+          case viewComputed: ComputedView => FilesView(language, viewComputed, options).all.map(x => (viewComputed.view.name, x))
           case tableComputed: ComputedTable =>
-            val fkAnalysis = FkAnalysis(computedRelationsByName, tableComputed, options.dialect)
-            FilesTable(tableComputed, fkAnalysis, options, domainsByName).all.map(x => (tableComputed.dbTable.name, x))
+            val fkAnalysis = FkAnalysis(computedRelationsByName, tableComputed, options.lang)
+            FilesTable(language, tableComputed, fkAnalysis, options, domainsByName).all.map(x => (tableComputed.dbTable.name, x))
           case _ => Nil
         }
 
-        val domainFiles = domains.map(d => FileDomain(d, options))
+        val domainFiles = domains.map(d => FileDomain(d, options, language))
 
-        val mostFiles: List[sc.File] =
+        val mostFiles: List[jvm.File] =
           List(
             options.dbLib.toList.flatMap(_.additionalFiles),
-            List(FileDefault(default, options.jsonLibs, options.dbLib).file),
+            List(FileDefault(default, options.jsonLibs, options.dbLib, language).file),
             enums.map(enm => FileStringEnum(options, enm)),
             domainFiles,
-            customTypes.All.values.map(FileCustomType(options)),
+            customTypes.All.values.map(FileCustomType(options, language)),
             relationFilesByName.map { case (_, f) => f },
             sqlFileFiles
           ).flatten
 
-        val keptMostFiles: List[sc.File] = {
-          val keptRelations: immutable.Iterable[sc.File] =
+        val keptMostFiles: List[jvm.File] = {
+          val keptRelations: immutable.Iterable[jvm.File] =
             if (options.keepDependencies) relationFilesByName.map { case (_, f) => f }
             else relationFilesByName.collect { case (name, f) if selector.include(name) => f }
 
@@ -130,26 +141,26 @@ object generate {
         // this should be a stop-gap solution anyway
         val pkgObject = if (isRoot) FilePackageObject.packageObject(options) else None
 
-        val testInsertsDataFiles: List[sc.File] =
+        val testInsertsDataFiles: List[jvm.File] =
           options.dbLib match {
             case Some(dbLib) =>
               val keptTypes = keptMostFiles.flatMap(x => x.tpe :: x.secondaryTypes).toSet
               val keptTables =
                 computedRelations.collect { case x: ComputedTable if options.enableTestInserts.include(x.dbTable.name) && keptTypes(x.names.RepoImplName) => x }
               if (keptTables.nonEmpty) {
-                val computed = ComputedTestInserts(project.name, options, customTypes, domains, enums, computedRelationsByName, keptTables)
-                FileTestInserts(computed, dbLib)
+                val computed = ComputedTestInserts(project.name, options, language, customTypes, domains, enums, computedRelationsByName, keptTables)
+                FileTestInserts(computed, dbLib, language)
               } else Nil
             case _ => Nil
           }
 
-        val allFiles: Iterator[sc.File] = {
-          val knownNamesByPkg: Map[sc.QIdent, Map[sc.Ident, sc.Type.Qualified]] =
+        val allFiles: Iterator[jvm.File] = {
+          val knownNamesByPkg: Map[jvm.QIdent, Map[jvm.Ident, jvm.Type.Qualified]] =
             (keptMostFiles ++ testInsertsDataFiles).groupBy(_.pkg).map { case (pkg, files) =>
               (pkg, files.flatMap(f => (f.name, f.tpe) :: f.secondaryTypes.map(tpe => (tpe.value.name, tpe))).toMap)
             }
 
-          val withImports = (testInsertsDataFiles.iterator ++ keptMostFiles).map(file => addPackageAndImports(knownNamesByPkg, file))
+          val withImports = (testInsertsDataFiles.iterator ++ keptMostFiles).map(file => addPackageAndImports(language, knownNamesByPkg, file))
           val all = withImports ++ pkgObject.iterator
           all.map(file => file.copy(contents = options.fileHeader.code ++ file.contents))
         }
@@ -164,7 +175,7 @@ object generate {
       }
 
     val deduplicated = deduplicate(projectsWithFiles)
-    deduplicated.toList.flatMap { p => Generated(p.target, p.testTarget, p.value.valuesIterator ++ p.scripts) }
+    deduplicated.toList.flatMap { p => Generated(publicOptions.lang, p.target, p.testTarget, p.value.valuesIterator ++ p.scripts) }
   }
 
   // projects in graph will have duplicated files, this will pull the files up until they are no longer duplicated
@@ -175,7 +186,7 @@ object generate {
         current.downstream.map(go).unzip
 
       // these are the files we'll pull up
-      val pullUp: Set[sc.Type.Qualified] = {
+      val pullUp: Set[jvm.Type.Qualified] = {
         val existInMoreThanOneDownStream =
           downstreamAccFiles.flatMap(_.keys).groupBy(identity).collect { case (k, v) if v.size > 1 => k }.toSet
 

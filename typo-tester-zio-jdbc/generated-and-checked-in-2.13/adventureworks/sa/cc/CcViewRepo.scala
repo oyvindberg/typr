@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait CcViewRepo {
   def select: SelectBuilder[CcViewFields, CcViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, CcViewRow]
 }

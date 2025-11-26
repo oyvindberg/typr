@@ -18,39 +18,52 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 /** Enum `public.myenum`
-  *  - a
-  *  - b
-  *  - c
-  */
-sealed abstract class Myenum(val value: String)
+ *  - a
+ *  - b
+ *  - c
+ */
+
+sealed abstract class Myenum(val value: java.lang.String)
 
 object Myenum {
-  def apply(str: String): Either[String, Myenum] =
+  implicit lazy val arrayColumn: Column[Array[Myenum]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Myenum.force))
+
+  implicit lazy val column: Column[Myenum] = Column.columnToString.mapResult(str => Myenum(str).left.map(SqlMappingError.apply))
+
+  implicit lazy val toStatement: ToStatement[Myenum] = ToStatement.stringToStatement.contramap(_.value)
+
+  implicit lazy val arrayToStatement: ToStatement[Array[Myenum]] = ToStatement[Array[Myenum]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("public.myenum", arr.map[AnyRef](_.value))))
+
+  implicit lazy val parameterMetadata: ParameterMetaData[Myenum] = {
+    new ParameterMetaData[Myenum] {
+      override def sqlType: String = "public.myenum"
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  implicit lazy val pgText: Text[Myenum] = {
+    new Text[Myenum] {
+      override def unsafeEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[Myenum] = Reads[Myenum]{(value: JsValue) => value.validate(Reads.StringReads).flatMap(str => Myenum(str).fold(JsError.apply, JsSuccess(_)))}
+
+  implicit lazy val writes: Writes[Myenum] = Writes[Myenum](value => Writes.StringWrites.writes(value.value))
+  def apply(str: java.lang.String): scala.Either[java.lang.String, Myenum] =
     ByName.get(str).toRight(s"'$str' does not match any of the following legal values: $Names")
-  def force(str: String): Myenum =
+  def force(str: java.lang.String): Myenum =
     apply(str) match {
-      case Left(msg) => sys.error(msg)
-      case Right(value) => value
+      case scala.Left(msg) => sys.error(msg)
+      case scala.Right(value) => value
     }
   case object a extends Myenum("a")
+
   case object b extends Myenum("b")
+
   case object c extends Myenum("c")
-  val All: List[Myenum] = List(a, b, c)
-  val Names: String = All.map(_.value).mkString(", ")
-  val ByName: Map[String, Myenum] = All.map(x => (x.value, x)).toMap
-              
-  implicit lazy val arrayColumn: Column[Array[Myenum]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Myenum.force))
-  implicit lazy val arrayToStatement: ToStatement[Array[Myenum]] = ToStatement[Array[Myenum]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("public.myenum", arr.map[AnyRef](_.value))))
-  implicit lazy val column: Column[Myenum] = Column.columnToString.mapResult(str => Myenum(str).left.map(SqlMappingError.apply))
-  implicit lazy val parameterMetadata: ParameterMetaData[Myenum] = new ParameterMetaData[Myenum] {
-    override def sqlType: String = "public.myenum"
-    override def jdbcType: Int = Types.OTHER
-  }
-  implicit lazy val reads: Reads[Myenum] = Reads[Myenum]{(value: JsValue) => value.validate(Reads.StringReads).flatMap(str => Myenum(str).fold(JsError.apply, JsSuccess(_)))}
-  implicit lazy val text: Text[Myenum] = new Text[Myenum] {
-    override def unsafeEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  implicit lazy val toStatement: ToStatement[Myenum] = ToStatement.stringToStatement.contramap(_.value)
-  implicit lazy val writes: Writes[Myenum] = Writes[Myenum](value => Writes.StringWrites.writes(value.value))
+  val All: scala.List[Myenum] = scala.List(a, b, c)
+  val Names: java.lang.String = All.map(_.value).mkString(", ")
+  val ByName: scala.collection.immutable.Map[java.lang.String, Myenum] = All.map(x => (x.value, x)).toMap
 }

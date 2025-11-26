@@ -19,31 +19,33 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class SalesorderdetailRepoMock(toRow: Function1[SalesorderdetailRowUnsaved, SalesorderdetailRow],
-                               map: scala.collection.mutable.Map[SalesorderdetailId, SalesorderdetailRow] = scala.collection.mutable.Map.empty) extends SalesorderdetailRepo {
-  override def delete: DeleteBuilder[SalesorderdetailFields, SalesorderdetailRow] = {
-    DeleteBuilderMock(DeleteParams.empty, SalesorderdetailFields.structure, map)
+case class SalesorderdetailRepoMock(
+  toRow: SalesorderdetailRowUnsaved => SalesorderdetailRow,
+  map: scala.collection.mutable.Map[SalesorderdetailId, SalesorderdetailRow] = scala.collection.mutable.Map.empty[SalesorderdetailId, SalesorderdetailRow]
+) extends SalesorderdetailRepo {
+  def delete: DeleteBuilder[SalesorderdetailFields, SalesorderdetailRow] = DeleteBuilderMock(DeleteParams.empty, SalesorderdetailFields.structure, map)
+
+  def deleteById(compositeId: SalesorderdetailId): ConnectionIO[Boolean] = delay(map.remove(compositeId).isDefined)
+
+  def deleteByIds(compositeIds: Array[SalesorderdetailId]): ConnectionIO[Int] = delay(compositeIds.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: SalesorderdetailRow): ConnectionIO[SalesorderdetailRow] = {
+  delay {
+    val _ = if (map.contains(unsaved.compositeId))
+      sys.error(s"id ${unsaved.compositeId} already exists")
+    else
+      map.put(unsaved.compositeId, unsaved)
+
+    unsaved
   }
-  override def deleteById(compositeId: SalesorderdetailId): ConnectionIO[Boolean] = {
-    delay(map.remove(compositeId).isDefined)
   }
-  override def deleteByIds(compositeIds: Array[SalesorderdetailId]): ConnectionIO[Int] = {
-    delay(compositeIds.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: SalesorderdetailRow): ConnectionIO[SalesorderdetailRow] = {
-    delay {
-      val _ = if (map.contains(unsaved.compositeId))
-        sys.error(s"id ${unsaved.compositeId} already exists")
-      else
-        map.put(unsaved.compositeId, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: SalesorderdetailRowUnsaved): ConnectionIO[SalesorderdetailRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, SalesorderdetailRow], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insert(unsaved: SalesorderdetailRowUnsaved): ConnectionIO[SalesorderdetailRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, SalesorderdetailRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -53,8 +55,12 @@ class SalesorderdetailRepoMock(toRow: Function1[SalesorderdetailRowUnsaved, Sale
       num
     }
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, SalesorderdetailRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, SalesorderdetailRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { unsavedRows =>
       var num = 0L
       unsavedRows.foreach { unsavedRow =>
@@ -65,28 +71,25 @@ class SalesorderdetailRepoMock(toRow: Function1[SalesorderdetailRowUnsaved, Sale
       num
     }
   }
-  override def select: SelectBuilder[SalesorderdetailFields, SalesorderdetailRow] = {
-    SelectBuilderMock(SalesorderdetailFields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, SalesorderdetailRow] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(compositeId: SalesorderdetailId): ConnectionIO[Option[SalesorderdetailRow]] = {
-    delay(map.get(compositeId))
-  }
-  override def selectByIds(compositeIds: Array[SalesorderdetailId]): Stream[ConnectionIO, SalesorderdetailRow] = {
-    Stream.emits(compositeIds.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(compositeIds: Array[SalesorderdetailId]): ConnectionIO[Map[SalesorderdetailId, SalesorderdetailRow]] = {
+
+  def select: SelectBuilder[SalesorderdetailFields, SalesorderdetailRow] = SelectBuilderMock(SalesorderdetailFields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, SalesorderdetailRow] = Stream.emits(map.values.toList)
+
+  def selectById(compositeId: SalesorderdetailId): ConnectionIO[Option[SalesorderdetailRow]] = delay(map.get(compositeId))
+
+  def selectByIds(compositeIds: Array[SalesorderdetailId]): Stream[ConnectionIO, SalesorderdetailRow] = Stream.emits(compositeIds.flatMap(map.get).toList)
+
+  def selectByIdsTracked(compositeIds: Array[SalesorderdetailId]): ConnectionIO[Map[SalesorderdetailId, SalesorderdetailRow]] = {
     selectByIds(compositeIds).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[SalesorderdetailFields, SalesorderdetailRow] = {
-    UpdateBuilderMock(UpdateParams.empty, SalesorderdetailFields.structure, map)
-  }
-  override def update(row: SalesorderdetailRow): ConnectionIO[Option[SalesorderdetailRow]] = {
+
+  def update: UpdateBuilder[SalesorderdetailFields, SalesorderdetailRow] = UpdateBuilderMock(UpdateParams.empty, SalesorderdetailFields.structure, map)
+
+  def update(row: SalesorderdetailRow): ConnectionIO[Option[SalesorderdetailRow]] = {
     delay {
       map.get(row.compositeId).map { _ =>
         map.put(row.compositeId, row): @nowarn
@@ -94,13 +97,15 @@ class SalesorderdetailRepoMock(toRow: Function1[SalesorderdetailRowUnsaved, Sale
       }
     }
   }
-  override def upsert(unsaved: SalesorderdetailRow): ConnectionIO[SalesorderdetailRow] = {
+
+  def upsert(unsaved: SalesorderdetailRow): ConnectionIO[SalesorderdetailRow] = {
     delay {
       map.put(unsaved.compositeId, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[SalesorderdetailRow]): Stream[ConnectionIO, SalesorderdetailRow] = {
+
+  def upsertBatch(unsaved: List[SalesorderdetailRow]): Stream[ConnectionIO, SalesorderdetailRow] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.compositeId -> row)
@@ -108,8 +113,12 @@ class SalesorderdetailRepoMock(toRow: Function1[SalesorderdetailRowUnsaved, Sale
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, SalesorderdetailRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, SalesorderdetailRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

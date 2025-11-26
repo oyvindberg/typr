@@ -16,7 +16,8 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.users
-    Primary key: user_id */
+ * Primary key: user_id
+ */
 case class UsersRow(
   userId: UsersId,
   name: String,
@@ -26,57 +27,77 @@ case class UsersRow(
   /** Default: now() */
   createdAt: TypoInstant,
   verifiedOn: Option[TypoInstant]
-){
-   val id = userId
-   def toUnsavedRow(createdAt: Defaulted[TypoInstant] = Defaulted.Provided(this.createdAt)): UsersRowUnsaved =
-     UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt)
- }
+) {
+  def id: UsersId = userId
+
+  def toUnsavedRow(createdAt: Defaulted[TypoInstant] = Defaulted.Provided(this.createdAt)): UsersRowUnsaved = {
+    new UsersRowUnsaved(
+      userId,
+      name,
+      lastName,
+      email,
+      password,
+      verifiedOn,
+      createdAt
+    )
+  }
+}
 
 object UsersRow {
   given decoder: Decoder[UsersRow] = Decoder.forProduct7[UsersRow, UsersId, String, Option[String], TypoUnknownCitext, String, TypoInstant, Option[TypoInstant]]("user_id", "name", "last_name", "email", "password", "created_at", "verified_on")(UsersRow.apply)(using UsersId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), TypoUnknownCitext.decoder, Decoder.decodeString, TypoInstant.decoder, Decoder.decodeOption(using TypoInstant.decoder))
+
   given encoder: Encoder[UsersRow] = Encoder.forProduct7[UsersRow, UsersId, String, Option[String], TypoUnknownCitext, String, TypoInstant, Option[TypoInstant]]("user_id", "name", "last_name", "email", "password", "created_at", "verified_on")(x => (x.userId, x.name, x.lastName, x.email, x.password, x.createdAt, x.verifiedOn))(using UsersId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), TypoUnknownCitext.encoder, Encoder.encodeString, TypoInstant.encoder, Encoder.encodeOption(using TypoInstant.encoder))
-  given read: Read[UsersRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(UsersId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUnknownCitext.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoInstant.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoInstant.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    UsersRow(
-      userId = arr(0).asInstanceOf[UsersId],
-          name = arr(1).asInstanceOf[String],
-          lastName = arr(2).asInstanceOf[Option[String]],
-          email = arr(3).asInstanceOf[TypoUnknownCitext],
-          password = arr(4).asInstanceOf[String],
-          createdAt = arr(5).asInstanceOf[TypoInstant],
-          verifiedOn = arr(6).asInstanceOf[Option[TypoInstant]]
+
+  given pgText: Text[UsersRow] = {
+    Text.instance[UsersRow]{ (row, sb) =>
+      UsersId.pgText.unsafeEncode(row.userId, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.lastName, sb)
+      sb.append(Text.DELIMETER)
+      TypoUnknownCitext.pgText.unsafeEncode(row.email, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.password, sb)
+      sb.append(Text.DELIMETER)
+      TypoInstant.pgText.unsafeEncode(row.createdAt, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoInstant.pgText).unsafeEncode(row.verifiedOn, sb)
+    }
+  }
+
+  given read: Read[UsersRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(UsersId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUnknownCitext.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoInstant.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoInstant.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      UsersRow(
+        userId = arr(0).asInstanceOf[UsersId],
+            name = arr(1).asInstanceOf[String],
+            lastName = arr(2).asInstanceOf[Option[String]],
+            email = arr(3).asInstanceOf[TypoUnknownCitext],
+            password = arr(4).asInstanceOf[String],
+            createdAt = arr(5).asInstanceOf[TypoInstant],
+            verifiedOn = arr(6).asInstanceOf[Option[TypoInstant]]
+      )
+    }
+  }
+
+  given write: Write[UsersRow] = {
+    new Write.Composite[UsersRow](
+      List(new Write.Single(UsersId.put),
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(Meta.StringMeta.put).toOpt,
+           new Write.Single(TypoUnknownCitext.put),
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(TypoInstant.put),
+           new Write.Single(TypoInstant.put).toOpt),
+      a => List(a.userId, a.name, a.lastName, a.email, a.password, a.createdAt, a.verifiedOn)
     )
   }
-  given text: Text[UsersRow] = Text.instance[UsersRow]{ (row, sb) =>
-    UsersId.text.unsafeEncode(row.userId, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.lastName, sb)
-    sb.append(Text.DELIMETER)
-    TypoUnknownCitext.text.unsafeEncode(row.email, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.password, sb)
-    sb.append(Text.DELIMETER)
-    TypoInstant.text.unsafeEncode(row.createdAt, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoInstant.text).unsafeEncode(row.verifiedOn, sb)
-  }
-  given write: Write[UsersRow] = new Write.Composite[UsersRow](
-    List(new Write.Single(UsersId.put),
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(Meta.StringMeta.put).toOpt,
-         new Write.Single(TypoUnknownCitext.put),
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(TypoInstant.put),
-         new Write.Single(TypoInstant.put).toOpt),
-    a => List(a.userId, a.name, a.lastName, a.email, a.password, a.createdAt, a.verifiedOn)
-  )
 }

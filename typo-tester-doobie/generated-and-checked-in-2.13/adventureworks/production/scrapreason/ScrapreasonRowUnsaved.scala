@@ -6,6 +6,7 @@
 package adventureworks.production.scrapreason
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -17,32 +18,30 @@ case class ScrapreasonRowUnsaved(
   /** Failure description. */
   name: Name,
   /** Default: nextval('production.scrapreason_scrapreasonid_seq'::regclass)
-      Primary key for ScrapReason records. */
-  scrapreasonid: Defaulted[ScrapreasonId] = Defaulted.UseDefault,
+   * Primary key for ScrapReason records.
+   */
+  scrapreasonid: Defaulted[ScrapreasonId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(scrapreasonidDefault: => ScrapreasonId, modifieddateDefault: => TypoLocalDateTime): ScrapreasonRow =
-    ScrapreasonRow(
-      scrapreasonid = scrapreasonid match {
-                        case Defaulted.UseDefault => scrapreasonidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    scrapreasonidDefault: => ScrapreasonId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ScrapreasonRow = new ScrapreasonRow(scrapreasonid = scrapreasonid.getOrElse(scrapreasonidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ScrapreasonRowUnsaved {
   implicit lazy val decoder: Decoder[ScrapreasonRowUnsaved] = Decoder.forProduct3[ScrapreasonRowUnsaved, Name, Defaulted[ScrapreasonId], Defaulted[TypoLocalDateTime]]("name", "scrapreasonid", "modifieddate")(ScrapreasonRowUnsaved.apply)(Name.decoder, Defaulted.decoder(ScrapreasonId.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[ScrapreasonRowUnsaved] = Encoder.forProduct3[ScrapreasonRowUnsaved, Name, Defaulted[ScrapreasonId], Defaulted[TypoLocalDateTime]]("name", "scrapreasonid", "modifieddate")(x => (x.name, x.scrapreasonid, x.modifieddate))(Name.encoder, Defaulted.encoder(ScrapreasonId.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[ScrapreasonRowUnsaved] = Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ScrapreasonId.text).unsafeEncode(row.scrapreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[ScrapreasonRowUnsaved] = {
+    Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ScrapreasonId.pgText).unsafeEncode(row.scrapreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

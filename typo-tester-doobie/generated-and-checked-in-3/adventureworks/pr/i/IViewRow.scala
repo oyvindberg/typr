@@ -26,18 +26,22 @@ case class IViewRow(
 
 object IViewRow {
   given decoder: Decoder[IViewRow] = Decoder.forProduct4[IViewRow, IllustrationId, IllustrationId, Option[TypoXml], TypoLocalDateTime]("id", "illustrationid", "diagram", "modifieddate")(IViewRow.apply)(using IllustrationId.decoder, IllustrationId.decoder, Decoder.decodeOption(using TypoXml.decoder), TypoLocalDateTime.decoder)
+
   given encoder: Encoder[IViewRow] = Encoder.forProduct4[IViewRow, IllustrationId, IllustrationId, Option[TypoXml], TypoLocalDateTime]("id", "illustrationid", "diagram", "modifieddate")(x => (x.id, x.illustrationid, x.diagram, x.modifieddate))(using IllustrationId.encoder, IllustrationId.encoder, Encoder.encodeOption(using TypoXml.encoder), TypoLocalDateTime.encoder)
-  given read: Read[IViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[IViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    IViewRow(
-      id = arr(0).asInstanceOf[IllustrationId],
-          illustrationid = arr(1).asInstanceOf[IllustrationId],
-          diagram = arr(2).asInstanceOf[Option[TypoXml]],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      IViewRow(
+        id = arr(0).asInstanceOf[IllustrationId],
+            illustrationid = arr(1).asInstanceOf[IllustrationId],
+            diagram = arr(2).asInstanceOf[Option[TypoXml]],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

@@ -9,5 +9,8 @@ import adventureworks.customtypes.TypoLocalDateTime
 import java.sql.Connection
 
 trait UpdatePersonReturningSqlRepo {
-  def apply(suffix: /* nullability unknown */ Option[String], cutoff: /* nullability unknown */ Option[TypoLocalDateTime])(using c: Connection): List[UpdatePersonReturningSqlRow]
+  def apply(
+    suffix: /* nullability unknown */ Option[String],
+    cutoff: /* nullability unknown */ Option[TypoLocalDateTime]
+  )(using c: Connection): List[UpdatePersonReturningSqlRow]
 }

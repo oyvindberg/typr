@@ -7,6 +7,7 @@ package adventureworks.person.phonenumbertype
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -22,47 +23,49 @@ case class PhonenumbertypeRowUnsaved(
   /** Name of the telephone number type */
   name: Name,
   /** Default: nextval('person.phonenumbertype_phonenumbertypeid_seq'::regclass)
-      Primary key for telephone number type records. */
-  phonenumbertypeid: Defaulted[PhonenumbertypeId] = Defaulted.UseDefault,
+   * Primary key for telephone number type records.
+   */
+  phonenumbertypeid: Defaulted[PhonenumbertypeId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(phonenumbertypeidDefault: => PhonenumbertypeId, modifieddateDefault: => TypoLocalDateTime): PhonenumbertypeRow =
-    PhonenumbertypeRow(
-      name = name,
-      phonenumbertypeid = phonenumbertypeid match {
-                            case Defaulted.UseDefault => phonenumbertypeidDefault
-                            case Defaulted.Provided(value) => value
-                          },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    phonenumbertypeidDefault: => PhonenumbertypeId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): PhonenumbertypeRow = new PhonenumbertypeRow(phonenumbertypeid = phonenumbertypeid.getOrElse(phonenumbertypeidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object PhonenumbertypeRowUnsaved {
-  given reads: Reads[PhonenumbertypeRowUnsaved] = Reads[PhonenumbertypeRowUnsaved](json => JsResult.fromTry(
-      Try(
-        PhonenumbertypeRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          phonenumbertypeid = json.\("phonenumbertypeid").as(Defaulted.reads(using PhonenumbertypeId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[PhonenumbertypeRowUnsaved] = Text.instance[PhonenumbertypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using PhonenumbertypeId.text).unsafeEncode(row.phonenumbertypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  given pgText: Text[PhonenumbertypeRowUnsaved] = {
+    Text.instance[PhonenumbertypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using PhonenumbertypeId.pgText).unsafeEncode(row.phonenumbertypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  given writes: OWrites[PhonenumbertypeRowUnsaved] = OWrites[PhonenumbertypeRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "phonenumbertypeid" -> Defaulted.writes(using PhonenumbertypeId.writes).writes(o.phonenumbertypeid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  given reads: Reads[PhonenumbertypeRowUnsaved] = {
+    Reads[PhonenumbertypeRowUnsaved](json => JsResult.fromTry(
+        Try(
+          PhonenumbertypeRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            phonenumbertypeid = json.\("phonenumbertypeid").as(Defaulted.reads(using PhonenumbertypeId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[PhonenumbertypeRowUnsaved] = {
+    OWrites[PhonenumbertypeRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "phonenumbertypeid" -> Defaulted.writes(using PhonenumbertypeId.writes).writes(o.phonenumbertypeid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

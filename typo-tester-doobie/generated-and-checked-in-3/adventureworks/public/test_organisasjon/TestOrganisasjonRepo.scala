@@ -13,18 +13,37 @@ import typo.dsl.UpdateBuilder
 
 trait TestOrganisasjonRepo {
   def delete: DeleteBuilder[TestOrganisasjonFields, TestOrganisasjonRow]
+
   def deleteById(organisasjonskode: TestOrganisasjonId): ConnectionIO[Boolean]
+
   def deleteByIds(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Int]
+
   def insert(unsaved: TestOrganisasjonRow): ConnectionIO[TestOrganisasjonRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, TestOrganisasjonRow], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, TestOrganisasjonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[TestOrganisasjonFields, TestOrganisasjonRow]
+
   def selectAll: Stream[ConnectionIO, TestOrganisasjonRow]
+
   def selectById(organisasjonskode: TestOrganisasjonId): ConnectionIO[Option[TestOrganisasjonRow]]
+
   def selectByIds(organisasjonskodes: Array[TestOrganisasjonId]): Stream[ConnectionIO, TestOrganisasjonRow]
+
   def selectByIdsTracked(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Map[TestOrganisasjonId, TestOrganisasjonRow]]
+
   def update: UpdateBuilder[TestOrganisasjonFields, TestOrganisasjonRow]
+
   def upsert(unsaved: TestOrganisasjonRow): ConnectionIO[TestOrganisasjonRow]
+
   def upsertBatch(unsaved: List[TestOrganisasjonRow]): Stream[ConnectionIO, TestOrganisasjonRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, TestOrganisasjonRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, TestOrganisasjonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

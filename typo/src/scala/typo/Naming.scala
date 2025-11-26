@@ -1,8 +1,8 @@
 package typo
 
-class Naming(val pkg: sc.QIdent) {
-  protected def fragments(source: Source): (sc.QIdent, String) = {
-    def forRelPath(relPath: RelPath): (sc.QIdent, String) =
+class Naming(val pkg: jvm.QIdent, lang: Lang) {
+  protected def fragments(source: Source): (jvm.QIdent, String) = {
+    def forRelPath(relPath: RelPath): (jvm.QIdent, String) =
       (
         pkg / relPath.segments.init.map(pkgSafe),
         relPath.segments.last.replace(".sql", "")
@@ -16,7 +16,7 @@ class Naming(val pkg: sc.QIdent) {
   }
 
   // not enough, but covers a common case
-  def pkgSafe(str: String): sc.Ident = sc.Ident(str.replace('-', '_'))
+  def pkgSafe(str: String): jvm.Ident = jvm.Ident(lang.escapedIdent(str))
 
   def suffixFor(source: Source): String =
     source match {
@@ -26,43 +26,42 @@ class Naming(val pkg: sc.QIdent) {
       case Source.SqlFile(_)     => "Sql"
     }
 
-  protected def relation(source: Source, suffix: String): sc.QIdent = {
+  protected def relation(source: Source, suffix: String): jvm.QIdent = {
     val (init, name) = fragments(source)
     val suffix0 = suffixFor(source)
-    init / pkgSafe(name) / sc.Ident(Naming.titleCase(name)).appended(suffix0 + suffix)
+    init / pkgSafe(name) / jvm.Ident(Naming.titleCase(name)).appended(suffix0 + suffix)
   }
 
-  protected def tpe(name: db.RelationName, suffix: String): sc.QIdent =
-    pkg / name.schema.map(sc.Ident.apply).toList / sc.Ident(Naming.titleCase(name.name)).appended(suffix)
+  protected def tpe(name: db.RelationName, suffix: String): jvm.QIdent =
+    pkg / name.schema.map(pkgSafe).toList / jvm.Ident(Naming.titleCase(name.name)).appended(suffix)
 
-  def idName(source: Source, cols: List[db.Col]): sc.QIdent = {
+  def idName(source: Source, cols: List[db.Col]): jvm.QIdent = {
     ((), cols)._1 // allow implementors to use this
     relation(source, "Id")
   }
-  def repoName(source: Source): sc.QIdent = relation(source, "Repo")
-  def repoImplName(source: Source): sc.QIdent = relation(source, "RepoImpl")
-  def repoMockName(source: Source): sc.QIdent = relation(source, "RepoMock")
-  def rowName(source: Source): sc.QIdent = relation(source, "Row")
-  def fieldsName(source: Source): sc.QIdent = relation(source, "Fields")
-  def fieldValueName(source: Source): sc.QIdent = relation(source, "FieldValue")
-  def fieldOrIdValueName(source: Source): sc.QIdent = relation(source, "FieldOrIdValue")
-  def rowUnsaved(source: Source): sc.QIdent = relation(source, "RowUnsaved")
+  def repoName(source: Source): jvm.QIdent = relation(source, "Repo")
+  def repoImplName(source: Source): jvm.QIdent = relation(source, "RepoImpl")
+  def repoMockName(source: Source): jvm.QIdent = relation(source, "RepoMock")
+  def rowName(source: Source): jvm.QIdent = relation(source, "Row")
+  def fieldsName(source: Source): jvm.QIdent = relation(source, "Fields")
+  def fieldOrIdValueName(source: Source): jvm.QIdent = relation(source, "FieldValue")
+  def rowUnsaved(source: Source): jvm.QIdent = relation(source, "RowUnsaved")
 
-  def className(names: List[sc.Ident]): sc.QIdent = pkg / names
+  def className(names: List[jvm.Ident]): jvm.QIdent = pkg / names
 
-  def enumName(name: db.RelationName): sc.QIdent =
+  def enumName(name: db.RelationName): jvm.QIdent =
     tpe(name, "")
 
-  def domainName(name: db.RelationName): sc.QIdent =
+  def domainName(name: db.RelationName): jvm.QIdent =
     tpe(name, "")
 
-  def enumValue(name: String): sc.Ident = sc.Ident(name)
+  def enumValue(name: String): jvm.Ident = jvm.Ident(name)
 
   // field names
-  def field(name: db.ColName): sc.Ident =
+  def field(name: db.ColName): jvm.Ident =
     Naming.camelCaseIdent(name.value.split('_'))
 
-  def fk(baseTable: db.RelationName, fk: db.ForeignKey, includeCols: Boolean): sc.Ident = {
+  def fk(baseTable: db.RelationName, fk: db.ForeignKey, includeCols: Boolean): jvm.Ident = {
     val parts = Array[Iterable[String]](
       List("fk"),
       fk.otherTable.schema.filterNot(baseTable.schema.contains),
@@ -73,13 +72,13 @@ class Naming(val pkg: sc.QIdent) {
   }
 
   // multiple field names together into one name
-  def field(colNames: NonEmptyList[db.ColName]): sc.Ident =
+  def field(colNames: NonEmptyList[db.ColName]): jvm.Ident =
     Naming.camelCaseIdent(colNames.map(field).map(_.value).toArray)
 }
 
 object Naming {
-  def camelCaseIdent(strings: Array[String]): sc.Ident =
-    sc.Ident(camelCase(strings))
+  def camelCaseIdent(strings: Array[String]): jvm.Ident =
+    jvm.Ident(camelCase(strings))
 
   def splitOnSymbol(str: String): Array[String] =
     str.split("[\\-_.]")

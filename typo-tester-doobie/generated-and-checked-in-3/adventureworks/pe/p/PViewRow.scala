@@ -51,38 +51,42 @@ case class PViewRow(
 
 object PViewRow {
   given decoder: Decoder[PViewRow] = Decoder.forProduct14[PViewRow, BusinessentityId, BusinessentityId, /* bpchar, max 2 chars */ String, NameStyle, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Int, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")(PViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, Decoder.decodeString, NameStyle.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PViewRow] = Encoder.forProduct14[PViewRow, BusinessentityId, BusinessentityId, /* bpchar, max 2 chars */ String, NameStyle, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Int, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.persontype, x.namestyle, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.emailpromotion, x.additionalcontactinfo, x.demographics, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, Encoder.encodeString, NameStyle.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(NameStyle.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          persontype = arr(2).asInstanceOf[/* bpchar, max 2 chars */ String],
-          namestyle = arr(3).asInstanceOf[NameStyle],
-          title = arr(4).asInstanceOf[Option[/* max 8 chars */ String]],
-          firstname = arr(5).asInstanceOf[/* user-picked */ FirstName],
-          middlename = arr(6).asInstanceOf[Option[Name]],
-          lastname = arr(7).asInstanceOf[Name],
-          suffix = arr(8).asInstanceOf[Option[/* max 10 chars */ String]],
-          emailpromotion = arr(9).asInstanceOf[Int],
-          additionalcontactinfo = arr(10).asInstanceOf[Option[TypoXml]],
-          demographics = arr(11).asInstanceOf[Option[TypoXml]],
-          rowguid = arr(12).asInstanceOf[TypoUUID],
-          modifieddate = arr(13).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(NameStyle.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            persontype = arr(2).asInstanceOf[/* bpchar, max 2 chars */ String],
+            namestyle = arr(3).asInstanceOf[NameStyle],
+            title = arr(4).asInstanceOf[Option[/* max 8 chars */ String]],
+            firstname = arr(5).asInstanceOf[/* user-picked */ FirstName],
+            middlename = arr(6).asInstanceOf[Option[Name]],
+            lastname = arr(7).asInstanceOf[Name],
+            suffix = arr(8).asInstanceOf[Option[/* max 10 chars */ String]],
+            emailpromotion = arr(9).asInstanceOf[Int],
+            additionalcontactinfo = arr(10).asInstanceOf[Option[TypoXml]],
+            demographics = arr(11).asInstanceOf[Option[TypoXml]],
+            rowguid = arr(12).asInstanceOf[TypoUUID],
+            modifieddate = arr(13).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

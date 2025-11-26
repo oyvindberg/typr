@@ -25,11 +25,11 @@ trait BecViewFields {
 
 object BecViewFields {
   lazy val structure: Relation[BecViewFields, BecViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[BecViewFields, BecViewRow] {
-  
+
     override lazy val fields: BecViewFields = new BecViewFields {
       override def id = Field[BusinessentityId, BecViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, BecViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -38,12 +38,11 @@ object BecViewFields {
       override def rowguid = Field[TypoUUID, BecViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, BecViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, BecViewRow]] =
       List[FieldLike[?, BecViewRow]](fields.id, fields.businessentityid, fields.personid, fields.contacttypeid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -25,38 +25,58 @@ import typo.dsl.Bijection
 case class TypoLocalDateTime(value: LocalDateTime)
 
 object TypoLocalDateTime {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).toFormatter
   def apply(value: LocalDateTime): TypoLocalDateTime = new TypoLocalDateTime(value.truncatedTo(ChronoUnit.MICROS))
+
   def apply(str: String): TypoLocalDateTime = apply(LocalDateTime.parse(str, parser))
-  def now = TypoLocalDateTime(LocalDateTime.now)
-  implicit lazy val arrayColumn: Column[Array[TypoLocalDateTime]] = Column.nonNull[Array[TypoLocalDateTime]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoLocalDateTime(LocalDateTime.parse(v.asInstanceOf[String], parser))))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLocalDateTime, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+
+  implicit lazy val arrayColumn: Column[Array[TypoLocalDateTime]] = {
+    Column.nonNull[Array[TypoLocalDateTime]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => TypoLocalDateTime.apply(LocalDateTime.parse(v.asInstanceOf[String], parser))))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLocalDateTime, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   implicit lazy val arrayToStatement: ToStatement[Array[TypoLocalDateTime]] = ToStatement[Array[TypoLocalDateTime]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("timestamp", v.map(v => v.value.toString))))
-  implicit lazy val bijection: Bijection[TypoLocalDateTime, LocalDateTime] = Bijection[TypoLocalDateTime, LocalDateTime](_.value)(TypoLocalDateTime.apply)
-  implicit lazy val column: Column[TypoLocalDateTime] = Column.nonNull[TypoLocalDateTime]((v1: Any, _) =>
-    v1 match {
-      case v: String => Right(TypoLocalDateTime(LocalDateTime.parse(v, parser)))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+
+  implicit lazy val bijection: Bijection[TypoLocalDateTime, LocalDateTime] = Bijection.apply[TypoLocalDateTime, LocalDateTime](_.value)(TypoLocalDateTime.apply)
+
+  implicit lazy val column: Column[TypoLocalDateTime] = {
+    Column.nonNull[TypoLocalDateTime]((v1: Any, _) =>
+      v1 match {
+        case v: String => Right(TypoLocalDateTime.apply(LocalDateTime.parse(v, parser)))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  def now: TypoLocalDateTime = new TypoLocalDateTime(LocalDateTime.now())
+
+  implicit lazy val parameterMetadata: ParameterMetaData[TypoLocalDateTime] = {
+    new ParameterMetaData[TypoLocalDateTime] {
+      override def sqlType: String = "timestamp"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  implicit lazy val parameterMetadata: ParameterMetaData[TypoLocalDateTime] = new ParameterMetaData[TypoLocalDateTime] {
-    override def sqlType: String = "timestamp"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).toFormatter()
+
+  implicit lazy val pgText: Text[TypoLocalDateTime] = {
+    new Text[TypoLocalDateTime] {
+      override def unsafeEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[TypoLocalDateTime] = Reads.DefaultLocalDateTimeReads.map(TypoLocalDateTime.apply)
-  implicit lazy val text: Text[TypoLocalDateTime] = new Text[TypoLocalDateTime] {
-    override def unsafeEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[TypoLocalDateTime] = ToStatement[TypoLocalDateTime]((s, index, v) => s.setObject(index, v.value.toString))
+
   implicit lazy val writes: Writes[TypoLocalDateTime] = Writes.DefaultLocalDateTimeWrites.contramap(_.value)
 }

@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.culture` */
-case class CultureId(value: /* bpchar, max 6 chars */ String) extends AnyVal
+case class CultureId(value: /* bpchar, max 6 chars */ String) extends scala.AnyVal
+
 object CultureId {
   implicit lazy val arrayGet: Get[Array[CultureId]] = adventureworks.StringArrayMeta.get.map(_.map(CultureId.apply))
+
   implicit lazy val arrayPut: Put[Array[CultureId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[CultureId, /* bpchar, max 6 chars */ String] = Bijection[CultureId, /* bpchar, max 6 chars */ String](_.value)(CultureId.apply)
+
+  implicit lazy val bijection: Bijection[CultureId, /* bpchar, max 6 chars */ String] = Bijection.apply[CultureId, /* bpchar, max 6 chars */ String](_.value)(CultureId.apply)
+
   implicit lazy val decoder: Decoder[CultureId] = Decoder.decodeString.map(CultureId.apply)
+
   implicit lazy val encoder: Encoder[CultureId] = Encoder.encodeString.contramap(_.value)
+
   implicit lazy val get: Get[CultureId] = Meta.StringMeta.get.map(CultureId.apply)
-  implicit lazy val put: Put[CultureId] = Meta.StringMeta.put.contramap(_.value)
-  implicit lazy val text: Text[CultureId] = new Text[CultureId] {
-    override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[CultureId] = {
+    new Text[CultureId] {
+      override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val put: Put[CultureId] = Meta.StringMeta.put.contramap(_.value)
 }

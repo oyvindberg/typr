@@ -15,47 +15,62 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: production.scrapreason
-    Manufacturing failure reasons lookup table.
-    Primary key: scrapreasonid */
+ * Manufacturing failure reasons lookup table.
+ * Primary key: scrapreasonid
+ */
 case class ScrapreasonRow(
   /** Primary key for ScrapReason records.
-      Default: nextval('production.scrapreason_scrapreasonid_seq'::regclass) */
+   * Default: nextval('production.scrapreason_scrapreasonid_seq'::regclass)
+   */
   scrapreasonid: ScrapreasonId,
   /** Failure description. */
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = scrapreasonid
-   def toUnsavedRow(scrapreasonid: Defaulted[ScrapreasonId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ScrapreasonRowUnsaved =
-     ScrapreasonRowUnsaved(name, scrapreasonid, modifieddate)
- }
+) {
+  def id: ScrapreasonId = scrapreasonid
+
+  def toUnsavedRow(
+    scrapreasonid: Defaulted[ScrapreasonId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): ScrapreasonRowUnsaved = new ScrapreasonRowUnsaved(name, scrapreasonid, modifieddate)
+}
 
 object ScrapreasonRow {
   implicit lazy val decoder: Decoder[ScrapreasonRow] = Decoder.forProduct3[ScrapreasonRow, ScrapreasonId, Name, TypoLocalDateTime]("scrapreasonid", "name", "modifieddate")(ScrapreasonRow.apply)(ScrapreasonId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[ScrapreasonRow] = Encoder.forProduct3[ScrapreasonRow, ScrapreasonId, Name, TypoLocalDateTime]("scrapreasonid", "name", "modifieddate")(x => (x.scrapreasonid, x.name, x.modifieddate))(ScrapreasonId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[ScrapreasonRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ScrapreasonId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    ScrapreasonRow(
-      scrapreasonid = arr(0).asInstanceOf[ScrapreasonId],
-          name = arr(1).asInstanceOf[Name],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  implicit lazy val pgText: Text[ScrapreasonRow] = {
+    Text.instance[ScrapreasonRow]{ (row, sb) =>
+      ScrapreasonId.pgText.unsafeEncode(row.scrapreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[ScrapreasonRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ScrapreasonId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      ScrapreasonRow(
+        scrapreasonid = arr(0).asInstanceOf[ScrapreasonId],
+            name = arr(1).asInstanceOf[Name],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[ScrapreasonRow] = {
+    new Write.Composite[ScrapreasonRow](
+      List(new Write.Single(ScrapreasonId.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.scrapreasonid, a.name, a.modifieddate)
     )
   }
-  implicit lazy val text: Text[ScrapreasonRow] = Text.instance[ScrapreasonRow]{ (row, sb) =>
-    ScrapreasonId.text.unsafeEncode(row.scrapreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  implicit lazy val write: Write[ScrapreasonRow] = new Write.Composite[ScrapreasonRow](
-    List(new Write.Single(ScrapreasonId.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.scrapreasonid, a.name, a.modifieddate)
-  )
 }

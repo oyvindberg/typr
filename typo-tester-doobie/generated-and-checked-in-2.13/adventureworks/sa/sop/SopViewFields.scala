@@ -24,11 +24,11 @@ trait SopViewFields {
 
 object SopViewFields {
   lazy val structure: Relation[SopViewFields, SopViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SopViewFields, SopViewRow] {
-  
+
     override lazy val fields: SopViewFields = new SopViewFields {
       override def id = Field[SpecialofferId, SopViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def specialofferid = Field[SpecialofferId, SopViewRow](_path, "specialofferid", None, None, x => x.specialofferid, (row, value) => row.copy(specialofferid = value))
@@ -36,12 +36,11 @@ object SopViewFields {
       override def rowguid = Field[TypoUUID, SopViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SopViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SopViewRow]] =
       List[FieldLike[?, SopViewRow]](fields.id, fields.specialofferid, fields.productid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

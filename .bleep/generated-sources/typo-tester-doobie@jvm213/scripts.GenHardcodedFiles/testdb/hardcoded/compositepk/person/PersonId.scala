@@ -13,7 +13,9 @@ case class PersonId(
   one: Long,
   two: Option[String]
 )
+
 object PersonId {
   implicit lazy val decoder: Decoder[PersonId] = Decoder.forProduct2[PersonId, Long, Option[String]]("one", "two")(PersonId.apply)(Decoder.decodeLong, Decoder.decodeOption(Decoder.decodeString))
+
   implicit lazy val encoder: Encoder[PersonId] = Encoder.forProduct2[PersonId, Long, Option[String]]("one", "two")(x => (x.one, x.two))(Encoder.encodeLong, Encoder.encodeOption(Encoder.encodeString))
 }

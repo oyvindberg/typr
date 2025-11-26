@@ -17,7 +17,9 @@ case class SalesterritoryhistoryId(
   startdate: TypoLocalDateTime,
   territoryid: SalesterritoryId
 )
+
 object SalesterritoryhistoryId {
   given decoder: Decoder[SalesterritoryhistoryId] = Decoder.forProduct3[SalesterritoryhistoryId, BusinessentityId, TypoLocalDateTime, SalesterritoryId]("businessentityid", "startdate", "territoryid")(SalesterritoryhistoryId.apply)(using BusinessentityId.decoder, TypoLocalDateTime.decoder, SalesterritoryId.decoder)
+
   given encoder: Encoder[SalesterritoryhistoryId] = Encoder.forProduct3[SalesterritoryhistoryId, BusinessentityId, TypoLocalDateTime, SalesterritoryId]("businessentityid", "startdate", "territoryid")(x => (x.businessentityid, x.startdate, x.territoryid))(using BusinessentityId.encoder, TypoLocalDateTime.encoder, SalesterritoryId.encoder)
 }

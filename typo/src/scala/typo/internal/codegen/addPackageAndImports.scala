@@ -7,92 +7,269 @@ import scala.collection.mutable
 /** imports are automatically written based on the qualified idents found in the code
   */
 object addPackageAndImports {
-  def apply(knownNamesByPkg: Map[sc.QIdent, Map[sc.Ident, sc.Type.Qualified]], file: sc.File): sc.File = {
-    val newImports = mutable.Map.empty[sc.Ident, sc.Type.Qualified]
+  def apply(language: Lang, knownNamesByPkg: Map[jvm.QIdent, Map[jvm.Ident, jvm.Type.Qualified]], file: jvm.File): jvm.File = {
+    val newImports = mutable.Map.empty[jvm.Ident, jvm.Type.Qualified]
+    val newStaticImports = mutable.Map.empty[jvm.Ident, jvm.Type.Qualified]
+
+    def addImport(currentQName: jvm.Type.Qualified, isStatic: Boolean): jvm.Type.Qualified = {
+      if (currentQName.value.idents.length <= 1) currentQName
+      else {
+        val currentName = currentQName.value.name
+        val shortenedQName = jvm.Type.Qualified(currentName)
+        val targetMap = if (isStatic) newStaticImports else newImports
+        val otherMap = if (isStatic) newImports else newStaticImports
+        knownNamesByPkg.get(file.pkg).flatMap(_.get(currentName)).orElse(language.BuiltIn.get(currentName)).orElse(targetMap.get(currentName)).orElse(otherMap.get(currentName)) match {
+          case Some(alreadyAvailable) =>
+            if (alreadyAvailable == currentQName) shortenedQName else currentQName
+          case None =>
+            targetMap += ((currentName, currentQName))
+            shortenedQName
+        }
+      }
+    }
 
     val contents = file.contents
     val withShortenedNames = contents.mapTrees { tree =>
       shortenNames(
         tree,
-        {
-          case currentQName if currentQName.value.idents.length <= 1 => currentQName
-          case currentQName =>
-            val currentName = currentQName.value.name
-            val shortenedQName = sc.Type.Qualified(currentName)
-            knownNamesByPkg.get(file.pkg).flatMap(_.get(currentName)).orElse(sc.Type.BuiltIn.get(currentName)).orElse(newImports.get(currentName)) match {
-              case Some(alreadyAvailable) =>
-                if (alreadyAvailable == currentQName) shortenedQName else currentQName
-              case None =>
-                newImports += ((currentName, currentQName))
-                shortenedQName
-            }
-        }
+        typeImport = qname => addImport(qname, isStatic = false),
+        staticImport = qname => addImport(qname, isStatic = true)
       )
     }
 
+    val renderedImports = newImports.values.toList.sorted.map { i =>
+      language match {
+        case LangJava     => code"import $i;"
+        case _: LangScala => code"import $i"
+        case other        => sys.error(s"Unsupported language: $other")
+      }
+    }
+    val renderedStaticImports = newStaticImports.values.toList.sorted.map { i =>
+      language match {
+        case LangJava     => code"import static $i;"
+        case _: LangScala => code"import $i"
+        case other        => sys.error(s"Unsupported language: $other")
+      }
+    }
+    val allImports = renderedImports ++ renderedStaticImports
     val withPrefix =
-      code"""package ${file.pkg}
-            |
-            |${newImports.values.toList.sorted.map { i => code"import $i" }.mkCode("\n")}
-            |
-            |$withShortenedNames""".stripMargin
+      code"""|package ${file.pkg}${language.`;`}
+             |
+             |${allImports.mkCode("\n")}
+             |
+             |$withShortenedNames""".stripMargin
 
     file.copy(contents = withPrefix)
   }
 
   // traverse tree and rewrite qualified names
-  def shortenNames(tree: sc.Tree, f: sc.Type.Qualified => sc.Type.Qualified): sc.Tree =
+  // typeImport is for regular class/type imports, staticImport is for static member imports (used for StringInterpolate in Java)
+  def shortenNames(tree: jvm.Tree, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Tree =
     tree match {
-      case x: sc.Ident =>
-        x
-      case x: sc.QIdent =>
-        x
-      case x: sc.Param =>
-        shortenNamesParam(x, f)
-      case sc.Params(params) =>
-        sc.Params(params.map(p => shortenNamesParam(p, f)))
-      case x: sc.StrLit =>
-        x
-      case sc.Summon(tpe) =>
-        sc.Summon(shortenNamesType(tpe, f))
-      case tpe: sc.Type =>
-        shortenNamesType(tpe, f)
-      case sc.StringInterpolate(i, prefix, content) =>
-        sc.StringInterpolate(shortenNamesType(i, f), prefix, content.mapTrees(t => shortenNames(t, f)))
-      case x: sc.ClassMember =>
-        shortenNamesClassMember(x, f)
-      case sc.Obj(name, members, body) =>
-        sc.Obj(name, members.map(cm => shortenNamesClassMember(cm, f)), body.map(_.mapTrees(t => shortenNames(t, f))))
-    }
-
-  def shortenNamesParam(param: sc.Param, f: sc.Type.Qualified => sc.Type.Qualified): sc.Param =
-    sc.Param(param.name, shortenNamesType(param.tpe, f), param.default.map(code => code.mapTrees(t => shortenNames(t, f))))
-
-  def shortenNamesClassMember(cm: sc.ClassMember, f: sc.Type.Qualified => sc.Type.Qualified): sc.ClassMember =
-    cm match {
-      case sc.Given(tparams, name, implicitParams, tpe, body) =>
-        sc.Given(tparams, name, implicitParams.map(p => shortenNamesParam(p, f)), shortenNamesType(tpe, f), body.mapTrees(t => shortenNames(t, f)))
-      case sc.Value(tparams, name, params, implicitParams, tpe, body) =>
-        sc.Value(
-          tparams,
-          name,
-          params.map(p => shortenNamesParam(p, f)),
-          implicitParams.map(p => shortenNamesParam(p, f)),
-          shortenNamesType(tpe, f),
-          body.mapTrees(t => shortenNames(t, f))
+      case jvm.IgnoreResult(expr) => jvm.IgnoreResult(expr.mapTrees(shortenNames(_, typeImport, staticImport)))
+      case jvm.IfExpr(pred, thenp, elsep) =>
+        jvm.IfExpr(
+          pred.mapTrees(t => shortenNames(t, typeImport, staticImport)),
+          thenp.mapTrees(t => shortenNames(t, typeImport, staticImport)),
+          elsep.mapTrees(t => shortenNames(t, typeImport, staticImport))
+        )
+      case jvm.ConstructorMethodRef(tpe) => jvm.ConstructorMethodRef(shortenNamesType(tpe, typeImport))
+      case jvm.ClassOf(tpe)              => jvm.ClassOf(shortenNamesType(tpe, typeImport))
+      case adt: jvm.Adt                  => shortenNamesAdt(adt, typeImport, staticImport)
+      case cls: jvm.Class                => shortenNamesClass(cls, typeImport, staticImport)
+      case jvm.Call(target, argGroups) =>
+        jvm.Call(
+          target.mapTrees(t => shortenNames(t, typeImport, staticImport)),
+          argGroups.map(group =>
+            jvm.Call.ArgGroup(
+              group.args.map(t => shortenNamesArg(t, typeImport, staticImport)),
+              group.isImplicit
+            )
+          )
+        )
+      case jvm.Apply0(ref)       => jvm.Apply0(shortenNamesParam(ref, typeImport, staticImport).narrow)
+      case jvm.Apply1(ref, arg1) => jvm.Apply1(shortenNamesParam(ref, typeImport, staticImport).narrow, arg1.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.Apply2(ref, arg1, arg2) =>
+        jvm.Apply2(
+          shortenNamesParam(ref, typeImport, staticImport).narrow,
+          arg1.mapTrees(t => shortenNames(t, typeImport, staticImport)),
+          arg2.mapTrees(t => shortenNames(t, typeImport, staticImport))
+        )
+      case jvm.Select(target, name)                    => jvm.Select(target.mapTrees(t => shortenNames(t, typeImport, staticImport)), name)
+      case jvm.ArrayIndex(target, num)                 => jvm.ArrayIndex(target.mapTrees(t => shortenNames(t, typeImport, staticImport)), num)
+      case jvm.ApplyNullary(target, name)              => jvm.ApplyNullary(target.mapTrees(t => shortenNames(t, typeImport, staticImport)), name)
+      case jvm.Arg.Named(name, value)                  => jvm.Arg.Named(name, value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.Arg.Pos(value)                          => jvm.Arg.Pos(value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.Enum(comments, tpe, members, instances) => jvm.Enum(comments, typeImport(tpe), members, instances.map(shortenNamesClassMember(_, typeImport, staticImport)))
+      case jvm.OpenEnum(comments, tpe, underlyingType, values, staticMembers) =>
+        jvm.OpenEnum(
+          comments = comments,
+          tpe = typeImport(tpe),
+          underlyingType = typeImport(underlyingType),
+          values = values.map { case (name, expr) => (name, expr.mapTrees(t => shortenNames(t, typeImport, staticImport))) },
+          staticMembers = staticMembers.map(shortenNamesStaticMember(_, typeImport, staticImport))
+        )
+      case jvm.MethodRef(tpe, name) => jvm.MethodRef(shortenNamesType(tpe, typeImport), name)
+      case jvm.New(target, args)    => jvm.New(target.mapTrees(t => shortenNames(t, typeImport, staticImport)), args.map(shortenNamesArg(_, typeImport, staticImport)))
+      case jvm.NewWithBody(tpe, members) =>
+        jvm.NewWithBody(shortenNamesType(tpe, typeImport), members.map(shortenNamesClassMember(_, typeImport, staticImport)))
+      case jvm.InferredTargs(target) => jvm.InferredTargs(target.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.GenericMethodCall(target, methodName, typeArgs, args) =>
+        jvm.GenericMethodCall(
+          target.mapTrees(t => shortenNames(t, typeImport, staticImport)),
+          methodName,
+          typeArgs.map(shortenNamesType(_, typeImport)),
+          args.map(shortenNamesArg(_, typeImport, staticImport))
+        )
+      case jvm.Lambda0(body)                    => jvm.Lambda0(body.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.Lambda1(param, body)             => jvm.Lambda1(param, body.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.Lambda2(p1, p2, body)            => jvm.Lambda2(p1, p2, body.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.ByName(body)                     => jvm.ByName(body.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.TypedLambda1(paramType, p, body) => jvm.TypedLambda1(shortenNamesType(paramType, typeImport), p, body.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.FieldGetterRef(rowType, fld)     => jvm.FieldGetterRef(shortenNamesType(rowType, typeImport), fld)
+      case jvm.SelfNullary(name)                => jvm.SelfNullary(name)
+      case jvm.TypedFactoryCall(tpe, typeArgs, args) =>
+        jvm.TypedFactoryCall(shortenNamesType(tpe, typeImport), typeArgs.map(shortenNamesType(_, typeImport)), args.map(shortenNamesArg(_, typeImport, staticImport)))
+      // StringInterpolate.import is for static method imports in Java (e.g., Fragment.interpolate)
+      case jvm.StringInterpolate(i, prefix, content) => jvm.StringInterpolate(shortenNamesType(i, staticImport), prefix, content.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case tpe: jvm.Type                             => shortenNamesType(tpe, typeImport)
+      case jvm.RuntimeInterpolation(value)           => jvm.RuntimeInterpolation(value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case x: jvm.ClassMember                        => shortenNamesClassMember(x, typeImport, staticImport)
+      case x: jvm.Ident                              => x
+      case x: jvm.Param[jvm.Type]                    => shortenNamesParam(x, typeImport, staticImport)
+      case x: jvm.QIdent                             => x
+      case x: jvm.StrLit                             => x
+      case x: jvm.Summon                             => jvm.Summon(shortenNamesType(x.tpe, typeImport))
+      case jvm.LocalVar(name, tpe, value) =>
+        jvm.LocalVar(name, tpe.map(shortenNamesType(_, typeImport)), value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.TypeSwitch(value, cases) =>
+        jvm.TypeSwitch(
+          value.mapTrees(t => shortenNames(t, typeImport, staticImport)),
+          cases.map { c => jvm.TypeSwitch.Case(shortenNamesType(c.tpe, typeImport), c.ident, c.body.mapTrees(t => shortenNames(t, typeImport, staticImport))) }
         )
     }
 
+  def shortenNamesParam(param: jvm.Param[jvm.Type], typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Param[jvm.Type] =
+    jvm.Param(
+      param.comments,
+      param.name,
+      shortenNamesType(param.tpe, typeImport),
+      param.default.map(code => code.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+    )
+
+  def shortenNamesArg(arg: jvm.Arg, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Arg =
+    arg match {
+      case jvm.Arg.Pos(value)         => jvm.Arg.Pos(value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+      case jvm.Arg.Named(name, value) => jvm.Arg.Named(name, value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+    }
+
+  def shortenNamesClass(cls: jvm.Class, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Class =
+    jvm.Class(
+      comments = cls.comments,
+      classType = cls.classType,
+      name = cls.name,
+      tparams = cls.tparams,
+      params = cls.params.map(shortenNamesParam(_, typeImport, staticImport)),
+      implicitParams = cls.implicitParams.map(shortenNamesParam(_, typeImport, staticImport)),
+      `extends` = cls.`extends`.map(shortenNamesType(_, typeImport)),
+      implements = cls.implements.map(shortenNamesType(_, typeImport)),
+      members = cls.members.map(shortenNamesClassMember(_, typeImport, staticImport)),
+      staticMembers = cls.staticMembers.map(shortenNamesClassMember(_, typeImport, staticImport))
+    )
+
+  def shortenNamesAdt(x: jvm.Adt, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Adt =
+    x match {
+      case x: jvm.Adt.Record => shortenNamesAdtRecord(x, typeImport, staticImport)
+      case x: jvm.Adt.Sum    => shortenNamesAdtSum(x, typeImport, staticImport)
+    }
+
+  def shortenNamesAdtRecord(x: jvm.Adt.Record, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Adt.Record =
+    jvm.Adt.Record(
+      isWrapper = x.isWrapper,
+      comments = x.comments,
+      name = x.name,
+      tparams = x.tparams,
+      params = x.params.map(shortenNamesParam(_, typeImport, staticImport)),
+      implicitParams = x.implicitParams.map(shortenNamesParam(_, typeImport, staticImport)),
+      `extends` = x.`extends`.map(shortenNamesType(_, typeImport)),
+      implements = x.implements.map(shortenNamesType(_, typeImport)),
+      members = x.members.map(shortenNamesClassMember(_, typeImport, staticImport)),
+      staticMembers = x.staticMembers.map(shortenNamesClassMember(_, typeImport, staticImport))
+    )
+
+  def shortenNamesAdtSum(x: jvm.Adt.Sum, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Adt.Sum =
+    jvm.Adt.Sum(
+      comments = x.comments,
+      name = x.name,
+      tparams = x.tparams,
+      implements = x.implements.map(shortenNamesType(_, typeImport)),
+      members = x.members.map(shortenNamesMethod(_, typeImport, staticImport)),
+      staticMembers = x.staticMembers.map(shortenNamesClassMember(_, typeImport, staticImport)),
+      subtypes = x.subtypes.map(shortenNamesAdt(_, typeImport, staticImport))
+    )
+
+  def shortenNamesClassMember(cm: jvm.ClassMember, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.ClassMember =
+    cm match {
+      case jvm.Given(tparams, name, implicitParams, tpe, body) =>
+        jvm.Given(
+          tparams,
+          name,
+          implicitParams.map(p => shortenNamesParam(p, typeImport, staticImport)),
+          shortenNamesType(tpe, typeImport),
+          body.mapTrees(t => shortenNames(t, typeImport, staticImport))
+        )
+      case jvm.Value(name, tpe, body, isLazy, isOverride) =>
+        jvm.Value(
+          name,
+          shortenNamesType(tpe, typeImport),
+          body.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))),
+          isLazy,
+          isOverride
+        )
+      case x: jvm.Method =>
+        shortenNamesMethod(x, typeImport, staticImport)
+      case cls: jvm.NestedClass =>
+        jvm.NestedClass(
+          isPrivate = cls.isPrivate,
+          isFinal = cls.isFinal,
+          name = cls.name,
+          params = cls.params.map(shortenNamesParam(_, typeImport, staticImport)),
+          `extends` = cls.`extends`.map(shortenNamesType(_, typeImport)),
+          superArgs = cls.superArgs.map(shortenNamesArg(_, typeImport, staticImport)),
+          members = cls.members.map(shortenNamesClassMember(_, typeImport, staticImport))
+        )
+    }
+
+  def shortenNamesStaticMember(cm: jvm.StaticMember, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.StaticMember =
+    cm match {
+      case x: jvm.ClassMember => shortenNamesClassMember(x, typeImport, staticImport)
+      case x: jvm.Class       => shortenNamesClass(x, typeImport, staticImport)
+    }
+
+  def shortenNamesMethod(x: jvm.Method, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Method =
+    jvm.Method(
+      x.comments,
+      x.tparams,
+      x.name,
+      x.params.map(p => shortenNamesParam(p, typeImport, staticImport)),
+      x.implicitParams.map(p => shortenNamesParam(p, typeImport, staticImport)),
+      shortenNamesType(x.tpe, typeImport),
+      x.body.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+    )
+
   // traverse type tree and rewrite qualified names
-  def shortenNamesType(tpe: sc.Type, f: sc.Type.Qualified => sc.Type.Qualified): sc.Type =
+  def shortenNamesType(tpe: jvm.Type, f: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Type =
     tpe match {
-      case sc.Type.ArrayOf(value)                 => sc.Type.ArrayOf(shortenNamesType(value, f))
-      case sc.Type.Abstract(value)                => sc.Type.Abstract(value)
-      case sc.Type.Wildcard                       => sc.Type.Wildcard
-      case sc.Type.TApply(underlying, targs)      => sc.Type.TApply(shortenNamesType(underlying, f), targs.map(targ => shortenNamesType(targ, f)))
-      case sc.Type.Qualified(value)               => f(sc.Type.Qualified(value))
-      case sc.Type.Commented(underlying, comment) => sc.Type.Commented(shortenNamesType(underlying, f), comment)
-      case sc.Type.ByName(underlying)             => sc.Type.ByName(shortenNamesType(underlying, f))
-      case sc.Type.UserDefined(underlying)        => sc.Type.UserDefined(shortenNamesType(underlying, f))
+      case q @ jvm.Type.Qualified(_)               => f(q)
+      case jvm.Type.Abstract(value)                => jvm.Type.Abstract(value)
+      case jvm.Type.ArrayOf(value)                 => jvm.Type.ArrayOf(shortenNamesType(value, f))
+      case jvm.Type.Commented(underlying, comment) => jvm.Type.Commented(shortenNamesType(underlying, f), comment)
+      case jvm.Type.TApply(underlying, targs)      => jvm.Type.TApply(shortenNamesType(underlying, f), targs.map(targ => shortenNamesType(targ, f)))
+      case jvm.Type.UserDefined(underlying)        => jvm.Type.UserDefined(shortenNamesType(underlying, f))
+      case jvm.Type.Void                           => jvm.Type.Void
+      case jvm.Type.Wildcard                       => jvm.Type.Wildcard
+      case jvm.Type.Function0(ret)                 => jvm.Type.Function0(shortenNamesType(ret, f))
+      case jvm.Type.Function1(tpe1, ret)           => jvm.Type.Function1(shortenNamesType(tpe1, f), shortenNamesType(ret, f))
+      case jvm.Type.Function2(tpe1, tpe2, ret)     => jvm.Type.Function2(shortenNamesType(tpe1, f), shortenNamesType(tpe2, f), shortenNamesType(ret, f))
     }
 }

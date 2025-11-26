@@ -13,39 +13,50 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.table-with-generated-columns
-    Primary key: name */
+ * Primary key: name
+ */
 case class TableWithGeneratedColumnsRow(
   name: TableWithGeneratedColumnsId,
   /** Generated ALWAYS, expression: 
-      CASE
-          WHEN (name IS NOT NULL) THEN 'no-name'::text
-          WHEN (name = 'a'::text) THEN 'a-name'::text
-          ELSE 'some-name'::text
-      END */
+  CASE
+      WHEN (name IS NOT NULL) THEN 'no-name'::text
+      WHEN (name = 'a'::text) THEN 'a-name'::text
+      ELSE 'some-name'::text
+  END */
   nameTypeAlways: String
-){
-   val id = name
-   def toUnsavedRow(): TableWithGeneratedColumnsRowUnsaved =
-     TableWithGeneratedColumnsRowUnsaved(name)
- }
+) {
+  def id: TableWithGeneratedColumnsId = name
+
+  def toUnsavedRow: TableWithGeneratedColumnsRowUnsaved = new TableWithGeneratedColumnsRowUnsaved(name)
+}
 
 object TableWithGeneratedColumnsRow {
   given decoder: Decoder[TableWithGeneratedColumnsRow] = Decoder.forProduct2[TableWithGeneratedColumnsRow, TableWithGeneratedColumnsId, String]("name", "name-type-always")(TableWithGeneratedColumnsRow.apply)(using TableWithGeneratedColumnsId.decoder, Decoder.decodeString)
+
   given encoder: Encoder[TableWithGeneratedColumnsRow] = Encoder.forProduct2[TableWithGeneratedColumnsRow, TableWithGeneratedColumnsId, String]("name", "name-type-always")(x => (x.name, x.nameTypeAlways))(using TableWithGeneratedColumnsId.encoder, Encoder.encodeString)
-  given read: Read[TableWithGeneratedColumnsRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(TableWithGeneratedColumnsId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    TableWithGeneratedColumnsRow(
-      name = arr(0).asInstanceOf[TableWithGeneratedColumnsId],
-          nameTypeAlways = arr(1).asInstanceOf[String]
+
+  given pgText: Text[TableWithGeneratedColumnsRow] = {
+    Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
+      TableWithGeneratedColumnsId.pgText.unsafeEncode(row.name, sb)
+    }
+  }
+
+  given read: Read[TableWithGeneratedColumnsRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(TableWithGeneratedColumnsId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      TableWithGeneratedColumnsRow(
+        name = arr(0).asInstanceOf[TableWithGeneratedColumnsId],
+            nameTypeAlways = arr(1).asInstanceOf[String]
+      )
+    }
+  }
+
+  given write: Write[TableWithGeneratedColumnsRow] = {
+    new Write.Composite[TableWithGeneratedColumnsRow](
+      List(new Write.Single(TableWithGeneratedColumnsId.put)),
+      a => List(a.name)
     )
   }
-  given text: Text[TableWithGeneratedColumnsRow] = Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
-    TableWithGeneratedColumnsId.text.unsafeEncode(row.name, sb)
-  }
-  given write: Write[TableWithGeneratedColumnsRow] = new Write.Composite[TableWithGeneratedColumnsRow](
-    List(new Write.Single(TableWithGeneratedColumnsId.put)),
-    a => List(a.name)
-  )
 }

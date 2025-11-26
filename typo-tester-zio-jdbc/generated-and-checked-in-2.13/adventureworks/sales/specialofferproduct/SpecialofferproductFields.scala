@@ -40,28 +40,27 @@ trait SpecialofferproductFields {
     specialofferid.isEqual(compositeId.specialofferid).and(productid.isEqual(compositeId.productid))
   def compositeIdIn(compositeIds: Array[SpecialofferproductId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId]](SpecialofferId.arrayJdbcEncoder, PGType.forArray(SpecialofferId.pgType)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId]](ProductId.arrayJdbcEncoder, PGType.forArray(ProductId.pgType)), implicitly))
-  
+
 }
 
 object SpecialofferproductFields {
   lazy val structure: Relation[SpecialofferproductFields, SpecialofferproductRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SpecialofferproductFields, SpecialofferproductRow] {
-  
+
     override lazy val fields: SpecialofferproductFields = new SpecialofferproductFields {
       override def specialofferid = IdField[SpecialofferId, SpecialofferproductRow](_path, "specialofferid", None, Some("int4"), x => x.specialofferid, (row, value) => row.copy(specialofferid = value))
       override def productid = IdField[ProductId, SpecialofferproductRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def rowguid = Field[TypoUUID, SpecialofferproductRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SpecialofferproductRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SpecialofferproductRow]] =
       List[FieldLike[?, SpecialofferproductRow]](fields.specialofferid, fields.productid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

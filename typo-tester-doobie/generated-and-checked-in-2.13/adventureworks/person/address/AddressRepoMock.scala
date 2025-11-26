@@ -19,31 +19,33 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class AddressRepoMock(toRow: Function1[AddressRowUnsaved, AddressRow],
-                      map: scala.collection.mutable.Map[AddressId, AddressRow] = scala.collection.mutable.Map.empty) extends AddressRepo {
-  override def delete: DeleteBuilder[AddressFields, AddressRow] = {
-    DeleteBuilderMock(DeleteParams.empty, AddressFields.structure, map)
+case class AddressRepoMock(
+  toRow: AddressRowUnsaved => AddressRow,
+  map: scala.collection.mutable.Map[AddressId, AddressRow] = scala.collection.mutable.Map.empty[AddressId, AddressRow]
+) extends AddressRepo {
+  def delete: DeleteBuilder[AddressFields, AddressRow] = DeleteBuilderMock(DeleteParams.empty, AddressFields.structure, map)
+
+  def deleteById(addressid: AddressId): ConnectionIO[Boolean] = delay(map.remove(addressid).isDefined)
+
+  def deleteByIds(addressids: Array[AddressId]): ConnectionIO[Int] = delay(addressids.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: AddressRow): ConnectionIO[AddressRow] = {
+  delay {
+    val _ = if (map.contains(unsaved.addressid))
+      sys.error(s"id ${unsaved.addressid} already exists")
+    else
+      map.put(unsaved.addressid, unsaved)
+
+    unsaved
   }
-  override def deleteById(addressid: AddressId): ConnectionIO[Boolean] = {
-    delay(map.remove(addressid).isDefined)
   }
-  override def deleteByIds(addressids: Array[AddressId]): ConnectionIO[Int] = {
-    delay(addressids.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: AddressRow): ConnectionIO[AddressRow] = {
-    delay {
-      val _ = if (map.contains(unsaved.addressid))
-        sys.error(s"id ${unsaved.addressid} already exists")
-      else
-        map.put(unsaved.addressid, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: AddressRowUnsaved): ConnectionIO[AddressRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, AddressRow], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insert(unsaved: AddressRowUnsaved): ConnectionIO[AddressRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, AddressRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -53,8 +55,12 @@ class AddressRepoMock(toRow: Function1[AddressRowUnsaved, AddressRow],
       num
     }
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, AddressRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, AddressRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { unsavedRows =>
       var num = 0L
       unsavedRows.foreach { unsavedRow =>
@@ -65,28 +71,25 @@ class AddressRepoMock(toRow: Function1[AddressRowUnsaved, AddressRow],
       num
     }
   }
-  override def select: SelectBuilder[AddressFields, AddressRow] = {
-    SelectBuilderMock(AddressFields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, AddressRow] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(addressid: AddressId): ConnectionIO[Option[AddressRow]] = {
-    delay(map.get(addressid))
-  }
-  override def selectByIds(addressids: Array[AddressId]): Stream[ConnectionIO, AddressRow] = {
-    Stream.emits(addressids.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(addressids: Array[AddressId]): ConnectionIO[Map[AddressId, AddressRow]] = {
+
+  def select: SelectBuilder[AddressFields, AddressRow] = SelectBuilderMock(AddressFields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, AddressRow] = Stream.emits(map.values.toList)
+
+  def selectById(addressid: AddressId): ConnectionIO[Option[AddressRow]] = delay(map.get(addressid))
+
+  def selectByIds(addressids: Array[AddressId]): Stream[ConnectionIO, AddressRow] = Stream.emits(addressids.flatMap(map.get).toList)
+
+  def selectByIdsTracked(addressids: Array[AddressId]): ConnectionIO[Map[AddressId, AddressRow]] = {
     selectByIds(addressids).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.addressid, x)).toMap
       addressids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[AddressFields, AddressRow] = {
-    UpdateBuilderMock(UpdateParams.empty, AddressFields.structure, map)
-  }
-  override def update(row: AddressRow): ConnectionIO[Option[AddressRow]] = {
+
+  def update: UpdateBuilder[AddressFields, AddressRow] = UpdateBuilderMock(UpdateParams.empty, AddressFields.structure, map)
+
+  def update(row: AddressRow): ConnectionIO[Option[AddressRow]] = {
     delay {
       map.get(row.addressid).map { _ =>
         map.put(row.addressid, row): @nowarn
@@ -94,13 +97,15 @@ class AddressRepoMock(toRow: Function1[AddressRowUnsaved, AddressRow],
       }
     }
   }
-  override def upsert(unsaved: AddressRow): ConnectionIO[AddressRow] = {
+
+  def upsert(unsaved: AddressRow): ConnectionIO[AddressRow] = {
     delay {
       map.put(unsaved.addressid, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[AddressRow]): Stream[ConnectionIO, AddressRow] = {
+
+  def upsertBatch(unsaved: List[AddressRow]): Stream[ConnectionIO, AddressRow] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.addressid -> row)
@@ -108,8 +113,12 @@ class AddressRepoMock(toRow: Function1[AddressRowUnsaved, AddressRow],
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, AddressRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, AddressRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

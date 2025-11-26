@@ -7,6 +7,7 @@ package adventureworks.person.countryregion
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import zio.json.JsonDecoder
@@ -21,46 +22,47 @@ case class CountryregionRowUnsaved(
   /** Country or region name. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow =
-    CountryregionRow(
-      countryregioncode = countryregioncode,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow = new CountryregionRow(countryregioncode = countryregioncode, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object CountryregionRowUnsaved {
-  given jsonDecoder: JsonDecoder[CountryregionRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val countryregioncode = jsonObj.get("countryregioncode").toRight("Missing field 'countryregioncode'").flatMap(_.as(using CountryregionId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (countryregioncode.isRight && name.isRight && modifieddate.isRight)
-      Right(CountryregionRowUnsaved(countryregioncode = countryregioncode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](countryregioncode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[CountryregionRowUnsaved] = new JsonEncoder[CountryregionRowUnsaved] {
-    override def unsafeEncode(a: CountryregionRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""countryregioncode":""")
-      CountryregionId.jsonEncoder.unsafeEncode(a.countryregioncode, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  given jsonDecoder: JsonDecoder[CountryregionRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val countryregioncode = jsonObj.get("countryregioncode").toRight("Missing field 'countryregioncode'").flatMap(_.as(using CountryregionId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (countryregioncode.isRight && name.isRight && modifieddate.isRight)
+        Right(CountryregionRowUnsaved(countryregioncode = countryregioncode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](countryregioncode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[CountryregionRowUnsaved] = Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
-    CountryregionId.text.unsafeEncode(row.countryregioncode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[CountryregionRowUnsaved] = {
+    new JsonEncoder[CountryregionRowUnsaved] {
+      override def unsafeEncode(a: CountryregionRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""countryregioncode":""")
+        CountryregionId.jsonEncoder.unsafeEncode(a.countryregioncode, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[CountryregionRowUnsaved] = {
+    Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
+      CountryregionId.pgText.unsafeEncode(row.countryregioncode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

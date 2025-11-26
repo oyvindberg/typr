@@ -14,37 +14,80 @@ import zio.json.JsonError
 import zio.json.internal.RetractReader
 import zio.json.internal.Write
 
+/** This signals a value where if you don't provide it, postgres will generate it for you */
+sealed trait Defaulted[T] {
+  def fold[U](
+    onDefault: => U,
+    onProvided: T => U
+  ): U
 
-/**
- * This signals a value where if you don't provide it, postgres will generate it for you
- */
-sealed trait Defaulted[+T]
+  def getOrElse(onDefault: => T): T
+
+  def visit(
+    onDefault: => Unit,
+    onProvided: T => Unit
+  ): Unit
+}
 
 object Defaulted {
-  case class Provided[T](value: T) extends Defaulted[T]
-  case object UseDefault extends Defaulted[Nothing]
-  implicit def jsonDecoder[T](implicit T: JsonDecoder[T]): JsonDecoder[Defaulted[T]] = new JsonDecoder[Defaulted[T]] {
-    override def unsafeDecode(trace: List[JsonError], in: RetractReader): Defaulted[T] =
-      Try(JsonDecoder.string.unsafeDecode(trace, in)) match {
-        case Success("defaulted") => UseDefault
-        case _ => Provided(T.unsafeDecode(trace, in))
-      }
-    }
-  implicit def jsonEncoder[T](implicit T: JsonEncoder[T]): JsonEncoder[Defaulted[T]] = new JsonEncoder[Defaulted[T]] {
-    override def unsafeEncode(a: Defaulted[T], indent: Option[Int], out: Write): Unit =
-      a match {
-        case Provided(value) =>
-          out.write("{")
-          out.write("\"provided\":")
-          T.unsafeEncode(value, None, out)
-          out.write("}")
-        case UseDefault => out.write("\"defaulted\"")
+  implicit def jsonDecoder[T](implicit T: JsonDecoder[T]): JsonDecoder[Defaulted[T]] = {
+    new JsonDecoder[Defaulted[T]] {
+      override def unsafeDecode(trace: List[JsonError], in: RetractReader): Defaulted[T] =
+        Try(JsonDecoder.string.unsafeDecode(trace, in)) match {
+          case Success("defaulted") => UseDefault()
+          case _ => Provided(T.unsafeDecode(trace, in))
+        }
       }
   }
-  implicit def text[T](implicit t: Text[T]): Text[Defaulted[T]] = Text.instance {
-    case (Defaulted.Provided(value), sb) => t.unsafeEncode(value, sb)
-    case (Defaulted.UseDefault, sb) =>
-      sb.append("__DEFAULT_VALUE__")
-      ()
+
+  implicit def jsonEncoder[T](implicit T: JsonEncoder[T]): JsonEncoder[Defaulted[T]] = {
+    new JsonEncoder[Defaulted[T]] {
+      override def unsafeEncode(a: Defaulted[T], indent: Option[Int], out: Write): Unit =
+        a match {
+          case Provided(value) =>
+            out.write("{")
+            out.write("\"provided\":")
+            T.unsafeEncode(value, None, out)
+            out.write("}")
+          case UseDefault() => out.write("\"defaulted\"")
+        }
+    }
+  }
+
+  implicit def pgText[T](implicit t: Text[T]): Text[Defaulted[T]] = {
+    Text.instance {
+      case (Defaulted.Provided(value), sb) => t.unsafeEncode(value, sb)
+      case (Defaulted.UseDefault(), sb) =>
+        sb.append("__DEFAULT_VALUE__")
+        ()
+    }
+  }
+
+  case class Provided[T](value: T) extends Defaulted[T] {
+    def fold[U](
+      onDefault: => U,
+      onProvided: T => U
+    ): U = onProvided(value)
+
+    def getOrElse(onDefault: => T): T = value
+
+    def visit(
+      onDefault: => Unit,
+      onProvided: T => Unit
+    ): Unit = onProvided(value)
+  }
+
+  case class UseDefault[T]() extends Defaulted[T] {
+    def fold[U](
+      onDefault: => U,
+      onProvided: T => U
+    ): U = onDefault
+
+    def getOrElse(onDefault: => T): T = onDefault
+
+    def visit(
+      onDefault: => Unit,
+      onProvided: T => Unit
+    ): Unit = onDefault
   }
 }

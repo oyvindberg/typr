@@ -6,6 +6,7 @@
 package adventureworks.production.transactionhistory
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import doobie.postgres.Text
@@ -15,74 +16,78 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.transactionhistory` which has not been persisted yet */
 case class TransactionhistoryRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Purchase order, sales order, or work order identification number. */
   referenceorderid: Int,
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
-      Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text]))) */
+   * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
+   */
   transactiontype: /* bpchar, max 1 chars */ String,
   /** Product quantity. */
   quantity: Int,
   /** Product cost. */
   actualcost: BigDecimal,
   /** Default: nextval('production.transactionhistory_transactionid_seq'::regclass)
-      Primary key for TransactionHistory records. */
-  transactionid: Defaulted[TransactionhistoryId] = Defaulted.UseDefault,
+   * Primary key for TransactionHistory records.
+   */
+  transactionid: Defaulted[TransactionhistoryId] = new UseDefault(),
   /** Default: 0
-      Line number associated with the purchase order, sales order, or work order. */
-  referenceorderlineid: Defaulted[Int] = Defaulted.UseDefault,
+   * Line number associated with the purchase order, sales order, or work order.
+   */
+  referenceorderlineid: Defaulted[Int] = new UseDefault(),
   /** Default: now()
-      Date and time of the transaction. */
-  transactiondate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+   * Date and time of the transaction.
+   */
+  transactiondate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(transactionidDefault: => TransactionhistoryId, referenceorderlineidDefault: => Int, transactiondateDefault: => TypoLocalDateTime, modifieddateDefault: => TypoLocalDateTime): TransactionhistoryRow =
-    TransactionhistoryRow(
+  def toRow(
+    transactionidDefault: => TransactionhistoryId,
+    referenceorderlineidDefault: => Int,
+    transactiondateDefault: => TypoLocalDateTime,
+    modifieddateDefault: => TypoLocalDateTime
+  ): TransactionhistoryRow = {
+    new TransactionhistoryRow(
+      transactionid = transactionid.getOrElse(transactionidDefault),
       productid = productid,
       referenceorderid = referenceorderid,
+      referenceorderlineid = referenceorderlineid.getOrElse(referenceorderlineidDefault),
+      transactiondate = transactiondate.getOrElse(transactiondateDefault),
       transactiontype = transactiontype,
       quantity = quantity,
       actualcost = actualcost,
-      transactionid = transactionid match {
-                        case Defaulted.UseDefault => transactionidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      referenceorderlineid = referenceorderlineid match {
-                               case Defaulted.UseDefault => referenceorderlineidDefault
-                               case Defaulted.Provided(value) => value
-                             },
-      transactiondate = transactiondate match {
-                          case Defaulted.UseDefault => transactiondateDefault
-                          case Defaulted.Provided(value) => value
-                        },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object TransactionhistoryRowUnsaved {
   given decoder: Decoder[TransactionhistoryRowUnsaved] = Decoder.forProduct9[TransactionhistoryRowUnsaved, ProductId, Int, /* bpchar, max 1 chars */ String, Int, BigDecimal, Defaulted[TransactionhistoryId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "transactionid", "referenceorderlineid", "transactiondate", "modifieddate")(TransactionhistoryRowUnsaved.apply)(using ProductId.decoder, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, Defaulted.decoder(using TransactionhistoryId.decoder), Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[TransactionhistoryRowUnsaved] = Encoder.forProduct9[TransactionhistoryRowUnsaved, ProductId, Int, /* bpchar, max 1 chars */ String, Int, BigDecimal, Defaulted[TransactionhistoryId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "transactionid", "referenceorderlineid", "transactiondate", "modifieddate")(x => (x.productid, x.referenceorderid, x.transactiontype, x.quantity, x.actualcost, x.transactionid, x.referenceorderlineid, x.transactiondate, x.modifieddate))(using ProductId.encoder, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, Defaulted.encoder(using TransactionhistoryId.encoder), Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[TransactionhistoryRowUnsaved] = Text.instance[TransactionhistoryRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.referenceorderid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.transactiontype, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.quantity, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.actualcost, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TransactionhistoryId.text).unsafeEncode(row.transactionid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.referenceorderlineid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.transactiondate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[TransactionhistoryRowUnsaved] = {
+    Text.instance[TransactionhistoryRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.referenceorderid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.transactiontype, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.quantity, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.actualcost, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TransactionhistoryId.pgText).unsafeEncode(row.transactionid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.referenceorderlineid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.transactiondate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

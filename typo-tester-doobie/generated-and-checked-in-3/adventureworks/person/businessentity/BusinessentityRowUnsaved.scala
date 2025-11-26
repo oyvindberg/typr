@@ -6,6 +6,7 @@
 package adventureworks.person.businessentity
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import doobie.postgres.Text
@@ -15,37 +16,33 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `person.businessentity` which has not been persisted yet */
 case class BusinessentityRowUnsaved(
   /** Default: nextval('person.businessentity_businessentityid_seq'::regclass)
-      Primary key for all customers, vendors, and employees. */
-  businessentityid: Defaulted[BusinessentityId] = Defaulted.UseDefault,
+   * Primary key for all customers, vendors, and employees.
+   */
+  businessentityid: Defaulted[BusinessentityId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(businessentityidDefault: => BusinessentityId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): BusinessentityRow =
-    BusinessentityRow(
-      businessentityid = businessentityid match {
-                           case Defaulted.UseDefault => businessentityidDefault
-                           case Defaulted.Provided(value) => value
-                         },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    businessentityidDefault: => BusinessentityId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): BusinessentityRow = new BusinessentityRow(businessentityid = businessentityid.getOrElse(businessentityidDefault), rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object BusinessentityRowUnsaved {
   given decoder: Decoder[BusinessentityRowUnsaved] = Decoder.forProduct3[BusinessentityRowUnsaved, Defaulted[BusinessentityId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "rowguid", "modifieddate")(BusinessentityRowUnsaved.apply)(using Defaulted.decoder(using BusinessentityId.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[BusinessentityRowUnsaved] = Encoder.forProduct3[BusinessentityRowUnsaved, Defaulted[BusinessentityId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "rowguid", "modifieddate")(x => (x.businessentityid, x.rowguid, x.modifieddate))(using Defaulted.encoder(using BusinessentityId.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[BusinessentityRowUnsaved] = Text.instance[BusinessentityRowUnsaved]{ (row, sb) =>
-    Defaulted.text(using BusinessentityId.text).unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[BusinessentityRowUnsaved] = {
+    Text.instance[BusinessentityRowUnsaved]{ (row, sb) =>
+      Defaulted.pgText(using BusinessentityId.pgText).unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

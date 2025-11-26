@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `purchasing.shipmethod` */
-case class ShipmethodId(value: Int) extends AnyVal
+case class ShipmethodId(value: Int) extends scala.AnyVal
+
 object ShipmethodId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[ShipmethodId]] = adventureworks.IntArrayDecoder.map(_.map(ShipmethodId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[ShipmethodId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[ShipmethodId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[ShipmethodId, Int] = Bijection[ShipmethodId, Int](_.value)(ShipmethodId.apply)
+
+  implicit lazy val bijection: Bijection[ShipmethodId, Int] = Bijection.apply[ShipmethodId, Int](_.value)(ShipmethodId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[ShipmethodId] = JdbcDecoder.intDecoder.map(ShipmethodId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[ShipmethodId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[ShipmethodId] = JsonDecoder.int.map(ShipmethodId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[ShipmethodId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val pgType: PGType[ShipmethodId] = PGType.PGTypeInt.as
-  implicit lazy val setter: Setter[ShipmethodId] = Setter.intSetter.contramap(_.value)
-  implicit lazy val text: Text[ShipmethodId] = new Text[ShipmethodId] {
-    override def unsafeEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[ShipmethodId] = {
+    new Text[ShipmethodId] {
+      override def unsafeEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[ShipmethodId] = PGType.PGTypeInt.as
+
+  implicit lazy val setter: Setter[ShipmethodId] = Setter.intSetter.contramap(_.value)
 }

@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait SalespersonquotahistoryRepo {
   def delete: DeleteBuilder[SalespersonquotahistoryFields, SalespersonquotahistoryRow]
+
   def deleteById(compositeId: SalespersonquotahistoryId): ConnectionIO[Boolean]
+
   def deleteByIds(compositeIds: Array[SalespersonquotahistoryId]): ConnectionIO[Int]
+
   def insert(unsaved: SalespersonquotahistoryRow): ConnectionIO[SalespersonquotahistoryRow]
+
   def insert(unsaved: SalespersonquotahistoryRowUnsaved): ConnectionIO[SalespersonquotahistoryRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, SalespersonquotahistoryRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, SalespersonquotahistoryRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, SalespersonquotahistoryRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, SalespersonquotahistoryRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[SalespersonquotahistoryFields, SalespersonquotahistoryRow]
+
   def selectAll: Stream[ConnectionIO, SalespersonquotahistoryRow]
+
   def selectById(compositeId: SalespersonquotahistoryId): ConnectionIO[Option[SalespersonquotahistoryRow]]
+
   def selectByIds(compositeIds: Array[SalespersonquotahistoryId]): Stream[ConnectionIO, SalespersonquotahistoryRow]
+
   def selectByIdsTracked(compositeIds: Array[SalespersonquotahistoryId]): ConnectionIO[Map[SalespersonquotahistoryId, SalespersonquotahistoryRow]]
+
   def update: UpdateBuilder[SalespersonquotahistoryFields, SalespersonquotahistoryRow]
+
   def update(row: SalespersonquotahistoryRow): ConnectionIO[Option[SalespersonquotahistoryRow]]
+
   def upsert(unsaved: SalespersonquotahistoryRow): ConnectionIO[SalespersonquotahistoryRow]
+
   def upsertBatch(unsaved: List[SalespersonquotahistoryRow]): Stream[ConnectionIO, SalespersonquotahistoryRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, SalespersonquotahistoryRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, SalespersonquotahistoryRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait StateprovinceRepo {
   def delete: DeleteBuilder[StateprovinceFields, StateprovinceRow]
+
   def deleteById(stateprovinceid: StateprovinceId): ConnectionIO[Boolean]
+
   def deleteByIds(stateprovinceids: Array[StateprovinceId]): ConnectionIO[Int]
+
   def insert(unsaved: StateprovinceRow): ConnectionIO[StateprovinceRow]
+
   def insert(unsaved: StateprovinceRowUnsaved): ConnectionIO[StateprovinceRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, StateprovinceRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, StateprovinceRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, StateprovinceRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, StateprovinceRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[StateprovinceFields, StateprovinceRow]
+
   def selectAll: Stream[ConnectionIO, StateprovinceRow]
+
   def selectById(stateprovinceid: StateprovinceId): ConnectionIO[Option[StateprovinceRow]]
+
   def selectByIds(stateprovinceids: Array[StateprovinceId]): Stream[ConnectionIO, StateprovinceRow]
+
   def selectByIdsTracked(stateprovinceids: Array[StateprovinceId]): ConnectionIO[Map[StateprovinceId, StateprovinceRow]]
+
   def update: UpdateBuilder[StateprovinceFields, StateprovinceRow]
+
   def update(row: StateprovinceRow): ConnectionIO[Option[StateprovinceRow]]
+
   def upsert(unsaved: StateprovinceRow): ConnectionIO[StateprovinceRow]
+
   def upsertBatch(unsaved: List[StateprovinceRow]): Stream[ConnectionIO, StateprovinceRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, StateprovinceRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, StateprovinceRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

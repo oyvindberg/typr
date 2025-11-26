@@ -29,11 +29,7 @@ class EmployeeTest extends AnyFunSuite with TypeCheckedTripleEquals {
       lastname = Name("lastname"),
       suffix = Some("suffix"),
       additionalcontactinfo = Some(TypoXml("<additionalcontactinfo/>")),
-      demographics = None,
-      namestyle = Defaulted.UseDefault,
-      emailpromotion = Defaulted.UseDefault,
-      rowguid = Defaulted.UseDefault,
-      modifieddate = Defaulted.UseDefault
+      demographics = None
     )
 
     // the xml structure doesn't have a stable equals method, so we need to use the json representation
@@ -53,9 +49,6 @@ class EmployeeTest extends AnyFunSuite with TypeCheckedTripleEquals {
       for {
         businessentityRow <- businessentityRepo.insert(
           BusinessentityRowUnsaved(
-            businessentityid = Defaulted.UseDefault,
-            rowguid = Defaulted.UseDefault,
-            modifieddate = Defaulted.UseDefault
           )
         )
         personRowUnsaved = PersonRowUnsaved(
@@ -67,11 +60,7 @@ class EmployeeTest extends AnyFunSuite with TypeCheckedTripleEquals {
           lastname = Name("lastname"),
           suffix = Some("suffix"),
           additionalcontactinfo = Some(TypoXml("<additionalcontactinfo/>")),
-          demographics = None,
-          namestyle = Defaulted.UseDefault,
-          emailpromotion = Defaulted.UseDefault,
-          rowguid = Defaulted.UseDefault,
-          modifieddate = Defaulted.UseDefault
+          demographics = None
         )
         personRow <- personRepo.insert(personRowUnsaved)
         // setup
@@ -120,14 +109,7 @@ class EmployeeTest extends AnyFunSuite with TypeCheckedTripleEquals {
           birthdate = TypoLocalDate(LocalDate.of(1950, 1, 1)),
           maritalstatus = "M",
           gender = "F",
-          hiredate = TypoLocalDate(LocalDate.now().minusYears(1)),
-          salariedflag = Defaulted.UseDefault,
-          vacationhours = Defaulted.UseDefault,
-          sickleavehours = Defaulted.UseDefault,
-          currentflag = Defaulted.UseDefault,
-          rowguid = Defaulted.UseDefault,
-          modifieddate = Defaulted.UseDefault,
-          organizationnode = Defaulted.UseDefault
+          hiredate = TypoLocalDate(LocalDate.now().minusYears(1))
         )
         _ <- employeeRepo.insert(employeeRowUnsaved).map {
           case EmployeeRow(

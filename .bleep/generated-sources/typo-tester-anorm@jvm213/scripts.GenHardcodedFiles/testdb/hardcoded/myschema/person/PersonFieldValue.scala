@@ -10,20 +10,58 @@ import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
 import testdb.hardcoded.myschema.marital_status.MaritalStatusId
 
-sealed abstract class PersonFieldOrIdValue[T](val name: String, val value: T)
-sealed abstract class PersonFieldValue[T](name: String, value: T) extends PersonFieldOrIdValue(name, value)
+sealed trait PersonFieldValue[T] {
+  def name: String
+
+  def value: T
+}
 
 object PersonFieldValue {
-  case class id(override val value: PersonId) extends PersonFieldOrIdValue("id", value)
-  case class favouriteFootballClubId(override val value: FootballClubId) extends PersonFieldValue("favourite_football_club_id", value)
-  case class name(override val value: /* max 100 chars */ String) extends PersonFieldValue("name", value)
-  case class nickName(override val value: Option[/* max 30 chars */ String]) extends PersonFieldValue("nick_name", value)
-  case class blogUrl(override val value: Option[/* max 100 chars */ String]) extends PersonFieldValue("blog_url", value)
-  case class email(override val value: /* max 254 chars */ String) extends PersonFieldValue("email", value)
-  case class phone(override val value: /* max 8 chars */ String) extends PersonFieldValue("phone", value)
-  case class likesPizza(override val value: Boolean) extends PersonFieldValue("likes_pizza", value)
-  case class maritalStatusId(override val value: MaritalStatusId) extends PersonFieldValue("marital_status_id", value)
-  case class workEmail(override val value: Option[/* max 254 chars */ String]) extends PersonFieldValue("work_email", value)
-  case class sector(override val value: Sector) extends PersonFieldValue("sector", value)
-  case class favoriteNumber(override val value: Number) extends PersonFieldValue("favorite_number", value)
+  case class blogUrl(value: Option[/* max 100 chars */ String]) extends PersonFieldValue[Option[/* max 100 chars */ String]] {
+    def name: String = "blog_url"
+  }
+
+  case class email(value: /* max 254 chars */ String) extends PersonFieldValue[/* max 254 chars */ String] {
+    def name: String = "email"
+  }
+
+  case class favoriteNumber(value: Number) extends PersonFieldValue[Number] {
+    def name: String = "favorite_number"
+  }
+
+  case class favouriteFootballClubId(value: FootballClubId) extends PersonFieldValue[FootballClubId] {
+    def name: String = "favourite_football_club_id"
+  }
+
+  case class id(value: PersonId) extends PersonFieldValue[PersonId] {
+    def name: String = "id"
+  }
+
+  case class likesPizza(value: Boolean) extends PersonFieldValue[Boolean] {
+    def name: String = "likes_pizza"
+  }
+
+  case class maritalStatusId(value: MaritalStatusId) extends PersonFieldValue[MaritalStatusId] {
+    def name: String = "marital_status_id"
+  }
+
+  case class name(value: /* max 100 chars */ String) extends PersonFieldValue[/* max 100 chars */ String] {
+    def name: String = "name"
+  }
+
+  case class nickName(value: Option[/* max 30 chars */ String]) extends PersonFieldValue[Option[/* max 30 chars */ String]] {
+    def name: String = "nick_name"
+  }
+
+  case class phone(value: /* max 8 chars */ String) extends PersonFieldValue[/* max 8 chars */ String] {
+    def name: String = "phone"
+  }
+
+  case class sector(value: Sector) extends PersonFieldValue[Sector] {
+    def name: String = "sector"
+  }
+
+  case class workEmail(value: Option[/* max 254 chars */ String]) extends PersonFieldValue[Option[/* max 254 chars */ String]] {
+    def name: String = "work_email"
+  }
 }

@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait BeaViewRepo {
   def select: SelectBuilder[BeaViewFields, BeaViewRow]
+
   def selectAll(implicit c: Connection): List[BeaViewRow]
 }

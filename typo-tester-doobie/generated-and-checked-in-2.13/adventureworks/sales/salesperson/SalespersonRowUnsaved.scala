@@ -6,6 +6,7 @@
 package adventureworks.sales.salesperson
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
@@ -17,86 +18,88 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.salesperson` which has not been persisted yet */
 case class SalespersonRowUnsaved(
   /** Primary key for SalesPerson records. Foreign key to Employee.BusinessEntityID
-      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
+   * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Territory currently assigned to. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+   * Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]]
+   */
+  territoryid: Option[SalesterritoryId] = None,
   /** Projected yearly sales.
-      Constraint CK_SalesPerson_SalesQuota affecting columns salesquota:  ((salesquota > 0.00)) */
-  salesquota: Option[BigDecimal],
+   * Constraint CK_SalesPerson_SalesQuota affecting columns salesquota:  ((salesquota > 0.00))
+   */
+  salesquota: Option[BigDecimal] = None,
   /** Default: 0.00
-      Bonus due if quota is met.
-      Constraint CK_SalesPerson_Bonus affecting columns bonus:  ((bonus >= 0.00)) */
-  bonus: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Bonus due if quota is met.
+   * Constraint CK_SalesPerson_Bonus affecting columns bonus:  ((bonus >= 0.00))
+   */
+  bonus: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.00
-      Commision percent received per sale.
-      Constraint CK_SalesPerson_CommissionPct affecting columns commissionpct:  ((commissionpct >= 0.00)) */
-  commissionpct: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Commision percent received per sale.
+   * Constraint CK_SalesPerson_CommissionPct affecting columns commissionpct:  ((commissionpct >= 0.00))
+   */
+  commissionpct: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.00
-      Sales total year to date.
-      Constraint CK_SalesPerson_SalesYTD affecting columns salesytd:  ((salesytd >= 0.00)) */
-  salesytd: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Sales total year to date.
+   * Constraint CK_SalesPerson_SalesYTD affecting columns salesytd:  ((salesytd >= 0.00))
+   */
+  salesytd: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.00
-      Sales total of previous year.
-      Constraint CK_SalesPerson_SalesLastYear affecting columns saleslastyear:  ((saleslastyear >= 0.00)) */
-  saleslastyear: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Sales total of previous year.
+   * Constraint CK_SalesPerson_SalesLastYear affecting columns saleslastyear:  ((saleslastyear >= 0.00))
+   */
+  saleslastyear: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(bonusDefault: => BigDecimal, commissionpctDefault: => BigDecimal, salesytdDefault: => BigDecimal, saleslastyearDefault: => BigDecimal, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SalespersonRow =
-    SalespersonRow(
+  def toRow(
+    bonusDefault: => BigDecimal,
+    commissionpctDefault: => BigDecimal,
+    salesytdDefault: => BigDecimal,
+    saleslastyearDefault: => BigDecimal,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SalespersonRow = {
+    new SalespersonRow(
       businessentityid = businessentityid,
       territoryid = territoryid,
       salesquota = salesquota,
-      bonus = bonus match {
-                case Defaulted.UseDefault => bonusDefault
-                case Defaulted.Provided(value) => value
-              },
-      commissionpct = commissionpct match {
-                        case Defaulted.UseDefault => commissionpctDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      salesytd = salesytd match {
-                   case Defaulted.UseDefault => salesytdDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      saleslastyear = saleslastyear match {
-                        case Defaulted.UseDefault => saleslastyearDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      bonus = bonus.getOrElse(bonusDefault),
+      commissionpct = commissionpct.getOrElse(commissionpctDefault),
+      salesytd = salesytd.getOrElse(salesytdDefault),
+      saleslastyear = saleslastyear.getOrElse(saleslastyearDefault),
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object SalespersonRowUnsaved {
   implicit lazy val decoder: Decoder[SalespersonRowUnsaved] = Decoder.forProduct9[SalespersonRowUnsaved, BusinessentityId, Option[SalesterritoryId], Option[BigDecimal], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(SalespersonRowUnsaved.apply)(BusinessentityId.decoder, Decoder.decodeOption(SalesterritoryId.decoder), Decoder.decodeOption(Decoder.decodeBigDecimal), Defaulted.decoder(Decoder.decodeBigDecimal), Defaulted.decoder(Decoder.decodeBigDecimal), Defaulted.decoder(Decoder.decodeBigDecimal), Defaulted.decoder(Decoder.decodeBigDecimal), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[SalespersonRowUnsaved] = Encoder.forProduct9[SalespersonRowUnsaved, BusinessentityId, Option[SalesterritoryId], Option[BigDecimal], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(x => (x.businessentityid, x.territoryid, x.salesquota, x.bonus, x.commissionpct, x.salesytd, x.saleslastyear, x.rowguid, x.modifieddate))(BusinessentityId.encoder, Encoder.encodeOption(SalesterritoryId.encoder), Encoder.encodeOption(Encoder.encodeBigDecimal), Defaulted.encoder(Encoder.encodeBigDecimal), Defaulted.encoder(Encoder.encodeBigDecimal), Defaulted.encoder(Encoder.encodeBigDecimal), Defaulted.encoder(Encoder.encodeBigDecimal), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[SalespersonRowUnsaved] = Text.instance[SalespersonRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(SalesterritoryId.text).unsafeEncode(row.territoryid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.bigDecimalInstance).unsafeEncode(row.salesquota, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.bonus, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.commissionpct, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.salesytd, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.saleslastyear, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[SalespersonRowUnsaved] = {
+    Text.instance[SalespersonRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(SalesterritoryId.pgText).unsafeEncode(row.territoryid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.bigDecimalInstance).unsafeEncode(row.salesquota, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.bonus, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.commissionpct, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.salesytd, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.saleslastyear, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

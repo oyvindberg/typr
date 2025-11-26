@@ -5,46 +5,45 @@
  */
 package testdb.hardcoded.myschema.marital_status
 
+import cats.data.NonEmptyList
 import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
+import doobie.free.connection.pure
 import doobie.postgres.syntax.FragmentOps
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
-import doobie.syntax.string.toSqlInterpolator
 import doobie.util.Write
 import doobie.util.fragments
 import doobie.util.update.Update
 import fs2.Stream
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import doobie.syntax.string.toSqlInterpolator
 
 class MaritalStatusRepoImpl extends MaritalStatusRepo {
-  override def delete: DeleteBuilder[MaritalStatusFields, MaritalStatusRow] = {
-    DeleteBuilder(""""myschema"."marital_status"""", MaritalStatusFields.structure)
-  }
-  override def deleteById(id: MaritalStatusId): ConnectionIO[Boolean] = {
-    sql"""delete from "myschema"."marital_status" where "id" = ${fromWrite(id)(using new Write.Single(MaritalStatusId.put))}""".update.run.map(_ > 0)
-  }
-  override def deleteByIds(ids: Array[MaritalStatusId]): ConnectionIO[Int] = {
-    sql"""delete from "myschema"."marital_status" where "id" = ANY(${fromWrite(ids)(using new Write.Single(MaritalStatusId.arrayPut))})""".update.run
-  }
-  override def insert(unsaved: MaritalStatusRow): ConnectionIO[MaritalStatusRow] = {
+  def delete: DeleteBuilder[MaritalStatusFields, MaritalStatusRow] = DeleteBuilder.of(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.read)
+
+  def deleteById(id: MaritalStatusId): ConnectionIO[Boolean] = sql"""delete from "myschema"."marital_status" where "id" = ${fromWrite(id)(using new Write.Single(MaritalStatusId.put))}""".update.run.map(_ > 0)
+
+  def deleteByIds(ids: Array[MaritalStatusId]): ConnectionIO[Int] = sql"""delete from "myschema"."marital_status" where "id" = ANY(${fromWrite(ids)(using new Write.Single(MaritalStatusId.arrayPut))})""".update.run
+
+  def insert(unsaved: MaritalStatusRow): ConnectionIO[MaritalStatusRow] = {
     sql"""insert into "myschema"."marital_status"("id")
-          values (${fromWrite(unsaved.id)(using new Write.Single(MaritalStatusId.put))}::int8)
-          returning "id"
-       """.query(using MaritalStatusRow.read).unique
+    values (${fromWrite(unsaved.id)(using new Write.Single(MaritalStatusId.put))}::int8)
+    returning "id"
+    """.query(using MaritalStatusRow.read).unique
   }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, MaritalStatusRow], batchSize: Int = 10000): ConnectionIO[Long] = {
-    new FragmentOps(sql"""COPY "myschema"."marital_status"("id") FROM STDIN""").copyIn(unsaved, batchSize)(using MaritalStatusRow.text)
-  }
-  override def select: SelectBuilder[MaritalStatusFields, MaritalStatusRow] = {
-    SelectBuilderSql(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, MaritalStatusRow] = {
-    sql"""select "id" from "myschema"."marital_status"""".query(using MaritalStatusRow.read).stream
-  }
-  override def selectByFieldValues(fieldValues: List[MaritalStatusFieldOrIdValue[?]]): Stream[ConnectionIO, MaritalStatusRow] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, MaritalStatusRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = new FragmentOps(sql"""COPY "myschema"."marital_status"("id") FROM STDIN""").copyIn(unsaved, batchSize)(using MaritalStatusRow.pgText)
+
+  def select: SelectBuilder[MaritalStatusFields, MaritalStatusRow] = SelectBuilder.of(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.read)
+
+  def selectAll: Stream[ConnectionIO, MaritalStatusRow] = sql"""select "id" from "myschema"."marital_status"""".query(using MaritalStatusRow.read).stream
+
+  def selectByFieldValues(fieldValues: List[MaritalStatusFieldValue[?]]): Stream[ConnectionIO, MaritalStatusRow] = {
     val where = fragments.whereAndOpt(
       fieldValues.map {
         case MaritalStatusFieldValue.id(value) => fr""""id" = ${fromWrite(value)(using new Write.Single(MaritalStatusId.put))}"""
@@ -52,52 +51,74 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
     )
     sql"""select "id" from "myschema"."marital_status" $where""".query(using MaritalStatusRow.read).stream
   }
-  override def selectById(id: MaritalStatusId): ConnectionIO[Option[MaritalStatusRow]] = {
-    sql"""select "id" from "myschema"."marital_status" where "id" = ${fromWrite(id)(using new Write.Single(MaritalStatusId.put))}""".query(using MaritalStatusRow.read).option
-  }
-  override def selectByIds(ids: Array[MaritalStatusId]): Stream[ConnectionIO, MaritalStatusRow] = {
-    sql"""select "id" from "myschema"."marital_status" where "id" = ANY(${fromWrite(ids)(using new Write.Single(MaritalStatusId.arrayPut))})""".query(using MaritalStatusRow.read).stream
-  }
-  override def selectByIdsTracked(ids: Array[MaritalStatusId]): ConnectionIO[Map[MaritalStatusId, MaritalStatusRow]] = {
+
+  def selectById(id: MaritalStatusId): ConnectionIO[Option[MaritalStatusRow]] = sql"""select "id" from "myschema"."marital_status" where "id" = ${fromWrite(id)(using new Write.Single(MaritalStatusId.put))}""".query(using MaritalStatusRow.read).option
+
+  def selectByIds(ids: Array[MaritalStatusId]): Stream[ConnectionIO, MaritalStatusRow] = sql"""select "id" from "myschema"."marital_status" where "id" = ANY(${fromWrite(ids)(using new Write.Single(MaritalStatusId.arrayPut))})""".query(using MaritalStatusRow.read).stream
+
+  def selectByIdsTracked(ids: Array[MaritalStatusId]): ConnectionIO[Map[MaritalStatusId, MaritalStatusRow]] = {
     selectByIds(ids).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.id, x)).toMap
       ids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[MaritalStatusFields, MaritalStatusRow] = {
-    UpdateBuilder(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.read)
+
+  def update: UpdateBuilder[MaritalStatusFields, MaritalStatusRow] = UpdateBuilder.of(""""myschema"."marital_status"""", MaritalStatusFields.structure, MaritalStatusRow.read)
+
+  def updateFieldValues(
+    id: MaritalStatusId,
+    fieldValues: List[MaritalStatusFieldValue[?]]
+  ): ConnectionIO[Boolean] = {
+    NonEmptyList.fromList(fieldValues) match {
+      case None => pure(false)
+      case Some(nonEmpty) =>
+        val updates = fragments.set(
+          nonEmpty.map {
+            case MaritalStatusFieldValue.id(value) => fr""""id" = ${fromWrite(value)(using new Write.Single(MaritalStatusId.put))}::int8"""
+          }
+        )
+        sql"""update "myschema"."marital_status"
+        $updates
+        where "id" = ${fromWrite(id)(using new Write.Single(MaritalStatusId.put))}""".update.run.map(_ > 0)
+    }
   }
-  override def upsert(unsaved: MaritalStatusRow): ConnectionIO[MaritalStatusRow] = {
+
+  def upsert(unsaved: MaritalStatusRow): ConnectionIO[MaritalStatusRow] = {
     sql"""insert into "myschema"."marital_status"("id")
-          values (
-            ${fromWrite(unsaved.id)(using new Write.Single(MaritalStatusId.put))}::int8
-          )
-          on conflict ("id")
-          do update set "id" = EXCLUDED."id"
-          returning "id"
-       """.query(using MaritalStatusRow.read).unique
+    values (
+      ${fromWrite(unsaved.id)(using new Write.Single(MaritalStatusId.put))}::int8
+    )
+    on conflict ("id")
+    do update set "id" = EXCLUDED."id"
+    returning "id"
+    """.query(using MaritalStatusRow.read).unique
   }
-  override def upsertBatch(unsaved: List[MaritalStatusRow]): Stream[ConnectionIO, MaritalStatusRow] = {
+
+  def upsertBatch(unsaved: List[MaritalStatusRow]): Stream[ConnectionIO, MaritalStatusRow] = {
     Update[MaritalStatusRow](
       s"""insert into "myschema"."marital_status"("id")
-          values (?::int8)
-          on conflict ("id")
-          do nothing
-          returning "id""""
+      values (?::int8)
+      on conflict ("id")
+      do nothing
+      returning "id""""
     )(using MaritalStatusRow.write)
     .updateManyWithGeneratedKeys[MaritalStatusRow]("id")(unsaved)(using catsStdInstancesForList, MaritalStatusRow.read)
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, MaritalStatusRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, MaritalStatusRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     for {
       _ <- sql"""create temporary table marital_status_TEMP (like "myschema"."marital_status") on commit drop""".update.run
-      _ <- new FragmentOps(sql"""copy marital_status_TEMP("id") from stdin""").copyIn(unsaved, batchSize)(using MaritalStatusRow.text)
+      _ <- new FragmentOps(sql"""copy marital_status_TEMP("id") from stdin""").copyIn(unsaved, batchSize)(using MaritalStatusRow.pgText)
       res <- sql"""insert into "myschema"."marital_status"("id")
-                   select * from marital_status_TEMP
-                   on conflict ("id")
-                   do nothing
-                   ;
-                   drop table marital_status_TEMP;""".update.run
+             select * from marital_status_TEMP
+             on conflict ("id")
+             do nothing
+             ;
+             drop table marital_status_TEMP;""".update.run
     } yield res
   }
 }

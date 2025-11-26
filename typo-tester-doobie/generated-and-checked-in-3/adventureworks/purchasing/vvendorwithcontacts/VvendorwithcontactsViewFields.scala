@@ -32,11 +32,11 @@ trait VvendorwithcontactsViewFields {
 
 object VvendorwithcontactsViewFields {
   lazy val structure: Relation[VvendorwithcontactsViewFields, VvendorwithcontactsViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VvendorwithcontactsViewFields, VvendorwithcontactsViewRow] {
-  
+
     override lazy val fields: VvendorwithcontactsViewFields = new VvendorwithcontactsViewFields {
       override def businessentityid = Field[BusinessentityId, VvendorwithcontactsViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def name = Field[Name, VvendorwithcontactsViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
@@ -51,12 +51,11 @@ object VvendorwithcontactsViewFields {
       override def emailaddress = OptField[/* max 50 chars */ String, VvendorwithcontactsViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
       override def emailpromotion = Field[Int, VvendorwithcontactsViewRow](_path, "emailpromotion", None, None, x => x.emailpromotion, (row, value) => row.copy(emailpromotion = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VvendorwithcontactsViewRow]] =
       List[FieldLike[?, VvendorwithcontactsViewRow]](fields.businessentityid, fields.name, fields.contacttype, fields.title, fields.firstname, fields.middlename, fields.lastname, fields.suffix, fields.phonenumber, fields.phonenumbertype, fields.emailaddress, fields.emailpromotion)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

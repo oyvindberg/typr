@@ -14,7 +14,6 @@ import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
 import doobie.postgres.syntax.FragmentOps
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
-import doobie.syntax.string.toSqlInterpolator
 import doobie.util.Write
 import doobie.util.fragment.Fragment
 import doobie.util.meta.Meta
@@ -22,26 +21,24 @@ import doobie.util.update.Update
 import fs2.Stream
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import doobie.syntax.string.toSqlInterpolator
 
 class WorkorderRepoImpl extends WorkorderRepo {
-  override def delete: DeleteBuilder[WorkorderFields, WorkorderRow] = {
-    DeleteBuilder(""""production"."workorder"""", WorkorderFields.structure)
-  }
-  override def deleteById(workorderid: WorkorderId): ConnectionIO[Boolean] = {
-    sql"""delete from "production"."workorder" where "workorderid" = ${fromWrite(workorderid)(new Write.Single(WorkorderId.put))}""".update.run.map(_ > 0)
-  }
-  override def deleteByIds(workorderids: Array[WorkorderId]): ConnectionIO[Int] = {
-    sql"""delete from "production"."workorder" where "workorderid" = ANY(${fromWrite(workorderids)(new Write.Single(WorkorderId.arrayPut))})""".update.run
-  }
-  override def insert(unsaved: WorkorderRow): ConnectionIO[WorkorderRow] = {
+  def delete: DeleteBuilder[WorkorderFields, WorkorderRow] = DeleteBuilder.of(""""production"."workorder"""", WorkorderFields.structure, WorkorderRow.read)
+
+  def deleteById(workorderid: WorkorderId): ConnectionIO[Boolean] = sql"""delete from "production"."workorder" where "workorderid" = ${fromWrite(workorderid)(new Write.Single(WorkorderId.put))}""".update.run.map(_ > 0)
+
+  def deleteByIds(workorderids: Array[WorkorderId]): ConnectionIO[Int] = sql"""delete from "production"."workorder" where "workorderid" = ANY(${fromWrite(workorderids)(new Write.Single(WorkorderId.arrayPut))})""".update.run
+
+  def insert(unsaved: WorkorderRow): ConnectionIO[WorkorderRow] = {
     sql"""insert into "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")
-          values (${fromWrite(unsaved.workorderid)(new Write.Single(WorkorderId.put))}::int4, ${fromWrite(unsaved.productid)(new Write.Single(ProductId.put))}::int4, ${fromWrite(unsaved.orderqty)(new Write.Single(Meta.IntMeta.put))}::int4, ${fromWrite(unsaved.scrappedqty)(new Write.Single(TypoShort.put))}::int2, ${fromWrite(unsaved.startdate)(new Write.Single(TypoLocalDateTime.put))}::timestamp, ${fromWrite(unsaved.enddate)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp, ${fromWrite(unsaved.duedate)(new Write.Single(TypoLocalDateTime.put))}::timestamp, ${fromWrite(unsaved.scrapreasonid)(new Write.SingleOpt(ScrapreasonId.put))}::int2, ${fromWrite(unsaved.modifieddate)(new Write.Single(TypoLocalDateTime.put))}::timestamp)
-          returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
-       """.query(WorkorderRow.read).unique
+    values (${fromWrite(unsaved.workorderid)(new Write.Single(WorkorderId.put))}::int4, ${fromWrite(unsaved.productid)(new Write.Single(ProductId.put))}::int4, ${fromWrite(unsaved.orderqty)(new Write.Single(Meta.IntMeta.put))}::int4, ${fromWrite(unsaved.scrappedqty)(new Write.Single(TypoShort.put))}::int2, ${fromWrite(unsaved.startdate)(new Write.Single(TypoLocalDateTime.put))}::timestamp, ${fromWrite(unsaved.enddate)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp, ${fromWrite(unsaved.duedate)(new Write.Single(TypoLocalDateTime.put))}::timestamp, ${fromWrite(unsaved.scrapreasonid)(new Write.SingleOpt(ScrapreasonId.put))}::int2, ${fromWrite(unsaved.modifieddate)(new Write.Single(TypoLocalDateTime.put))}::timestamp)
+    returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
+    """.query(WorkorderRow.read).unique
   }
-  override def insert(unsaved: WorkorderRowUnsaved): ConnectionIO[WorkorderRow] = {
+
+  def insert(unsaved: WorkorderRowUnsaved): ConnectionIO[WorkorderRow] = {
     val fs = List(
       Some((Fragment.const0(s""""productid""""), fr"${fromWrite(unsaved.productid)(new Write.Single(ProductId.put))}::int4")),
       Some((Fragment.const0(s""""orderqty""""), fr"${fromWrite(unsaved.orderqty)(new Write.Single(Meta.IntMeta.put))}::int4")),
@@ -51,134 +48,139 @@ class WorkorderRepoImpl extends WorkorderRepo {
       Some((Fragment.const0(s""""duedate""""), fr"${fromWrite(unsaved.duedate)(new Write.Single(TypoLocalDateTime.put))}::timestamp")),
       Some((Fragment.const0(s""""scrapreasonid""""), fr"${fromWrite(unsaved.scrapreasonid)(new Write.SingleOpt(ScrapreasonId.put))}::int2")),
       unsaved.workorderid match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""workorderid""""), fr"${fromWrite(value: WorkorderId)(new Write.Single(WorkorderId.put))}::int4"))
       },
       unsaved.modifieddate match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""modifieddate""""), fr"${fromWrite(value: TypoLocalDateTime)(new Write.Single(TypoLocalDateTime.put))}::timestamp"))
       }
     ).flatten
-    
     val q = if (fs.isEmpty) {
       sql"""insert into "production"."workorder" default values
-            returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
-         """
+      returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
+      """
     } else {
       val CommaSeparate = Fragment.FragmentMonoid.intercalate(fr", ")
       sql"""insert into "production"."workorder"(${CommaSeparate.combineAllOption(fs.map { case (n, _) => n }).get})
-            values (${CommaSeparate.combineAllOption(fs.map { case (_, f) => f }).get})
-            returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
-         """
+      values (${CommaSeparate.combineAllOption(fs.map { case (_, f) => f }).get})
+      returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
+      """
     }
     q.query(WorkorderRow.read).unique
-    
   }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, WorkorderRow], batchSize: Int = 10000): ConnectionIO[Long] = {
-    new FragmentOps(sql"""COPY "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate") FROM STDIN""").copyIn(unsaved, batchSize)(WorkorderRow.text)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, WorkorderRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long] = {
-    new FragmentOps(sql"""COPY "production"."workorder"("productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "workorderid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""").copyIn(unsaved, batchSize)(WorkorderRowUnsaved.text)
-  }
-  override def select: SelectBuilder[WorkorderFields, WorkorderRow] = {
-    SelectBuilderSql(""""production"."workorder"""", WorkorderFields.structure, WorkorderRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, WorkorderRow] = {
-    sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder"""".query(WorkorderRow.read).stream
-  }
-  override def selectById(workorderid: WorkorderId): ConnectionIO[Option[WorkorderRow]] = {
-    sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder" where "workorderid" = ${fromWrite(workorderid)(new Write.Single(WorkorderId.put))}""".query(WorkorderRow.read).option
-  }
-  override def selectByIds(workorderids: Array[WorkorderId]): Stream[ConnectionIO, WorkorderRow] = {
-    sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder" where "workorderid" = ANY(${fromWrite(workorderids)(new Write.Single(WorkorderId.arrayPut))})""".query(WorkorderRow.read).stream
-  }
-  override def selectByIdsTracked(workorderids: Array[WorkorderId]): ConnectionIO[Map[WorkorderId, WorkorderRow]] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, WorkorderRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = new FragmentOps(sql"""COPY "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate") FROM STDIN""").copyIn(unsaved, batchSize)(WorkorderRow.pgText)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, WorkorderRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = new FragmentOps(sql"""COPY "production"."workorder"("productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "workorderid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""").copyIn(unsaved, batchSize)(WorkorderRowUnsaved.pgText)
+
+  def select: SelectBuilder[WorkorderFields, WorkorderRow] = SelectBuilder.of(""""production"."workorder"""", WorkorderFields.structure, WorkorderRow.read)
+
+  def selectAll: Stream[ConnectionIO, WorkorderRow] = sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder"""".query(WorkorderRow.read).stream
+
+  def selectById(workorderid: WorkorderId): ConnectionIO[Option[WorkorderRow]] = sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder" where "workorderid" = ${fromWrite(workorderid)(new Write.Single(WorkorderId.put))}""".query(WorkorderRow.read).option
+
+  def selectByIds(workorderids: Array[WorkorderId]): Stream[ConnectionIO, WorkorderRow] = sql"""select "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text from "production"."workorder" where "workorderid" = ANY(${fromWrite(workorderids)(new Write.Single(WorkorderId.arrayPut))})""".query(WorkorderRow.read).stream
+
+  def selectByIdsTracked(workorderids: Array[WorkorderId]): ConnectionIO[Map[WorkorderId, WorkorderRow]] = {
     selectByIds(workorderids).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.workorderid, x)).toMap
       workorderids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[WorkorderFields, WorkorderRow] = {
-    UpdateBuilder(""""production"."workorder"""", WorkorderFields.structure, WorkorderRow.read)
-  }
-  override def update(row: WorkorderRow): ConnectionIO[Option[WorkorderRow]] = {
+
+  def update: UpdateBuilder[WorkorderFields, WorkorderRow] = UpdateBuilder.of(""""production"."workorder"""", WorkorderFields.structure, WorkorderRow.read)
+
+  def update(row: WorkorderRow): ConnectionIO[Option[WorkorderRow]] = {
     val workorderid = row.workorderid
     sql"""update "production"."workorder"
-          set "productid" = ${fromWrite(row.productid)(new Write.Single(ProductId.put))}::int4,
-              "orderqty" = ${fromWrite(row.orderqty)(new Write.Single(Meta.IntMeta.put))}::int4,
-              "scrappedqty" = ${fromWrite(row.scrappedqty)(new Write.Single(TypoShort.put))}::int2,
-              "startdate" = ${fromWrite(row.startdate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
-              "enddate" = ${fromWrite(row.enddate)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp,
-              "duedate" = ${fromWrite(row.duedate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
-              "scrapreasonid" = ${fromWrite(row.scrapreasonid)(new Write.SingleOpt(ScrapreasonId.put))}::int2,
-              "modifieddate" = ${fromWrite(row.modifieddate)(new Write.Single(TypoLocalDateTime.put))}::timestamp
-          where "workorderid" = ${fromWrite(workorderid)(new Write.Single(WorkorderId.put))}
-          returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text""".query(WorkorderRow.read).option
+    set "productid" = ${fromWrite(row.productid)(new Write.Single(ProductId.put))}::int4,
+    "orderqty" = ${fromWrite(row.orderqty)(new Write.Single(Meta.IntMeta.put))}::int4,
+    "scrappedqty" = ${fromWrite(row.scrappedqty)(new Write.Single(TypoShort.put))}::int2,
+    "startdate" = ${fromWrite(row.startdate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
+    "enddate" = ${fromWrite(row.enddate)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp,
+    "duedate" = ${fromWrite(row.duedate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
+    "scrapreasonid" = ${fromWrite(row.scrapreasonid)(new Write.SingleOpt(ScrapreasonId.put))}::int2,
+    "modifieddate" = ${fromWrite(row.modifieddate)(new Write.Single(TypoLocalDateTime.put))}::timestamp
+    where "workorderid" = ${fromWrite(workorderid)(new Write.Single(WorkorderId.put))}
+    returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text""".query(WorkorderRow.read).option
   }
-  override def upsert(unsaved: WorkorderRow): ConnectionIO[WorkorderRow] = {
+
+  def upsert(unsaved: WorkorderRow): ConnectionIO[WorkorderRow] = {
     sql"""insert into "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")
-          values (
-            ${fromWrite(unsaved.workorderid)(new Write.Single(WorkorderId.put))}::int4,
-            ${fromWrite(unsaved.productid)(new Write.Single(ProductId.put))}::int4,
-            ${fromWrite(unsaved.orderqty)(new Write.Single(Meta.IntMeta.put))}::int4,
-            ${fromWrite(unsaved.scrappedqty)(new Write.Single(TypoShort.put))}::int2,
-            ${fromWrite(unsaved.startdate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
-            ${fromWrite(unsaved.enddate)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp,
-            ${fromWrite(unsaved.duedate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
-            ${fromWrite(unsaved.scrapreasonid)(new Write.SingleOpt(ScrapreasonId.put))}::int2,
-            ${fromWrite(unsaved.modifieddate)(new Write.Single(TypoLocalDateTime.put))}::timestamp
-          )
-          on conflict ("workorderid")
-          do update set
-            "productid" = EXCLUDED."productid",
-            "orderqty" = EXCLUDED."orderqty",
-            "scrappedqty" = EXCLUDED."scrappedqty",
-            "startdate" = EXCLUDED."startdate",
-            "enddate" = EXCLUDED."enddate",
-            "duedate" = EXCLUDED."duedate",
-            "scrapreasonid" = EXCLUDED."scrapreasonid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
-       """.query(WorkorderRow.read).unique
+    values (
+      ${fromWrite(unsaved.workorderid)(new Write.Single(WorkorderId.put))}::int4,
+    ${fromWrite(unsaved.productid)(new Write.Single(ProductId.put))}::int4,
+    ${fromWrite(unsaved.orderqty)(new Write.Single(Meta.IntMeta.put))}::int4,
+    ${fromWrite(unsaved.scrappedqty)(new Write.Single(TypoShort.put))}::int2,
+    ${fromWrite(unsaved.startdate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
+    ${fromWrite(unsaved.enddate)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp,
+    ${fromWrite(unsaved.duedate)(new Write.Single(TypoLocalDateTime.put))}::timestamp,
+    ${fromWrite(unsaved.scrapreasonid)(new Write.SingleOpt(ScrapreasonId.put))}::int2,
+    ${fromWrite(unsaved.modifieddate)(new Write.Single(TypoLocalDateTime.put))}::timestamp
+    )
+    on conflict ("workorderid")
+    do update set
+      "productid" = EXCLUDED."productid",
+    "orderqty" = EXCLUDED."orderqty",
+    "scrappedqty" = EXCLUDED."scrappedqty",
+    "startdate" = EXCLUDED."startdate",
+    "enddate" = EXCLUDED."enddate",
+    "duedate" = EXCLUDED."duedate",
+    "scrapreasonid" = EXCLUDED."scrapreasonid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text
+    """.query(WorkorderRow.read).unique
   }
-  override def upsertBatch(unsaved: List[WorkorderRow]): Stream[ConnectionIO, WorkorderRow] = {
+
+  def upsertBatch(unsaved: List[WorkorderRow]): Stream[ConnectionIO, WorkorderRow] = {
     Update[WorkorderRow](
       s"""insert into "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")
-          values (?::int4,?::int4,?::int4,?::int2,?::timestamp,?::timestamp,?::timestamp,?::int2,?::timestamp)
-          on conflict ("workorderid")
-          do update set
-            "productid" = EXCLUDED."productid",
-            "orderqty" = EXCLUDED."orderqty",
-            "scrappedqty" = EXCLUDED."scrappedqty",
-            "startdate" = EXCLUDED."startdate",
-            "enddate" = EXCLUDED."enddate",
-            "duedate" = EXCLUDED."duedate",
-            "scrapreasonid" = EXCLUDED."scrapreasonid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text"""
+      values (?::int4,?::int4,?::int4,?::int2,?::timestamp,?::timestamp,?::timestamp,?::int2,?::timestamp)
+      on conflict ("workorderid")
+      do update set
+        "productid" = EXCLUDED."productid",
+      "orderqty" = EXCLUDED."orderqty",
+      "scrappedqty" = EXCLUDED."scrappedqty",
+      "startdate" = EXCLUDED."startdate",
+      "enddate" = EXCLUDED."enddate",
+      "duedate" = EXCLUDED."duedate",
+      "scrapreasonid" = EXCLUDED."scrapreasonid",
+      "modifieddate" = EXCLUDED."modifieddate"
+      returning "workorderid", "productid", "orderqty", "scrappedqty", "startdate"::text, "enddate"::text, "duedate"::text, "scrapreasonid", "modifieddate"::text"""
     )(WorkorderRow.write)
     .updateManyWithGeneratedKeys[WorkorderRow]("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")(unsaved)(catsStdInstancesForList, WorkorderRow.read)
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, WorkorderRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, WorkorderRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     for {
       _ <- sql"""create temporary table workorder_TEMP (like "production"."workorder") on commit drop""".update.run
-      _ <- new FragmentOps(sql"""copy workorder_TEMP("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate") from stdin""").copyIn(unsaved, batchSize)(WorkorderRow.text)
+      _ <- new FragmentOps(sql"""copy workorder_TEMP("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate") from stdin""").copyIn(unsaved, batchSize)(WorkorderRow.pgText)
       res <- sql"""insert into "production"."workorder"("workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")
-                   select * from workorder_TEMP
-                   on conflict ("workorderid")
-                   do update set
-                     "productid" = EXCLUDED."productid",
-                     "orderqty" = EXCLUDED."orderqty",
-                     "scrappedqty" = EXCLUDED."scrappedqty",
-                     "startdate" = EXCLUDED."startdate",
-                     "enddate" = EXCLUDED."enddate",
-                     "duedate" = EXCLUDED."duedate",
-                     "scrapreasonid" = EXCLUDED."scrapreasonid",
-                     "modifieddate" = EXCLUDED."modifieddate"
-                   ;
-                   drop table workorder_TEMP;""".update.run
+             select * from workorder_TEMP
+             on conflict ("workorderid")
+             do update set
+               "productid" = EXCLUDED."productid",
+             "orderqty" = EXCLUDED."orderqty",
+             "scrappedqty" = EXCLUDED."scrappedqty",
+             "startdate" = EXCLUDED."startdate",
+             "enddate" = EXCLUDED."enddate",
+             "duedate" = EXCLUDED."duedate",
+             "scrapreasonid" = EXCLUDED."scrapreasonid",
+             "modifieddate" = EXCLUDED."modifieddate"
+             ;
+             drop table workorder_TEMP;""".update.run
     } yield res
   }
 }

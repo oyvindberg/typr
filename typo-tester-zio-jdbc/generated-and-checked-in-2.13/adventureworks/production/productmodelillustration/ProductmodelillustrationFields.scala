@@ -38,27 +38,26 @@ trait ProductmodelillustrationFields {
     productmodelid.isEqual(compositeId.productmodelid).and(illustrationid.isEqual(compositeId.illustrationid))
   def compositeIdIn(compositeIds: Array[ProductmodelillustrationId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[ProductmodelillustrationId](productmodelid)(_.productmodelid)(using as[Array[ProductmodelId]](ProductmodelId.arrayJdbcEncoder, PGType.forArray(ProductmodelId.pgType)), implicitly), TuplePart[ProductmodelillustrationId](illustrationid)(_.illustrationid)(using as[Array[IllustrationId]](IllustrationId.arrayJdbcEncoder, PGType.forArray(IllustrationId.pgType)), implicitly))
-  
+
 }
 
 object ProductmodelillustrationFields {
   lazy val structure: Relation[ProductmodelillustrationFields, ProductmodelillustrationRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductmodelillustrationFields, ProductmodelillustrationRow] {
-  
+
     override lazy val fields: ProductmodelillustrationFields = new ProductmodelillustrationFields {
       override def productmodelid = IdField[ProductmodelId, ProductmodelillustrationRow](_path, "productmodelid", None, Some("int4"), x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def illustrationid = IdField[IllustrationId, ProductmodelillustrationRow](_path, "illustrationid", None, Some("int4"), x => x.illustrationid, (row, value) => row.copy(illustrationid = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductmodelillustrationRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductmodelillustrationRow]] =
       List[FieldLike[?, ProductmodelillustrationRow]](fields.productmodelid, fields.illustrationid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

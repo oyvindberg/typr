@@ -35,36 +35,44 @@ case class VproductanddescriptionMVRow(
 )
 
 object VproductanddescriptionMVRow {
-  implicit lazy val reads: Reads[VproductanddescriptionMVRow] = Reads[VproductanddescriptionMVRow](json => JsResult.fromTry(
-      Try(
-        VproductanddescriptionMVRow(
-          productid = json.\("productid").as(ProductId.reads),
-          name = json.\("name").as(Name.reads),
-          productmodel = json.\("productmodel").as(Name.reads),
-          cultureid = json.\("cultureid").as(CultureId.reads),
-          description = json.\("description").as(Reads.StringReads)
+  implicit lazy val reads: Reads[VproductanddescriptionMVRow] = {
+    Reads[VproductanddescriptionMVRow](json => JsResult.fromTry(
+        Try(
+          VproductanddescriptionMVRow(
+            productid = json.\("productid").as(ProductId.reads),
+            name = json.\("name").as(Name.reads),
+            productmodel = json.\("productmodel").as(Name.reads),
+            cultureid = json.\("cultureid").as(CultureId.reads),
+            description = json.\("description").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VproductanddescriptionMVRow] = RowParser[VproductanddescriptionMVRow] { row =>
-    Success(
-      VproductanddescriptionMVRow(
-        productid = row(idx + 0)(ProductId.column),
-        name = row(idx + 1)(Name.column),
-        productmodel = row(idx + 2)(Name.column),
-        cultureid = row(idx + 3)(CultureId.column),
-        description = row(idx + 4)(Column.columnToString)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[VproductanddescriptionMVRow] = OWrites[VproductanddescriptionMVRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "name" -> Name.writes.writes(o.name),
-      "productmodel" -> Name.writes.writes(o.productmodel),
-      "cultureid" -> CultureId.writes.writes(o.cultureid),
-      "description" -> Writes.StringWrites.writes(o.description)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VproductanddescriptionMVRow] = {
+    RowParser[VproductanddescriptionMVRow] { row =>
+      Success(
+        VproductanddescriptionMVRow(
+          productid = row(idx + 0)(ProductId.column),
+          name = row(idx + 1)(Name.column),
+          productmodel = row(idx + 2)(Name.column),
+          cultureid = row(idx + 3)(CultureId.column),
+          description = row(idx + 4)(Column.columnToString)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[VproductanddescriptionMVRow] = {
+    OWrites[VproductanddescriptionMVRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "name" -> Name.writes.writes(o.name),
+        "productmodel" -> Name.writes.writes(o.productmodel),
+        "cultureid" -> CultureId.writes.writes(o.cultureid),
+        "description" -> Writes.StringWrites.writes(o.description)
+      ))
+    )
+  }
 }

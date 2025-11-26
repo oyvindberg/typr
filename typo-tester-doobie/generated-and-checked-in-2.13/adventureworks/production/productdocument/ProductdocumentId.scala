@@ -15,7 +15,9 @@ case class ProductdocumentId(
   productid: ProductId,
   documentnode: DocumentId
 )
+
 object ProductdocumentId {
   implicit lazy val decoder: Decoder[ProductdocumentId] = Decoder.forProduct2[ProductdocumentId, ProductId, DocumentId]("productid", "documentnode")(ProductdocumentId.apply)(ProductId.decoder, DocumentId.decoder)
+
   implicit lazy val encoder: Encoder[ProductdocumentId] = Encoder.forProduct2[ProductdocumentId, ProductId, DocumentId]("productid", "documentnode")(x => (x.productid, x.documentnode))(ProductId.encoder, DocumentId.encoder)
 }

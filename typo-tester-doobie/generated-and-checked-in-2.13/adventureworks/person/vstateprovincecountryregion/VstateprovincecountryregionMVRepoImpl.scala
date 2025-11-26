@@ -6,16 +6,12 @@
 package adventureworks.person.vstateprovincecountryregion
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VstateprovincecountryregionMVRepoImpl extends VstateprovincecountryregionMVRepo {
-  override def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] = {
-    SelectBuilderSql(""""person"."vstateprovincecountryregion"""", VstateprovincecountryregionMVFields.structure, VstateprovincecountryregionMVRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VstateprovincecountryregionMVRow] = {
-    sql"""select "stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname" from "person"."vstateprovincecountryregion"""".query(VstateprovincecountryregionMVRow.read).stream
-  }
+  def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] = SelectBuilder.of(""""person"."vstateprovincecountryregion"""", VstateprovincecountryregionMVFields.structure, VstateprovincecountryregionMVRow.read)
+
+  def selectAll: Stream[ConnectionIO, VstateprovincecountryregionMVRow] = sql"""select "stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname" from "person"."vstateprovincecountryregion"""".query(VstateprovincecountryregionMVRow.read).stream
 }

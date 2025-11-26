@@ -6,16 +6,12 @@
 package adventureworks.humanresources.vjobcandidate
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VjobcandidateViewRepoImpl extends VjobcandidateViewRepo {
-  override def select: SelectBuilder[VjobcandidateViewFields, VjobcandidateViewRow] = {
-    SelectBuilderSql(""""humanresources"."vjobcandidate"""", VjobcandidateViewFields.structure, VjobcandidateViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VjobcandidateViewRow] = {
-    sql"""select "jobcandidateid", "businessentityid", "Name.Prefix", "Name.First", "Name.Middle", "Name.Last", "Name.Suffix", "Skills", "Addr.Type", "Addr.Loc.CountryRegion", "Addr.Loc.State", "Addr.Loc.City", "Addr.PostalCode", "EMail", "WebSite", "modifieddate"::text from "humanresources"."vjobcandidate"""".query(VjobcandidateViewRow.read).stream
-  }
+  def select: SelectBuilder[VjobcandidateViewFields, VjobcandidateViewRow] = SelectBuilder.of(""""humanresources"."vjobcandidate"""", VjobcandidateViewFields.structure, VjobcandidateViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, VjobcandidateViewRow] = sql"""select "jobcandidateid", "businessentityid", "Name.Prefix", "Name.First", "Name.Middle", "Name.Last", "Name.Suffix", "Skills", "Addr.Type", "Addr.Loc.CountryRegion", "Addr.Loc.State", "Addr.Loc.City", "Addr.PostalCode", "EMail", "WebSite", "modifieddate"::text from "humanresources"."vjobcandidate"""".query(VjobcandidateViewRow.read).stream
 }

@@ -21,32 +21,34 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class CountryregionRepoMock(toRow: Function1[CountryregionRowUnsaved, CountryregionRow],
-                            map: scala.collection.mutable.Map[CountryregionId, CountryregionRow] = scala.collection.mutable.Map.empty) extends CountryregionRepo {
-  override def delete: DeleteBuilder[CountryregionFields, CountryregionRow] = {
-    DeleteBuilderMock(DeleteParams.empty, CountryregionFields.structure, map)
+case class CountryregionRepoMock(
+  toRow: CountryregionRowUnsaved => CountryregionRow,
+  map: scala.collection.mutable.Map[CountryregionId, CountryregionRow] = scala.collection.mutable.Map.empty[CountryregionId, CountryregionRow]
+) extends CountryregionRepo {
+  def delete: DeleteBuilder[CountryregionFields, CountryregionRow] = DeleteBuilderMock(DeleteParams.empty, CountryregionFields.structure, map)
+
+  def deleteById(countryregioncode: CountryregionId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(countryregioncode).isDefined)
+
+  def deleteByIds(countryregioncodes: Array[CountryregionId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(countryregioncodes.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: CountryregionRow): ZIO[ZConnection, Throwable, CountryregionRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.countryregioncode))
+        sys.error(s"id ${unsaved.countryregioncode} already exists")
+      else
+        map.put(unsaved.countryregioncode, unsaved)
+
+    unsaved
   }
-  override def deleteById(countryregioncode: CountryregionId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(countryregioncode).isDefined)
   }
-  override def deleteByIds(countryregioncodes: Array[CountryregionId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(countryregioncodes.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: CountryregionRow): ZIO[ZConnection, Throwable, CountryregionRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.countryregioncode))
-          sys.error(s"id ${unsaved.countryregioncode} already exists")
-        else
-          map.put(unsaved.countryregioncode, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: CountryregionRowUnsaved): ZIO[ZConnection, Throwable, CountryregionRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, CountryregionRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insert(unsaved: CountryregionRowUnsaved): ZIO[ZConnection, Throwable, CountryregionRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, CountryregionRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.countryregioncode -> row)
@@ -54,8 +56,12 @@ class CountryregionRepoMock(toRow: Function1[CountryregionRowUnsaved, Countryreg
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, CountryregionRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, CountryregionRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
       ZIO.succeed {
         val row = toRow(unsavedRow)
@@ -64,28 +70,25 @@ class CountryregionRepoMock(toRow: Function1[CountryregionRowUnsaved, Countryreg
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[CountryregionFields, CountryregionRow] = {
-    SelectBuilderMock(CountryregionFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, CountryregionRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(countryregioncode: CountryregionId): ZIO[ZConnection, Throwable, Option[CountryregionRow]] = {
-    ZIO.succeed(map.get(countryregioncode))
-  }
-  override def selectByIds(countryregioncodes: Array[CountryregionId]): ZStream[ZConnection, Throwable, CountryregionRow] = {
-    ZStream.fromIterable(countryregioncodes.flatMap(map.get))
-  }
-  override def selectByIdsTracked(countryregioncodes: Array[CountryregionId]): ZIO[ZConnection, Throwable, Map[CountryregionId, CountryregionRow]] = {
+
+  def select: SelectBuilder[CountryregionFields, CountryregionRow] = SelectBuilderMock(CountryregionFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, CountryregionRow] = ZStream.fromIterable(map.values)
+
+  def selectById(countryregioncode: CountryregionId): ZIO[ZConnection, Throwable, Option[CountryregionRow]] = ZIO.succeed(map.get(countryregioncode))
+
+  def selectByIds(countryregioncodes: Array[CountryregionId]): ZStream[ZConnection, Throwable, CountryregionRow] = ZStream.fromIterable(countryregioncodes.flatMap(map.get))
+
+  def selectByIdsTracked(countryregioncodes: Array[CountryregionId]): ZIO[ZConnection, Throwable, Map[CountryregionId, CountryregionRow]] = {
     selectByIds(countryregioncodes).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.countryregioncode, x)).toMap
       countryregioncodes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[CountryregionFields, CountryregionRow] = {
-    UpdateBuilderMock(UpdateParams.empty, CountryregionFields.structure, map)
-  }
-  override def update(row: CountryregionRow): ZIO[ZConnection, Throwable, Option[CountryregionRow]] = {
+
+  def update: UpdateBuilder[CountryregionFields, CountryregionRow] = UpdateBuilderMock(UpdateParams.empty, CountryregionFields.structure, map)
+
+  def update(row: CountryregionRow): ZIO[ZConnection, Throwable, Option[CountryregionRow]] = {
     ZIO.succeed {
       map.get(row.countryregioncode).map { _ =>
         map.put(row.countryregioncode, row): @nowarn
@@ -93,14 +96,19 @@ class CountryregionRepoMock(toRow: Function1[CountryregionRowUnsaved, Countryreg
       }
     }
   }
-  override def upsert(unsaved: CountryregionRow): ZIO[ZConnection, Throwable, UpdateResult[CountryregionRow]] = {
+
+  def upsert(unsaved: CountryregionRow): ZIO[ZConnection, Throwable, UpdateResult[CountryregionRow]] = {
     ZIO.succeed {
       map.put(unsaved.countryregioncode, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, CountryregionRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, CountryregionRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.countryregioncode -> row)

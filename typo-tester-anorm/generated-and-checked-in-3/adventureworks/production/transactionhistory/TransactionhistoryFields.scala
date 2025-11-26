@@ -33,11 +33,11 @@ trait TransactionhistoryFields {
 
 object TransactionhistoryFields {
   lazy val structure: Relation[TransactionhistoryFields, TransactionhistoryRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[TransactionhistoryFields, TransactionhistoryRow] {
-  
+
     override lazy val fields: TransactionhistoryFields = new TransactionhistoryFields {
       override def transactionid = IdField[TransactionhistoryId, TransactionhistoryRow](_path, "transactionid", None, Some("int4"), x => x.transactionid, (row, value) => row.copy(transactionid = value))
       override def productid = Field[ProductId, TransactionhistoryRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
@@ -49,12 +49,11 @@ object TransactionhistoryFields {
       override def actualcost = Field[BigDecimal, TransactionhistoryRow](_path, "actualcost", None, Some("numeric"), x => x.actualcost, (row, value) => row.copy(actualcost = value))
       override def modifieddate = Field[TypoLocalDateTime, TransactionhistoryRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, TransactionhistoryRow]] =
       List[FieldLike[?, TransactionhistoryRow]](fields.transactionid, fields.productid, fields.referenceorderid, fields.referenceorderlineid, fields.transactiondate, fields.transactiontype, fields.quantity, fields.actualcost, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

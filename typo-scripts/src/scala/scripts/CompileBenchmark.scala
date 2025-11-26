@@ -4,11 +4,11 @@ import bleep.*
 import bleep.commands.SourceGen
 import bleep.model.{CrossProjectName, ProjectName}
 import typo.*
+import typo.internal.codegen.LangScala
 import typo.internal.generate
 import typo.internal.sqlfiles.readSqlFileDirectories
 
 import java.nio.file.Path
-import scala.annotation.nowarn
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
@@ -55,13 +55,14 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
         List(false, true).flatMap { inlineImplicits =>
           val options = Options(
             pkg = "adventureworks",
-            dbLib,
-            jsonLib,
-            enableDsl = dbLib.nonEmpty,
+            lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
+            dbLib = dbLib,
+            jsonLibs = jsonLib,
             enableTestInserts = Selector.All,
+            enableStreamingInserts = false,
+            enableDsl = dbLib.nonEmpty,
             inlineImplicits = inlineImplicits,
-            fixVerySlowImplicit = fixVerySlowImplicit,
-            enableStreamingInserts = false
+            fixVerySlowImplicit = fixVerySlowImplicit
           )
           generate(
             options,
@@ -75,7 +76,7 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
               Nil
             ),
             Map.empty
-          ).foreach(_.overwriteFolder(options.dialect))
+          ).foreach(_.overwriteFolder())
 
           crossIds.map { crossId =>
             started.projectPaths(CrossProjectName(ProjectName(projectName), Some(crossId))).sourcesDirs.fromSourceLayout.foreach { p =>
@@ -88,7 +89,7 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
             val times = 0.to(2).map { _ =>
               val crossProjectName = model.CrossProjectName(model.ProjectName(projectName), Some(crossId))
               commands.clean(List(crossProjectName))
-              SourceGen(false, Array(crossProjectName)).run(started): @nowarn
+              SourceGen(false, Array(crossProjectName)).run(started).orThrow
               time(commands.compile(List(crossProjectName)))
             }
             val avgtime = times.sum / times.length

@@ -20,20 +20,26 @@ case class TestUtdanningstilbudId(
   organisasjonskode: TestOrganisasjonId,
   utdanningsmulighetKode: String
 )
+
 object TestUtdanningstilbudId {
-  implicit lazy val reads: Reads[TestUtdanningstilbudId] = Reads[TestUtdanningstilbudId](json => JsResult.fromTry(
-      Try(
-        TestUtdanningstilbudId(
-          organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads),
-          utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+  implicit lazy val reads: Reads[TestUtdanningstilbudId] = {
+    Reads[TestUtdanningstilbudId](json => JsResult.fromTry(
+        Try(
+          TestUtdanningstilbudId(
+            organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads),
+            utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[TestUtdanningstilbudId] = OWrites[TestUtdanningstilbudId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode),
-      "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[TestUtdanningstilbudId] = {
+    OWrites[TestUtdanningstilbudId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode),
+        "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
+      ))
+    )
+  }
 }

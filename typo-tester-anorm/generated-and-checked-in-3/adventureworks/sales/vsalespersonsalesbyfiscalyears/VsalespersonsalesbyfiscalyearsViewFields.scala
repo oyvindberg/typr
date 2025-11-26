@@ -22,11 +22,11 @@ trait VsalespersonsalesbyfiscalyearsViewFields {
 
 object VsalespersonsalesbyfiscalyearsViewFields {
   lazy val structure: Relation[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] {
-  
+
     override lazy val fields: VsalespersonsalesbyfiscalyearsViewFields = new VsalespersonsalesbyfiscalyearsViewFields {
       override def salesPersonID = OptField[Int, VsalespersonsalesbyfiscalyearsViewRow](_path, "SalesPersonID", None, None, x => x.salesPersonID, (row, value) => row.copy(salesPersonID = value))
       override def fullName = OptField[String, VsalespersonsalesbyfiscalyearsViewRow](_path, "FullName", None, None, x => x.fullName, (row, value) => row.copy(fullName = value))
@@ -36,12 +36,11 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       override def `2013` = OptField[BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](_path, "2013", None, None, x => x.`2013`, (row, value) => row.copy(`2013` = value))
       override def `2014` = OptField[BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](_path, "2014", None, None, x => x.`2014`, (row, value) => row.copy(`2014` = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VsalespersonsalesbyfiscalyearsViewRow]] =
       List[FieldLike[?, VsalespersonsalesbyfiscalyearsViewRow]](fields.salesPersonID, fields.fullName, fields.jobTitle, fields.salesTerritory, fields.`2012`, fields.`2013`, fields.`2014`)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

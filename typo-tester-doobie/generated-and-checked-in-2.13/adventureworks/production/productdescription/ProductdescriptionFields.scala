@@ -22,23 +22,22 @@ trait ProductdescriptionFields {
 
 object ProductdescriptionFields {
   lazy val structure: Relation[ProductdescriptionFields, ProductdescriptionRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductdescriptionFields, ProductdescriptionRow] {
-  
+
     override lazy val fields: ProductdescriptionFields = new ProductdescriptionFields {
       override def productdescriptionid = IdField[ProductdescriptionId, ProductdescriptionRow](_path, "productdescriptionid", None, Some("int4"), x => x.productdescriptionid, (row, value) => row.copy(productdescriptionid = value))
       override def description = Field[/* max 400 chars */ String, ProductdescriptionRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
       override def rowguid = Field[TypoUUID, ProductdescriptionRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductdescriptionRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductdescriptionRow]] =
       List[FieldLike[?, ProductdescriptionRow]](fields.productdescriptionid, fields.description, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

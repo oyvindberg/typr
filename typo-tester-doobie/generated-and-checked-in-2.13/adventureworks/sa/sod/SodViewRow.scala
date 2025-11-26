@@ -44,32 +44,36 @@ case class SodViewRow(
 
 object SodViewRow {
   implicit lazy val decoder: Decoder[SodViewRow] = Decoder.forProduct11[SodViewRow, Int, SalesorderheaderId, Int, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate")(SodViewRow.apply)(Decoder.decodeInt, SalesorderheaderId.decoder, Decoder.decodeInt, Decoder.decodeOption(Decoder.decodeString), TypoShort.decoder, ProductId.decoder, SpecialofferId.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[SodViewRow] = Encoder.forProduct11[SodViewRow, Int, SalesorderheaderId, Int, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate")(x => (x.id, x.salesorderid, x.salesorderdetailid, x.carriertrackingnumber, x.orderqty, x.productid, x.specialofferid, x.unitprice, x.unitpricediscount, x.rowguid, x.modifieddate))(Encoder.encodeInt, SalesorderheaderId.encoder, Encoder.encodeInt, Encoder.encodeOption(Encoder.encodeString), TypoShort.encoder, ProductId.encoder, SpecialofferId.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[SodViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[SodViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    SodViewRow(
-      id = arr(0).asInstanceOf[Int],
-          salesorderid = arr(1).asInstanceOf[SalesorderheaderId],
-          salesorderdetailid = arr(2).asInstanceOf[Int],
-          carriertrackingnumber = arr(3).asInstanceOf[Option[/* max 25 chars */ String]],
-          orderqty = arr(4).asInstanceOf[TypoShort],
-          productid = arr(5).asInstanceOf[ProductId],
-          specialofferid = arr(6).asInstanceOf[SpecialofferId],
-          unitprice = arr(7).asInstanceOf[BigDecimal],
-          unitpricediscount = arr(8).asInstanceOf[BigDecimal],
-          rowguid = arr(9).asInstanceOf[TypoUUID],
-          modifieddate = arr(10).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      SodViewRow(
+        id = arr(0).asInstanceOf[Int],
+            salesorderid = arr(1).asInstanceOf[SalesorderheaderId],
+            salesorderdetailid = arr(2).asInstanceOf[Int],
+            carriertrackingnumber = arr(3).asInstanceOf[Option[/* max 25 chars */ String]],
+            orderqty = arr(4).asInstanceOf[TypoShort],
+            productid = arr(5).asInstanceOf[ProductId],
+            specialofferid = arr(6).asInstanceOf[SpecialofferId],
+            unitprice = arr(7).asInstanceOf[BigDecimal],
+            unitpricediscount = arr(8).asInstanceOf[BigDecimal],
+            rowguid = arr(9).asInstanceOf[TypoUUID],
+            modifieddate = arr(10).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

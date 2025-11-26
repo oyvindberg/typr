@@ -19,27 +19,28 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class OnlyPkColumnsRepoMock(map: scala.collection.mutable.Map[OnlyPkColumnsId, OnlyPkColumnsRow] = scala.collection.mutable.Map.empty) extends OnlyPkColumnsRepo {
-  override def delete: DeleteBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow] = {
-    DeleteBuilderMock(DeleteParams.empty, OnlyPkColumnsFields.structure, map)
+case class OnlyPkColumnsRepoMock(map: scala.collection.mutable.Map[OnlyPkColumnsId, OnlyPkColumnsRow] = scala.collection.mutable.Map.empty[OnlyPkColumnsId, OnlyPkColumnsRow]) extends OnlyPkColumnsRepo {
+  def delete: DeleteBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow] = DeleteBuilderMock(DeleteParams.empty, OnlyPkColumnsFields.structure, map)
+
+  def deleteById(compositeId: OnlyPkColumnsId): ConnectionIO[Boolean] = delay(map.remove(compositeId).isDefined)
+
+  def deleteByIds(compositeIds: Array[OnlyPkColumnsId]): ConnectionIO[Int] = delay(compositeIds.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: OnlyPkColumnsRow): ConnectionIO[OnlyPkColumnsRow] = {
+  delay {
+    val _ = if (map.contains(unsaved.compositeId))
+      sys.error(s"id ${unsaved.compositeId} already exists")
+    else
+      map.put(unsaved.compositeId, unsaved)
+
+    unsaved
   }
-  override def deleteById(compositeId: OnlyPkColumnsId): ConnectionIO[Boolean] = {
-    delay(map.remove(compositeId).isDefined)
   }
-  override def deleteByIds(compositeIds: Array[OnlyPkColumnsId]): ConnectionIO[Int] = {
-    delay(compositeIds.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: OnlyPkColumnsRow): ConnectionIO[OnlyPkColumnsRow] = {
-    delay {
-      val _ = if (map.contains(unsaved.compositeId))
-        sys.error(s"id ${unsaved.compositeId} already exists")
-      else
-        map.put(unsaved.compositeId, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, OnlyPkColumnsRow], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, OnlyPkColumnsRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -49,34 +50,32 @@ class OnlyPkColumnsRepoMock(map: scala.collection.mutable.Map[OnlyPkColumnsId, O
       num
     }
   }
-  override def select: SelectBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow] = {
-    SelectBuilderMock(OnlyPkColumnsFields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, OnlyPkColumnsRow] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(compositeId: OnlyPkColumnsId): ConnectionIO[Option[OnlyPkColumnsRow]] = {
-    delay(map.get(compositeId))
-  }
-  override def selectByIds(compositeIds: Array[OnlyPkColumnsId]): Stream[ConnectionIO, OnlyPkColumnsRow] = {
-    Stream.emits(compositeIds.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(compositeIds: Array[OnlyPkColumnsId]): ConnectionIO[Map[OnlyPkColumnsId, OnlyPkColumnsRow]] = {
+
+  def select: SelectBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow] = SelectBuilderMock(OnlyPkColumnsFields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, OnlyPkColumnsRow] = Stream.emits(map.values.toList)
+
+  def selectById(compositeId: OnlyPkColumnsId): ConnectionIO[Option[OnlyPkColumnsRow]] = delay(map.get(compositeId))
+
+  def selectByIds(compositeIds: Array[OnlyPkColumnsId]): Stream[ConnectionIO, OnlyPkColumnsRow] = Stream.emits(compositeIds.flatMap(map.get).toList)
+
+  def selectByIdsTracked(compositeIds: Array[OnlyPkColumnsId]): ConnectionIO[Map[OnlyPkColumnsId, OnlyPkColumnsRow]] = {
     selectByIds(compositeIds).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow] = {
-    UpdateBuilderMock(UpdateParams.empty, OnlyPkColumnsFields.structure, map)
-  }
-  override def upsert(unsaved: OnlyPkColumnsRow): ConnectionIO[OnlyPkColumnsRow] = {
+
+  def update: UpdateBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow] = UpdateBuilderMock(UpdateParams.empty, OnlyPkColumnsFields.structure, map)
+
+  def upsert(unsaved: OnlyPkColumnsRow): ConnectionIO[OnlyPkColumnsRow] = {
     delay {
       map.put(unsaved.compositeId, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[OnlyPkColumnsRow]): Stream[ConnectionIO, OnlyPkColumnsRow] = {
+
+  def upsertBatch(unsaved: List[OnlyPkColumnsRow]): Stream[ConnectionIO, OnlyPkColumnsRow] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.compositeId -> row)
@@ -84,8 +83,12 @@ class OnlyPkColumnsRepoMock(map: scala.collection.mutable.Map[OnlyPkColumnsId, O
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, OnlyPkColumnsRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, OnlyPkColumnsRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

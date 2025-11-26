@@ -6,16 +6,12 @@
 package adventureworks.pr.pmpdc
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PmpdcViewRepoImpl extends PmpdcViewRepo {
-  override def select: SelectBuilder[PmpdcViewFields, PmpdcViewRow] = {
-    SelectBuilderSql(""""pr"."pmpdc"""", PmpdcViewFields.structure, PmpdcViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PmpdcViewRow] = {
-    sql"""select "productmodelid", "productdescriptionid", "cultureid", "modifieddate"::text from "pr"."pmpdc"""".query(using PmpdcViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[PmpdcViewFields, PmpdcViewRow] = SelectBuilder.of(""""pr"."pmpdc"""", PmpdcViewFields.structure, PmpdcViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, PmpdcViewRow] = sql"""select "productmodelid", "productdescriptionid", "cultureid", "modifieddate"::text from "pr"."pmpdc"""".query(using PmpdcViewRow.jdbcDecoder).selectStream()
 }

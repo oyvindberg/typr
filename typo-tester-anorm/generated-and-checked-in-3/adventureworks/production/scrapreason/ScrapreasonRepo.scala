@@ -12,22 +12,47 @@ import typo.dsl.UpdateBuilder
 
 trait ScrapreasonRepo {
   def delete: DeleteBuilder[ScrapreasonFields, ScrapreasonRow]
+
   def deleteById(scrapreasonid: ScrapreasonId)(using c: Connection): Boolean
+
   def deleteByIds(scrapreasonids: Array[ScrapreasonId])(using c: Connection): Int
+
   def insert(unsaved: ScrapreasonRow)(using c: Connection): ScrapreasonRow
+
   def insert(unsaved: ScrapreasonRowUnsaved)(using c: Connection): ScrapreasonRow
-  def insertStreaming(unsaved: Iterator[ScrapreasonRow], batchSize: Int = 10000)(using c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[ScrapreasonRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[ScrapreasonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[ScrapreasonRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[ScrapreasonFields, ScrapreasonRow]
+
   def selectAll(using c: Connection): List[ScrapreasonRow]
+
   def selectById(scrapreasonid: ScrapreasonId)(using c: Connection): Option[ScrapreasonRow]
+
   def selectByIds(scrapreasonids: Array[ScrapreasonId])(using c: Connection): List[ScrapreasonRow]
+
   def selectByIdsTracked(scrapreasonids: Array[ScrapreasonId])(using c: Connection): Map[ScrapreasonId, ScrapreasonRow]
+
   def update: UpdateBuilder[ScrapreasonFields, ScrapreasonRow]
+
   def update(row: ScrapreasonRow)(using c: Connection): Option[ScrapreasonRow]
+
   def upsert(unsaved: ScrapreasonRow)(using c: Connection): ScrapreasonRow
+
   def upsertBatch(unsaved: Iterable[ScrapreasonRow])(using c: Connection): List[ScrapreasonRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[ScrapreasonRow], batchSize: Int = 10000)(using c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[ScrapreasonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int
 }

@@ -37,27 +37,26 @@ trait ProductdocumentFields {
     productid.isEqual(compositeId.productid).and(documentnode.isEqual(compositeId.documentnode))
   def compositeIdIn(compositeIds: Array[ProductdocumentId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[ProductdocumentId](productid)(_.productid)(using as[Array[ProductId]](using ProductId.arrayPut), implicitly), TuplePart[ProductdocumentId](documentnode)(_.documentnode)(using as[Array[DocumentId]](using DocumentId.arrayPut), implicitly))
-  
+
 }
 
 object ProductdocumentFields {
   lazy val structure: Relation[ProductdocumentFields, ProductdocumentRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductdocumentFields, ProductdocumentRow] {
-  
+
     override lazy val fields: ProductdocumentFields = new ProductdocumentFields {
       override def productid = IdField[ProductId, ProductdocumentRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductdocumentRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
       override def documentnode = IdField[DocumentId, ProductdocumentRow](_path, "documentnode", None, None, x => x.documentnode, (row, value) => row.copy(documentnode = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductdocumentRow]] =
       List[FieldLike[?, ProductdocumentRow]](fields.productid, fields.modifieddate, fields.documentnode)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

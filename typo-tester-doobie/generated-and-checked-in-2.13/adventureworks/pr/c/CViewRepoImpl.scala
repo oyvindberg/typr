@@ -6,16 +6,12 @@
 package adventureworks.pr.c
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class CViewRepoImpl extends CViewRepo {
-  override def select: SelectBuilder[CViewFields, CViewRow] = {
-    SelectBuilderSql(""""pr"."c"""", CViewFields.structure, CViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, CViewRow] = {
-    sql"""select "id", "cultureid", "name", "modifieddate"::text from "pr"."c"""".query(CViewRow.read).stream
-  }
+  def select: SelectBuilder[CViewFields, CViewRow] = SelectBuilder.of(""""pr"."c"""", CViewFields.structure, CViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, CViewRow] = sql"""select "id", "cultureid", "name", "modifieddate"::text from "pr"."c"""".query(CViewRow.read).stream
 }

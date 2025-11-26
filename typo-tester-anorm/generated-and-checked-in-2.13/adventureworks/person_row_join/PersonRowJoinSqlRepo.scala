@@ -8,5 +8,5 @@ package adventureworks.person_row_join
 import java.sql.Connection
 
 trait PersonRowJoinSqlRepo {
-  def apply()(implicit c: Connection): List[PersonRowJoinSqlRow]
+  def apply(implicit c: Connection): List[PersonRowJoinSqlRow]
 }

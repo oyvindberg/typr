@@ -5,13 +5,13 @@ import typo.internal.compat.*
 import typo.internal.metadb.OpenEnum
 
 sealed trait IdComputed {
-  def paramName: sc.Ident
+  def paramName: jvm.Ident
   def cols: NonEmptyList[ComputedColumn]
-  def tpe: sc.Type
-  final def param: sc.Param = sc.Param(paramName, tpe, None)
+  def tpe: jvm.Type
+  final def param: jvm.Param[jvm.Type] = jvm.Param(paramName, tpe)
 
-  final lazy val userDefinedColTypes: List[sc.Type] =
-    cols.toList.collect { case x if sc.Type.containsUserDefined(x.tpe) => x }.map(_.tpe).distinctByCompat(sc.Type.base)
+  final lazy val userDefinedColTypes: List[jvm.Type] =
+    cols.toList.collect { case x if jvm.Type.containsUserDefined(x.tpe) => x }.map(_.tpe).distinctByCompat(jvm.Type.base)
 }
 
 object IdComputed {
@@ -19,35 +19,35 @@ object IdComputed {
   sealed trait Unary extends IdComputed {
     def col: ComputedColumn
     override def cols: NonEmptyList[ComputedColumn] = NonEmptyList(col, Nil)
-    override def paramName: sc.Ident = col.name
+    override def paramName: jvm.Ident = col.name
   }
 
   // normal generated code for a normal single-column id
-  case class UnaryNormal(col: ComputedColumn, tpe: sc.Type.Qualified) extends Unary {
-    def underlying: sc.Type = col.tpe
+  case class UnaryNormal(col: ComputedColumn, tpe: jvm.Type.Qualified) extends Unary {
+    def underlying: jvm.Type = col.tpe
   }
 
   // normal generated code for a normal single-column id, we won't generate extra code for this usage of it
-  case class UnaryInherited(col: ComputedColumn, tpe: sc.Type) extends Unary {
-    def underlying: sc.Type = col.tpe
+  case class UnaryInherited(col: ComputedColumn, tpe: jvm.Type) extends Unary {
+    def underlying: jvm.Type = col.tpe
   }
 
   // // user specified they don't want a primary key type for this
-  case class UnaryNoIdType(col: ComputedColumn, tpe: sc.Type) extends Unary {
-    def underlying: sc.Type = col.tpe
+  case class UnaryNoIdType(col: ComputedColumn, tpe: jvm.Type) extends Unary {
+    def underlying: jvm.Type = col.tpe
   }
 
   case class UnaryOpenEnum(
       col: ComputedColumn,
-      tpe: sc.Type.Qualified,
-      underlying: sc.Type,
+      tpe: jvm.Type.Qualified,
+      underlying: jvm.Type,
       openEnum: OpenEnum
   ) extends Unary
 
   // if user supplied a type override for an id column
-  case class UnaryUserSpecified(col: ComputedColumn, tpe: sc.Type) extends Unary {
-    override def paramName: sc.Ident = col.name
+  case class UnaryUserSpecified(col: ComputedColumn, tpe: jvm.Type) extends Unary {
+    override def paramName: jvm.Ident = col.name
   }
 
-  case class Composite(cols: NonEmptyList[ComputedColumn], tpe: sc.Type.Qualified, paramName: sc.Ident) extends IdComputed
+  case class Composite(cols: NonEmptyList[ComputedColumn], tpe: jvm.Type.Qualified, paramName: jvm.Ident) extends IdComputed
 }

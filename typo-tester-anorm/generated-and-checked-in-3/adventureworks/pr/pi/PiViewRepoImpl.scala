@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.pi
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PiViewRepoImpl extends PiViewRepo {
-  override def select: SelectBuilder[PiViewFields, PiViewRow] = {
-    SelectBuilderSql(""""pr"."pi"""", PiViewFields.structure, PiViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[PiViewRow] = {
+  def select: SelectBuilder[PiViewFields, PiViewRow] = SelectBuilder.of(""""pr"."pi"""", PiViewFields.structure, PiViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[PiViewRow] = {
     SQL"""select "id", "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
-          from "pr"."pi"
-       """.as(PiViewRow.rowParser(1).*)
+    from "pr"."pi"
+    """.as(PiViewRow.rowParser(1).*)
   }
 }

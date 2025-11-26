@@ -6,16 +6,12 @@
 package adventureworks.pe.bec
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class BecViewRepoImpl extends BecViewRepo {
-  override def select: SelectBuilder[BecViewFields, BecViewRow] = {
-    SelectBuilderSql(""""pe"."bec"""", BecViewFields.structure, BecViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, BecViewRow] = {
-    sql"""select "id", "businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate"::text from "pe"."bec"""".query(BecViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[BecViewFields, BecViewRow] = SelectBuilder.of(""""pe"."bec"""", BecViewFields.structure, BecViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, BecViewRow] = sql"""select "id", "businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate"::text from "pe"."bec"""".query(BecViewRow.jdbcDecoder).selectStream()
 }

@@ -7,6 +7,7 @@ package adventureworks.sales.personcreditcard
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
@@ -18,52 +19,55 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `sales.personcreditcard` which has not been persisted yet */
 case class PersoncreditcardRowUnsaved(
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
-      Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
+   * Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]]
+   */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): PersoncreditcardRow =
-    PersoncreditcardRow(
-      businessentityid = businessentityid,
-      creditcardid = creditcardid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): PersoncreditcardRow = new PersoncreditcardRow(businessentityid = businessentityid, creditcardid = creditcardid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object PersoncreditcardRowUnsaved {
-  given jsonDecoder: JsonDecoder[PersoncreditcardRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val creditcardid = jsonObj.get("creditcardid").toRight("Missing field 'creditcardid'").flatMap(_.as(using CustomCreditcardId.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (businessentityid.isRight && creditcardid.isRight && modifieddate.isRight)
-      Right(PersoncreditcardRowUnsaved(businessentityid = businessentityid.toOption.get, creditcardid = creditcardid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, creditcardid, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[PersoncreditcardRowUnsaved] = new JsonEncoder[PersoncreditcardRowUnsaved] {
-    override def unsafeEncode(a: PersoncreditcardRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""creditcardid":""")
-      CustomCreditcardId.jsonEncoder.unsafeEncode(a.creditcardid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  given jsonDecoder: JsonDecoder[PersoncreditcardRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val creditcardid = jsonObj.get("creditcardid").toRight("Missing field 'creditcardid'").flatMap(_.as(using CustomCreditcardId.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (businessentityid.isRight && creditcardid.isRight && modifieddate.isRight)
+        Right(PersoncreditcardRowUnsaved(businessentityid = businessentityid.toOption.get, creditcardid = creditcardid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, creditcardid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[PersoncreditcardRowUnsaved] = Text.instance[PersoncreditcardRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    /* user-picked */ CustomCreditcardId.text.unsafeEncode(row.creditcardid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[PersoncreditcardRowUnsaved] = {
+    new JsonEncoder[PersoncreditcardRowUnsaved] {
+      override def unsafeEncode(a: PersoncreditcardRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""creditcardid":""")
+        CustomCreditcardId.jsonEncoder.unsafeEncode(a.creditcardid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[PersoncreditcardRowUnsaved] = {
+    Text.instance[PersoncreditcardRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      /* user-picked */ CustomCreditcardId.pgText.unsafeEncode(row.creditcardid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

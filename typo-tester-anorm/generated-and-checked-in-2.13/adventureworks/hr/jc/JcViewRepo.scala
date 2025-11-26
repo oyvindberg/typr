@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait JcViewRepo {
   def select: SelectBuilder[JcViewFields, JcViewRow]
+
   def selectAll(implicit c: Connection): List[JcViewRow]
 }

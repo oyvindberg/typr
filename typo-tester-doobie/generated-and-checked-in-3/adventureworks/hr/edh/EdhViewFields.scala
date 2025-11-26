@@ -28,11 +28,11 @@ trait EdhViewFields {
 
 object EdhViewFields {
   lazy val structure: Relation[EdhViewFields, EdhViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[EdhViewFields, EdhViewRow] {
-  
+
     override lazy val fields: EdhViewFields = new EdhViewFields {
       override def id = Field[BusinessentityId, EdhViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, EdhViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -42,12 +42,11 @@ object EdhViewFields {
       override def enddate = OptField[TypoLocalDate, EdhViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
       override def modifieddate = Field[TypoLocalDateTime, EdhViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, EdhViewRow]] =
       List[FieldLike[?, EdhViewRow]](fields.id, fields.businessentityid, fields.departmentid, fields.shiftid, fields.startdate, fields.enddate, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -21,22 +21,21 @@ trait CrcViewFields {
 
 object CrcViewFields {
   lazy val structure: Relation[CrcViewFields, CrcViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CrcViewFields, CrcViewRow] {
-  
+
     override lazy val fields: CrcViewFields = new CrcViewFields {
       override def countryregioncode = Field[CountryregionId, CrcViewRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))
       override def currencycode = Field[CurrencyId, CrcViewRow](_path, "currencycode", None, None, x => x.currencycode, (row, value) => row.copy(currencycode = value))
       override def modifieddate = Field[TypoLocalDateTime, CrcViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CrcViewRow]] =
       List[FieldLike[?, CrcViewRow]](fields.countryregioncode, fields.currencycode, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

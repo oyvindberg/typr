@@ -6,6 +6,7 @@
 package adventureworks.production.billofmaterials
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
@@ -17,83 +18,90 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.billofmaterials` which has not been persisted yet */
 case class BillofmaterialsRowUnsaved(
   /** Parent product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]]
-      Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
-      Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid:  ((productassemblyid <> componentid)) */
-  productassemblyid: Option[ProductId],
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
+   * Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid:  ((productassemblyid <> componentid))
+   */
+  productassemblyid: Option[ProductId] = None,
   /** Component identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]]
-      Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid:  ((productassemblyid <> componentid)) */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   * Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid:  ((productassemblyid <> componentid))
+   */
   componentid: ProductId,
   /** Date the component stopped being used in the assembly item.
-      Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL))) */
-  enddate: Option[TypoLocalDateTime],
+   * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL)))
+   */
+  enddate: Option[TypoLocalDateTime] = None,
   /** Standard code identifying the unit of measure for the quantity.
-      Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
+   * Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]]
+   */
   unitmeasurecode: UnitmeasureId,
   /** Indicates the depth the component is from its parent (AssemblyID).
-      Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1)))) */
+   * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
+   */
   bomlevel: TypoShort,
   /** Default: nextval('production.billofmaterials_billofmaterialsid_seq'::regclass)
-      Primary key for BillOfMaterials records. */
-  billofmaterialsid: Defaulted[Int] = Defaulted.UseDefault,
+   * Primary key for BillOfMaterials records.
+   */
+  billofmaterialsid: Defaulted[Int] = new UseDefault(),
   /** Default: now()
-      Date the component started being used in the assembly item.
-      Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL))) */
-  startdate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+   * Date the component started being used in the assembly item.
+   * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL)))
+   */
+  startdate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: 1.00
-      Quantity of the component needed to create the assembly.
-      Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
-      Constraint CK_BillOfMaterials_PerAssemblyQty affecting columns perassemblyqty:  ((perassemblyqty >= 1.00)) */
-  perassemblyqty: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Quantity of the component needed to create the assembly.
+   * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
+   * Constraint CK_BillOfMaterials_PerAssemblyQty affecting columns perassemblyqty:  ((perassemblyqty >= 1.00))
+   */
+  perassemblyqty: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(billofmaterialsidDefault: => Int, startdateDefault: => TypoLocalDateTime, perassemblyqtyDefault: => BigDecimal, modifieddateDefault: => TypoLocalDateTime): BillofmaterialsRow =
-    BillofmaterialsRow(
+  def toRow(
+    billofmaterialsidDefault: => Int,
+    startdateDefault: => TypoLocalDateTime,
+    perassemblyqtyDefault: => BigDecimal,
+    modifieddateDefault: => TypoLocalDateTime
+  ): BillofmaterialsRow = {
+    new BillofmaterialsRow(
+      billofmaterialsid = billofmaterialsid.getOrElse(billofmaterialsidDefault),
       productassemblyid = productassemblyid,
       componentid = componentid,
+      startdate = startdate.getOrElse(startdateDefault),
       enddate = enddate,
       unitmeasurecode = unitmeasurecode,
       bomlevel = bomlevel,
-      billofmaterialsid = billofmaterialsid match {
-                            case Defaulted.UseDefault => billofmaterialsidDefault
-                            case Defaulted.Provided(value) => value
-                          },
-      startdate = startdate match {
-                    case Defaulted.UseDefault => startdateDefault
-                    case Defaulted.Provided(value) => value
-                  },
-      perassemblyqty = perassemblyqty match {
-                         case Defaulted.UseDefault => perassemblyqtyDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      perassemblyqty = perassemblyqty.getOrElse(perassemblyqtyDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object BillofmaterialsRowUnsaved {
   given decoder: Decoder[BillofmaterialsRowUnsaved] = Decoder.forProduct9[BillofmaterialsRowUnsaved, Option[ProductId], ProductId, Option[TypoLocalDateTime], UnitmeasureId, TypoShort, Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[BigDecimal], Defaulted[TypoLocalDateTime]]("productassemblyid", "componentid", "enddate", "unitmeasurecode", "bomlevel", "billofmaterialsid", "startdate", "perassemblyqty", "modifieddate")(BillofmaterialsRowUnsaved.apply)(using Decoder.decodeOption(using ProductId.decoder), ProductId.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), UnitmeasureId.decoder, TypoShort.decoder, Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using Decoder.decodeBigDecimal), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[BillofmaterialsRowUnsaved] = Encoder.forProduct9[BillofmaterialsRowUnsaved, Option[ProductId], ProductId, Option[TypoLocalDateTime], UnitmeasureId, TypoShort, Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[BigDecimal], Defaulted[TypoLocalDateTime]]("productassemblyid", "componentid", "enddate", "unitmeasurecode", "bomlevel", "billofmaterialsid", "startdate", "perassemblyqty", "modifieddate")(x => (x.productassemblyid, x.componentid, x.enddate, x.unitmeasurecode, x.bomlevel, x.billofmaterialsid, x.startdate, x.perassemblyqty, x.modifieddate))(using Encoder.encodeOption(using ProductId.encoder), ProductId.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), UnitmeasureId.encoder, TypoShort.encoder, Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using Encoder.encodeBigDecimal), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[BillofmaterialsRowUnsaved] = Text.instance[BillofmaterialsRowUnsaved]{ (row, sb) =>
-    Text.option(using ProductId.text).unsafeEncode(row.productassemblyid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.componentid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoLocalDateTime.text).unsafeEncode(row.enddate, sb)
-    sb.append(Text.DELIMETER)
-    UnitmeasureId.text.unsafeEncode(row.unitmeasurecode, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.bomlevel, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.billofmaterialsid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.startdate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.bigDecimalInstance).unsafeEncode(row.perassemblyqty, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[BillofmaterialsRowUnsaved] = {
+    Text.instance[BillofmaterialsRowUnsaved]{ (row, sb) =>
+      Text.option(using ProductId.pgText).unsafeEncode(row.productassemblyid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.componentid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoLocalDateTime.pgText).unsafeEncode(row.enddate, sb)
+      sb.append(Text.DELIMETER)
+      UnitmeasureId.pgText.unsafeEncode(row.unitmeasurecode, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.bomlevel, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.billofmaterialsid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.startdate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.bigDecimalInstance).unsafeEncode(row.perassemblyqty, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

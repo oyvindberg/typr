@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `purchasing.shipmethod` */
-case class ShipmethodId(value: Int) extends AnyVal
+case class ShipmethodId(value: Int) extends scala.AnyVal
+
 object ShipmethodId {
   given arrayColumn: Column[Array[ShipmethodId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[ShipmethodId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[ShipmethodId, Int] = Bijection[ShipmethodId, Int](_.value)(ShipmethodId.apply)
+
+  given bijection: Bijection[ShipmethodId, Int] = Bijection.apply[ShipmethodId, Int](_.value)(ShipmethodId.apply)
+
   given column: Column[ShipmethodId] = Column.columnToInt.map(ShipmethodId.apply)
-  given parameterMetadata: ParameterMetaData[ShipmethodId] = new ParameterMetaData[ShipmethodId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[ShipmethodId] = {
+    new ParameterMetaData[ShipmethodId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[ShipmethodId] = {
+    new Text[ShipmethodId] {
+      override def unsafeEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[ShipmethodId] = Reads.IntReads.map(ShipmethodId.apply)
-  given text: Text[ShipmethodId] = new Text[ShipmethodId] {
-    override def unsafeEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShipmethodId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[ShipmethodId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[ShipmethodId] = Writes.IntWrites.contramap(_.value)
 }

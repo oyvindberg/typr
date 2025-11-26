@@ -22,22 +22,28 @@ case class PersonphoneId(
   phonenumber: Phone,
   phonenumbertypeid: PhonenumbertypeId
 )
+
 object PersonphoneId {
-  given reads: Reads[PersonphoneId] = Reads[PersonphoneId](json => JsResult.fromTry(
-      Try(
-        PersonphoneId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          phonenumber = json.\("phonenumber").as(Phone.reads),
-          phonenumbertypeid = json.\("phonenumbertypeid").as(PhonenumbertypeId.reads)
+  given reads: Reads[PersonphoneId] = {
+    Reads[PersonphoneId](json => JsResult.fromTry(
+        Try(
+          PersonphoneId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            phonenumber = json.\("phonenumber").as(Phone.reads),
+            phonenumbertypeid = json.\("phonenumbertypeid").as(PhonenumbertypeId.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[PersonphoneId] = OWrites[PersonphoneId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "phonenumber" -> Phone.writes.writes(o.phonenumber),
-      "phonenumbertypeid" -> PhonenumbertypeId.writes.writes(o.phonenumbertypeid)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[PersonphoneId] = {
+    OWrites[PersonphoneId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "phonenumber" -> Phone.writes.writes(o.phonenumber),
+        "phonenumbertypeid" -> PhonenumbertypeId.writes.writes(o.phonenumbertypeid)
+      ))
+    )
+  }
 }

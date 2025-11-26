@@ -24,16 +24,20 @@ case class CrViewRow(
 
 object CrViewRow {
   given decoder: Decoder[CrViewRow] = Decoder.forProduct3[CrViewRow, CountryregionId, Name, TypoLocalDateTime]("countryregioncode", "name", "modifieddate")(CrViewRow.apply)(using CountryregionId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[CrViewRow] = Encoder.forProduct3[CrViewRow, CountryregionId, Name, TypoLocalDateTime]("countryregioncode", "name", "modifieddate")(x => (x.countryregioncode, x.name, x.modifieddate))(using CountryregionId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[CrViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    CrViewRow(
-      countryregioncode = arr(0).asInstanceOf[CountryregionId],
-          name = arr(1).asInstanceOf[Name],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
-    )
+
+  given read: Read[CrViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      CrViewRow(
+        countryregioncode = arr(0).asInstanceOf[CountryregionId],
+            name = arr(1).asInstanceOf[Name],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

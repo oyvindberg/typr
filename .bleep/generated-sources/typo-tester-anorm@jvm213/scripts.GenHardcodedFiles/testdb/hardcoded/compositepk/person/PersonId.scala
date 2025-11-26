@@ -19,20 +19,26 @@ case class PersonId(
   one: Long,
   two: Option[String]
 )
+
 object PersonId {
-  implicit lazy val reads: Reads[PersonId] = Reads[PersonId](json => JsResult.fromTry(
-      Try(
-        PersonId(
-          one = json.\("one").as(Reads.LongReads),
-          two = json.\("two").toOption.map(_.as(Reads.StringReads))
+  implicit lazy val reads: Reads[PersonId] = {
+    Reads[PersonId](json => JsResult.fromTry(
+        Try(
+          PersonId(
+            one = json.\("one").as(Reads.LongReads),
+            two = json.\("two").toOption.map(_.as(Reads.StringReads))
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[PersonId] = OWrites[PersonId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "one" -> Writes.LongWrites.writes(o.one),
-      "two" -> Writes.OptionWrites(Writes.StringWrites).writes(o.two)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[PersonId] = {
+    OWrites[PersonId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "one" -> Writes.LongWrites.writes(o.one),
+        "two" -> Writes.OptionWrites(Writes.StringWrites).writes(o.two)
+      ))
+    )
+  }
 }

@@ -11,7 +11,7 @@ class IdentityTest extends AnyFunSuite with TypeCheckedTripleEquals {
 
   test("works") {
     withConnection {
-      val unsaved = IdentityTestRowUnsaved(IdentityTestId("a"), Defaulted.UseDefault)
+      val unsaved = IdentityTestRowUnsaved(IdentityTestId("a"), Defaulted.UseDefault())
       for {
         inserted <- repo.insert(unsaved)
         upserted <- repo.upsert(inserted)

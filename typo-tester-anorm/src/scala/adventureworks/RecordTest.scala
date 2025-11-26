@@ -22,7 +22,7 @@ class RecordTest extends AnyFunSuite with TypeCheckedTripleEquals {
       val employeeRow =
         testInsert.humanresourcesEmployee(personRow.businessentityid, gender = "M", maritalstatus = "M", birthdate = TypoLocalDate("1998-01-01"), hiredate = TypoLocalDate("1997-01-01"))
       testInsert.salesSalesperson(employeeRow.businessentityid): @nowarn
-      personRowJoinSqlRepo() foreach println
+      personRowJoinSqlRepo.apply foreach println
     }
   }
 }

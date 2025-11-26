@@ -18,22 +18,33 @@ import typo.dsl.Bijection
 case class TypoHStore(value: Map[String, String])
 
 object TypoHStore {
-  implicit lazy val bijection: Bijection[TypoHStore, Map[String, String]] = Bijection[TypoHStore, Map[String, String]](_.value)(TypoHStore.apply)
+  implicit lazy val bijection: Bijection[TypoHStore, Map[String, String]] = Bijection.apply[TypoHStore, Map[String, String]](_.value)(TypoHStore.apply)
+
   implicit lazy val decoder: Decoder[TypoHStore] = Decoder[Map[String, String]].map(TypoHStore.apply)
+
   implicit lazy val encoder: Encoder[TypoHStore] = Encoder[Map[String, String]].contramap(_.value)
-  implicit lazy val get: Get[TypoHStore] = Get.Advanced.other[java.util.Map[?, ?]](NonEmptyList.one("hstore"))
-    .map(v => {
-                val b = Map.newBuilder[String, String]
-                v.forEach { case (k, v) => b += k.asInstanceOf[String] -> v.asInstanceOf[String]}
-                TypoHStore(b.result())
-              })
-  implicit lazy val put: Put[TypoHStore] = Put.Advanced.other[java.util.Map[String, String]](NonEmptyList.one("hstore")).contramap(v => {
-                                                                                                 val b = new HashMap[String, String]
-                                                                                                 v.value.foreach { case (k, v) => b.put(k, v)}
-                                                                                                 b
-                                                                                               })
-  implicit lazy val text: Text[TypoHStore] = new Text[TypoHStore] {
-    override def unsafeEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
-    override def unsafeArrayEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
+
+  implicit lazy val get: Get[TypoHStore] = {
+    Get.Advanced.other[java.util.Map[?, ?]](NonEmptyList.one("hstore"))
+      .map(v => {
+                  val b = Map.newBuilder[String, String]
+                  v.forEach { case (k, v) => b += k.asInstanceOf[String] -> v.asInstanceOf[String]}
+                  TypoHStore(b.result())
+                })
+  }
+
+  implicit lazy val pgText: Text[TypoHStore] = {
+    new Text[TypoHStore] {
+      override def unsafeEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
+      override def unsafeArrayEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
+    }
+  }
+
+  implicit lazy val put: Put[TypoHStore] = {
+    Put.Advanced.other[java.util.Map[String, String]](NonEmptyList.one("hstore")).contramap(v => {
+      val b = new HashMap[String, String]
+      v.value.foreach { case (k, v) => b.put(k, v)}
+      b
+    })
   }
 }

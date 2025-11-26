@@ -14,7 +14,9 @@ case class TestUtdanningstilbudId(
   organisasjonskode: TestOrganisasjonId,
   utdanningsmulighetKode: String
 )
+
 object TestUtdanningstilbudId {
   implicit lazy val decoder: Decoder[TestUtdanningstilbudId] = Decoder.forProduct2[TestUtdanningstilbudId, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(TestUtdanningstilbudId.apply)(TestOrganisasjonId.decoder, Decoder.decodeString)
+
   implicit lazy val encoder: Encoder[TestUtdanningstilbudId] = Encoder.forProduct2[TestUtdanningstilbudId, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(x => (x.organisasjonskode, x.utdanningsmulighetKode))(TestOrganisasjonId.encoder, Encoder.encodeString)
 }

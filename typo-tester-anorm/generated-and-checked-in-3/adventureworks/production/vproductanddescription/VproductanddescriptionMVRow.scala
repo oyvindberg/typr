@@ -35,36 +35,44 @@ case class VproductanddescriptionMVRow(
 )
 
 object VproductanddescriptionMVRow {
-  given reads: Reads[VproductanddescriptionMVRow] = Reads[VproductanddescriptionMVRow](json => JsResult.fromTry(
-      Try(
-        VproductanddescriptionMVRow(
-          productid = json.\("productid").as(ProductId.reads),
-          name = json.\("name").as(Name.reads),
-          productmodel = json.\("productmodel").as(Name.reads),
-          cultureid = json.\("cultureid").as(CultureId.reads),
-          description = json.\("description").as(Reads.StringReads)
+  given reads: Reads[VproductanddescriptionMVRow] = {
+    Reads[VproductanddescriptionMVRow](json => JsResult.fromTry(
+        Try(
+          VproductanddescriptionMVRow(
+            productid = json.\("productid").as(ProductId.reads),
+            name = json.\("name").as(Name.reads),
+            productmodel = json.\("productmodel").as(Name.reads),
+            cultureid = json.\("cultureid").as(CultureId.reads),
+            description = json.\("description").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VproductanddescriptionMVRow] = RowParser[VproductanddescriptionMVRow] { row =>
-    Success(
-      VproductanddescriptionMVRow(
-        productid = row(idx + 0)(using ProductId.column),
-        name = row(idx + 1)(using Name.column),
-        productmodel = row(idx + 2)(using Name.column),
-        cultureid = row(idx + 3)(using CultureId.column),
-        description = row(idx + 4)(using Column.columnToString)
-      )
+      ),
     )
   }
-  given writes: OWrites[VproductanddescriptionMVRow] = OWrites[VproductanddescriptionMVRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "name" -> Name.writes.writes(o.name),
-      "productmodel" -> Name.writes.writes(o.productmodel),
-      "cultureid" -> CultureId.writes.writes(o.cultureid),
-      "description" -> Writes.StringWrites.writes(o.description)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VproductanddescriptionMVRow] = {
+    RowParser[VproductanddescriptionMVRow] { row =>
+      Success(
+        VproductanddescriptionMVRow(
+          productid = row(idx + 0)(using ProductId.column),
+          name = row(idx + 1)(using Name.column),
+          productmodel = row(idx + 2)(using Name.column),
+          cultureid = row(idx + 3)(using CultureId.column),
+          description = row(idx + 4)(using Column.columnToString)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[VproductanddescriptionMVRow] = {
+    OWrites[VproductanddescriptionMVRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "name" -> Name.writes.writes(o.name),
+        "productmodel" -> Name.writes.writes(o.productmodel),
+        "cultureid" -> CultureId.writes.writes(o.cultureid),
+        "description" -> Writes.StringWrites.writes(o.description)
+      ))
+    )
+  }
 }

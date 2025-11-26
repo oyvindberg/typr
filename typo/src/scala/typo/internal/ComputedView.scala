@@ -5,15 +5,15 @@ import typo.internal.analysis.ParsedName
 import typo.internal.rewriteDependentData.Eval
 
 case class ComputedView(
+    lang: Lang,
     logger: TypoLogger,
     view: db.View,
     naming: Naming,
     typeMapperDb: TypeMapperDb,
-    scalaTypeMapper: TypeMapperScala,
+    scalaTypeMapper: TypeMapperJvm,
     eval: Eval[db.RelationName, HasSource],
     enableFieldValue: Boolean,
-    enableDsl: Boolean,
-    dialect: Dialect
+    enableDsl: Boolean
 ) extends HasSource {
   val source: Source.View = Source.View(view.name, view.isMaterialized)
 
@@ -35,10 +35,10 @@ case class ComputedView(
       )
     }
 
-  def inferType(colName: db.ColName): sc.Type = {
+  def inferType(colName: db.ColName): jvm.Type = {
     val (col, parsedName) = colsByName(colName)
-    val typeFromFk: Option[sc.Type] =
-      findTypeFromFk(logger, source, col.name, pointsToByColName(col.name), eval.asMaybe, dialect)(otherColName => Some(inferType(otherColName)))
+    val typeFromFk: Option[jvm.Type] =
+      findTypeFromFk(logger, source, col.name, pointsToByColName(col.name), eval.asMaybe, lang)(otherColName => Some(inferType(otherColName)))
     scalaTypeMapper.sqlFile(parsedName.overriddenType.orElse(typeFromFk), col.tpe, col.nullability)
   }
 
@@ -46,14 +46,9 @@ case class ComputedView(
 
   val repoMethods: NonEmptyList[RepoMethod] = {
     val maybeSelectByFieldValues = for {
-      fieldOrIdValueName <- names.FieldOrIdValueName
-      fieldValueName <- names.FieldValueName
+      fieldValueName <- names.FieldOrIdValueName
     } yield {
-      val fieldValuesParam = sc.Param(
-        sc.Ident("fieldValues"),
-        TypesScala.List.of(fieldOrIdValueName.of(sc.Type.Wildcard)),
-        None
-      )
+      val fieldValuesParam = jvm.Param(jvm.Ident("fieldValues"), lang.ListType.tpe.of(fieldValueName.of(jvm.Type.Wildcard)))
       RepoMethod.SelectByFieldValues(view.name, cols, fieldValueName, fieldValuesParam, names.RowName)
     }
     val maybeSelectBuilder = for {

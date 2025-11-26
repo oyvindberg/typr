@@ -41,54 +41,62 @@ case class VproductmodelinstructionsViewRow(
 )
 
 object VproductmodelinstructionsViewRow {
-  given reads: Reads[VproductmodelinstructionsViewRow] = Reads[VproductmodelinstructionsViewRow](json => JsResult.fromTry(
-      Try(
-        VproductmodelinstructionsViewRow(
-          productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
-          name = json.\("name").as(Name.reads),
-          instructions = json.\("instructions").toOption.map(_.as(Reads.StringReads)),
-          locationID = json.\("LocationID").toOption.map(_.as(Reads.IntReads)),
-          setupHours = json.\("SetupHours").toOption.map(_.as(Reads.bigDecReads)),
-          machineHours = json.\("MachineHours").toOption.map(_.as(Reads.bigDecReads)),
-          laborHours = json.\("LaborHours").toOption.map(_.as(Reads.bigDecReads)),
-          lotSize = json.\("LotSize").toOption.map(_.as(Reads.IntReads)),
-          step = json.\("Step").toOption.map(_.as(Reads.StringReads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[VproductmodelinstructionsViewRow] = {
+    Reads[VproductmodelinstructionsViewRow](json => JsResult.fromTry(
+        Try(
+          VproductmodelinstructionsViewRow(
+            productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
+            name = json.\("name").as(Name.reads),
+            instructions = json.\("instructions").toOption.map(_.as(Reads.StringReads)),
+            locationID = json.\("LocationID").toOption.map(_.as(Reads.IntReads)),
+            setupHours = json.\("SetupHours").toOption.map(_.as(Reads.bigDecReads)),
+            machineHours = json.\("MachineHours").toOption.map(_.as(Reads.bigDecReads)),
+            laborHours = json.\("LaborHours").toOption.map(_.as(Reads.bigDecReads)),
+            lotSize = json.\("LotSize").toOption.map(_.as(Reads.IntReads)),
+            step = json.\("Step").toOption.map(_.as(Reads.StringReads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VproductmodelinstructionsViewRow] = RowParser[VproductmodelinstructionsViewRow] { row =>
-    Success(
-      VproductmodelinstructionsViewRow(
-        productmodelid = row(idx + 0)(using ProductmodelId.column),
-        name = row(idx + 1)(using Name.column),
-        instructions = row(idx + 2)(using Column.columnToOption(using Column.columnToString)),
-        locationID = row(idx + 3)(using Column.columnToOption(using Column.columnToInt)),
-        setupHours = row(idx + 4)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
-        machineHours = row(idx + 5)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
-        laborHours = row(idx + 6)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
-        lotSize = row(idx + 7)(using Column.columnToOption(using Column.columnToInt)),
-        step = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
-        rowguid = row(idx + 9)(using TypoUUID.column),
-        modifieddate = row(idx + 10)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[VproductmodelinstructionsViewRow] = OWrites[VproductmodelinstructionsViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
-      "name" -> Name.writes.writes(o.name),
-      "instructions" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.instructions),
-      "LocationID" -> Writes.OptionWrites(using Writes.IntWrites).writes(o.locationID),
-      "SetupHours" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.setupHours),
-      "MachineHours" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.machineHours),
-      "LaborHours" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.laborHours),
-      "LotSize" -> Writes.OptionWrites(using Writes.IntWrites).writes(o.lotSize),
-      "Step" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.step),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VproductmodelinstructionsViewRow] = {
+    RowParser[VproductmodelinstructionsViewRow] { row =>
+      Success(
+        VproductmodelinstructionsViewRow(
+          productmodelid = row(idx + 0)(using ProductmodelId.column),
+          name = row(idx + 1)(using Name.column),
+          instructions = row(idx + 2)(using Column.columnToOption(using Column.columnToString)),
+          locationID = row(idx + 3)(using Column.columnToOption(using Column.columnToInt)),
+          setupHours = row(idx + 4)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
+          machineHours = row(idx + 5)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
+          laborHours = row(idx + 6)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
+          lotSize = row(idx + 7)(using Column.columnToOption(using Column.columnToInt)),
+          step = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
+          rowguid = row(idx + 9)(using TypoUUID.column),
+          modifieddate = row(idx + 10)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[VproductmodelinstructionsViewRow] = {
+    OWrites[VproductmodelinstructionsViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
+        "name" -> Name.writes.writes(o.name),
+        "instructions" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.instructions),
+        "LocationID" -> Writes.OptionWrites(using Writes.IntWrites).writes(o.locationID),
+        "SetupHours" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.setupHours),
+        "MachineHours" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.machineHours),
+        "LaborHours" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.laborHours),
+        "LotSize" -> Writes.OptionWrites(using Writes.IntWrites).writes(o.lotSize),
+        "Step" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.step),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

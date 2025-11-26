@@ -20,20 +20,26 @@ case class TestUtdanningstilbudId(
   organisasjonskode: TestOrganisasjonId,
   utdanningsmulighetKode: String
 )
+
 object TestUtdanningstilbudId {
-  given reads: Reads[TestUtdanningstilbudId] = Reads[TestUtdanningstilbudId](json => JsResult.fromTry(
-      Try(
-        TestUtdanningstilbudId(
-          organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads),
-          utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+  given reads: Reads[TestUtdanningstilbudId] = {
+    Reads[TestUtdanningstilbudId](json => JsResult.fromTry(
+        Try(
+          TestUtdanningstilbudId(
+            organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads),
+            utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[TestUtdanningstilbudId] = OWrites[TestUtdanningstilbudId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode),
-      "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[TestUtdanningstilbudId] = {
+    OWrites[TestUtdanningstilbudId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode),
+        "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
+      ))
+    )
+  }
 }

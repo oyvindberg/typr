@@ -15,7 +15,9 @@ case class EmployeepayhistoryId(
   businessentityid: BusinessentityId,
   ratechangedate: TypoLocalDateTime
 )
+
 object EmployeepayhistoryId {
   implicit lazy val decoder: Decoder[EmployeepayhistoryId] = Decoder.forProduct2[EmployeepayhistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "ratechangedate")(EmployeepayhistoryId.apply)(BusinessentityId.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[EmployeepayhistoryId] = Encoder.forProduct2[EmployeepayhistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "ratechangedate")(x => (x.businessentityid, x.ratechangedate))(BusinessentityId.encoder, TypoLocalDateTime.encoder)
 }

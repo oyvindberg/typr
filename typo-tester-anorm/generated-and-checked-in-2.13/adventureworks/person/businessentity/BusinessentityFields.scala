@@ -21,22 +21,21 @@ trait BusinessentityFields {
 
 object BusinessentityFields {
   lazy val structure: Relation[BusinessentityFields, BusinessentityRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[BusinessentityFields, BusinessentityRow] {
-  
+
     override lazy val fields: BusinessentityFields = new BusinessentityFields {
       override def businessentityid = IdField[BusinessentityId, BusinessentityRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def rowguid = Field[TypoUUID, BusinessentityRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, BusinessentityRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, BusinessentityRow]] =
       List[FieldLike[?, BusinessentityRow]](fields.businessentityid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

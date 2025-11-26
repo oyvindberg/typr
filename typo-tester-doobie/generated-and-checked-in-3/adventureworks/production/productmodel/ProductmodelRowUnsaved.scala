@@ -6,6 +6,7 @@
 package adventureworks.production.productmodel
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
@@ -19,50 +20,52 @@ case class ProductmodelRowUnsaved(
   /** Product model description. */
   name: Name,
   /** Detailed product catalog information in xml format. */
-  catalogdescription: Option[TypoXml],
+  catalogdescription: Option[TypoXml] = None,
   /** Manufacturing instructions in xml format. */
-  instructions: Option[TypoXml],
+  instructions: Option[TypoXml] = None,
   /** Default: nextval('production.productmodel_productmodelid_seq'::regclass)
-      Primary key for ProductModel records. */
-  productmodelid: Defaulted[ProductmodelId] = Defaulted.UseDefault,
+   * Primary key for ProductModel records.
+   */
+  productmodelid: Defaulted[ProductmodelId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productmodelidDefault: => ProductmodelId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductmodelRow =
-    ProductmodelRow(
+  def toRow(
+    productmodelidDefault: => ProductmodelId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductmodelRow = {
+    new ProductmodelRow(
+      productmodelid = productmodelid.getOrElse(productmodelidDefault),
       name = name,
       catalogdescription = catalogdescription,
       instructions = instructions,
-      productmodelid = productmodelid match {
-                         case Defaulted.UseDefault => productmodelidDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ProductmodelRowUnsaved {
   given decoder: Decoder[ProductmodelRowUnsaved] = Decoder.forProduct6[ProductmodelRowUnsaved, Name, Option[TypoXml], Option[TypoXml], Defaulted[ProductmodelId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "catalogdescription", "instructions", "productmodelid", "rowguid", "modifieddate")(ProductmodelRowUnsaved.apply)(using Name.decoder, Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), Defaulted.decoder(using ProductmodelId.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ProductmodelRowUnsaved] = Encoder.forProduct6[ProductmodelRowUnsaved, Name, Option[TypoXml], Option[TypoXml], Defaulted[ProductmodelId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "catalogdescription", "instructions", "productmodelid", "rowguid", "modifieddate")(x => (x.name, x.catalogdescription, x.instructions, x.productmodelid, x.rowguid, x.modifieddate))(using Name.encoder, Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), Defaulted.encoder(using ProductmodelId.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ProductmodelRowUnsaved] = Text.instance[ProductmodelRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.catalogdescription, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.instructions, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ProductmodelId.text).unsafeEncode(row.productmodelid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ProductmodelRowUnsaved] = {
+    Text.instance[ProductmodelRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.catalogdescription, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.instructions, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ProductmodelId.pgText).unsafeEncode(row.productmodelid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

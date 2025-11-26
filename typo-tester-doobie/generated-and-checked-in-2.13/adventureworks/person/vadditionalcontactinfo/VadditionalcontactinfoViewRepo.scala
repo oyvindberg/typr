@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait VadditionalcontactinfoViewRepo {
   def select: SelectBuilder[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow]
+
   def selectAll: Stream[ConnectionIO, VadditionalcontactinfoViewRow]
 }

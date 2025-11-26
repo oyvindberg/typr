@@ -16,20 +16,19 @@ trait TestOrganisasjonFields {
 
 object TestOrganisasjonFields {
   lazy val structure: Relation[TestOrganisasjonFields, TestOrganisasjonRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[TestOrganisasjonFields, TestOrganisasjonRow] {
-  
+
     override lazy val fields: TestOrganisasjonFields = new TestOrganisasjonFields {
       override def organisasjonskode = IdField[TestOrganisasjonId, TestOrganisasjonRow](_path, "organisasjonskode", None, None, x => x.organisasjonskode, (row, value) => row.copy(organisasjonskode = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, TestOrganisasjonRow]] =
       List[FieldLike[?, TestOrganisasjonRow]](fields.organisasjonskode)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

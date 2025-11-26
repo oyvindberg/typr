@@ -23,73 +23,110 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: humanresources.employeepayhistory
-    Employee pay history.
-    Composite primary key: businessentityid, ratechangedate */
+ * Employee pay history.
+ * Composite primary key: businessentityid, ratechangedate
+ */
 case class EmployeepayhistoryRow(
   /** Employee identification number. Foreign key to Employee.BusinessEntityID.
-      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
+   * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Date the change in pay is effective */
   ratechangedate: TypoLocalDateTime,
   /** Salary hourly rate.
-      Constraint CK_EmployeePayHistory_Rate affecting columns rate: (((rate >= 6.50) AND (rate <= 200.00))) */
+   * Constraint CK_EmployeePayHistory_Rate affecting columns rate: (((rate >= 6.50) AND (rate <= 200.00)))
+   */
   rate: BigDecimal,
   /** 1 = Salary received monthly, 2 = Salary received biweekly
-      Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency: ((payfrequency = ANY (ARRAY[1, 2]))) */
+   * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency: ((payfrequency = ANY (ARRAY[1, 2])))
+   */
   payfrequency: TypoShort,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: EmployeepayhistoryId = EmployeepayhistoryId(businessentityid, ratechangedate)
-   val id = compositeId
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): EmployeepayhistoryRowUnsaved =
-     EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate)
- }
+) {
+  def compositeId: EmployeepayhistoryId = new EmployeepayhistoryId(businessentityid, ratechangedate)
 
-object EmployeepayhistoryRow {
-  def apply(compositeId: EmployeepayhistoryId, rate: BigDecimal, payfrequency: TypoShort, modifieddate: TypoLocalDateTime) =
-    new EmployeepayhistoryRow(compositeId.businessentityid, compositeId.ratechangedate, rate, payfrequency, modifieddate)
-  implicit lazy val reads: Reads[EmployeepayhistoryRow] = Reads[EmployeepayhistoryRow](json => JsResult.fromTry(
-      Try(
-        EmployeepayhistoryRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          ratechangedate = json.\("ratechangedate").as(TypoLocalDateTime.reads),
-          rate = json.\("rate").as(Reads.bigDecReads),
-          payfrequency = json.\("payfrequency").as(TypoShort.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[EmployeepayhistoryRow] = RowParser[EmployeepayhistoryRow] { row =>
-    Success(
-      EmployeepayhistoryRow(
-        businessentityid = row(idx + 0)(BusinessentityId.column),
-        ratechangedate = row(idx + 1)(TypoLocalDateTime.column),
-        rate = row(idx + 2)(Column.columnToScalaBigDecimal),
-        payfrequency = row(idx + 3)(TypoShort.column),
-        modifieddate = row(idx + 4)(TypoLocalDateTime.column)
-      )
+  def id: EmployeepayhistoryId = this.compositeId
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): EmployeepayhistoryRowUnsaved = {
+    new EmployeepayhistoryRowUnsaved(
+      businessentityid,
+      ratechangedate,
+      rate,
+      payfrequency,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[EmployeepayhistoryRow] = Text.instance[EmployeepayhistoryRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.ratechangedate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.rate, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.payfrequency, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object EmployeepayhistoryRow {
+  def apply(
+    compositeId: EmployeepayhistoryId,
+    rate: BigDecimal,
+    payfrequency: TypoShort,
+    modifieddate: TypoLocalDateTime
+  ): EmployeepayhistoryRow = {
+    new EmployeepayhistoryRow(
+      compositeId.businessentityid,
+      compositeId.ratechangedate,
+      rate,
+      payfrequency,
+      modifieddate
+    )
   }
-  implicit lazy val writes: OWrites[EmployeepayhistoryRow] = OWrites[EmployeepayhistoryRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "ratechangedate" -> TypoLocalDateTime.writes.writes(o.ratechangedate),
-      "rate" -> Writes.BigDecimalWrites.writes(o.rate),
-      "payfrequency" -> TypoShort.writes.writes(o.payfrequency),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val pgText: Text[EmployeepayhistoryRow] = {
+    Text.instance[EmployeepayhistoryRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.ratechangedate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.rate, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.payfrequency, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[EmployeepayhistoryRow] = {
+    Reads[EmployeepayhistoryRow](json => JsResult.fromTry(
+        Try(
+          EmployeepayhistoryRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            ratechangedate = json.\("ratechangedate").as(TypoLocalDateTime.reads),
+            rate = json.\("rate").as(Reads.bigDecReads),
+            payfrequency = json.\("payfrequency").as(TypoShort.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[EmployeepayhistoryRow] = {
+    RowParser[EmployeepayhistoryRow] { row =>
+      Success(
+        EmployeepayhistoryRow(
+          businessentityid = row(idx + 0)(BusinessentityId.column),
+          ratechangedate = row(idx + 1)(TypoLocalDateTime.column),
+          rate = row(idx + 2)(Column.columnToScalaBigDecimal),
+          payfrequency = row(idx + 3)(TypoShort.column),
+          modifieddate = row(idx + 4)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[EmployeepayhistoryRow] = {
+    OWrites[EmployeepayhistoryRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "ratechangedate" -> TypoLocalDateTime.writes.writes(o.ratechangedate),
+        "rate" -> Writes.BigDecimalWrites.writes(o.rate),
+        "payfrequency" -> TypoShort.writes.writes(o.payfrequency),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -26,18 +26,22 @@ case class CuViewRow(
 
 object CuViewRow {
   given decoder: Decoder[CuViewRow] = Decoder.forProduct4[CuViewRow, CurrencyId, CurrencyId, Name, TypoLocalDateTime]("id", "currencycode", "name", "modifieddate")(CuViewRow.apply)(using CurrencyId.decoder, CurrencyId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[CuViewRow] = Encoder.forProduct4[CuViewRow, CurrencyId, CurrencyId, Name, TypoLocalDateTime]("id", "currencycode", "name", "modifieddate")(x => (x.id, x.currencycode, x.name, x.modifieddate))(using CurrencyId.encoder, CurrencyId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[CuViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[CuViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    CuViewRow(
-      id = arr(0).asInstanceOf[CurrencyId],
-          currencycode = arr(1).asInstanceOf[CurrencyId],
-          name = arr(2).asInstanceOf[Name],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      CuViewRow(
+        id = arr(0).asInstanceOf[CurrencyId],
+            currencycode = arr(1).asInstanceOf[CurrencyId],
+            name = arr(2).asInstanceOf[Name],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

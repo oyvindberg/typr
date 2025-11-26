@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.um
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class UmViewRepoImpl extends UmViewRepo {
-  override def select: SelectBuilder[UmViewFields, UmViewRow] = {
-    SelectBuilderSql(""""pr"."um"""", UmViewFields.structure, UmViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[UmViewRow] = {
+  def select: SelectBuilder[UmViewFields, UmViewRow] = SelectBuilder.of(""""pr"."um"""", UmViewFields.structure, UmViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[UmViewRow] = {
     SQL"""select "id", "unitmeasurecode", "name", "modifieddate"::text
-          from "pr"."um"
-       """.as(UmViewRow.rowParser(1).*)
+    from "pr"."um"
+    """.as(UmViewRow.rowParser(1).*)
   }
 }

@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.pd
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PdViewRepoImpl extends PdViewRepo {
-  override def select: SelectBuilder[PdViewFields, PdViewRow] = {
-    SelectBuilderSql(""""pr"."pd"""", PdViewFields.structure, PdViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[PdViewRow] = {
+  def select: SelectBuilder[PdViewFields, PdViewRow] = SelectBuilder.of(""""pr"."pd"""", PdViewFields.structure, PdViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[PdViewRow] = {
     SQL"""select "id", "productdescriptionid", "description", "rowguid", "modifieddate"::text
-          from "pr"."pd"
-       """.as(PdViewRow.rowParser(1).*)
+    from "pr"."pd"
+    """.as(PdViewRow.rowParser(1).*)
   }
 }

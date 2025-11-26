@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait UmViewRepo {
   def select: SelectBuilder[UmViewFields, UmViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, UmViewRow]
 }

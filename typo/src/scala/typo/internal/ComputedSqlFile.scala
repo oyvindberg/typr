@@ -4,17 +4,16 @@ package internal
 import typo.internal.analysis.{DecomposedSql, MaybeReturnsRows, ParsedName}
 import typo.internal.rewriteDependentData.EvalMaybe
 import typo.internal.sqlfiles.SqlFile
-import typo.sc.Type
 
 case class ComputedSqlFile(
     logger: TypoLogger,
     sqlFile: SqlFile,
-    pkg0: sc.QIdent,
+    pkg0: jvm.QIdent,
     naming: Naming,
     typeMapperDb: TypeMapperDb,
-    scalaTypeMapper: TypeMapperScala,
+    scalaTypeMapper: TypeMapperJvm,
     eval: EvalMaybe[db.RelationName, HasSource],
-    dialect: Dialect
+    lang: Lang
 ) {
   val source: Source.SqlFile = Source.SqlFile(sqlFile.relPath)
 
@@ -45,7 +44,7 @@ case class ComputedSqlFile(
           }
 
         // we let types flow through constraints down to this column, the point is to reuse id types downstream
-        val typeFromFk: Option[sc.Type] = findTypeFromFk(logger, source, col.name, pointsTo, eval, dialect)(_ => None)
+        val typeFromFk: Option[jvm.Type] = findTypeFromFk(logger, source, col.name, pointsTo, eval, lang)(_ => None)
 
         val tpe = scalaTypeMapper.sqlFile(col.parsedColumnName.overriddenType.orElse(typeFromFk), dbType, nullability)
 
@@ -75,7 +74,7 @@ case class ComputedSqlFile(
           }
 
         val scalaName = maybeParsedName match {
-          case None             => sc.Ident(s"param${indices.head}")
+          case None             => jvm.Ident(s"param${indices.head}")
           case Some(parsedName) => naming.field(parsedName.name)
         }
 
@@ -95,7 +94,7 @@ case class ComputedSqlFile(
   val names: ComputedNames =
     ComputedNames(naming, source, maybeId = None, enableFieldValue = false, enableDsl = false)
 
-  val maybeRowName: MaybeReturnsRows[Type.Qualified] =
+  val maybeRowName: MaybeReturnsRows[jvm.Type.Qualified] =
     maybeCols.map(_ => names.RowName)
 
   val repoMethods: NonEmptyList[RepoMethod] =
@@ -103,5 +102,5 @@ case class ComputedSqlFile(
 }
 
 object ComputedSqlFile {
-  case class Param(name: sc.Ident, tpe: sc.Type, indices: List[Int], udtName: String, dbType: db.Type)
+  case class Param(name: jvm.Ident, tpe: jvm.Type, indices: List[Int], udtName: String, dbType: db.Type)
 }

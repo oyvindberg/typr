@@ -22,23 +22,22 @@ trait PccViewFields {
 
 object PccViewFields {
   lazy val structure: Relation[PccViewFields, PccViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PccViewFields, PccViewRow] {
-  
+
     override lazy val fields: PccViewFields = new PccViewFields {
       override def id = Field[BusinessentityId, PccViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, PccViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def creditcardid = Field[/* user-picked */ CustomCreditcardId, PccViewRow](_path, "creditcardid", None, None, x => x.creditcardid, (row, value) => row.copy(creditcardid = value))
       override def modifieddate = Field[TypoLocalDateTime, PccViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PccViewRow]] =
       List[FieldLike[?, PccViewRow]](fields.id, fields.businessentityid, fields.creditcardid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

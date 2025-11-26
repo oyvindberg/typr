@@ -25,11 +25,11 @@ trait CcViewFields {
 
 object CcViewFields {
   lazy val structure: Relation[CcViewFields, CcViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CcViewFields, CcViewRow] {
-  
+
     override lazy val fields: CcViewFields = new CcViewFields {
       override def id = Field[/* user-picked */ CustomCreditcardId, CcViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def creditcardid = Field[/* user-picked */ CustomCreditcardId, CcViewRow](_path, "creditcardid", None, None, x => x.creditcardid, (row, value) => row.copy(creditcardid = value))
@@ -39,12 +39,11 @@ object CcViewFields {
       override def expyear = Field[TypoShort, CcViewRow](_path, "expyear", None, None, x => x.expyear, (row, value) => row.copy(expyear = value))
       override def modifieddate = Field[TypoLocalDateTime, CcViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CcViewRow]] =
       List[FieldLike[?, CcViewRow]](fields.id, fields.creditcardid, fields.cardtype, fields.cardnumber, fields.expmonth, fields.expyear, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

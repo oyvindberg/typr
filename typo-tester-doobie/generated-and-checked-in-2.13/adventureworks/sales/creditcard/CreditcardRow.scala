@@ -17,11 +17,13 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.creditcard
-    Customer credit card information.
-    Primary key: creditcardid */
+ * Customer credit card information.
+ * Primary key: creditcardid
+ */
 case class CreditcardRow(
   /** Primary key for CreditCard records.
-      Default: nextval('sales.creditcard_creditcardid_seq'::regclass) */
+   * Default: nextval('sales.creditcard_creditcardid_seq'::regclass)
+   */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Credit card name. */
   cardtype: /* max 50 chars */ String,
@@ -33,52 +35,74 @@ case class CreditcardRow(
   expyear: TypoShort,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = creditcardid
-   def toUnsavedRow(creditcardid: Defaulted[/* user-picked */ CustomCreditcardId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CreditcardRowUnsaved =
-     CreditcardRowUnsaved(cardtype, cardnumber, expmonth, expyear, creditcardid, modifieddate)
- }
+) {
+  def id: /* user-picked */ CustomCreditcardId = creditcardid
+
+  def toUnsavedRow(
+    creditcardid: Defaulted[/* user-picked */ CustomCreditcardId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): CreditcardRowUnsaved = {
+    new CreditcardRowUnsaved(
+      cardtype,
+      cardnumber,
+      expmonth,
+      expyear,
+      creditcardid,
+      modifieddate
+    )
+  }
+}
 
 object CreditcardRow {
   implicit lazy val decoder: Decoder[CreditcardRow] = Decoder.forProduct6[CreditcardRow, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(CreditcardRow.apply)(CustomCreditcardId.decoder, Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[CreditcardRow] = Encoder.forProduct6[CreditcardRow, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(x => (x.creditcardid, x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.modifieddate))(CustomCreditcardId.encoder, Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[CreditcardRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    CreditcardRow(
-      creditcardid = arr(0).asInstanceOf[/* user-picked */ CustomCreditcardId],
-          cardtype = arr(1).asInstanceOf[/* max 50 chars */ String],
-          cardnumber = arr(2).asInstanceOf[/* max 25 chars */ String],
-          expmonth = arr(3).asInstanceOf[TypoShort],
-          expyear = arr(4).asInstanceOf[TypoShort],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+
+  implicit lazy val pgText: Text[CreditcardRow] = {
+    Text.instance[CreditcardRow]{ (row, sb) =>
+      /* user-picked */ CustomCreditcardId.pgText.unsafeEncode(row.creditcardid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.cardtype, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.cardnumber, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.expmonth, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.expyear, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[CreditcardRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      CreditcardRow(
+        creditcardid = arr(0).asInstanceOf[/* user-picked */ CustomCreditcardId],
+            cardtype = arr(1).asInstanceOf[/* max 50 chars */ String],
+            cardnumber = arr(2).asInstanceOf[/* max 25 chars */ String],
+            expmonth = arr(3).asInstanceOf[TypoShort],
+            expyear = arr(4).asInstanceOf[TypoShort],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[CreditcardRow] = {
+    new Write.Composite[CreditcardRow](
+      List(new Write.Single(/* user-picked */ CustomCreditcardId.put),
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(TypoShort.put),
+           new Write.Single(TypoShort.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.creditcardid, a.cardtype, a.cardnumber, a.expmonth, a.expyear, a.modifieddate)
     )
   }
-  implicit lazy val text: Text[CreditcardRow] = Text.instance[CreditcardRow]{ (row, sb) =>
-    /* user-picked */ CustomCreditcardId.text.unsafeEncode(row.creditcardid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.cardtype, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.cardnumber, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.expmonth, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.expyear, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  implicit lazy val write: Write[CreditcardRow] = new Write.Composite[CreditcardRow](
-    List(new Write.Single(/* user-picked */ CustomCreditcardId.put),
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(TypoShort.put),
-         new Write.Single(TypoShort.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.creditcardid, a.cardtype, a.cardnumber, a.expmonth, a.expyear, a.modifieddate)
-  )
 }

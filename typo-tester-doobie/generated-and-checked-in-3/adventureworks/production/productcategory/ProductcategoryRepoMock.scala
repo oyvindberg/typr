@@ -19,31 +19,33 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class ProductcategoryRepoMock(toRow: Function1[ProductcategoryRowUnsaved, ProductcategoryRow],
-                              map: scala.collection.mutable.Map[ProductcategoryId, ProductcategoryRow] = scala.collection.mutable.Map.empty) extends ProductcategoryRepo {
-  override def delete: DeleteBuilder[ProductcategoryFields, ProductcategoryRow] = {
-    DeleteBuilderMock(DeleteParams.empty, ProductcategoryFields.structure, map)
+case class ProductcategoryRepoMock(
+  toRow: ProductcategoryRowUnsaved => ProductcategoryRow,
+  map: scala.collection.mutable.Map[ProductcategoryId, ProductcategoryRow] = scala.collection.mutable.Map.empty[ProductcategoryId, ProductcategoryRow]
+) extends ProductcategoryRepo {
+  def delete: DeleteBuilder[ProductcategoryFields, ProductcategoryRow] = DeleteBuilderMock(DeleteParams.empty, ProductcategoryFields.structure, map)
+
+  def deleteById(productcategoryid: ProductcategoryId): ConnectionIO[Boolean] = delay(map.remove(productcategoryid).isDefined)
+
+  def deleteByIds(productcategoryids: Array[ProductcategoryId]): ConnectionIO[Int] = delay(productcategoryids.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: ProductcategoryRow): ConnectionIO[ProductcategoryRow] = {
+  delay {
+    val _ = if (map.contains(unsaved.productcategoryid))
+      sys.error(s"id ${unsaved.productcategoryid} already exists")
+    else
+      map.put(unsaved.productcategoryid, unsaved)
+
+    unsaved
   }
-  override def deleteById(productcategoryid: ProductcategoryId): ConnectionIO[Boolean] = {
-    delay(map.remove(productcategoryid).isDefined)
   }
-  override def deleteByIds(productcategoryids: Array[ProductcategoryId]): ConnectionIO[Int] = {
-    delay(productcategoryids.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: ProductcategoryRow): ConnectionIO[ProductcategoryRow] = {
-    delay {
-      val _ = if (map.contains(unsaved.productcategoryid))
-        sys.error(s"id ${unsaved.productcategoryid} already exists")
-      else
-        map.put(unsaved.productcategoryid, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: ProductcategoryRowUnsaved): ConnectionIO[ProductcategoryRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, ProductcategoryRow], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insert(unsaved: ProductcategoryRowUnsaved): ConnectionIO[ProductcategoryRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, ProductcategoryRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -53,8 +55,12 @@ class ProductcategoryRepoMock(toRow: Function1[ProductcategoryRowUnsaved, Produc
       num
     }
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, ProductcategoryRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, ProductcategoryRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { unsavedRows =>
       var num = 0L
       unsavedRows.foreach { unsavedRow =>
@@ -65,28 +71,25 @@ class ProductcategoryRepoMock(toRow: Function1[ProductcategoryRowUnsaved, Produc
       num
     }
   }
-  override def select: SelectBuilder[ProductcategoryFields, ProductcategoryRow] = {
-    SelectBuilderMock(ProductcategoryFields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, ProductcategoryRow] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(productcategoryid: ProductcategoryId): ConnectionIO[Option[ProductcategoryRow]] = {
-    delay(map.get(productcategoryid))
-  }
-  override def selectByIds(productcategoryids: Array[ProductcategoryId]): Stream[ConnectionIO, ProductcategoryRow] = {
-    Stream.emits(productcategoryids.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(productcategoryids: Array[ProductcategoryId]): ConnectionIO[Map[ProductcategoryId, ProductcategoryRow]] = {
+
+  def select: SelectBuilder[ProductcategoryFields, ProductcategoryRow] = SelectBuilderMock(ProductcategoryFields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, ProductcategoryRow] = Stream.emits(map.values.toList)
+
+  def selectById(productcategoryid: ProductcategoryId): ConnectionIO[Option[ProductcategoryRow]] = delay(map.get(productcategoryid))
+
+  def selectByIds(productcategoryids: Array[ProductcategoryId]): Stream[ConnectionIO, ProductcategoryRow] = Stream.emits(productcategoryids.flatMap(map.get).toList)
+
+  def selectByIdsTracked(productcategoryids: Array[ProductcategoryId]): ConnectionIO[Map[ProductcategoryId, ProductcategoryRow]] = {
     selectByIds(productcategoryids).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.productcategoryid, x)).toMap
       productcategoryids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[ProductcategoryFields, ProductcategoryRow] = {
-    UpdateBuilderMock(UpdateParams.empty, ProductcategoryFields.structure, map)
-  }
-  override def update(row: ProductcategoryRow): ConnectionIO[Option[ProductcategoryRow]] = {
+
+  def update: UpdateBuilder[ProductcategoryFields, ProductcategoryRow] = UpdateBuilderMock(UpdateParams.empty, ProductcategoryFields.structure, map)
+
+  def update(row: ProductcategoryRow): ConnectionIO[Option[ProductcategoryRow]] = {
     delay {
       map.get(row.productcategoryid).map { _ =>
         map.put(row.productcategoryid, row): @nowarn
@@ -94,13 +97,15 @@ class ProductcategoryRepoMock(toRow: Function1[ProductcategoryRowUnsaved, Produc
       }
     }
   }
-  override def upsert(unsaved: ProductcategoryRow): ConnectionIO[ProductcategoryRow] = {
+
+  def upsert(unsaved: ProductcategoryRow): ConnectionIO[ProductcategoryRow] = {
     delay {
       map.put(unsaved.productcategoryid, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[ProductcategoryRow]): Stream[ConnectionIO, ProductcategoryRow] = {
+
+  def upsertBatch(unsaved: List[ProductcategoryRow]): Stream[ConnectionIO, ProductcategoryRow] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.productcategoryid -> row)
@@ -108,8 +113,12 @@ class ProductcategoryRepoMock(toRow: Function1[ProductcategoryRowUnsaved, Produc
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, ProductcategoryRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, ProductcategoryRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

@@ -13,24 +13,48 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
+/** upsertBatch: Not implementable for zio-jdbc */
 trait ProductRepo {
   def delete: DeleteBuilder[ProductFields, ProductRow]
+
   def deleteById(productid: ProductId): ZIO[ZConnection, Throwable, Boolean]
+
   def deleteByIds(productids: Array[ProductId]): ZIO[ZConnection, Throwable, Long]
+
   def insert(unsaved: ProductRow): ZIO[ZConnection, Throwable, ProductRow]
+
   def insert(unsaved: ProductRowUnsaved): ZIO[ZConnection, Throwable, ProductRow]
-  def insertStreaming(unsaved: ZStream[ZConnection, Throwable, ProductRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, ProductRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, ProductRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, ProductRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
   def select: SelectBuilder[ProductFields, ProductRow]
+
   def selectAll: ZStream[ZConnection, Throwable, ProductRow]
+
   def selectById(productid: ProductId): ZIO[ZConnection, Throwable, Option[ProductRow]]
+
   def selectByIds(productids: Array[ProductId]): ZStream[ZConnection, Throwable, ProductRow]
+
   def selectByIdsTracked(productids: Array[ProductId]): ZIO[ZConnection, Throwable, Map[ProductId, ProductRow]]
+
   def update: UpdateBuilder[ProductFields, ProductRow]
+
   def update(row: ProductRow): ZIO[ZConnection, Throwable, Option[ProductRow]]
+
   def upsert(unsaved: ProductRow): ZIO[ZConnection, Throwable, UpdateResult[ProductRow]]
-  // Not implementable for zio-jdbc: upsertBatch
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, ProductRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, ProductRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
 }

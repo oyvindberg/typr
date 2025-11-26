@@ -3,22 +3,23 @@ package internal
 package codegen
 
 trait DbLib {
-  def resolveConstAs(tpe: sc.Type): sc.Code
-  def defaultedInstance: List[sc.Given]
-  def repoSig(repoMethod: RepoMethod): Either[DbLib.NotImplementedFor, sc.Code]
-  def repoImpl(repoMethod: RepoMethod): sc.Code
-  def mockRepoImpl(id: IdComputed, repoMethod: RepoMethod, maybeToRow: Option[sc.Param]): sc.Code
-  def testInsertMethod(x: ComputedTestInserts.InsertMethod): sc.Value
-  def stringEnumInstances(wrapperType: sc.Type, underlying: sc.Type, sqlType: String, openEnum: Boolean): List[sc.ClassMember]
-  def wrapperTypeInstances(wrapperType: sc.Type.Qualified, underlying: sc.Type, overrideDbType: Option[String]): List[sc.ClassMember]
-  def missingInstances: List[sc.ClassMember]
-  def rowInstances(tpe: sc.Type, cols: NonEmptyList[ComputedColumn], rowType: DbLib.RowType): List[sc.ClassMember]
-  def customTypeInstances(ct: CustomType): List[sc.ClassMember]
-  def additionalFiles: List[sc.File]
+  def lang: Lang
+  def resolveConstAs(tpe: jvm.Type): jvm.Code
+  def defaultedInstance: List[jvm.Given]
+  def repoSig(repoMethod: RepoMethod): Either[DbLib.NotImplementedFor, jvm.Method]
+  def repoImpl(repoMethod: RepoMethod): List[jvm.Code]
+  def mockRepoImpl(id: IdComputed, repoMethod: RepoMethod, maybeToRow: Option[jvm.Param[jvm.Type.Function1]]): List[jvm.Code]
+  def testInsertMethod(x: ComputedTestInserts.InsertMethod): jvm.Method
+  def stringEnumInstances(wrapperType: jvm.Type, underlying: jvm.Type, sqlType: String, openEnum: Boolean): List[jvm.ClassMember]
+  def wrapperTypeInstances(wrapperType: jvm.Type.Qualified, underlying: jvm.Type, overrideDbType: Option[String]): List[jvm.ClassMember]
+  def missingInstances: List[jvm.ClassMember]
+  def rowInstances(tpe: jvm.Type, cols: NonEmptyList[ComputedColumn], rowType: DbLib.RowType): List[jvm.ClassMember]
+  def customTypeInstances(ct: CustomType): List[jvm.ClassMember]
+  def additionalFiles: List[jvm.File]
 }
 
 object DbLib {
-  case class NotImplementedFor(library: String)
+  case class NotImplementedFor(repoMethod: RepoMethod, library: String)
 
   sealed trait RowType
   object RowType {

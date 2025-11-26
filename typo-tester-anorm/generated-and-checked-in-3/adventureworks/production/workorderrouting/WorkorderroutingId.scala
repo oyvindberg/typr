@@ -22,22 +22,28 @@ case class WorkorderroutingId(
   productid: Int,
   operationsequence: TypoShort
 )
+
 object WorkorderroutingId {
-  given reads: Reads[WorkorderroutingId] = Reads[WorkorderroutingId](json => JsResult.fromTry(
-      Try(
-        WorkorderroutingId(
-          workorderid = json.\("workorderid").as(WorkorderId.reads),
-          productid = json.\("productid").as(Reads.IntReads),
-          operationsequence = json.\("operationsequence").as(TypoShort.reads)
+  given reads: Reads[WorkorderroutingId] = {
+    Reads[WorkorderroutingId](json => JsResult.fromTry(
+        Try(
+          WorkorderroutingId(
+            workorderid = json.\("workorderid").as(WorkorderId.reads),
+            productid = json.\("productid").as(Reads.IntReads),
+            operationsequence = json.\("operationsequence").as(TypoShort.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[WorkorderroutingId] = OWrites[WorkorderroutingId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "workorderid" -> WorkorderId.writes.writes(o.workorderid),
-      "productid" -> Writes.IntWrites.writes(o.productid),
-      "operationsequence" -> TypoShort.writes.writes(o.operationsequence)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[WorkorderroutingId] = {
+    OWrites[WorkorderroutingId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "workorderid" -> WorkorderId.writes.writes(o.workorderid),
+        "productid" -> Writes.IntWrites.writes(o.productid),
+        "operationsequence" -> TypoShort.writes.writes(o.operationsequence)
+      ))
+    )
+  }
 }

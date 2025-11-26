@@ -7,6 +7,7 @@ package adventureworks.production.culture
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -24,41 +25,42 @@ case class CultureRowUnsaved(
   /** Culture description. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): CultureRow =
-    CultureRow(
-      cultureid = cultureid,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): CultureRow = new CultureRow(cultureid = cultureid, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object CultureRowUnsaved {
-  implicit lazy val reads: Reads[CultureRowUnsaved] = Reads[CultureRowUnsaved](json => JsResult.fromTry(
-      Try(
-        CultureRowUnsaved(
-          cultureid = json.\("cultureid").as(CultureId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[CultureRowUnsaved] = Text.instance[CultureRowUnsaved]{ (row, sb) =>
-    CultureId.text.unsafeEncode(row.cultureid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  implicit lazy val pgText: Text[CultureRowUnsaved] = {
+    Text.instance[CultureRowUnsaved]{ (row, sb) =>
+      CultureId.pgText.unsafeEncode(row.cultureid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[CultureRowUnsaved] = OWrites[CultureRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "cultureid" -> CultureId.writes.writes(o.cultureid),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[CultureRowUnsaved] = {
+    Reads[CultureRowUnsaved](json => JsResult.fromTry(
+        Try(
+          CultureRowUnsaved(
+            cultureid = json.\("cultureid").as(CultureId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[CultureRowUnsaved] = {
+    OWrites[CultureRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "cultureid" -> CultureId.writes.writes(o.cultureid),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

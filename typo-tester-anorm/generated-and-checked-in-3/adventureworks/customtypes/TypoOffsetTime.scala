@@ -25,38 +25,58 @@ import typo.dsl.Bijection
 case class TypoOffsetTime(value: OffsetTime)
 
 object TypoOffsetTime {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter
   def apply(value: OffsetTime): TypoOffsetTime = new TypoOffsetTime(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoOffsetTime = apply(OffsetTime.parse(str, parser))
-  def now = TypoOffsetTime(OffsetTime.now)
-  given arrayColumn: Column[Array[TypoOffsetTime]] = Column.nonNull[Array[TypoOffsetTime]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoOffsetTime(OffsetTime.parse(v.asInstanceOf[String], parser))))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoOffsetTime, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+
+  def apply(str: String): TypoOffsetTime = new TypoOffsetTime(OffsetTime.parse(str, parser))
+
+  given arrayColumn: Column[Array[TypoOffsetTime]] = {
+    Column.nonNull[Array[TypoOffsetTime]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoOffsetTime(OffsetTime.parse(v.asInstanceOf[String], parser))))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoOffsetTime, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   given arrayToStatement: ToStatement[Array[TypoOffsetTime]] = ToStatement[Array[TypoOffsetTime]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("timetz", v.map(v => v.value.toString))))
-  given bijection: Bijection[TypoOffsetTime, OffsetTime] = Bijection[TypoOffsetTime, OffsetTime](_.value)(TypoOffsetTime.apply)
-  given column: Column[TypoOffsetTime] = Column.nonNull[TypoOffsetTime]((v1: Any, _) =>
-    v1 match {
-      case v: String => Right(TypoOffsetTime(OffsetTime.parse(v, parser)))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+
+  given bijection: Bijection[TypoOffsetTime, OffsetTime] = Bijection.apply[TypoOffsetTime, OffsetTime](_.value)(TypoOffsetTime.apply)
+
+  given column: Column[TypoOffsetTime] = {
+    Column.nonNull[TypoOffsetTime]((v1: Any, _) =>
+      v1 match {
+        case v: String => Right(new TypoOffsetTime(OffsetTime.parse(v, parser)))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  def now: TypoOffsetTime = new TypoOffsetTime(OffsetTime.now())
+
+  given parameterMetadata: ParameterMetaData[TypoOffsetTime] = {
+    new ParameterMetaData[TypoOffsetTime] {
+      override def sqlType: String = "timetz"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  given parameterMetadata: ParameterMetaData[TypoOffsetTime] = new ParameterMetaData[TypoOffsetTime] {
-    override def sqlType: String = "timetz"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
+
+  given pgText: Text[TypoOffsetTime] = {
+    new Text[TypoOffsetTime] {
+      override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
   given reads: Reads[TypoOffsetTime] = adventureworks.OffsetTimeReads.map(TypoOffsetTime.apply)
-  given text: Text[TypoOffsetTime] = new Text[TypoOffsetTime] {
-    override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
+
   given toStatement: ToStatement[TypoOffsetTime] = ToStatement[TypoOffsetTime]((s, index, v) => s.setObject(index, v.value.toString))
+
   given writes: Writes[TypoOffsetTime] = adventureworks.OffsetTimeWrites.contramap(_.value)
 }

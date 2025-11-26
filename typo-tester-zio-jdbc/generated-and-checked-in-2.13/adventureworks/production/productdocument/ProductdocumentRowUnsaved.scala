@@ -7,6 +7,7 @@ package adventureworks.production.productdocument
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
@@ -18,56 +19,59 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `production.productdocument` which has not been persisted yet */
 case class ProductdocumentRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Document identification number. Foreign key to Document.DocumentNode.
-      Points to [[adventureworks.production.document.DocumentRow.documentnode]] */
-  documentnode: Defaulted[DocumentId] = Defaulted.UseDefault
+   * Document identification number. Foreign key to Document.DocumentNode.
+   * Points to [[adventureworks.production.document.DocumentRow.documentnode]]
+   */
+  documentnode: Defaulted[DocumentId] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime, documentnodeDefault: => DocumentId): ProductdocumentRow =
-    ProductdocumentRow(
-      productid = productid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      documentnode = documentnode match {
-                       case Defaulted.UseDefault => documentnodeDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    modifieddateDefault: => TypoLocalDateTime,
+    documentnodeDefault: => DocumentId
+  ): ProductdocumentRow = new ProductdocumentRow(productid = productid, modifieddate = modifieddate.getOrElse(modifieddateDefault), documentnode = documentnode.getOrElse(documentnodeDefault))
 }
+
 object ProductdocumentRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[ProductdocumentRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(Defaulted.jsonDecoder(DocumentId.jsonDecoder)))
-    if (productid.isRight && modifieddate.isRight && documentnode.isRight)
-      Right(ProductdocumentRowUnsaved(productid = productid.toOption.get, modifieddate = modifieddate.toOption.get, documentnode = documentnode.toOption.get))
-    else Left(List[Either[String, Any]](productid, modifieddate, documentnode).flatMap(_.left.toOption).mkString(", "))
-  }
-  implicit lazy val jsonEncoder: JsonEncoder[ProductdocumentRowUnsaved] = new JsonEncoder[ProductdocumentRowUnsaved] {
-    override def unsafeEncode(a: ProductdocumentRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write(",")
-      out.write(""""documentnode":""")
-      Defaulted.jsonEncoder(DocumentId.jsonEncoder).unsafeEncode(a.documentnode, indent, out)
-      out.write("}")
+  implicit lazy val jsonDecoder: JsonDecoder[ProductdocumentRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(Defaulted.jsonDecoder(DocumentId.jsonDecoder)))
+      if (productid.isRight && modifieddate.isRight && documentnode.isRight)
+        Right(ProductdocumentRowUnsaved(productid = productid.toOption.get, modifieddate = modifieddate.toOption.get, documentnode = documentnode.toOption.get))
+      else Left(List[Either[String, Any]](productid, modifieddate, documentnode).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[ProductdocumentRowUnsaved] = Text.instance[ProductdocumentRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(DocumentId.text).unsafeEncode(row.documentnode, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[ProductdocumentRowUnsaved] = {
+    new JsonEncoder[ProductdocumentRowUnsaved] {
+      override def unsafeEncode(a: ProductdocumentRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write(",")
+        out.write(""""documentnode":""")
+        Defaulted.jsonEncoder(DocumentId.jsonEncoder).unsafeEncode(a.documentnode, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[ProductdocumentRowUnsaved] = {
+    Text.instance[ProductdocumentRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(DocumentId.pgText).unsafeEncode(row.documentnode, sb)
+    }
   }
 }

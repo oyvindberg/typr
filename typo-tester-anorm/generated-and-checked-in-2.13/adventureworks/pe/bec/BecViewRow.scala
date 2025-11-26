@@ -36,39 +36,47 @@ case class BecViewRow(
 )
 
 object BecViewRow {
-  implicit lazy val reads: Reads[BecViewRow] = Reads[BecViewRow](json => JsResult.fromTry(
-      Try(
-        BecViewRow(
-          id = json.\("id").as(BusinessentityId.reads),
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          personid = json.\("personid").as(BusinessentityId.reads),
-          contacttypeid = json.\("contacttypeid").as(ContacttypeId.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[BecViewRow] = {
+    Reads[BecViewRow](json => JsResult.fromTry(
+        Try(
+          BecViewRow(
+            id = json.\("id").as(BusinessentityId.reads),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            personid = json.\("personid").as(BusinessentityId.reads),
+            contacttypeid = json.\("contacttypeid").as(ContacttypeId.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[BecViewRow] = RowParser[BecViewRow] { row =>
-    Success(
-      BecViewRow(
-        id = row(idx + 0)(BusinessentityId.column),
-        businessentityid = row(idx + 1)(BusinessentityId.column),
-        personid = row(idx + 2)(BusinessentityId.column),
-        contacttypeid = row(idx + 3)(ContacttypeId.column),
-        rowguid = row(idx + 4)(TypoUUID.column),
-        modifieddate = row(idx + 5)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[BecViewRow] = OWrites[BecViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> BusinessentityId.writes.writes(o.id),
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "personid" -> BusinessentityId.writes.writes(o.personid),
-      "contacttypeid" -> ContacttypeId.writes.writes(o.contacttypeid),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[BecViewRow] = {
+    RowParser[BecViewRow] { row =>
+      Success(
+        BecViewRow(
+          id = row(idx + 0)(BusinessentityId.column),
+          businessentityid = row(idx + 1)(BusinessentityId.column),
+          personid = row(idx + 2)(BusinessentityId.column),
+          contacttypeid = row(idx + 3)(ContacttypeId.column),
+          rowguid = row(idx + 4)(TypoUUID.column),
+          modifieddate = row(idx + 5)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[BecViewRow] = {
+    OWrites[BecViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> BusinessentityId.writes.writes(o.id),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "personid" -> BusinessentityId.writes.writes(o.personid),
+        "contacttypeid" -> ContacttypeId.writes.writes(o.contacttypeid),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

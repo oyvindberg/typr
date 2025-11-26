@@ -12,22 +12,47 @@ import typo.dsl.UpdateBuilder
 
 trait ProductproductphotoRepo {
   def delete: DeleteBuilder[ProductproductphotoFields, ProductproductphotoRow]
+
   def deleteById(compositeId: ProductproductphotoId)(using c: Connection): Boolean
+
   def deleteByIds(compositeIds: Array[ProductproductphotoId])(using c: Connection): Int
+
   def insert(unsaved: ProductproductphotoRow)(using c: Connection): ProductproductphotoRow
+
   def insert(unsaved: ProductproductphotoRowUnsaved)(using c: Connection): ProductproductphotoRow
-  def insertStreaming(unsaved: Iterator[ProductproductphotoRow], batchSize: Int = 10000)(using c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[ProductproductphotoRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[ProductproductphotoRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[ProductproductphotoRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[ProductproductphotoFields, ProductproductphotoRow]
+
   def selectAll(using c: Connection): List[ProductproductphotoRow]
+
   def selectById(compositeId: ProductproductphotoId)(using c: Connection): Option[ProductproductphotoRow]
+
   def selectByIds(compositeIds: Array[ProductproductphotoId])(using c: Connection): List[ProductproductphotoRow]
+
   def selectByIdsTracked(compositeIds: Array[ProductproductphotoId])(using c: Connection): Map[ProductproductphotoId, ProductproductphotoRow]
+
   def update: UpdateBuilder[ProductproductphotoFields, ProductproductphotoRow]
+
   def update(row: ProductproductphotoRow)(using c: Connection): Option[ProductproductphotoRow]
+
   def upsert(unsaved: ProductproductphotoRow)(using c: Connection): ProductproductphotoRow
+
   def upsertBatch(unsaved: Iterable[ProductproductphotoRow])(using c: Connection): List[ProductproductphotoRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[ProductproductphotoRow], batchSize: Int = 10000)(using c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[ProductproductphotoRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int
 }

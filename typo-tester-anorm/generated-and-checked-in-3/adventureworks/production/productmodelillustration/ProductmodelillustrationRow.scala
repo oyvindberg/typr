@@ -21,58 +21,76 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: production.productmodelillustration
-    Cross-reference table mapping product models and illustrations.
-    Composite primary key: productmodelid, illustrationid */
+ * Cross-reference table mapping product models and illustrations.
+ * Composite primary key: productmodelid, illustrationid
+ */
 case class ProductmodelillustrationRow(
   /** Primary key. Foreign key to ProductModel.ProductModelID.
-      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
+   * Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]]
+   */
   productmodelid: ProductmodelId,
   /** Primary key. Foreign key to Illustration.IllustrationID.
-      Points to [[adventureworks.production.illustration.IllustrationRow.illustrationid]] */
+   * Points to [[adventureworks.production.illustration.IllustrationRow.illustrationid]]
+   */
   illustrationid: IllustrationId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: ProductmodelillustrationId = ProductmodelillustrationId(productmodelid, illustrationid)
-   val id = compositeId
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductmodelillustrationRowUnsaved =
-     ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate)
- }
+) {
+  def compositeId: ProductmodelillustrationId = new ProductmodelillustrationId(productmodelid, illustrationid)
+
+  def id: ProductmodelillustrationId = this.compositeId
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductmodelillustrationRowUnsaved = new ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate)
+}
 
 object ProductmodelillustrationRow {
-  def apply(compositeId: ProductmodelillustrationId, modifieddate: TypoLocalDateTime) =
-    new ProductmodelillustrationRow(compositeId.productmodelid, compositeId.illustrationid, modifieddate)
-  given reads: Reads[ProductmodelillustrationRow] = Reads[ProductmodelillustrationRow](json => JsResult.fromTry(
-      Try(
-        ProductmodelillustrationRow(
-          productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
-          illustrationid = json.\("illustrationid").as(IllustrationId.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  def apply(
+    compositeId: ProductmodelillustrationId,
+    modifieddate: TypoLocalDateTime
+  ): ProductmodelillustrationRow = new ProductmodelillustrationRow(compositeId.productmodelid, compositeId.illustrationid, modifieddate)
+
+  given pgText: Text[ProductmodelillustrationRow] = {
+    Text.instance[ProductmodelillustrationRow]{ (row, sb) =>
+      ProductmodelId.pgText.unsafeEncode(row.productmodelid, sb)
+      sb.append(Text.DELIMETER)
+      IllustrationId.pgText.unsafeEncode(row.illustrationid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[ProductmodelillustrationRow] = {
+    Reads[ProductmodelillustrationRow](json => JsResult.fromTry(
+        Try(
+          ProductmodelillustrationRow(
+            productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
+            illustrationid = json.\("illustrationid").as(IllustrationId.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[ProductmodelillustrationRow] = RowParser[ProductmodelillustrationRow] { row =>
-    Success(
-      ProductmodelillustrationRow(
-        productmodelid = row(idx + 0)(using ProductmodelId.column),
-        illustrationid = row(idx + 1)(using IllustrationId.column),
-        modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given text: Text[ProductmodelillustrationRow] = Text.instance[ProductmodelillustrationRow]{ (row, sb) =>
-    ProductmodelId.text.unsafeEncode(row.productmodelid, sb)
-    sb.append(Text.DELIMETER)
-    IllustrationId.text.unsafeEncode(row.illustrationid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[ProductmodelillustrationRow] = {
+    RowParser[ProductmodelillustrationRow] { row =>
+      Success(
+        ProductmodelillustrationRow(
+          productmodelid = row(idx + 0)(using ProductmodelId.column),
+          illustrationid = row(idx + 1)(using IllustrationId.column),
+          modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[ProductmodelillustrationRow] = OWrites[ProductmodelillustrationRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
-      "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given writes: OWrites[ProductmodelillustrationRow] = {
+    OWrites[ProductmodelillustrationRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
+        "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

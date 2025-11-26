@@ -39,42 +39,50 @@ case class SciViewRow(
 )
 
 object SciViewRow {
-  given reads: Reads[SciViewRow] = Reads[SciViewRow](json => JsResult.fromTry(
-      Try(
-        SciViewRow(
-          id = json.\("id").as(ShoppingcartitemId.reads),
-          shoppingcartitemid = json.\("shoppingcartitemid").as(ShoppingcartitemId.reads),
-          shoppingcartid = json.\("shoppingcartid").as(Reads.StringReads),
-          quantity = json.\("quantity").as(Reads.IntReads),
-          productid = json.\("productid").as(ProductId.reads),
-          datecreated = json.\("datecreated").as(TypoLocalDateTime.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SciViewRow] = {
+    Reads[SciViewRow](json => JsResult.fromTry(
+        Try(
+          SciViewRow(
+            id = json.\("id").as(ShoppingcartitemId.reads),
+            shoppingcartitemid = json.\("shoppingcartitemid").as(ShoppingcartitemId.reads),
+            shoppingcartid = json.\("shoppingcartid").as(Reads.StringReads),
+            quantity = json.\("quantity").as(Reads.IntReads),
+            productid = json.\("productid").as(ProductId.reads),
+            datecreated = json.\("datecreated").as(TypoLocalDateTime.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SciViewRow] = RowParser[SciViewRow] { row =>
-    Success(
-      SciViewRow(
-        id = row(idx + 0)(using ShoppingcartitemId.column),
-        shoppingcartitemid = row(idx + 1)(using ShoppingcartitemId.column),
-        shoppingcartid = row(idx + 2)(using Column.columnToString),
-        quantity = row(idx + 3)(using Column.columnToInt),
-        productid = row(idx + 4)(using ProductId.column),
-        datecreated = row(idx + 5)(using TypoLocalDateTime.column),
-        modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SciViewRow] = OWrites[SciViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ShoppingcartitemId.writes.writes(o.id),
-      "shoppingcartitemid" -> ShoppingcartitemId.writes.writes(o.shoppingcartitemid),
-      "shoppingcartid" -> Writes.StringWrites.writes(o.shoppingcartid),
-      "quantity" -> Writes.IntWrites.writes(o.quantity),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "datecreated" -> TypoLocalDateTime.writes.writes(o.datecreated),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SciViewRow] = {
+    RowParser[SciViewRow] { row =>
+      Success(
+        SciViewRow(
+          id = row(idx + 0)(using ShoppingcartitemId.column),
+          shoppingcartitemid = row(idx + 1)(using ShoppingcartitemId.column),
+          shoppingcartid = row(idx + 2)(using Column.columnToString),
+          quantity = row(idx + 3)(using Column.columnToInt),
+          productid = row(idx + 4)(using ProductId.column),
+          datecreated = row(idx + 5)(using TypoLocalDateTime.column),
+          modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SciViewRow] = {
+    OWrites[SciViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ShoppingcartitemId.writes.writes(o.id),
+        "shoppingcartitemid" -> ShoppingcartitemId.writes.writes(o.shoppingcartitemid),
+        "shoppingcartid" -> Writes.StringWrites.writes(o.shoppingcartid),
+        "quantity" -> Writes.IntWrites.writes(o.quantity),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "datecreated" -> TypoLocalDateTime.writes.writes(o.datecreated),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -20,29 +20,42 @@ import zio.json.JsonEncoder
 case class TypoBytea(value: Array[Byte])
 
 object TypoBytea {
-  given bijection: Bijection[TypoBytea, Array[Byte]] = Bijection[TypoBytea, Array[Byte]](_.value)(TypoBytea.apply)
-  given jdbcDecoder: JdbcDecoder[TypoBytea] = JdbcDecoder[TypoBytea](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoBytea(v.asInstanceOf[Array[Byte]])
-    },
-    "Array[scala.Byte]"
-  )
+  given bijection: Bijection[TypoBytea, Array[Byte]] = Bijection.apply[TypoBytea, Array[Byte]](_.value)(TypoBytea.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoBytea] = {
+    JdbcDecoder[TypoBytea](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoBytea(v.asInstanceOf[Array[Byte]])
+      },
+      "Array[scala.Byte]"
+    )
+  }
+
   given jdbcEncoder: JdbcEncoder[TypoBytea] = JdbcEncoder.singleParamEncoder(using setter)
+
   given jsonDecoder: JsonDecoder[TypoBytea] = JsonDecoder.array[Byte](using JsonDecoder.byte, implicitly).map(TypoBytea.apply)
+
   given jsonEncoder: JsonEncoder[TypoBytea] = JsonEncoder.array[Byte](using JsonEncoder.byte, implicitly).contramap(_.value)
+
+  given pgText: Text[TypoBytea] = {
+    new Text[TypoBytea] {
+      override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given pgType: PGType[TypoBytea] = PGType.instance[TypoBytea]("bytea", Types.OTHER)
-  given setter: Setter[TypoBytea] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
-        i,
-        v.value
-      )
-    },
-    "bytea"
-  )
-  given text: Text[TypoBytea] = new Text[TypoBytea] {
-    override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeArrayEncode(v.value, sb)
+
+  given setter: Setter[TypoBytea] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value
+        )
+      },
+      "bytea"
+    )
   }
 }

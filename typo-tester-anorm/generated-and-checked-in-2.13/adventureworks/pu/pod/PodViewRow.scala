@@ -46,51 +46,59 @@ case class PodViewRow(
 )
 
 object PodViewRow {
-  implicit lazy val reads: Reads[PodViewRow] = Reads[PodViewRow](json => JsResult.fromTry(
-      Try(
-        PodViewRow(
-          id = json.\("id").as(Reads.IntReads),
-          purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
-          purchaseorderdetailid = json.\("purchaseorderdetailid").as(Reads.IntReads),
-          duedate = json.\("duedate").as(TypoLocalDateTime.reads),
-          orderqty = json.\("orderqty").as(TypoShort.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          unitprice = json.\("unitprice").as(Reads.bigDecReads),
-          receivedqty = json.\("receivedqty").as(Reads.bigDecReads),
-          rejectedqty = json.\("rejectedqty").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[PodViewRow] = {
+    Reads[PodViewRow](json => JsResult.fromTry(
+        Try(
+          PodViewRow(
+            id = json.\("id").as(Reads.IntReads),
+            purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
+            purchaseorderdetailid = json.\("purchaseorderdetailid").as(Reads.IntReads),
+            duedate = json.\("duedate").as(TypoLocalDateTime.reads),
+            orderqty = json.\("orderqty").as(TypoShort.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            unitprice = json.\("unitprice").as(Reads.bigDecReads),
+            receivedqty = json.\("receivedqty").as(Reads.bigDecReads),
+            rejectedqty = json.\("rejectedqty").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PodViewRow] = RowParser[PodViewRow] { row =>
-    Success(
-      PodViewRow(
-        id = row(idx + 0)(Column.columnToInt),
-        purchaseorderid = row(idx + 1)(PurchaseorderheaderId.column),
-        purchaseorderdetailid = row(idx + 2)(Column.columnToInt),
-        duedate = row(idx + 3)(TypoLocalDateTime.column),
-        orderqty = row(idx + 4)(TypoShort.column),
-        productid = row(idx + 5)(ProductId.column),
-        unitprice = row(idx + 6)(Column.columnToScalaBigDecimal),
-        receivedqty = row(idx + 7)(Column.columnToScalaBigDecimal),
-        rejectedqty = row(idx + 8)(Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 9)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PodViewRow] = OWrites[PodViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> Writes.IntWrites.writes(o.id),
-      "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
-      "purchaseorderdetailid" -> Writes.IntWrites.writes(o.purchaseorderdetailid),
-      "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
-      "orderqty" -> TypoShort.writes.writes(o.orderqty),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
-      "receivedqty" -> Writes.BigDecimalWrites.writes(o.receivedqty),
-      "rejectedqty" -> Writes.BigDecimalWrites.writes(o.rejectedqty),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PodViewRow] = {
+    RowParser[PodViewRow] { row =>
+      Success(
+        PodViewRow(
+          id = row(idx + 0)(Column.columnToInt),
+          purchaseorderid = row(idx + 1)(PurchaseorderheaderId.column),
+          purchaseorderdetailid = row(idx + 2)(Column.columnToInt),
+          duedate = row(idx + 3)(TypoLocalDateTime.column),
+          orderqty = row(idx + 4)(TypoShort.column),
+          productid = row(idx + 5)(ProductId.column),
+          unitprice = row(idx + 6)(Column.columnToScalaBigDecimal),
+          receivedqty = row(idx + 7)(Column.columnToScalaBigDecimal),
+          rejectedqty = row(idx + 8)(Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 9)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PodViewRow] = {
+    OWrites[PodViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> Writes.IntWrites.writes(o.id),
+        "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
+        "purchaseorderdetailid" -> Writes.IntWrites.writes(o.purchaseorderdetailid),
+        "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
+        "orderqty" -> TypoShort.writes.writes(o.orderqty),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
+        "receivedqty" -> Writes.BigDecimalWrites.writes(o.receivedqty),
+        "rejectedqty" -> Writes.BigDecimalWrites.writes(o.rejectedqty),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

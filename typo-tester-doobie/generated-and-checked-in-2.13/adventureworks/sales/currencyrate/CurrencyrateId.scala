@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.currencyrate` */
-case class CurrencyrateId(value: Int) extends AnyVal
+case class CurrencyrateId(value: Int) extends scala.AnyVal
+
 object CurrencyrateId {
   implicit lazy val arrayGet: Get[Array[CurrencyrateId]] = adventureworks.IntegerArrayMeta.get.map(_.map(CurrencyrateId.apply))
+
   implicit lazy val arrayPut: Put[Array[CurrencyrateId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[CurrencyrateId, Int] = Bijection[CurrencyrateId, Int](_.value)(CurrencyrateId.apply)
+
+  implicit lazy val bijection: Bijection[CurrencyrateId, Int] = Bijection.apply[CurrencyrateId, Int](_.value)(CurrencyrateId.apply)
+
   implicit lazy val decoder: Decoder[CurrencyrateId] = Decoder.decodeInt.map(CurrencyrateId.apply)
+
   implicit lazy val encoder: Encoder[CurrencyrateId] = Encoder.encodeInt.contramap(_.value)
+
   implicit lazy val get: Get[CurrencyrateId] = Meta.IntMeta.get.map(CurrencyrateId.apply)
-  implicit lazy val put: Put[CurrencyrateId] = Meta.IntMeta.put.contramap(_.value)
-  implicit lazy val text: Text[CurrencyrateId] = new Text[CurrencyrateId] {
-    override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[CurrencyrateId] = {
+    new Text[CurrencyrateId] {
+      override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val put: Put[CurrencyrateId] = Meta.IntMeta.put.contramap(_.value)
 }

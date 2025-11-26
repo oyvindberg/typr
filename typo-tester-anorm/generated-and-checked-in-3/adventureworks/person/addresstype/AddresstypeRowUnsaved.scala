@@ -7,6 +7,7 @@ package adventureworks.person.addresstype
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
@@ -23,57 +24,63 @@ case class AddresstypeRowUnsaved(
   /** Address type description. For example, Billing, Home, or Shipping. */
   name: Name,
   /** Default: nextval('person.addresstype_addresstypeid_seq'::regclass)
-      Primary key for AddressType records. */
-  addresstypeid: Defaulted[AddresstypeId] = Defaulted.UseDefault,
+   * Primary key for AddressType records.
+   */
+  addresstypeid: Defaulted[AddresstypeId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(addresstypeidDefault: => AddresstypeId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): AddresstypeRow =
-    AddresstypeRow(
+  def toRow(
+    addresstypeidDefault: => AddresstypeId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): AddresstypeRow = {
+    new AddresstypeRow(
+      addresstypeid = addresstypeid.getOrElse(addresstypeidDefault),
       name = name,
-      addresstypeid = addresstypeid match {
-                        case Defaulted.UseDefault => addresstypeidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object AddresstypeRowUnsaved {
-  given reads: Reads[AddresstypeRowUnsaved] = Reads[AddresstypeRowUnsaved](json => JsResult.fromTry(
-      Try(
-        AddresstypeRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          addresstypeid = json.\("addresstypeid").as(Defaulted.reads(using AddresstypeId.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[AddresstypeRowUnsaved] = Text.instance[AddresstypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using AddresstypeId.text).unsafeEncode(row.addresstypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[AddresstypeRowUnsaved] = OWrites[AddresstypeRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "addresstypeid" -> Defaulted.writes(using AddresstypeId.writes).writes(o.addresstypeid),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object AddresstypeRowUnsaved {
+  given pgText: Text[AddresstypeRowUnsaved] = {
+    Text.instance[AddresstypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using AddresstypeId.pgText).unsafeEncode(row.addresstypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[AddresstypeRowUnsaved] = {
+    Reads[AddresstypeRowUnsaved](json => JsResult.fromTry(
+        Try(
+          AddresstypeRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            addresstypeid = json.\("addresstypeid").as(Defaulted.reads(using AddresstypeId.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[AddresstypeRowUnsaved] = {
+    OWrites[AddresstypeRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "addresstypeid" -> Defaulted.writes(using AddresstypeId.writes).writes(o.addresstypeid),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

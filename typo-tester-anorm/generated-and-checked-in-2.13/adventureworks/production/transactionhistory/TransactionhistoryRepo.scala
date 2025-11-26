@@ -12,22 +12,47 @@ import typo.dsl.UpdateBuilder
 
 trait TransactionhistoryRepo {
   def delete: DeleteBuilder[TransactionhistoryFields, TransactionhistoryRow]
+
   def deleteById(transactionid: TransactionhistoryId)(implicit c: Connection): Boolean
+
   def deleteByIds(transactionids: Array[TransactionhistoryId])(implicit c: Connection): Int
+
   def insert(unsaved: TransactionhistoryRow)(implicit c: Connection): TransactionhistoryRow
+
   def insert(unsaved: TransactionhistoryRowUnsaved)(implicit c: Connection): TransactionhistoryRow
-  def insertStreaming(unsaved: Iterator[TransactionhistoryRow], batchSize: Int = 10000)(implicit c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[TransactionhistoryRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[TransactionhistoryRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[TransactionhistoryRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
   def select: SelectBuilder[TransactionhistoryFields, TransactionhistoryRow]
+
   def selectAll(implicit c: Connection): List[TransactionhistoryRow]
+
   def selectById(transactionid: TransactionhistoryId)(implicit c: Connection): Option[TransactionhistoryRow]
+
   def selectByIds(transactionids: Array[TransactionhistoryId])(implicit c: Connection): List[TransactionhistoryRow]
+
   def selectByIdsTracked(transactionids: Array[TransactionhistoryId])(implicit c: Connection): Map[TransactionhistoryId, TransactionhistoryRow]
+
   def update: UpdateBuilder[TransactionhistoryFields, TransactionhistoryRow]
+
   def update(row: TransactionhistoryRow)(implicit c: Connection): Option[TransactionhistoryRow]
+
   def upsert(unsaved: TransactionhistoryRow)(implicit c: Connection): TransactionhistoryRow
+
   def upsertBatch(unsaved: Iterable[TransactionhistoryRow])(implicit c: Connection): List[TransactionhistoryRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[TransactionhistoryRow], batchSize: Int = 10000)(implicit c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[TransactionhistoryRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int
 }

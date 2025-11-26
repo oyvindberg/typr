@@ -22,32 +22,34 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class DocumentRepoMock(toRow: Function1[DocumentRowUnsaved, DocumentRow],
-                       map: scala.collection.mutable.Map[DocumentId, DocumentRow] = scala.collection.mutable.Map.empty) extends DocumentRepo {
-  override def delete: DeleteBuilder[DocumentFields, DocumentRow] = {
-    DeleteBuilderMock(DeleteParams.empty, DocumentFields.structure, map)
+case class DocumentRepoMock(
+  toRow: DocumentRowUnsaved => DocumentRow,
+  map: scala.collection.mutable.Map[DocumentId, DocumentRow] = scala.collection.mutable.Map.empty[DocumentId, DocumentRow]
+) extends DocumentRepo {
+  def delete: DeleteBuilder[DocumentFields, DocumentRow] = DeleteBuilderMock(DeleteParams.empty, DocumentFields.structure, map)
+
+  def deleteById(documentnode: DocumentId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(documentnode).isDefined)
+
+  def deleteByIds(documentnodes: Array[DocumentId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(documentnodes.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: DocumentRow): ZIO[ZConnection, Throwable, DocumentRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.documentnode))
+        sys.error(s"id ${unsaved.documentnode} already exists")
+      else
+        map.put(unsaved.documentnode, unsaved)
+
+    unsaved
   }
-  override def deleteById(documentnode: DocumentId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(documentnode).isDefined)
   }
-  override def deleteByIds(documentnodes: Array[DocumentId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(documentnodes.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: DocumentRow): ZIO[ZConnection, Throwable, DocumentRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.documentnode))
-          sys.error(s"id ${unsaved.documentnode} already exists")
-        else
-          map.put(unsaved.documentnode, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: DocumentRowUnsaved): ZIO[ZConnection, Throwable, DocumentRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, DocumentRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insert(unsaved: DocumentRowUnsaved): ZIO[ZConnection, Throwable, DocumentRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, DocumentRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.documentnode -> row)
@@ -55,8 +57,12 @@ class DocumentRepoMock(toRow: Function1[DocumentRowUnsaved, DocumentRow],
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, DocumentRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, DocumentRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
       ZIO.succeed {
         val row = toRow(unsavedRow)
@@ -65,31 +71,27 @@ class DocumentRepoMock(toRow: Function1[DocumentRowUnsaved, DocumentRow],
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[DocumentFields, DocumentRow] = {
-    SelectBuilderMock(DocumentFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, DocumentRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(documentnode: DocumentId): ZIO[ZConnection, Throwable, Option[DocumentRow]] = {
-    ZIO.succeed(map.get(documentnode))
-  }
-  override def selectByIds(documentnodes: Array[DocumentId]): ZStream[ZConnection, Throwable, DocumentRow] = {
-    ZStream.fromIterable(documentnodes.flatMap(map.get))
-  }
-  override def selectByIdsTracked(documentnodes: Array[DocumentId]): ZIO[ZConnection, Throwable, Map[DocumentId, DocumentRow]] = {
+
+  def select: SelectBuilder[DocumentFields, DocumentRow] = SelectBuilderMock(DocumentFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, DocumentRow] = ZStream.fromIterable(map.values)
+
+  def selectById(documentnode: DocumentId): ZIO[ZConnection, Throwable, Option[DocumentRow]] = ZIO.succeed(map.get(documentnode))
+
+  def selectByIds(documentnodes: Array[DocumentId]): ZStream[ZConnection, Throwable, DocumentRow] = ZStream.fromIterable(documentnodes.flatMap(map.get))
+
+  def selectByIdsTracked(documentnodes: Array[DocumentId]): ZIO[ZConnection, Throwable, Map[DocumentId, DocumentRow]] = {
     selectByIds(documentnodes).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.documentnode, x)).toMap
       documentnodes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def selectByUniqueRowguid(rowguid: TypoUUID): ZIO[ZConnection, Throwable, Option[DocumentRow]] = {
-    ZIO.succeed(map.values.find(v => rowguid == v.rowguid))
-  }
-  override def update: UpdateBuilder[DocumentFields, DocumentRow] = {
-    UpdateBuilderMock(UpdateParams.empty, DocumentFields.structure, map)
-  }
-  override def update(row: DocumentRow): ZIO[ZConnection, Throwable, Option[DocumentRow]] = {
+
+  def selectByUniqueRowguid(rowguid: TypoUUID): ZIO[ZConnection, Throwable, Option[DocumentRow]] = ZIO.succeed(map.values.find(v => rowguid == v.rowguid))
+
+  def update: UpdateBuilder[DocumentFields, DocumentRow] = UpdateBuilderMock(UpdateParams.empty, DocumentFields.structure, map)
+
+  def update(row: DocumentRow): ZIO[ZConnection, Throwable, Option[DocumentRow]] = {
     ZIO.succeed {
       map.get(row.documentnode).map { _ =>
         map.put(row.documentnode, row): @nowarn
@@ -97,14 +99,19 @@ class DocumentRepoMock(toRow: Function1[DocumentRowUnsaved, DocumentRow],
       }
     }
   }
-  override def upsert(unsaved: DocumentRow): ZIO[ZConnection, Throwable, UpdateResult[DocumentRow]] = {
+
+  def upsert(unsaved: DocumentRow): ZIO[ZConnection, Throwable, UpdateResult[DocumentRow]] = {
     ZIO.succeed {
       map.put(unsaved.documentnode, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, DocumentRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, DocumentRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.documentnode -> row)

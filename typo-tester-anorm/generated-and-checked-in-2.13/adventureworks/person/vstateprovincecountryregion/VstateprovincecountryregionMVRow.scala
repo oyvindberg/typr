@@ -41,42 +41,50 @@ case class VstateprovincecountryregionMVRow(
 )
 
 object VstateprovincecountryregionMVRow {
-  implicit lazy val reads: Reads[VstateprovincecountryregionMVRow] = Reads[VstateprovincecountryregionMVRow](json => JsResult.fromTry(
-      Try(
-        VstateprovincecountryregionMVRow(
-          stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
-          stateprovincecode = json.\("stateprovincecode").as(Reads.StringReads),
-          isonlystateprovinceflag = json.\("isonlystateprovinceflag").as(Flag.reads),
-          stateprovincename = json.\("stateprovincename").as(Name.reads),
-          territoryid = json.\("territoryid").as(SalesterritoryId.reads),
-          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
-          countryregionname = json.\("countryregionname").as(Name.reads)
+  implicit lazy val reads: Reads[VstateprovincecountryregionMVRow] = {
+    Reads[VstateprovincecountryregionMVRow](json => JsResult.fromTry(
+        Try(
+          VstateprovincecountryregionMVRow(
+            stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
+            stateprovincecode = json.\("stateprovincecode").as(Reads.StringReads),
+            isonlystateprovinceflag = json.\("isonlystateprovinceflag").as(Flag.reads),
+            stateprovincename = json.\("stateprovincename").as(Name.reads),
+            territoryid = json.\("territoryid").as(SalesterritoryId.reads),
+            countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+            countryregionname = json.\("countryregionname").as(Name.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VstateprovincecountryregionMVRow] = RowParser[VstateprovincecountryregionMVRow] { row =>
-    Success(
-      VstateprovincecountryregionMVRow(
-        stateprovinceid = row(idx + 0)(StateprovinceId.column),
-        stateprovincecode = row(idx + 1)(Column.columnToString),
-        isonlystateprovinceflag = row(idx + 2)(Flag.column),
-        stateprovincename = row(idx + 3)(Name.column),
-        territoryid = row(idx + 4)(SalesterritoryId.column),
-        countryregioncode = row(idx + 5)(CountryregionId.column),
-        countryregionname = row(idx + 6)(Name.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[VstateprovincecountryregionMVRow] = OWrites[VstateprovincecountryregionMVRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
-      "stateprovincecode" -> Writes.StringWrites.writes(o.stateprovincecode),
-      "isonlystateprovinceflag" -> Flag.writes.writes(o.isonlystateprovinceflag),
-      "stateprovincename" -> Name.writes.writes(o.stateprovincename),
-      "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
-      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
-      "countryregionname" -> Name.writes.writes(o.countryregionname)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VstateprovincecountryregionMVRow] = {
+    RowParser[VstateprovincecountryregionMVRow] { row =>
+      Success(
+        VstateprovincecountryregionMVRow(
+          stateprovinceid = row(idx + 0)(StateprovinceId.column),
+          stateprovincecode = row(idx + 1)(Column.columnToString),
+          isonlystateprovinceflag = row(idx + 2)(Flag.column),
+          stateprovincename = row(idx + 3)(Name.column),
+          territoryid = row(idx + 4)(SalesterritoryId.column),
+          countryregioncode = row(idx + 5)(CountryregionId.column),
+          countryregionname = row(idx + 6)(Name.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[VstateprovincecountryregionMVRow] = {
+    OWrites[VstateprovincecountryregionMVRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
+        "stateprovincecode" -> Writes.StringWrites.writes(o.stateprovincecode),
+        "isonlystateprovinceflag" -> Flag.writes.writes(o.isonlystateprovinceflag),
+        "stateprovincename" -> Name.writes.writes(o.stateprovincename),
+        "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
+        "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+        "countryregionname" -> Name.writes.writes(o.countryregionname)
+      ))
+    )
+  }
 }

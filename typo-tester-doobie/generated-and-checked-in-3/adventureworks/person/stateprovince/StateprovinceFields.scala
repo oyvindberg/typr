@@ -41,11 +41,11 @@ trait StateprovinceFields {
 
 object StateprovinceFields {
   lazy val structure: Relation[StateprovinceFields, StateprovinceRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[StateprovinceFields, StateprovinceRow] {
-  
+
     override lazy val fields: StateprovinceFields = new StateprovinceFields {
       override def stateprovinceid = IdField[StateprovinceId, StateprovinceRow](_path, "stateprovinceid", None, Some("int4"), x => x.stateprovinceid, (row, value) => row.copy(stateprovinceid = value))
       override def stateprovincecode = Field[/* bpchar, max 3 chars */ String, StateprovinceRow](_path, "stateprovincecode", None, Some("bpchar"), x => x.stateprovincecode, (row, value) => row.copy(stateprovincecode = value))
@@ -56,12 +56,11 @@ object StateprovinceFields {
       override def rowguid = Field[TypoUUID, StateprovinceRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, StateprovinceRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, StateprovinceRow]] =
       List[FieldLike[?, StateprovinceRow]](fields.stateprovinceid, fields.stateprovincecode, fields.countryregioncode, fields.isonlystateprovinceflag, fields.name, fields.territoryid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

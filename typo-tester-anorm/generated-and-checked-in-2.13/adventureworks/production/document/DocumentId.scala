@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.document` */
-case class DocumentId(value: String) extends AnyVal
+case class DocumentId(value: String) extends scala.AnyVal
+
 object DocumentId {
   implicit lazy val arrayColumn: Column[Array[DocumentId]] = Column.columnToArray(column, implicitly)
+
   implicit lazy val arrayToStatement: ToStatement[Array[DocumentId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[DocumentId, String] = Bijection[DocumentId, String](_.value)(DocumentId.apply)
+
+  implicit lazy val bijection: Bijection[DocumentId, String] = Bijection.apply[DocumentId, String](_.value)(DocumentId.apply)
+
   implicit lazy val column: Column[DocumentId] = Column.columnToString.map(DocumentId.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[DocumentId] = new ParameterMetaData[DocumentId] {
-    override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+
+  implicit lazy val parameterMetadata: ParameterMetaData[DocumentId] = {
+    new ParameterMetaData[DocumentId] {
+      override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+    }
   }
+
+  implicit lazy val pgText: Text[DocumentId] = {
+    new Text[DocumentId] {
+      override def unsafeEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[DocumentId] = Reads.StringReads.map(DocumentId.apply)
-  implicit lazy val text: Text[DocumentId] = new Text[DocumentId] {
-    override def unsafeEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: DocumentId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[DocumentId] = ToStatement.stringToStatement.contramap(_.value)
+
   implicit lazy val writes: Writes[DocumentId] = Writes.StringWrites.contramap(_.value)
 }

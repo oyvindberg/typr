@@ -15,23 +15,36 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Domain `public.short_text`
-  * Constraint: CHECK ((length(VALUE) <= 55))
-  */
+ * Constraint: CHECK ((length(VALUE) <= 55))
+ */
 case class ShortText(value: String)
+
 object ShortText {
   given arrayColumn: Column[Array[ShortText]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[ShortText]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  given bijection: Bijection[ShortText, String] = Bijection[ShortText, String](_.value)(ShortText.apply)
+
+  given bijection: Bijection[ShortText, String] = Bijection.apply[ShortText, String](_.value)(ShortText.apply)
+
   given column: Column[ShortText] = Column.columnToString.map(ShortText.apply)
-  given parameterMetadata: ParameterMetaData[ShortText] = new ParameterMetaData[ShortText] {
-    override def sqlType: String = """"public"."short_text""""
-    override def jdbcType: Int = Types.OTHER
+
+  given parameterMetadata: ParameterMetaData[ShortText] = {
+    new ParameterMetaData[ShortText] {
+      override def sqlType: String = """"public"."short_text""""
+      override def jdbcType: Int = Types.OTHER
+    }
   }
+
+  given pgText: Text[ShortText] = {
+    new Text[ShortText] {
+      override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[ShortText] = Reads.StringReads.map(ShortText.apply)
-  given text: Text[ShortText] = new Text[ShortText] {
-    override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[ShortText] = ToStatement.stringToStatement.contramap(_.value)
+
   given writes: Writes[ShortText] = Writes.StringWrites.contramap(_.value)
 }

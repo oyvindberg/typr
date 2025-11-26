@@ -26,18 +26,22 @@ case class PntViewRow(
 
 object PntViewRow {
   given decoder: Decoder[PntViewRow] = Decoder.forProduct4[PntViewRow, PhonenumbertypeId, PhonenumbertypeId, Name, TypoLocalDateTime]("id", "phonenumbertypeid", "name", "modifieddate")(PntViewRow.apply)(using PhonenumbertypeId.decoder, PhonenumbertypeId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PntViewRow] = Encoder.forProduct4[PntViewRow, PhonenumbertypeId, PhonenumbertypeId, Name, TypoLocalDateTime]("id", "phonenumbertypeid", "name", "modifieddate")(x => (x.id, x.phonenumbertypeid, x.name, x.modifieddate))(using PhonenumbertypeId.encoder, PhonenumbertypeId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PntViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(PhonenumbertypeId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PntViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(PhonenumbertypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PntViewRow(
-      id = arr(0).asInstanceOf[PhonenumbertypeId],
-          phonenumbertypeid = arr(1).asInstanceOf[PhonenumbertypeId],
-          name = arr(2).asInstanceOf[Name],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(PhonenumbertypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PntViewRow(
+        id = arr(0).asInstanceOf[PhonenumbertypeId],
+            phonenumbertypeid = arr(1).asInstanceOf[PhonenumbertypeId],
+            name = arr(2).asInstanceOf[Name],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

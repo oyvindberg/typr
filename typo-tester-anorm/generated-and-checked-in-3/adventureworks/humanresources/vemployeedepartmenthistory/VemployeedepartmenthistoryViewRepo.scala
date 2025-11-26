@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait VemployeedepartmenthistoryViewRepo {
   def select: SelectBuilder[VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow]
+
   def selectAll(using c: Connection): List[VemployeedepartmenthistoryViewRow]
 }

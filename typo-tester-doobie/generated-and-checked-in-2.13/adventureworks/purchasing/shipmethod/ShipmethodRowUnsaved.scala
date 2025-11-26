@@ -6,6 +6,7 @@
 package adventureworks.purchasing.shipmethod
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
@@ -18,60 +19,60 @@ case class ShipmethodRowUnsaved(
   /** Shipping company name. */
   name: Name,
   /** Default: nextval('purchasing.shipmethod_shipmethodid_seq'::regclass)
-      Primary key for ShipMethod records. */
-  shipmethodid: Defaulted[ShipmethodId] = Defaulted.UseDefault,
+   * Primary key for ShipMethod records.
+   */
+  shipmethodid: Defaulted[ShipmethodId] = new UseDefault(),
   /** Default: 0.00
-      Minimum shipping charge.
-      Constraint CK_ShipMethod_ShipBase affecting columns shipbase:  ((shipbase > 0.00)) */
-  shipbase: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Minimum shipping charge.
+   * Constraint CK_ShipMethod_ShipBase affecting columns shipbase:  ((shipbase > 0.00))
+   */
+  shipbase: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.00
-      Shipping charge per pound.
-      Constraint CK_ShipMethod_ShipRate affecting columns shiprate:  ((shiprate > 0.00)) */
-  shiprate: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Shipping charge per pound.
+   * Constraint CK_ShipMethod_ShipRate affecting columns shiprate:  ((shiprate > 0.00))
+   */
+  shiprate: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(shipmethodidDefault: => ShipmethodId, shipbaseDefault: => BigDecimal, shiprateDefault: => BigDecimal, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ShipmethodRow =
-    ShipmethodRow(
-      shipmethodid = shipmethodid match {
-                       case Defaulted.UseDefault => shipmethodidDefault
-                       case Defaulted.Provided(value) => value
-                     },
+  def toRow(
+    shipmethodidDefault: => ShipmethodId,
+    shipbaseDefault: => BigDecimal,
+    shiprateDefault: => BigDecimal,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ShipmethodRow = {
+    new ShipmethodRow(
+      shipmethodid = shipmethodid.getOrElse(shipmethodidDefault),
       name = name,
-      shipbase = shipbase match {
-                   case Defaulted.UseDefault => shipbaseDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      shiprate = shiprate match {
-                   case Defaulted.UseDefault => shiprateDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      shipbase = shipbase.getOrElse(shipbaseDefault),
+      shiprate = shiprate.getOrElse(shiprateDefault),
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ShipmethodRowUnsaved {
   implicit lazy val decoder: Decoder[ShipmethodRowUnsaved] = Decoder.forProduct6[ShipmethodRowUnsaved, Name, Defaulted[ShipmethodId], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "shipmethodid", "shipbase", "shiprate", "rowguid", "modifieddate")(ShipmethodRowUnsaved.apply)(Name.decoder, Defaulted.decoder(ShipmethodId.decoder), Defaulted.decoder(Decoder.decodeBigDecimal), Defaulted.decoder(Decoder.decodeBigDecimal), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[ShipmethodRowUnsaved] = Encoder.forProduct6[ShipmethodRowUnsaved, Name, Defaulted[ShipmethodId], Defaulted[BigDecimal], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("name", "shipmethodid", "shipbase", "shiprate", "rowguid", "modifieddate")(x => (x.name, x.shipmethodid, x.shipbase, x.shiprate, x.rowguid, x.modifieddate))(Name.encoder, Defaulted.encoder(ShipmethodId.encoder), Defaulted.encoder(Encoder.encodeBigDecimal), Defaulted.encoder(Encoder.encodeBigDecimal), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[ShipmethodRowUnsaved] = Text.instance[ShipmethodRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ShipmethodId.text).unsafeEncode(row.shipmethodid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.shipbase, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.shiprate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[ShipmethodRowUnsaved] = {
+    Text.instance[ShipmethodRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ShipmethodId.pgText).unsafeEncode(row.shipmethodid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.shipbase, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.shiprate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

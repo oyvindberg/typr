@@ -2,6 +2,7 @@ package scripts
 
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typo.*
+import typo.internal.codegen.LangScala
 import typo.internal.metadb.OpenEnum
 import typo.internal.sqlfiles.readSqlFileDirectories
 import typo.internal.{FileSync, generate}
@@ -33,8 +34,9 @@ object GeneratedFrontpage {
 
         val options = Options(
           pkg = "frontpage",
-          Some(DbLibName.Anorm),
-          List(JsonLibName.PlayJson),
+          lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
+          dbLib = Some(DbLibName.Anorm),
+          jsonLibs = List(JsonLibName.PlayJson),
           typeOverride = TypeOverride.Empty,
           openEnums = Selector.None,
           generateMockRepos = Selector.All,
@@ -49,7 +51,7 @@ object GeneratedFrontpage {
           generate(options, metadb, ProjectGraph(name = "", targetSources, None, selector, sqlScripts, Nil), relationNameToOpenEnum).head
 
         newFiles
-          .overwriteFolder(options.dialect, softWrite = FileSync.SoftWrite.Yes(Set.empty))
+          .overwriteFolder(softWrite = FileSync.SoftWrite.Yes(Set.empty))
           .filter { case (_, synced) => synced != FileSync.Synced.Unchanged }
           .foreach { case (path, synced) => logger.withContext("path", path).warn(synced.toString) }
 

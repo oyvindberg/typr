@@ -37,39 +37,47 @@ case class BeaViewRow(
 )
 
 object BeaViewRow {
-  given reads: Reads[BeaViewRow] = Reads[BeaViewRow](json => JsResult.fromTry(
-      Try(
-        BeaViewRow(
-          id = json.\("id").as(BusinessentityId.reads),
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          addressid = json.\("addressid").as(AddressId.reads),
-          addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[BeaViewRow] = {
+    Reads[BeaViewRow](json => JsResult.fromTry(
+        Try(
+          BeaViewRow(
+            id = json.\("id").as(BusinessentityId.reads),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            addressid = json.\("addressid").as(AddressId.reads),
+            addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[BeaViewRow] = RowParser[BeaViewRow] { row =>
-    Success(
-      BeaViewRow(
-        id = row(idx + 0)(using BusinessentityId.column),
-        businessentityid = row(idx + 1)(using BusinessentityId.column),
-        addressid = row(idx + 2)(using AddressId.column),
-        addresstypeid = row(idx + 3)(using AddresstypeId.column),
-        rowguid = row(idx + 4)(using TypoUUID.column),
-        modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[BeaViewRow] = OWrites[BeaViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> BusinessentityId.writes.writes(o.id),
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "addressid" -> AddressId.writes.writes(o.addressid),
-      "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[BeaViewRow] = {
+    RowParser[BeaViewRow] { row =>
+      Success(
+        BeaViewRow(
+          id = row(idx + 0)(using BusinessentityId.column),
+          businessentityid = row(idx + 1)(using BusinessentityId.column),
+          addressid = row(idx + 2)(using AddressId.column),
+          addresstypeid = row(idx + 3)(using AddresstypeId.column),
+          rowguid = row(idx + 4)(using TypoUUID.column),
+          modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[BeaViewRow] = {
+    OWrites[BeaViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> BusinessentityId.writes.writes(o.id),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "addressid" -> AddressId.writes.writes(o.addressid),
+        "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

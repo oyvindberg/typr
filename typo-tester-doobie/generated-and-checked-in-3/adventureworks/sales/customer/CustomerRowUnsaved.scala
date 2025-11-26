@@ -6,6 +6,7 @@
 package adventureworks.sales.customer
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
@@ -17,55 +18,60 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.customer` which has not been persisted yet */
 case class CustomerRowUnsaved(
   /** Foreign key to Person.BusinessEntityID
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
-  personid: Option[BusinessentityId],
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
+  personid: Option[BusinessentityId] = None,
   /** Foreign key to Store.BusinessEntityID
-      Points to [[adventureworks.sales.store.StoreRow.businessentityid]] */
-  storeid: Option[BusinessentityId],
+   * Points to [[adventureworks.sales.store.StoreRow.businessentityid]]
+   */
+  storeid: Option[BusinessentityId] = None,
   /** ID of the territory in which the customer is located. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+   * Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]]
+   */
+  territoryid: Option[SalesterritoryId] = None,
   /** Default: nextval('sales.customer_customerid_seq'::regclass)
-      Primary key. */
-  customerid: Defaulted[CustomerId] = Defaulted.UseDefault,
+   * Primary key.
+   */
+  customerid: Defaulted[CustomerId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(customeridDefault: => CustomerId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): CustomerRow =
-    CustomerRow(
+  def toRow(
+    customeridDefault: => CustomerId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): CustomerRow = {
+    new CustomerRow(
+      customerid = customerid.getOrElse(customeridDefault),
       personid = personid,
       storeid = storeid,
       territoryid = territoryid,
-      customerid = customerid match {
-                     case Defaulted.UseDefault => customeridDefault
-                     case Defaulted.Provided(value) => value
-                   },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object CustomerRowUnsaved {
   given decoder: Decoder[CustomerRowUnsaved] = Decoder.forProduct6[CustomerRowUnsaved, Option[BusinessentityId], Option[BusinessentityId], Option[SalesterritoryId], Defaulted[CustomerId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("personid", "storeid", "territoryid", "customerid", "rowguid", "modifieddate")(CustomerRowUnsaved.apply)(using Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using SalesterritoryId.decoder), Defaulted.decoder(using CustomerId.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[CustomerRowUnsaved] = Encoder.forProduct6[CustomerRowUnsaved, Option[BusinessentityId], Option[BusinessentityId], Option[SalesterritoryId], Defaulted[CustomerId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("personid", "storeid", "territoryid", "customerid", "rowguid", "modifieddate")(x => (x.personid, x.storeid, x.territoryid, x.customerid, x.rowguid, x.modifieddate))(using Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using SalesterritoryId.encoder), Defaulted.encoder(using CustomerId.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[CustomerRowUnsaved] = Text.instance[CustomerRowUnsaved]{ (row, sb) =>
-    Text.option(using BusinessentityId.text).unsafeEncode(row.personid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using BusinessentityId.text).unsafeEncode(row.storeid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using SalesterritoryId.text).unsafeEncode(row.territoryid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using CustomerId.text).unsafeEncode(row.customerid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[CustomerRowUnsaved] = {
+    Text.instance[CustomerRowUnsaved]{ (row, sb) =>
+      Text.option(using BusinessentityId.pgText).unsafeEncode(row.personid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using BusinessentityId.pgText).unsafeEncode(row.storeid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using SalesterritoryId.pgText).unsafeEncode(row.territoryid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using CustomerId.pgText).unsafeEncode(row.customerid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

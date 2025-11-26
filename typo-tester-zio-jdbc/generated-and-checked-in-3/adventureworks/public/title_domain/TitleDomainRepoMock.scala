@@ -21,28 +21,29 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class TitleDomainRepoMock(map: scala.collection.mutable.Map[TitleDomainId, TitleDomainRow] = scala.collection.mutable.Map.empty) extends TitleDomainRepo {
-  override def delete: DeleteBuilder[TitleDomainFields, TitleDomainRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TitleDomainFields.structure, map)
+case class TitleDomainRepoMock(map: scala.collection.mutable.Map[TitleDomainId, TitleDomainRow] = scala.collection.mutable.Map.empty[TitleDomainId, TitleDomainRow]) extends TitleDomainRepo {
+  def delete: DeleteBuilder[TitleDomainFields, TitleDomainRow] = DeleteBuilderMock(DeleteParams.empty, TitleDomainFields.structure, map)
+
+  def deleteById(code: TitleDomainId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(code).isDefined)
+
+  def deleteByIds(codes: Array[TitleDomainId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(codes.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: TitleDomainRow): ZIO[ZConnection, Throwable, TitleDomainRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.code))
+        sys.error(s"id ${unsaved.code} already exists")
+      else
+        map.put(unsaved.code, unsaved)
+
+    unsaved
   }
-  override def deleteById(code: TitleDomainId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(code).isDefined)
   }
-  override def deleteByIds(codes: Array[TitleDomainId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(codes.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: TitleDomainRow): ZIO[ZConnection, Throwable, TitleDomainRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.code))
-          sys.error(s"id ${unsaved.code} already exists")
-        else
-          map.put(unsaved.code, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, TitleDomainRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TitleDomainRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.code -> row)
@@ -50,35 +51,36 @@ class TitleDomainRepoMock(map: scala.collection.mutable.Map[TitleDomainId, Title
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[TitleDomainFields, TitleDomainRow] = {
-    SelectBuilderMock(TitleDomainFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, TitleDomainRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(code: TitleDomainId): ZIO[ZConnection, Throwable, Option[TitleDomainRow]] = {
-    ZIO.succeed(map.get(code))
-  }
-  override def selectByIds(codes: Array[TitleDomainId]): ZStream[ZConnection, Throwable, TitleDomainRow] = {
-    ZStream.fromIterable(codes.flatMap(map.get))
-  }
-  override def selectByIdsTracked(codes: Array[TitleDomainId]): ZIO[ZConnection, Throwable, Map[TitleDomainId, TitleDomainRow]] = {
+
+  def select: SelectBuilder[TitleDomainFields, TitleDomainRow] = SelectBuilderMock(TitleDomainFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, TitleDomainRow] = ZStream.fromIterable(map.values)
+
+  def selectById(code: TitleDomainId): ZIO[ZConnection, Throwable, Option[TitleDomainRow]] = ZIO.succeed(map.get(code))
+
+  def selectByIds(codes: Array[TitleDomainId]): ZStream[ZConnection, Throwable, TitleDomainRow] = ZStream.fromIterable(codes.flatMap(map.get))
+
+  def selectByIdsTracked(codes: Array[TitleDomainId]): ZIO[ZConnection, Throwable, Map[TitleDomainId, TitleDomainRow]] = {
     selectByIds(codes).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.code, x)).toMap
       codes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[TitleDomainFields, TitleDomainRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TitleDomainFields.structure, map)
-  }
-  override def upsert(unsaved: TitleDomainRow): ZIO[ZConnection, Throwable, UpdateResult[TitleDomainRow]] = {
+
+  def update: UpdateBuilder[TitleDomainFields, TitleDomainRow] = UpdateBuilderMock(UpdateParams.empty, TitleDomainFields.structure, map)
+
+  def upsert(unsaved: TitleDomainRow): ZIO[ZConnection, Throwable, UpdateResult[TitleDomainRow]] = {
     ZIO.succeed {
       map.put(unsaved.code, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, TitleDomainRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TitleDomainRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.code -> row)

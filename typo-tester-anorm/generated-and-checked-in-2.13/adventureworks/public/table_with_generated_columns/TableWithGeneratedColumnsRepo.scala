@@ -12,21 +12,45 @@ import typo.dsl.UpdateBuilder
 
 trait TableWithGeneratedColumnsRepo {
   def delete: DeleteBuilder[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow]
+
   def deleteById(name: TableWithGeneratedColumnsId)(implicit c: Connection): Boolean
+
   def deleteByIds(names: Array[TableWithGeneratedColumnsId])(implicit c: Connection): Int
+
   def insert(unsaved: TableWithGeneratedColumnsRow)(implicit c: Connection): TableWithGeneratedColumnsRow
+
   def insert(unsaved: TableWithGeneratedColumnsRowUnsaved)(implicit c: Connection): TableWithGeneratedColumnsRow
-  def insertStreaming(unsaved: Iterator[TableWithGeneratedColumnsRow], batchSize: Int = 10000)(implicit c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[TableWithGeneratedColumnsRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[TableWithGeneratedColumnsRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[TableWithGeneratedColumnsRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
   def select: SelectBuilder[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow]
+
   def selectAll(implicit c: Connection): List[TableWithGeneratedColumnsRow]
+
   def selectById(name: TableWithGeneratedColumnsId)(implicit c: Connection): Option[TableWithGeneratedColumnsRow]
+
   def selectByIds(names: Array[TableWithGeneratedColumnsId])(implicit c: Connection): List[TableWithGeneratedColumnsRow]
+
   def selectByIdsTracked(names: Array[TableWithGeneratedColumnsId])(implicit c: Connection): Map[TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow]
+
   def update: UpdateBuilder[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow]
+
   def upsert(unsaved: TableWithGeneratedColumnsRow)(implicit c: Connection): TableWithGeneratedColumnsRow
+
   def upsertBatch(unsaved: Iterable[TableWithGeneratedColumnsRow])(implicit c: Connection): List[TableWithGeneratedColumnsRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[TableWithGeneratedColumnsRow], batchSize: Int = 10000)(implicit c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[TableWithGeneratedColumnsRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int
 }

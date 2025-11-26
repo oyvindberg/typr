@@ -19,47 +19,59 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.table-with-generated-columns
-    Primary key: name */
+ * Primary key: name
+ */
 case class TableWithGeneratedColumnsRow(
   name: TableWithGeneratedColumnsId,
   /** Generated ALWAYS, expression: 
-      CASE
-          WHEN (name IS NOT NULL) THEN 'no-name'::text
-          WHEN (name = 'a'::text) THEN 'a-name'::text
-          ELSE 'some-name'::text
-      END */
+  CASE
+      WHEN (name IS NOT NULL) THEN 'no-name'::text
+      WHEN (name = 'a'::text) THEN 'a-name'::text
+      ELSE 'some-name'::text
+  END */
   nameTypeAlways: String
-){
-   val id = name
-   def toUnsavedRow(): TableWithGeneratedColumnsRowUnsaved =
-     TableWithGeneratedColumnsRowUnsaved(name)
- }
+) {
+  def id: TableWithGeneratedColumnsId = name
+
+  def toUnsavedRow: TableWithGeneratedColumnsRowUnsaved = new TableWithGeneratedColumnsRowUnsaved(name)
+}
 
 object TableWithGeneratedColumnsRow {
-  given reads: Reads[TableWithGeneratedColumnsRow] = Reads[TableWithGeneratedColumnsRow](json => JsResult.fromTry(
-      Try(
-        TableWithGeneratedColumnsRow(
-          name = json.\("name").as(TableWithGeneratedColumnsId.reads),
-          nameTypeAlways = json.\("name-type-always").as(Reads.StringReads)
+  given pgText: Text[TableWithGeneratedColumnsRow] = {
+    Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
+      TableWithGeneratedColumnsId.pgText.unsafeEncode(row.name, sb)
+    }
+  }
+
+  given reads: Reads[TableWithGeneratedColumnsRow] = {
+    Reads[TableWithGeneratedColumnsRow](json => JsResult.fromTry(
+        Try(
+          TableWithGeneratedColumnsRow(
+            name = json.\("name").as(TableWithGeneratedColumnsId.reads),
+            nameTypeAlways = json.\("name-type-always").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TableWithGeneratedColumnsRow] = RowParser[TableWithGeneratedColumnsRow] { row =>
-    Success(
-      TableWithGeneratedColumnsRow(
-        name = row(idx + 0)(using TableWithGeneratedColumnsId.column),
-        nameTypeAlways = row(idx + 1)(using Column.columnToString)
-      )
+      ),
     )
   }
-  given text: Text[TableWithGeneratedColumnsRow] = Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
-    TableWithGeneratedColumnsId.text.unsafeEncode(row.name, sb)
+
+  def rowParser(idx: Int): RowParser[TableWithGeneratedColumnsRow] = {
+    RowParser[TableWithGeneratedColumnsRow] { row =>
+      Success(
+        TableWithGeneratedColumnsRow(
+          name = row(idx + 0)(using TableWithGeneratedColumnsId.column),
+          nameTypeAlways = row(idx + 1)(using Column.columnToString)
+        )
+      )
+    }
   }
-  given writes: OWrites[TableWithGeneratedColumnsRow] = OWrites[TableWithGeneratedColumnsRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> TableWithGeneratedColumnsId.writes.writes(o.name),
-      "name-type-always" -> Writes.StringWrites.writes(o.nameTypeAlways)
-    ))
-  )
+
+  given writes: OWrites[TableWithGeneratedColumnsRow] = {
+    OWrites[TableWithGeneratedColumnsRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> TableWithGeneratedColumnsId.writes.writes(o.name),
+        "name-type-always" -> Writes.StringWrites.writes(o.nameTypeAlways)
+      ))
+    )
+  }
 }

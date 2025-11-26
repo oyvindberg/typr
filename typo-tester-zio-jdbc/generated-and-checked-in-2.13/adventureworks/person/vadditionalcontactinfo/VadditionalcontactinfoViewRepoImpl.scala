@@ -6,16 +6,12 @@
 package adventureworks.person.vadditionalcontactinfo
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class VadditionalcontactinfoViewRepoImpl extends VadditionalcontactinfoViewRepo {
-  override def select: SelectBuilder[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] = {
-    SelectBuilderSql(""""person"."vadditionalcontactinfo"""", VadditionalcontactinfoViewFields.structure, VadditionalcontactinfoViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, VadditionalcontactinfoViewRow] = {
-    sql"""select "businessentityid", "firstname", "middlename", "lastname", "telephonenumber", "telephonespecialinstructions", "street", "city", "stateprovince", "postalcode", "countryregion", "homeaddressspecialinstructions", "emailaddress", "emailspecialinstructions", "emailtelephonenumber", "rowguid", "modifieddate"::text from "person"."vadditionalcontactinfo"""".query(VadditionalcontactinfoViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] = SelectBuilder.of(""""person"."vadditionalcontactinfo"""", VadditionalcontactinfoViewFields.structure, VadditionalcontactinfoViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, VadditionalcontactinfoViewRow] = sql"""select "businessentityid", "firstname", "middlename", "lastname", "telephonenumber", "telephonespecialinstructions", "street", "city", "stateprovince", "postalcode", "countryregion", "homeaddressspecialinstructions", "emailaddress", "emailspecialinstructions", "emailtelephonenumber", "rowguid", "modifieddate"::text from "person"."vadditionalcontactinfo"""".query(VadditionalcontactinfoViewRow.jdbcDecoder).selectStream()
 }

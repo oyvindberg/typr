@@ -22,54 +22,74 @@ import zio.json.JsonEncoder
 case class TypoXml(value: String)
 
 object TypoXml {
-  given arrayJdbcDecoder: JdbcDecoder[Array[TypoXml]] = JdbcDecoder[Array[TypoXml]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoXml(x.asInstanceOf[PGobject].getValue))
-    },
-    "Array[java.lang.String]"
-  )
+  given arrayJdbcDecoder: JdbcDecoder[Array[TypoXml]] = {
+    JdbcDecoder[Array[TypoXml]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoXml(x.asInstanceOf[PGobject].getValue))
+      },
+      "Array[java.lang.String]"
+    )
+  }
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TypoXml]] = JdbcEncoder.singleParamEncoder(using arraySetter)
-  given arraySetter: Setter[Array[TypoXml]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "xml",
-        v.map { vv =>
-          {
-            val obj = new PGobject
-            obj.setType("xml")
-            obj.setValue(vv.value)
-            obj
-          }
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  given bijection: Bijection[TypoXml, String] = Bijection[TypoXml, String](_.value)(TypoXml.apply)
-  given jdbcDecoder: JdbcDecoder[TypoXml] = JdbcDecoder[TypoXml](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoXml(v.asInstanceOf[PgSQLXML].getString)
-    },
-    "java.lang.String"
-  )
-  given jdbcEncoder: JdbcEncoder[TypoXml] = JdbcEncoder.singleParamEncoder(using setter)
-  given jsonDecoder: JsonDecoder[TypoXml] = JsonDecoder.string.map(TypoXml.apply)
-  given jsonEncoder: JsonEncoder[TypoXml] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[TypoXml] = PGType.instance[TypoXml]("xml", Types.OTHER)
-  given setter: Setter[TypoXml] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  given arraySetter: Setter[Array[TypoXml]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value
-      )
-    },
-    "xml"
-  )
-  given text: Text[TypoXml] = new Text[TypoXml] {
-    override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+        ps.getConnection.createArrayOf(
+          "xml",
+          v.map { vv =>
+            {
+              val obj = new PGobject()
+              obj.setType("xml")
+              obj.setValue(vv.value)
+              obj
+            }
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  given bijection: Bijection[TypoXml, String] = Bijection.apply[TypoXml, String](_.value)(TypoXml.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoXml] = {
+    JdbcDecoder[TypoXml](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoXml(v.asInstanceOf[PgSQLXML].getString)
+      },
+      "java.lang.String"
+    )
+  }
+
+  given jdbcEncoder: JdbcEncoder[TypoXml] = JdbcEncoder.singleParamEncoder(using setter)
+
+  given jsonDecoder: JsonDecoder[TypoXml] = JsonDecoder.string.map(TypoXml.apply)
+
+  given jsonEncoder: JsonEncoder[TypoXml] = JsonEncoder.string.contramap(_.value)
+
+  given pgText: Text[TypoXml] = {
+    new Text[TypoXml] {
+      override def unsafeEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString(), sb)
+      override def unsafeArrayEncode(v: TypoXml, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString(), sb)
+    }
+  }
+
+  given pgType: PGType[TypoXml] = PGType.instance[TypoXml]("xml", Types.OTHER)
+
+  given setter: Setter[TypoXml] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value
+        )
+      },
+      "xml"
+    )
   }
 }

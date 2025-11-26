@@ -15,37 +15,45 @@ import adventureworks.public.Phone
 import adventureworks.public.ShortText
 import scala.util.Random
 
+/** Methods to generate random data for domain types */
 trait TestDomainInsert {
   /** Domain `public.AccountNumber`
-    * No constraint
-    */
+   * No constraint
+   */
   def publicAccountNumber(random: Random): AccountNumber
+
   /** Domain `public.Flag`
-    * No constraint
-    */
+   * No constraint
+   */
   def publicFlag(random: Random): Flag
+
   /** Domain `public.mydomain`
-    * No constraint
-    */
+   * No constraint
+   */
   def publicMydomain(random: Random): Mydomain
+
   /** Domain `public.Name`
-    * No constraint
-    */
+   * No constraint
+   */
   def publicName(random: Random): Name
+
   /** Domain `public.NameStyle`
-    * No constraint
-    */
+   * No constraint
+   */
   def publicNameStyle(random: Random): NameStyle
+
   /** Domain `public.OrderNumber`
-    * No constraint
-    */
+   * No constraint
+   */
   def publicOrderNumber(random: Random): OrderNumber
+
   /** Domain `public.Phone`
-    * No constraint
-    */
+   * No constraint
+   */
   def publicPhone(random: Random): Phone
+
   /** Domain `public.short_text`
-    * Constraint: CHECK ((length(VALUE) <= 55))
-    */
+   * Constraint: CHECK ((length(VALUE) <= 55))
+   */
   def publicShortText(random: Random): ShortText
 }

@@ -14,19 +14,29 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Domain `public.short_text`
-  * Constraint: CHECK ((length(VALUE) <= 55))
-  */
+ * Constraint: CHECK ((length(VALUE) <= 55))
+ */
 case class ShortText(value: String)
+
 object ShortText {
   given arrayGet: Get[Array[ShortText]] = adventureworks.StringArrayMeta.get.map(_.map(ShortText.apply))
+
   given arrayPut: Put[Array[ShortText]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[ShortText, String] = Bijection[ShortText, String](_.value)(ShortText.apply)
+
+  given bijection: Bijection[ShortText, String] = Bijection.apply[ShortText, String](_.value)(ShortText.apply)
+
   given decoder: Decoder[ShortText] = Decoder.decodeString.map(ShortText.apply)
+
   given encoder: Encoder[ShortText] = Encoder.encodeString.contramap(_.value)
+
   given get: Get[ShortText] = Meta.StringMeta.get.map(ShortText.apply)
-  given put: Put[ShortText] = Meta.StringMeta.put.contramap(_.value)
-  given text: Text[ShortText] = new Text[ShortText] {
-    override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ShortText] = {
+    new Text[ShortText] {
+      override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[ShortText] = Meta.StringMeta.put.contramap(_.value)
 }

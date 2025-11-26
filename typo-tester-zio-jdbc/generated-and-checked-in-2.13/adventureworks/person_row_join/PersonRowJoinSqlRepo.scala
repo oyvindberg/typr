@@ -9,5 +9,5 @@ import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
 trait PersonRowJoinSqlRepo {
-  def apply(): ZStream[ZConnection, Throwable, PersonRowJoinSqlRow]
+  def apply: ZStream[ZConnection, Throwable, PersonRowJoinSqlRow]
 }

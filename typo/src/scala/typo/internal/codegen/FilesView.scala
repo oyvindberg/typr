@@ -4,9 +4,9 @@ package codegen
 
 import typo.internal.codegen.DbLib.RowType
 
-case class FilesView(view: ComputedView, options: InternalOptions) {
-  val relation = FilesRelation(view.naming, view.names, Some(view.cols), None, options, fks = Nil)
-  val all: List[sc.File] = List(
+case class FilesView(lang: Lang, view: ComputedView, options: InternalOptions) {
+  val relation = FilesRelation(lang, view.naming, view.names, Some(view.cols), None, options, fks = Nil)
+  val all: List[jvm.File] = List(
     relation.RowFile(RowType.Readable, view.view.comment, maybeUnsavedRow = None),
     relation.FieldsFile,
     for {

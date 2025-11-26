@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.productmodel` */
-case class ProductmodelId(value: Int) extends AnyVal
+case class ProductmodelId(value: Int) extends scala.AnyVal
+
 object ProductmodelId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ProductmodelId]] = adventureworks.IntArrayDecoder.map(_.map(ProductmodelId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ProductmodelId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ProductmodelId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ProductmodelId, Int] = Bijection[ProductmodelId, Int](_.value)(ProductmodelId.apply)
+
+  given bijection: Bijection[ProductmodelId, Int] = Bijection.apply[ProductmodelId, Int](_.value)(ProductmodelId.apply)
+
   given jdbcDecoder: JdbcDecoder[ProductmodelId] = JdbcDecoder.intDecoder.map(ProductmodelId.apply)
+
   given jdbcEncoder: JdbcEncoder[ProductmodelId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ProductmodelId] = JsonDecoder.int.map(ProductmodelId.apply)
+
   given jsonEncoder: JsonEncoder[ProductmodelId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ProductmodelId] = PGType.PGTypeInt.as
-  given setter: Setter[ProductmodelId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ProductmodelId] = new Text[ProductmodelId] {
-    override def unsafeEncode(v: ProductmodelId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ProductmodelId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ProductmodelId] = {
+    new Text[ProductmodelId] {
+      override def unsafeEncode(v: ProductmodelId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ProductmodelId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ProductmodelId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ProductmodelId] = Setter.intSetter.contramap(_.value)
 }

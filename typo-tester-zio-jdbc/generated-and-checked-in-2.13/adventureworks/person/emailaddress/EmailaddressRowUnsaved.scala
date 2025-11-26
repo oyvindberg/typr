@@ -7,6 +7,7 @@ package adventureworks.person.emailaddress
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
@@ -18,76 +19,83 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `person.emailaddress` which has not been persisted yet */
 case class EmailaddressRowUnsaved(
   /** Primary key. Person associated with this email address.  Foreign key to Person.BusinessEntityID
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** E-mail address for the person. */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: Option[/* max 50 chars */ String] = None,
   /** Default: nextval('person.emailaddress_emailaddressid_seq'::regclass)
-      Primary key. ID of this email address. */
-  emailaddressid: Defaulted[Int] = Defaulted.UseDefault,
+   * Primary key. ID of this email address.
+   */
+  emailaddressid: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(emailaddressidDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): EmailaddressRow =
-    EmailaddressRow(
+  def toRow(
+    emailaddressidDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): EmailaddressRow = {
+    new EmailaddressRow(
       businessentityid = businessentityid,
-      emailaddressid = emailaddressid match {
-                         case Defaulted.UseDefault => emailaddressidDefault
-                         case Defaulted.Provided(value) => value
-                       },
+      emailaddressid = emailaddressid.getOrElse(emailaddressidDefault),
       emailaddress = emailaddress,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object EmailaddressRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[EmailaddressRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-    val emailaddressid = jsonObj.get("emailaddressid").toRight("Missing field 'emailaddressid'").flatMap(_.as(Defaulted.jsonDecoder(JsonDecoder.int)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (businessentityid.isRight && emailaddress.isRight && emailaddressid.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(EmailaddressRowUnsaved(businessentityid = businessentityid.toOption.get, emailaddress = emailaddress.toOption.get, emailaddressid = emailaddressid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, emailaddress, emailaddressid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  implicit lazy val jsonEncoder: JsonEncoder[EmailaddressRowUnsaved] = new JsonEncoder[EmailaddressRowUnsaved] {
-    override def unsafeEncode(a: EmailaddressRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""emailaddress":""")
-      JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
-      out.write(",")
-      out.write(""""emailaddressid":""")
-      Defaulted.jsonEncoder(JsonEncoder.int).unsafeEncode(a.emailaddressid, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object EmailaddressRowUnsaved {
+  implicit lazy val jsonDecoder: JsonDecoder[EmailaddressRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val emailaddressid = jsonObj.get("emailaddressid").toRight("Missing field 'emailaddressid'").flatMap(_.as(Defaulted.jsonDecoder(JsonDecoder.int)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (businessentityid.isRight && emailaddress.isRight && emailaddressid.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(EmailaddressRowUnsaved(businessentityid = businessentityid.toOption.get, emailaddress = emailaddress.toOption.get, emailaddressid = emailaddressid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, emailaddress, emailaddressid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[EmailaddressRowUnsaved] = Text.instance[EmailaddressRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.emailaddress, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.intInstance).unsafeEncode(row.emailaddressid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[EmailaddressRowUnsaved] = {
+    new JsonEncoder[EmailaddressRowUnsaved] {
+      override def unsafeEncode(a: EmailaddressRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""emailaddress":""")
+        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
+        out.write(",")
+        out.write(""""emailaddressid":""")
+        Defaulted.jsonEncoder(JsonEncoder.int).unsafeEncode(a.emailaddressid, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[EmailaddressRowUnsaved] = {
+    Text.instance[EmailaddressRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.emailaddress, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.intInstance).unsafeEncode(row.emailaddressid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

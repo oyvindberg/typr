@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait BecViewRepo {
   def select: SelectBuilder[BecViewFields, BecViewRow]
+
   def selectAll(using c: Connection): List[BecViewRow]
 }

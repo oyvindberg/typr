@@ -15,23 +15,36 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Domain `public.Name`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Name(value: String)
+
 object Name {
   given arrayColumn: Column[Array[Name]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[Name]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  given bijection: Bijection[Name, String] = Bijection[Name, String](_.value)(Name.apply)
+
+  given bijection: Bijection[Name, String] = Bijection.apply[Name, String](_.value)(Name.apply)
+
   given column: Column[Name] = Column.columnToString.map(Name.apply)
-  given parameterMetadata: ParameterMetaData[Name] = new ParameterMetaData[Name] {
-    override def sqlType: String = """"public"."Name""""
-    override def jdbcType: Int = Types.OTHER
+
+  given parameterMetadata: ParameterMetaData[Name] = {
+    new ParameterMetaData[Name] {
+      override def sqlType: String = """"public"."Name""""
+      override def jdbcType: Int = Types.OTHER
+    }
   }
+
+  given pgText: Text[Name] = {
+    new Text[Name] {
+      override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[Name] = Reads.StringReads.map(Name.apply)
-  given text: Text[Name] = new Text[Name] {
-    override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[Name] = ToStatement.stringToStatement.contramap(_.value)
+
   given writes: Writes[Name] = Writes.StringWrites.contramap(_.value)
 }

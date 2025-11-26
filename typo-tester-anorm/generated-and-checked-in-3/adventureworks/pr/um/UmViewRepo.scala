@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait UmViewRepo {
   def select: SelectBuilder[UmViewFields, UmViewRow]
+
   def selectAll(using c: Connection): List[UmViewRow]
 }

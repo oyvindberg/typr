@@ -15,8 +15,9 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: person.countryregion
-    Lookup table containing the ISO standard codes for countries and regions.
-    Primary key: countryregioncode */
+ * Lookup table containing the ISO standard codes for countries and regions.
+ * Primary key: countryregioncode
+ */
 case class CountryregionRow(
   /** ISO standard code for countries and regions. */
   countryregioncode: CountryregionId,
@@ -24,37 +25,47 @@ case class CountryregionRow(
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = countryregioncode
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CountryregionRowUnsaved =
-     CountryregionRowUnsaved(countryregioncode, name, modifieddate)
- }
+) {
+  def id: CountryregionId = countryregioncode
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CountryregionRowUnsaved = new CountryregionRowUnsaved(countryregioncode, name, modifieddate)
+}
 
 object CountryregionRow {
   given decoder: Decoder[CountryregionRow] = Decoder.forProduct3[CountryregionRow, CountryregionId, Name, TypoLocalDateTime]("countryregioncode", "name", "modifieddate")(CountryregionRow.apply)(using CountryregionId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[CountryregionRow] = Encoder.forProduct3[CountryregionRow, CountryregionId, Name, TypoLocalDateTime]("countryregioncode", "name", "modifieddate")(x => (x.countryregioncode, x.name, x.modifieddate))(using CountryregionId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[CountryregionRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    CountryregionRow(
-      countryregioncode = arr(0).asInstanceOf[CountryregionId],
-          name = arr(1).asInstanceOf[Name],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[CountryregionRow] = {
+    Text.instance[CountryregionRow]{ (row, sb) =>
+      CountryregionId.pgText.unsafeEncode(row.countryregioncode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[CountryregionRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      CountryregionRow(
+        countryregioncode = arr(0).asInstanceOf[CountryregionId],
+            name = arr(1).asInstanceOf[Name],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[CountryregionRow] = {
+    new Write.Composite[CountryregionRow](
+      List(new Write.Single(CountryregionId.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.countryregioncode, a.name, a.modifieddate)
     )
   }
-  given text: Text[CountryregionRow] = Text.instance[CountryregionRow]{ (row, sb) =>
-    CountryregionId.text.unsafeEncode(row.countryregioncode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[CountryregionRow] = new Write.Composite[CountryregionRow](
-    List(new Write.Single(CountryregionId.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.countryregioncode, a.name, a.modifieddate)
-  )
 }

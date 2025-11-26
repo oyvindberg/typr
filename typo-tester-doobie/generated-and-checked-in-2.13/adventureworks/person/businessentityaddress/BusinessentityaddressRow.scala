@@ -18,66 +18,104 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: person.businessentityaddress
-    Cross-reference table mapping customers, vendors, and employees to their addresses.
-    Composite primary key: businessentityid, addressid, addresstypeid */
+ * Cross-reference table mapping customers, vendors, and employees to their addresses.
+ * Composite primary key: businessentityid, addressid, addresstypeid
+ */
 case class BusinessentityaddressRow(
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary key. Foreign key to Address.AddressID.
-      Points to [[adventureworks.person.address.AddressRow.addressid]] */
+   * Points to [[adventureworks.person.address.AddressRow.addressid]]
+   */
   addressid: AddressId,
   /** Primary key. Foreign key to AddressType.AddressTypeID.
-      Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]] */
+   * Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]]
+   */
   addresstypeid: AddresstypeId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: BusinessentityaddressId = BusinessentityaddressId(businessentityid, addressid, addresstypeid)
-   val id = compositeId
-   def toUnsavedRow(rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): BusinessentityaddressRowUnsaved =
-     BusinessentityaddressRowUnsaved(businessentityid, addressid, addresstypeid, rowguid, modifieddate)
- }
+) {
+  def compositeId: BusinessentityaddressId = new BusinessentityaddressId(businessentityid, addressid, addresstypeid)
 
-object BusinessentityaddressRow {
-  def apply(compositeId: BusinessentityaddressId, rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new BusinessentityaddressRow(compositeId.businessentityid, compositeId.addressid, compositeId.addresstypeid, rowguid, modifieddate)
-  implicit lazy val decoder: Decoder[BusinessentityaddressRow] = Decoder.forProduct5[BusinessentityaddressRow, BusinessentityId, AddressId, AddresstypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(BusinessentityaddressRow.apply)(BusinessentityId.decoder, AddressId.decoder, AddresstypeId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
-  implicit lazy val encoder: Encoder[BusinessentityaddressRow] = Encoder.forProduct5[BusinessentityaddressRow, BusinessentityId, AddressId, AddresstypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(x => (x.businessentityid, x.addressid, x.addresstypeid, x.rowguid, x.modifieddate))(BusinessentityId.encoder, AddressId.encoder, AddresstypeId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[BusinessentityaddressRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
-      new Read.Single(AddresstypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    BusinessentityaddressRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          addressid = arr(1).asInstanceOf[AddressId],
-          addresstypeid = arr(2).asInstanceOf[AddresstypeId],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+  def id: BusinessentityaddressId = this.compositeId
+
+  def toUnsavedRow(
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): BusinessentityaddressRowUnsaved = {
+    new BusinessentityaddressRowUnsaved(
+      businessentityid,
+      addressid,
+      addresstypeid,
+      rowguid,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[BusinessentityaddressRow] = Text.instance[BusinessentityaddressRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    AddressId.text.unsafeEncode(row.addressid, sb)
-    sb.append(Text.DELIMETER)
-    AddresstypeId.text.unsafeEncode(row.addresstypeid, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object BusinessentityaddressRow {
+  def apply(
+    compositeId: BusinessentityaddressId,
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): BusinessentityaddressRow = {
+    new BusinessentityaddressRow(
+      compositeId.businessentityid,
+      compositeId.addressid,
+      compositeId.addresstypeid,
+      rowguid,
+      modifieddate
+    )
   }
-  implicit lazy val write: Write[BusinessentityaddressRow] = new Write.Composite[BusinessentityaddressRow](
-    List(new Write.Single(BusinessentityId.put),
-         new Write.Single(AddressId.put),
-         new Write.Single(AddresstypeId.put),
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.businessentityid, a.addressid, a.addresstypeid, a.rowguid, a.modifieddate)
-  )
+
+  implicit lazy val decoder: Decoder[BusinessentityaddressRow] = Decoder.forProduct5[BusinessentityaddressRow, BusinessentityId, AddressId, AddresstypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(BusinessentityaddressRow.apply)(BusinessentityId.decoder, AddressId.decoder, AddresstypeId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
+  implicit lazy val encoder: Encoder[BusinessentityaddressRow] = Encoder.forProduct5[BusinessentityaddressRow, BusinessentityId, AddressId, AddresstypeId, TypoUUID, TypoLocalDateTime]("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(x => (x.businessentityid, x.addressid, x.addresstypeid, x.rowguid, x.modifieddate))(BusinessentityId.encoder, AddressId.encoder, AddresstypeId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
+
+  implicit lazy val pgText: Text[BusinessentityaddressRow] = {
+    Text.instance[BusinessentityaddressRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      AddressId.pgText.unsafeEncode(row.addressid, sb)
+      sb.append(Text.DELIMETER)
+      AddresstypeId.pgText.unsafeEncode(row.addresstypeid, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[BusinessentityaddressRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
+        new Read.Single(AddresstypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      BusinessentityaddressRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            addressid = arr(1).asInstanceOf[AddressId],
+            addresstypeid = arr(2).asInstanceOf[AddresstypeId],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[BusinessentityaddressRow] = {
+    new Write.Composite[BusinessentityaddressRow](
+      List(new Write.Single(BusinessentityId.put),
+           new Write.Single(AddressId.put),
+           new Write.Single(AddresstypeId.put),
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.businessentityid, a.addressid, a.addresstypeid, a.rowguid, a.modifieddate)
+    )
+  }
 }

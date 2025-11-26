@@ -20,20 +20,26 @@ case class PurchaseorderdetailId(
   purchaseorderid: PurchaseorderheaderId,
   purchaseorderdetailid: Int
 )
+
 object PurchaseorderdetailId {
-  implicit lazy val reads: Reads[PurchaseorderdetailId] = Reads[PurchaseorderdetailId](json => JsResult.fromTry(
-      Try(
-        PurchaseorderdetailId(
-          purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
-          purchaseorderdetailid = json.\("purchaseorderdetailid").as(Reads.IntReads)
+  implicit lazy val reads: Reads[PurchaseorderdetailId] = {
+    Reads[PurchaseorderdetailId](json => JsResult.fromTry(
+        Try(
+          PurchaseorderdetailId(
+            purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
+            purchaseorderdetailid = json.\("purchaseorderdetailid").as(Reads.IntReads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[PurchaseorderdetailId] = OWrites[PurchaseorderdetailId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
-      "purchaseorderdetailid" -> Writes.IntWrites.writes(o.purchaseorderdetailid)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[PurchaseorderdetailId] = {
+    OWrites[PurchaseorderdetailId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
+        "purchaseorderdetailid" -> Writes.IntWrites.writes(o.purchaseorderdetailid)
+      ))
+    )
+  }
 }

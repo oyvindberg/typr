@@ -15,23 +15,36 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Domain `public.mydomain`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Mydomain(value: String)
+
 object Mydomain {
   given arrayColumn: Column[Array[Mydomain]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[Mydomain]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  given bijection: Bijection[Mydomain, String] = Bijection[Mydomain, String](_.value)(Mydomain.apply)
+
+  given bijection: Bijection[Mydomain, String] = Bijection.apply[Mydomain, String](_.value)(Mydomain.apply)
+
   given column: Column[Mydomain] = Column.columnToString.map(Mydomain.apply)
-  given parameterMetadata: ParameterMetaData[Mydomain] = new ParameterMetaData[Mydomain] {
-    override def sqlType: String = """"public"."mydomain""""
-    override def jdbcType: Int = Types.OTHER
+
+  given parameterMetadata: ParameterMetaData[Mydomain] = {
+    new ParameterMetaData[Mydomain] {
+      override def sqlType: String = """"public"."mydomain""""
+      override def jdbcType: Int = Types.OTHER
+    }
   }
+
+  given pgText: Text[Mydomain] = {
+    new Text[Mydomain] {
+      override def unsafeEncode(v: Mydomain, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Mydomain, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[Mydomain] = Reads.StringReads.map(Mydomain.apply)
-  given text: Text[Mydomain] = new Text[Mydomain] {
-    override def unsafeEncode(v: Mydomain, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Mydomain, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[Mydomain] = ToStatement.stringToStatement.contramap(_.value)
+
   given writes: Writes[Mydomain] = Writes.StringWrites.contramap(_.value)
 }

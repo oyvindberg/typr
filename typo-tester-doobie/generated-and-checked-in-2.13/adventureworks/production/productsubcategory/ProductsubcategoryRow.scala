@@ -17,14 +17,17 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: production.productsubcategory
-    Product subcategories. See ProductCategory table.
-    Primary key: productsubcategoryid */
+ * Product subcategories. See ProductCategory table.
+ * Primary key: productsubcategoryid
+ */
 case class ProductsubcategoryRow(
   /** Primary key for ProductSubcategory records.
-      Default: nextval('production.productsubcategory_productsubcategoryid_seq'::regclass) */
+   * Default: nextval('production.productsubcategory_productsubcategoryid_seq'::regclass)
+   */
   productsubcategoryid: ProductsubcategoryId,
   /** Product category identification number. Foreign key to ProductCategory.ProductCategoryID.
-      Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]] */
+   * Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]]
+   */
   productcategoryid: ProductcategoryId,
   /** Subcategory description. */
   name: Name,
@@ -32,47 +35,69 @@ case class ProductsubcategoryRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = productsubcategoryid
-   def toUnsavedRow(productsubcategoryid: Defaulted[ProductsubcategoryId], rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductsubcategoryRowUnsaved =
-     ProductsubcategoryRowUnsaved(productcategoryid, name, productsubcategoryid, rowguid, modifieddate)
- }
+) {
+  def id: ProductsubcategoryId = productsubcategoryid
+
+  def toUnsavedRow(
+    productsubcategoryid: Defaulted[ProductsubcategoryId],
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): ProductsubcategoryRowUnsaved = {
+    new ProductsubcategoryRowUnsaved(
+      productcategoryid,
+      name,
+      productsubcategoryid,
+      rowguid,
+      modifieddate
+    )
+  }
+}
 
 object ProductsubcategoryRow {
   implicit lazy val decoder: Decoder[ProductsubcategoryRow] = Decoder.forProduct5[ProductsubcategoryRow, ProductsubcategoryId, ProductcategoryId, Name, TypoUUID, TypoLocalDateTime]("productsubcategoryid", "productcategoryid", "name", "rowguid", "modifieddate")(ProductsubcategoryRow.apply)(ProductsubcategoryId.decoder, ProductcategoryId.decoder, Name.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[ProductsubcategoryRow] = Encoder.forProduct5[ProductsubcategoryRow, ProductsubcategoryId, ProductcategoryId, Name, TypoUUID, TypoLocalDateTime]("productsubcategoryid", "productcategoryid", "name", "rowguid", "modifieddate")(x => (x.productsubcategoryid, x.productcategoryid, x.name, x.rowguid, x.modifieddate))(ProductsubcategoryId.encoder, ProductcategoryId.encoder, Name.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[ProductsubcategoryRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductsubcategoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductcategoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    ProductsubcategoryRow(
-      productsubcategoryid = arr(0).asInstanceOf[ProductsubcategoryId],
-          productcategoryid = arr(1).asInstanceOf[ProductcategoryId],
-          name = arr(2).asInstanceOf[Name],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+
+  implicit lazy val pgText: Text[ProductsubcategoryRow] = {
+    Text.instance[ProductsubcategoryRow]{ (row, sb) =>
+      ProductsubcategoryId.pgText.unsafeEncode(row.productsubcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      ProductcategoryId.pgText.unsafeEncode(row.productcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[ProductsubcategoryRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductsubcategoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductcategoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      ProductsubcategoryRow(
+        productsubcategoryid = arr(0).asInstanceOf[ProductsubcategoryId],
+            productcategoryid = arr(1).asInstanceOf[ProductcategoryId],
+            name = arr(2).asInstanceOf[Name],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[ProductsubcategoryRow] = {
+    new Write.Composite[ProductsubcategoryRow](
+      List(new Write.Single(ProductsubcategoryId.put),
+           new Write.Single(ProductcategoryId.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.productsubcategoryid, a.productcategoryid, a.name, a.rowguid, a.modifieddate)
     )
   }
-  implicit lazy val text: Text[ProductsubcategoryRow] = Text.instance[ProductsubcategoryRow]{ (row, sb) =>
-    ProductsubcategoryId.text.unsafeEncode(row.productsubcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    ProductcategoryId.text.unsafeEncode(row.productcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  implicit lazy val write: Write[ProductsubcategoryRow] = new Write.Composite[ProductsubcategoryRow](
-    List(new Write.Single(ProductsubcategoryId.put),
-         new Write.Single(ProductcategoryId.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.productsubcategoryid, a.productcategoryid, a.name, a.rowguid, a.modifieddate)
-  )
 }

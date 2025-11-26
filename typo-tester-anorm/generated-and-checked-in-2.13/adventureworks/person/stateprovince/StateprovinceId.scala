@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.stateprovince` */
-case class StateprovinceId(value: Int) extends AnyVal
+case class StateprovinceId(value: Int) extends scala.AnyVal
+
 object StateprovinceId {
   implicit lazy val arrayColumn: Column[Array[StateprovinceId]] = Column.columnToArray(column, implicitly)
+
   implicit lazy val arrayToStatement: ToStatement[Array[StateprovinceId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[StateprovinceId, Int] = Bijection[StateprovinceId, Int](_.value)(StateprovinceId.apply)
+
+  implicit lazy val bijection: Bijection[StateprovinceId, Int] = Bijection.apply[StateprovinceId, Int](_.value)(StateprovinceId.apply)
+
   implicit lazy val column: Column[StateprovinceId] = Column.columnToInt.map(StateprovinceId.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[StateprovinceId] = new ParameterMetaData[StateprovinceId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  implicit lazy val parameterMetadata: ParameterMetaData[StateprovinceId] = {
+    new ParameterMetaData[StateprovinceId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  implicit lazy val pgText: Text[StateprovinceId] = {
+    new Text[StateprovinceId] {
+      override def unsafeEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[StateprovinceId] = Reads.IntReads.map(StateprovinceId.apply)
-  implicit lazy val text: Text[StateprovinceId] = new Text[StateprovinceId] {
-    override def unsafeEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: StateprovinceId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[StateprovinceId] = ToStatement.intToStatement.contramap(_.value)
+
   implicit lazy val writes: Writes[StateprovinceId] = Writes.IntWrites.contramap(_.value)
 }

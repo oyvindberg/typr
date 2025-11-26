@@ -25,16 +25,19 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: sales.store
-    Customers (resellers) of Adventure Works products.
-    Primary key: businessentityid */
+ * Customers (resellers) of Adventure Works products.
+ * Primary key: businessentityid
+ */
 case class StoreRow(
   /** Primary key. Foreign key to Customer.BusinessEntityID.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Name of the store. */
   name: Name,
   /** ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
+   * Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]]
+   */
   salespersonid: Option[BusinessentityId],
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
   demographics: Option[TypoXml],
@@ -42,59 +45,82 @@ case class StoreRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = businessentityid
-   def toUnsavedRow(rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): StoreRowUnsaved =
-     StoreRowUnsaved(businessentityid, name, salespersonid, demographics, rowguid, modifieddate)
- }
+) {
+  def id: BusinessentityId = businessentityid
 
-object StoreRow {
-  implicit lazy val reads: Reads[StoreRow] = Reads[StoreRow](json => JsResult.fromTry(
-      Try(
-        StoreRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          name = json.\("name").as(Name.reads),
-          salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
-          demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[StoreRow] = RowParser[StoreRow] { row =>
-    Success(
-      StoreRow(
-        businessentityid = row(idx + 0)(BusinessentityId.column),
-        name = row(idx + 1)(Name.column),
-        salespersonid = row(idx + 2)(Column.columnToOption(BusinessentityId.column)),
-        demographics = row(idx + 3)(Column.columnToOption(TypoXml.column)),
-        rowguid = row(idx + 4)(TypoUUID.column),
-        modifieddate = row(idx + 5)(TypoLocalDateTime.column)
-      )
+  def toUnsavedRow(
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): StoreRowUnsaved = {
+    new StoreRowUnsaved(
+      businessentityid,
+      name,
+      salespersonid,
+      demographics,
+      rowguid,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[StoreRow] = Text.instance[StoreRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(BusinessentityId.text).unsafeEncode(row.salespersonid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoXml.text).unsafeEncode(row.demographics, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object StoreRow {
+  implicit lazy val pgText: Text[StoreRow] = {
+    Text.instance[StoreRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(BusinessentityId.pgText).unsafeEncode(row.salespersonid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoXml.pgText).unsafeEncode(row.demographics, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[StoreRow] = OWrites[StoreRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "name" -> Name.writes.writes(o.name),
-      "salespersonid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.salespersonid),
-      "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[StoreRow] = {
+    Reads[StoreRow](json => JsResult.fromTry(
+        Try(
+          StoreRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            name = json.\("name").as(Name.reads),
+            salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
+            demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[StoreRow] = {
+    RowParser[StoreRow] { row =>
+      Success(
+        StoreRow(
+          businessentityid = row(idx + 0)(BusinessentityId.column),
+          name = row(idx + 1)(Name.column),
+          salespersonid = row(idx + 2)(Column.columnToOption(BusinessentityId.column)),
+          demographics = row(idx + 3)(Column.columnToOption(TypoXml.column)),
+          rowguid = row(idx + 4)(TypoUUID.column),
+          modifieddate = row(idx + 5)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[StoreRow] = {
+    OWrites[StoreRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "name" -> Name.writes.writes(o.name),
+        "salespersonid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.salespersonid),
+        "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

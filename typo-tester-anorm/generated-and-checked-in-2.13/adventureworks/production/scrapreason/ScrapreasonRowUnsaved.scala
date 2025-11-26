@@ -7,6 +7,7 @@ package adventureworks.production.scrapreason
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -22,47 +23,49 @@ case class ScrapreasonRowUnsaved(
   /** Failure description. */
   name: Name,
   /** Default: nextval('production.scrapreason_scrapreasonid_seq'::regclass)
-      Primary key for ScrapReason records. */
-  scrapreasonid: Defaulted[ScrapreasonId] = Defaulted.UseDefault,
+   * Primary key for ScrapReason records.
+   */
+  scrapreasonid: Defaulted[ScrapreasonId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(scrapreasonidDefault: => ScrapreasonId, modifieddateDefault: => TypoLocalDateTime): ScrapreasonRow =
-    ScrapreasonRow(
-      scrapreasonid = scrapreasonid match {
-                        case Defaulted.UseDefault => scrapreasonidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    scrapreasonidDefault: => ScrapreasonId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ScrapreasonRow = new ScrapreasonRow(scrapreasonid = scrapreasonid.getOrElse(scrapreasonidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ScrapreasonRowUnsaved {
-  implicit lazy val reads: Reads[ScrapreasonRowUnsaved] = Reads[ScrapreasonRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ScrapreasonRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          scrapreasonid = json.\("scrapreasonid").as(Defaulted.reads(ScrapreasonId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ScrapreasonRowUnsaved] = Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ScrapreasonId.text).unsafeEncode(row.scrapreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  implicit lazy val pgText: Text[ScrapreasonRowUnsaved] = {
+    Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ScrapreasonId.pgText).unsafeEncode(row.scrapreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[ScrapreasonRowUnsaved] = OWrites[ScrapreasonRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "scrapreasonid" -> Defaulted.writes(ScrapreasonId.writes).writes(o.scrapreasonid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[ScrapreasonRowUnsaved] = {
+    Reads[ScrapreasonRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ScrapreasonRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            scrapreasonid = json.\("scrapreasonid").as(Defaulted.reads(ScrapreasonId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ScrapreasonRowUnsaved] = {
+    OWrites[ScrapreasonRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "scrapreasonid" -> Defaulted.writes(ScrapreasonId.writes).writes(o.scrapreasonid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

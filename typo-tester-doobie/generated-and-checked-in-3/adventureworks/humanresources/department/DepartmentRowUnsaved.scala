@@ -6,6 +6,7 @@
 package adventureworks.humanresources.department
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -19,35 +20,39 @@ case class DepartmentRowUnsaved(
   /** Name of the group to which the department belongs. */
   groupname: Name,
   /** Default: nextval('humanresources.department_departmentid_seq'::regclass)
-      Primary key for Department records. */
-  departmentid: Defaulted[DepartmentId] = Defaulted.UseDefault,
+   * Primary key for Department records.
+   */
+  departmentid: Defaulted[DepartmentId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(departmentidDefault: => DepartmentId, modifieddateDefault: => TypoLocalDateTime): DepartmentRow =
-    DepartmentRow(
+  def toRow(
+    departmentidDefault: => DepartmentId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): DepartmentRow = {
+    new DepartmentRow(
+      departmentid = departmentid.getOrElse(departmentidDefault),
       name = name,
       groupname = groupname,
-      departmentid = departmentid match {
-                       case Defaulted.UseDefault => departmentidDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object DepartmentRowUnsaved {
   given decoder: Decoder[DepartmentRowUnsaved] = Decoder.forProduct4[DepartmentRowUnsaved, Name, Name, Defaulted[DepartmentId], Defaulted[TypoLocalDateTime]]("name", "groupname", "departmentid", "modifieddate")(DepartmentRowUnsaved.apply)(using Name.decoder, Name.decoder, Defaulted.decoder(using DepartmentId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[DepartmentRowUnsaved] = Encoder.forProduct4[DepartmentRowUnsaved, Name, Name, Defaulted[DepartmentId], Defaulted[TypoLocalDateTime]]("name", "groupname", "departmentid", "modifieddate")(x => (x.name, x.groupname, x.departmentid, x.modifieddate))(using Name.encoder, Name.encoder, Defaulted.encoder(using DepartmentId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[DepartmentRowUnsaved] = Text.instance[DepartmentRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.groupname, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using DepartmentId.text).unsafeEncode(row.departmentid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[DepartmentRowUnsaved] = {
+    Text.instance[DepartmentRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.groupname, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using DepartmentId.pgText).unsafeEncode(row.departmentid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

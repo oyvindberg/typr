@@ -14,19 +14,29 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Domain `information_schema.character_data`
-  * No constraint
-  */
+ * No constraint
+ */
 case class CharacterData(value: String)
+
 object CharacterData {
   given arrayGet: Get[Array[CharacterData]] = adventureworks.StringArrayMeta.get.map(_.map(CharacterData.apply))
+
   given arrayPut: Put[Array[CharacterData]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[CharacterData, String] = Bijection[CharacterData, String](_.value)(CharacterData.apply)
+
+  given bijection: Bijection[CharacterData, String] = Bijection.apply[CharacterData, String](_.value)(CharacterData.apply)
+
   given decoder: Decoder[CharacterData] = Decoder.decodeString.map(CharacterData.apply)
+
   given encoder: Encoder[CharacterData] = Encoder.encodeString.contramap(_.value)
+
   given get: Get[CharacterData] = Meta.StringMeta.get.map(CharacterData.apply)
-  given put: Put[CharacterData] = Meta.StringMeta.put.contramap(_.value)
-  given text: Text[CharacterData] = new Text[CharacterData] {
-    override def unsafeEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CharacterData] = {
+    new Text[CharacterData] {
+      override def unsafeEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[CharacterData] = Meta.StringMeta.put.contramap(_.value)
 }

@@ -2,6 +2,11 @@ create extension citext;
 create extension hstore;
 create extension vector;
 
+create type complex as (
+    r float8,
+    i float8
+);
+
 create type myenum as enum ('a', 'b', 'c');
 create domain mydomain as text;
 

@@ -5,18 +5,16 @@
  */
 package adventureworks.sa.tr
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class TrViewRepoImpl extends TrViewRepo {
-  override def select: SelectBuilder[TrViewFields, TrViewRow] = {
-    SelectBuilderSql(""""sa"."tr"""", TrViewFields.structure, TrViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[TrViewRow] = {
+  def select: SelectBuilder[TrViewFields, TrViewRow] = SelectBuilder.of(""""sa"."tr"""", TrViewFields.structure, TrViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[TrViewRow] = {
     SQL"""select "id", "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
-          from "sa"."tr"
-       """.as(TrViewRow.rowParser(1).*)
+    from "sa"."tr"
+    """.as(TrViewRow.rowParser(1).*)
   }
 }

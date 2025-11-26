@@ -12,28 +12,37 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.issue142
-    Primary key: tabellkode */
-case class Issue142Row(
-  tabellkode: Issue142Id
-){
-   val id = tabellkode
- }
+ * Primary key: tabellkode
+ */
+case class Issue142Row(tabellkode: Issue142Id) {
+  def id: Issue142Id = tabellkode
+}
 
 object Issue142Row {
   given decoder: Decoder[Issue142Row] = Decoder.forProduct1[Issue142Row, Issue142Id]("tabellkode")(Issue142Row.apply)(using Issue142Id.decoder)
+
   given encoder: Encoder[Issue142Row] = Encoder.forProduct1[Issue142Row, Issue142Id]("tabellkode")(x => (x.tabellkode))(using Issue142Id.encoder)
-  given read: Read[Issue142Row] = new Read.CompositeOfInstances(Array(
-    new Read.Single(Issue142Id.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    Issue142Row(
-      tabellkode = arr(0).asInstanceOf[Issue142Id]
+
+  given pgText: Text[Issue142Row] = {
+    Text.instance[Issue142Row]{ (row, sb) =>
+      Issue142Id.pgText.unsafeEncode(row.tabellkode, sb)
+    }
+  }
+
+  given read: Read[Issue142Row] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(Issue142Id.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      Issue142Row(
+        tabellkode = arr(0).asInstanceOf[Issue142Id]
+      )
+    }
+  }
+
+  given write: Write[Issue142Row] = {
+    new Write.Composite[Issue142Row](
+      List(new Write.Single(Issue142Id.put)),
+      a => List(a.tabellkode)
     )
   }
-  given text: Text[Issue142Row] = Text.instance[Issue142Row]{ (row, sb) =>
-    Issue142Id.text.unsafeEncode(row.tabellkode, sb)
-  }
-  given write: Write[Issue142Row] = new Write.Composite[Issue142Row](
-    List(new Write.Single(Issue142Id.put)),
-    a => List(a.tabellkode)
-  )
 }

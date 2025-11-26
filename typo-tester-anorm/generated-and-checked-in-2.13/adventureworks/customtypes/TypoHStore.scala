@@ -20,30 +20,44 @@ import typo.dsl.Bijection
 case class TypoHStore(value: Map[String, String])
 
 object TypoHStore {
-  implicit lazy val bijection: Bijection[TypoHStore, Map[String, String]] = Bijection[TypoHStore, Map[String, String]](_.value)(TypoHStore.apply)
-  implicit lazy val column: Column[TypoHStore] = Column.nonNull[TypoHStore]((v1: Any, _) =>
-    v1 match {
-      case v: java.util.Map[?, ?] => Right({
-                                             val b = Map.newBuilder[String, String]
-                                             v.forEach { case (k, v) => b += k.asInstanceOf[String] -> v.asInstanceOf[String]}
-                                             TypoHStore(b.result())
-                                           })
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.util.Map[?, ?], got ${other.getClass.getName}"))
+  implicit lazy val bijection: Bijection[TypoHStore, Map[String, String]] = Bijection.apply[TypoHStore, Map[String, String]](_.value)(TypoHStore.apply)
+
+  implicit lazy val column: Column[TypoHStore] = {
+    Column.nonNull[TypoHStore]((v1: Any, _) =>
+      v1 match {
+        case v: java.util.Map[?, ?] => Right({
+                                               val b = Map.newBuilder[String, String]
+                                               v.forEach { case (k, v) => b += k.asInstanceOf[String] -> v.asInstanceOf[String]}
+                                               TypoHStore(b.result())
+                                             })
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.util.Map[?, ?], got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  implicit lazy val parameterMetadata: ParameterMetaData[TypoHStore] = {
+    new ParameterMetaData[TypoHStore] {
+      override def sqlType: String = "hstore"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  implicit lazy val parameterMetadata: ParameterMetaData[TypoHStore] = new ParameterMetaData[TypoHStore] {
-    override def sqlType: String = "hstore"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  implicit lazy val pgText: Text[TypoHStore] = {
+    new Text[TypoHStore] {
+      override def unsafeEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
+      override def unsafeArrayEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
+    }
+  }
+
   implicit lazy val reads: Reads[TypoHStore] = implicitly[Reads[Map[String, String]]].map(TypoHStore.apply)
-  implicit lazy val text: Text[TypoHStore] = new Text[TypoHStore] {
-    override def unsafeEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
-    override def unsafeArrayEncode(v: TypoHStore, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.map { case (k, v) => s"$k => $v" }.mkString(","), sb)
+
+  implicit lazy val toStatement: ToStatement[TypoHStore] = {
+    ToStatement[TypoHStore]((s, index, v) => s.setObject(index, {
+      val b = new HashMap[String, String]
+      v.value.foreach { case (k, v) => b.put(k, v)}
+      b
+    }))
   }
-  implicit lazy val toStatement: ToStatement[TypoHStore] = ToStatement[TypoHStore]((s, index, v) => s.setObject(index, {
-                                                                val b = new HashMap[String, String]
-                                                                v.value.foreach { case (k, v) => b.put(k, v)}
-                                                                b
-                                                              }))
+
   implicit lazy val writes: Writes[TypoHStore] = implicitly[Writes[Map[String, String]]].contramap(_.value)
 }

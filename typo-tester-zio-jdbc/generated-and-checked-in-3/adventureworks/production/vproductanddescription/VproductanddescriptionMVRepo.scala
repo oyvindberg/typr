@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VproductanddescriptionMVRepo {
   def select: SelectBuilder[VproductanddescriptionMVFields, VproductanddescriptionMVRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VproductanddescriptionMVRow]
 }

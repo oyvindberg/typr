@@ -23,24 +23,28 @@ case class VsalespersonsalesbyfiscalyearsViewRow(
 
 object VsalespersonsalesbyfiscalyearsViewRow {
   implicit lazy val decoder: Decoder[VsalespersonsalesbyfiscalyearsViewRow] = Decoder.forProduct7[VsalespersonsalesbyfiscalyearsViewRow, /* nullability unknown */ Option[Int], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014")(VsalespersonsalesbyfiscalyearsViewRow.apply)(Decoder.decodeOption(Decoder.decodeInt), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeBigDecimal), Decoder.decodeOption(Decoder.decodeBigDecimal), Decoder.decodeOption(Decoder.decodeBigDecimal))
+
   implicit lazy val encoder: Encoder[VsalespersonsalesbyfiscalyearsViewRow] = Encoder.forProduct7[VsalespersonsalesbyfiscalyearsViewRow, /* nullability unknown */ Option[Int], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014")(x => (x.salesPersonID, x.fullName, x.jobTitle, x.salesTerritory, x.`2012`, x.`2013`, x.`2014`))(Encoder.encodeOption(Encoder.encodeInt), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeBigDecimal), Encoder.encodeOption(Encoder.encodeBigDecimal), Encoder.encodeOption(Encoder.encodeBigDecimal))
-  implicit lazy val read: Read[VsalespersonsalesbyfiscalyearsViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    VsalespersonsalesbyfiscalyearsViewRow(
-      salesPersonID = arr(0).asInstanceOf[/* nullability unknown */ Option[Int]],
-          fullName = arr(1).asInstanceOf[/* nullability unknown */ Option[String]],
-          jobTitle = arr(2).asInstanceOf[/* nullability unknown */ Option[String]],
-          salesTerritory = arr(3).asInstanceOf[/* nullability unknown */ Option[String]],
-          `2012` = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-          `2013` = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-          `2014` = arr(6).asInstanceOf[/* nullability unknown */ Option[BigDecimal]]
-    )
+
+  implicit lazy val read: Read[VsalespersonsalesbyfiscalyearsViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      VsalespersonsalesbyfiscalyearsViewRow(
+        salesPersonID = arr(0).asInstanceOf[/* nullability unknown */ Option[Int]],
+            fullName = arr(1).asInstanceOf[/* nullability unknown */ Option[String]],
+            jobTitle = arr(2).asInstanceOf[/* nullability unknown */ Option[String]],
+            salesTerritory = arr(3).asInstanceOf[/* nullability unknown */ Option[String]],
+            `2012` = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
+            `2013` = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
+            `2014` = arr(6).asInstanceOf[/* nullability unknown */ Option[BigDecimal]]
+      )
+    }
   }
 }

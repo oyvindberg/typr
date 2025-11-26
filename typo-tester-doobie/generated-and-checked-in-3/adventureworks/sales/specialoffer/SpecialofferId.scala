@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.specialoffer` */
-case class SpecialofferId(value: Int) extends AnyVal
+case class SpecialofferId(value: Int) extends scala.AnyVal
+
 object SpecialofferId {
   given arrayGet: Get[Array[SpecialofferId]] = adventureworks.IntegerArrayMeta.get.map(_.map(SpecialofferId.apply))
+
   given arrayPut: Put[Array[SpecialofferId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[SpecialofferId, Int] = Bijection[SpecialofferId, Int](_.value)(SpecialofferId.apply)
+
+  given bijection: Bijection[SpecialofferId, Int] = Bijection.apply[SpecialofferId, Int](_.value)(SpecialofferId.apply)
+
   given decoder: Decoder[SpecialofferId] = Decoder.decodeInt.map(SpecialofferId.apply)
+
   given encoder: Encoder[SpecialofferId] = Encoder.encodeInt.contramap(_.value)
+
   given get: Get[SpecialofferId] = Meta.IntMeta.get.map(SpecialofferId.apply)
-  given put: Put[SpecialofferId] = Meta.IntMeta.put.contramap(_.value)
-  given text: Text[SpecialofferId] = new Text[SpecialofferId] {
-    override def unsafeEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[SpecialofferId] = {
+    new Text[SpecialofferId] {
+      override def unsafeEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: SpecialofferId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[SpecialofferId] = Meta.IntMeta.put.contramap(_.value)
 }

@@ -32,33 +32,41 @@ case class PersonDynamicSqlRow(
 )
 
 object PersonDynamicSqlRow {
-  given reads: Reads[PersonDynamicSqlRow] = Reads[PersonDynamicSqlRow](json => JsResult.fromTry(
-      Try(
-        PersonDynamicSqlRow(
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads)
+  given reads: Reads[PersonDynamicSqlRow] = {
+    Reads[PersonDynamicSqlRow](json => JsResult.fromTry(
+        Try(
+          PersonDynamicSqlRow(
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersonDynamicSqlRow] = RowParser[PersonDynamicSqlRow] { row =>
-    Success(
-      PersonDynamicSqlRow(
-        title = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
-        firstname = row(idx + 1)(using /* user-picked */ FirstName.column),
-        middlename = row(idx + 2)(using Column.columnToOption(using Name.column)),
-        lastname = row(idx + 3)(using Name.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PersonDynamicSqlRow] = OWrites[PersonDynamicSqlRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PersonDynamicSqlRow] = {
+    RowParser[PersonDynamicSqlRow] { row =>
+      Success(
+        PersonDynamicSqlRow(
+          title = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          firstname = row(idx + 1)(using /* user-picked */ FirstName.column),
+          middlename = row(idx + 2)(using Column.columnToOption(using Name.column)),
+          lastname = row(idx + 3)(using Name.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PersonDynamicSqlRow] = {
+    OWrites[PersonDynamicSqlRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname)
+      ))
+    )
+  }
 }

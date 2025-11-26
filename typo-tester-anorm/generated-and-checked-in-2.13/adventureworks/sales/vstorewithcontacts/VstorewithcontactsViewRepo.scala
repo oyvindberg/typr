@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait VstorewithcontactsViewRepo {
   def select: SelectBuilder[VstorewithcontactsViewFields, VstorewithcontactsViewRow]
+
   def selectAll(implicit c: Connection): List[VstorewithcontactsViewRow]
 }

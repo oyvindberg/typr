@@ -47,48 +47,56 @@ case class SpViewRow(
 )
 
 object SpViewRow {
-  given reads: Reads[SpViewRow] = Reads[SpViewRow](json => JsResult.fromTry(
-      Try(
-        SpViewRow(
-          id = json.\("id").as(StateprovinceId.reads),
-          stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
-          stateprovincecode = json.\("stateprovincecode").as(Reads.StringReads),
-          countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
-          isonlystateprovinceflag = json.\("isonlystateprovinceflag").as(Flag.reads),
-          name = json.\("name").as(Name.reads),
-          territoryid = json.\("territoryid").as(SalesterritoryId.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SpViewRow] = {
+    Reads[SpViewRow](json => JsResult.fromTry(
+        Try(
+          SpViewRow(
+            id = json.\("id").as(StateprovinceId.reads),
+            stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
+            stateprovincecode = json.\("stateprovincecode").as(Reads.StringReads),
+            countryregioncode = json.\("countryregioncode").as(CountryregionId.reads),
+            isonlystateprovinceflag = json.\("isonlystateprovinceflag").as(Flag.reads),
+            name = json.\("name").as(Name.reads),
+            territoryid = json.\("territoryid").as(SalesterritoryId.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SpViewRow] = RowParser[SpViewRow] { row =>
-    Success(
-      SpViewRow(
-        id = row(idx + 0)(using StateprovinceId.column),
-        stateprovinceid = row(idx + 1)(using StateprovinceId.column),
-        stateprovincecode = row(idx + 2)(using Column.columnToString),
-        countryregioncode = row(idx + 3)(using CountryregionId.column),
-        isonlystateprovinceflag = row(idx + 4)(using Flag.column),
-        name = row(idx + 5)(using Name.column),
-        territoryid = row(idx + 6)(using SalesterritoryId.column),
-        rowguid = row(idx + 7)(using TypoUUID.column),
-        modifieddate = row(idx + 8)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SpViewRow] = OWrites[SpViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> StateprovinceId.writes.writes(o.id),
-      "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
-      "stateprovincecode" -> Writes.StringWrites.writes(o.stateprovincecode),
-      "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
-      "isonlystateprovinceflag" -> Flag.writes.writes(o.isonlystateprovinceflag),
-      "name" -> Name.writes.writes(o.name),
-      "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SpViewRow] = {
+    RowParser[SpViewRow] { row =>
+      Success(
+        SpViewRow(
+          id = row(idx + 0)(using StateprovinceId.column),
+          stateprovinceid = row(idx + 1)(using StateprovinceId.column),
+          stateprovincecode = row(idx + 2)(using Column.columnToString),
+          countryregioncode = row(idx + 3)(using CountryregionId.column),
+          isonlystateprovinceflag = row(idx + 4)(using Flag.column),
+          name = row(idx + 5)(using Name.column),
+          territoryid = row(idx + 6)(using SalesterritoryId.column),
+          rowguid = row(idx + 7)(using TypoUUID.column),
+          modifieddate = row(idx + 8)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SpViewRow] = {
+    OWrites[SpViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> StateprovinceId.writes.writes(o.id),
+        "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
+        "stateprovincecode" -> Writes.StringWrites.writes(o.stateprovincecode),
+        "countryregioncode" -> CountryregionId.writes.writes(o.countryregioncode),
+        "isonlystateprovinceflag" -> Flag.writes.writes(o.isonlystateprovinceflag),
+        "name" -> Name.writes.writes(o.name),
+        "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

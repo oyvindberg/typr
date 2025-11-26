@@ -6,6 +6,7 @@
 package adventureworks.person.countryregion
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -19,26 +20,23 @@ case class CountryregionRowUnsaved(
   /** Country or region name. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow =
-    CountryregionRow(
-      countryregioncode = countryregioncode,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow = new CountryregionRow(countryregioncode = countryregioncode, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object CountryregionRowUnsaved {
   implicit lazy val decoder: Decoder[CountryregionRowUnsaved] = Decoder.forProduct3[CountryregionRowUnsaved, CountryregionId, Name, Defaulted[TypoLocalDateTime]]("countryregioncode", "name", "modifieddate")(CountryregionRowUnsaved.apply)(CountryregionId.decoder, Name.decoder, Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[CountryregionRowUnsaved] = Encoder.forProduct3[CountryregionRowUnsaved, CountryregionId, Name, Defaulted[TypoLocalDateTime]]("countryregioncode", "name", "modifieddate")(x => (x.countryregioncode, x.name, x.modifieddate))(CountryregionId.encoder, Name.encoder, Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[CountryregionRowUnsaved] = Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
-    CountryregionId.text.unsafeEncode(row.countryregioncode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[CountryregionRowUnsaved] = {
+    Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
+      CountryregionId.pgText.unsafeEncode(row.countryregioncode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

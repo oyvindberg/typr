@@ -21,22 +21,21 @@ trait SohsrViewFields {
 
 object SohsrViewFields {
   lazy val structure: Relation[SohsrViewFields, SohsrViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SohsrViewFields, SohsrViewRow] {
-  
+
     override lazy val fields: SohsrViewFields = new SohsrViewFields {
       override def salesorderid = Field[SalesorderheaderId, SohsrViewRow](_path, "salesorderid", None, None, x => x.salesorderid, (row, value) => row.copy(salesorderid = value))
       override def salesreasonid = Field[SalesreasonId, SohsrViewRow](_path, "salesreasonid", None, None, x => x.salesreasonid, (row, value) => row.copy(salesreasonid = value))
       override def modifieddate = Field[TypoLocalDateTime, SohsrViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SohsrViewRow]] =
       List[FieldLike[?, SohsrViewRow]](fields.salesorderid, fields.salesreasonid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -1,6 +1,6 @@
 package typo.dsl
 
-import anorm.{RowParser, SQL, SimpleSql}
+import anorm.{ResultSetParser, RowParser, SQL, SimpleSql}
 import typo.dsl.Fragment.FragmentStringInterpolator
 
 import java.sql.Connection
@@ -32,15 +32,53 @@ trait UpdateBuilder[Fields, Row] {
 }
 
 object UpdateBuilder {
-  def apply[Fields, Row](name: String, structure: Structure.Relation[Fields, Row], rowParser: Int => RowParser[Row]): UpdateBuilderSql[Fields, Row] =
-    UpdateBuilderSql(name, structure, rowParser, UpdateParams.empty)
+  def of[Fields, Row](name: String, structure: Structure.Relation[Fields, Row], resultSetParser: ResultSetParser[List[Row]]): UpdateBuilderSql[Fields, Row] =
+    UpdateBuilderSql.Impl(name, structure, resultSetParser, UpdateParams.empty)
 
-  final case class UpdateBuilderSql[Fields, Row](
+  final case class UpdateBuilderMock[Id, Fields, Row](
+      params: UpdateParams[Fields, Row],
+      structure: Structure[Fields, Row],
+      map: scala.collection.mutable.Map[Id, Row]
+  ) extends UpdateBuilder[Fields, Row] {
+    override def withParams(sqlParams: UpdateParams[Fields, Row]): UpdateBuilder[Fields, Row] =
+      copy(params = sqlParams)
+
+    override def sql(returning: Boolean): Option[Fragment] =
+      None
+
+    override def execute()(implicit c: Connection): Int =
+      executeReturnChanged().size
+
+    override def executeReturnChanged()(implicit @nowarn c: Connection): List[Row] = {
+      val changed = List.newBuilder[Row]
+      map.foreach { case (id, row) =>
+        if (params.where.forall(w => structure.untypedEval(w(structure.fields), row).getOrElse(false))) {
+          val newRow = params.setters.foldLeft(row) { case (row, set: UpdateParams.Setter[Fields, t, Row]) =>
+            val field: SqlExpr.FieldLike[t, Row] = set.col(structure.fields)
+            val newValue: Option[t] = structure.untypedEval(set.value(structure.fields), row)
+            field.set(row, newValue) match {
+              case Left(msg)    => sys.error(msg)
+              case Right(value) => value
+            }
+          }
+          map.update(id, newRow)
+          changed += newRow
+        }
+      }
+      changed.result()
+    }
+  }
+}
+
+sealed trait UpdateBuilderSql[Fields, Row] extends UpdateBuilder[Fields, Row]
+
+object UpdateBuilderSql {
+  final case class Impl[Fields, Row](
       name: String,
       structure: Structure.Relation[Fields, Row],
-      rowParser: Int => RowParser[Row],
+      resultSetParser: ResultSetParser[List[Row]],
       params: UpdateParams[Fields, Row]
-  ) extends UpdateBuilder[Fields, Row] {
+  ) extends UpdateBuilderSql[Fields, Row] {
     override def withParams(sqlParams: UpdateParams[Fields, Row]): UpdateBuilder[Fields, Row] =
       copy(params = sqlParams)
 
@@ -84,41 +122,7 @@ object UpdateBuilder {
 
     override def executeReturnChanged()(implicit c: Connection): List[Row] = {
       val frag = mkSql(returning = true)
-      SimpleSql(SQL(frag.sql), frag.params.map(_.tupled).toMap, RowParser.successful).as(rowParser(1).*)
-    }
-  }
-
-  final case class UpdateBuilderMock[Id, Fields, Row](
-      params: UpdateParams[Fields, Row],
-      structure: Structure[Fields, Row],
-      map: scala.collection.mutable.Map[Id, Row]
-  ) extends UpdateBuilder[Fields, Row] {
-    override def withParams(sqlParams: UpdateParams[Fields, Row]): UpdateBuilder[Fields, Row] =
-      copy(params = sqlParams)
-
-    override def sql(returning: Boolean): Option[Fragment] =
-      None
-
-    override def execute()(implicit c: Connection): Int =
-      executeReturnChanged().size
-
-    override def executeReturnChanged()(implicit @nowarn c: Connection): List[Row] = {
-      val changed = List.newBuilder[Row]
-      map.foreach { case (id, row) =>
-        if (params.where.forall(w => structure.untypedEval(w(structure.fields), row).getOrElse(false))) {
-          val newRow = params.setters.foldLeft(row) { case (row, set: UpdateParams.Setter[Fields, t, Row]) =>
-            val field: SqlExpr.FieldLike[t, Row] = set.col(structure.fields)
-            val newValue: Option[t] = structure.untypedEval(set.value(structure.fields), row)
-            field.set(row, newValue) match {
-              case Left(msg)    => sys.error(msg)
-              case Right(value) => value
-            }
-          }
-          map.update(id, newRow)
-          changed += newRow
-        }
-      }
-      changed.result()
+      SimpleSql(SQL(frag.sql), frag.params.map(_.tupled).toMap, RowParser.successful).as(resultSetParser)
     }
   }
 }

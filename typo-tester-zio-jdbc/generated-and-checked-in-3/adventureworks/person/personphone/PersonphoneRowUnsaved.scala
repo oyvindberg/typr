@@ -7,6 +7,7 @@ package adventureworks.person.personphone
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
@@ -19,61 +20,70 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `person.personphone` which has not been persisted yet */
 case class PersonphoneRowUnsaved(
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Telephone number identification number. */
   phonenumber: Phone,
   /** Kind of phone number. Foreign key to PhoneNumberType.PhoneNumberTypeID.
-      Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]] */
+   * Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]]
+   */
   phonenumbertypeid: PhonenumbertypeId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): PersonphoneRow =
-    PersonphoneRow(
+  def toRow(modifieddateDefault: => TypoLocalDateTime): PersonphoneRow = {
+    new PersonphoneRow(
       businessentityid = businessentityid,
       phonenumber = phonenumber,
       phonenumbertypeid = phonenumbertypeid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object PersonphoneRowUnsaved {
-  given jsonDecoder: JsonDecoder[PersonphoneRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val phonenumber = jsonObj.get("phonenumber").toRight("Missing field 'phonenumber'").flatMap(_.as(using Phone.jsonDecoder))
-    val phonenumbertypeid = jsonObj.get("phonenumbertypeid").toRight("Missing field 'phonenumbertypeid'").flatMap(_.as(using PhonenumbertypeId.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (businessentityid.isRight && phonenumber.isRight && phonenumbertypeid.isRight && modifieddate.isRight)
-      Right(PersonphoneRowUnsaved(businessentityid = businessentityid.toOption.get, phonenumber = phonenumber.toOption.get, phonenumbertypeid = phonenumbertypeid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, phonenumber, phonenumbertypeid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  given jsonEncoder: JsonEncoder[PersonphoneRowUnsaved] = new JsonEncoder[PersonphoneRowUnsaved] {
-    override def unsafeEncode(a: PersonphoneRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""phonenumber":""")
-      Phone.jsonEncoder.unsafeEncode(a.phonenumber, indent, out)
-      out.write(",")
-      out.write(""""phonenumbertypeid":""")
-      PhonenumbertypeId.jsonEncoder.unsafeEncode(a.phonenumbertypeid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object PersonphoneRowUnsaved {
+  given jsonDecoder: JsonDecoder[PersonphoneRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val phonenumber = jsonObj.get("phonenumber").toRight("Missing field 'phonenumber'").flatMap(_.as(using Phone.jsonDecoder))
+      val phonenumbertypeid = jsonObj.get("phonenumbertypeid").toRight("Missing field 'phonenumbertypeid'").flatMap(_.as(using PhonenumbertypeId.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (businessentityid.isRight && phonenumber.isRight && phonenumbertypeid.isRight && modifieddate.isRight)
+        Right(PersonphoneRowUnsaved(businessentityid = businessentityid.toOption.get, phonenumber = phonenumber.toOption.get, phonenumbertypeid = phonenumbertypeid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, phonenumber, phonenumbertypeid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[PersonphoneRowUnsaved] = Text.instance[PersonphoneRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Phone.text.unsafeEncode(row.phonenumber, sb)
-    sb.append(Text.DELIMETER)
-    PhonenumbertypeId.text.unsafeEncode(row.phonenumbertypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[PersonphoneRowUnsaved] = {
+    new JsonEncoder[PersonphoneRowUnsaved] {
+      override def unsafeEncode(a: PersonphoneRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""phonenumber":""")
+        Phone.jsonEncoder.unsafeEncode(a.phonenumber, indent, out)
+        out.write(",")
+        out.write(""""phonenumbertypeid":""")
+        PhonenumbertypeId.jsonEncoder.unsafeEncode(a.phonenumbertypeid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[PersonphoneRowUnsaved] = {
+    Text.instance[PersonphoneRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Phone.pgText.unsafeEncode(row.phonenumber, sb)
+      sb.append(Text.DELIMETER)
+      PhonenumbertypeId.pgText.unsafeEncode(row.phonenumbertypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

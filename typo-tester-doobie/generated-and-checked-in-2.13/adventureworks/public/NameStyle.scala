@@ -14,19 +14,29 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Domain `public.NameStyle`
-  * No constraint
-  */
+ * No constraint
+ */
 case class NameStyle(value: Boolean)
+
 object NameStyle {
   implicit lazy val arrayGet: Get[Array[NameStyle]] = adventureworks.BooleanArrayMeta.get.map(_.map(NameStyle.apply))
+
   implicit lazy val arrayPut: Put[Array[NameStyle]] = adventureworks.BooleanArrayMeta.put.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[NameStyle, Boolean] = Bijection[NameStyle, Boolean](_.value)(NameStyle.apply)
+
+  implicit lazy val bijection: Bijection[NameStyle, Boolean] = Bijection.apply[NameStyle, Boolean](_.value)(NameStyle.apply)
+
   implicit lazy val decoder: Decoder[NameStyle] = Decoder.decodeBoolean.map(NameStyle.apply)
+
   implicit lazy val encoder: Encoder[NameStyle] = Encoder.encodeBoolean.contramap(_.value)
+
   implicit lazy val get: Get[NameStyle] = Meta.BooleanMeta.get.map(NameStyle.apply)
-  implicit lazy val put: Put[NameStyle] = Meta.BooleanMeta.put.contramap(_.value)
-  implicit lazy val text: Text[NameStyle] = new Text[NameStyle] {
-    override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[NameStyle] = {
+    new Text[NameStyle] {
+      override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val put: Put[NameStyle] = Meta.BooleanMeta.put.contramap(_.value)
 }

@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VjobcandidateViewRepo {
   def select: SelectBuilder[VjobcandidateViewFields, VjobcandidateViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VjobcandidateViewRow]
 }

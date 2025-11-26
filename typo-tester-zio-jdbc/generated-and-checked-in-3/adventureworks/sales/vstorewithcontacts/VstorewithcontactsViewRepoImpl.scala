@@ -6,16 +6,12 @@
 package adventureworks.sales.vstorewithcontacts
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class VstorewithcontactsViewRepoImpl extends VstorewithcontactsViewRepo {
-  override def select: SelectBuilder[VstorewithcontactsViewFields, VstorewithcontactsViewRow] = {
-    SelectBuilderSql(""""sales"."vstorewithcontacts"""", VstorewithcontactsViewFields.structure, VstorewithcontactsViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, VstorewithcontactsViewRow] = {
-    sql"""select "businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion" from "sales"."vstorewithcontacts"""".query(using VstorewithcontactsViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[VstorewithcontactsViewFields, VstorewithcontactsViewRow] = SelectBuilder.of(""""sales"."vstorewithcontacts"""", VstorewithcontactsViewFields.structure, VstorewithcontactsViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, VstorewithcontactsViewRow] = sql"""select "businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion" from "sales"."vstorewithcontacts"""".query(using VstorewithcontactsViewRow.jdbcDecoder).selectStream()
 }

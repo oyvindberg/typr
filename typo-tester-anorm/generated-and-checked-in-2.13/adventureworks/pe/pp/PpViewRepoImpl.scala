@@ -5,18 +5,16 @@
  */
 package adventureworks.pe.pp
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PpViewRepoImpl extends PpViewRepo {
-  override def select: SelectBuilder[PpViewFields, PpViewRow] = {
-    SelectBuilderSql(""""pe"."pp"""", PpViewFields.structure, PpViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[PpViewRow] = {
+  def select: SelectBuilder[PpViewFields, PpViewRow] = SelectBuilder.of(""""pe"."pp"""", PpViewFields.structure, PpViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[PpViewRow] = {
     SQL"""select "id", "businessentityid", "phonenumber", "phonenumbertypeid", "modifieddate"::text
-          from "pe"."pp"
-       """.as(PpViewRow.rowParser(1).*)
+    from "pe"."pp"
+    """.as(PpViewRow.rowParser(1).*)
   }
 }

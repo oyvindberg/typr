@@ -6,6 +6,7 @@
 package adventureworks.production.productdescription
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import doobie.postgres.Text
@@ -17,40 +18,42 @@ case class ProductdescriptionRowUnsaved(
   /** Description of the product. */
   description: /* max 400 chars */ String,
   /** Default: nextval('production.productdescription_productdescriptionid_seq'::regclass)
-      Primary key for ProductDescription records. */
-  productdescriptionid: Defaulted[ProductdescriptionId] = Defaulted.UseDefault,
+   * Primary key for ProductDescription records.
+   */
+  productdescriptionid: Defaulted[ProductdescriptionId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productdescriptionidDefault: => ProductdescriptionId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductdescriptionRow =
-    ProductdescriptionRow(
+  def toRow(
+    productdescriptionidDefault: => ProductdescriptionId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductdescriptionRow = {
+    new ProductdescriptionRow(
+      productdescriptionid = productdescriptionid.getOrElse(productdescriptionidDefault),
       description = description,
-      productdescriptionid = productdescriptionid match {
-                               case Defaulted.UseDefault => productdescriptionidDefault
-                               case Defaulted.Provided(value) => value
-                             },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ProductdescriptionRowUnsaved {
   given decoder: Decoder[ProductdescriptionRowUnsaved] = Decoder.forProduct4[ProductdescriptionRowUnsaved, /* max 400 chars */ String, Defaulted[ProductdescriptionId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("description", "productdescriptionid", "rowguid", "modifieddate")(ProductdescriptionRowUnsaved.apply)(using Decoder.decodeString, Defaulted.decoder(using ProductdescriptionId.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ProductdescriptionRowUnsaved] = Encoder.forProduct4[ProductdescriptionRowUnsaved, /* max 400 chars */ String, Defaulted[ProductdescriptionId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("description", "productdescriptionid", "rowguid", "modifieddate")(x => (x.description, x.productdescriptionid, x.rowguid, x.modifieddate))(using Encoder.encodeString, Defaulted.encoder(using ProductdescriptionId.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ProductdescriptionRowUnsaved] = Text.instance[ProductdescriptionRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.description, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ProductdescriptionId.text).unsafeEncode(row.productdescriptionid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ProductdescriptionRowUnsaved] = {
+    Text.instance[ProductdescriptionRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.description, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ProductdescriptionId.pgText).unsafeEncode(row.productdescriptionid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

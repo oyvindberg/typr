@@ -12,26 +12,35 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: myschema.marital_status
-    Primary key: id */
-case class MaritalStatusRow(
-  id: MaritalStatusId
-)
+ * Primary key: id
+ */
+case class MaritalStatusRow(id: MaritalStatusId)
 
 object MaritalStatusRow {
   given decoder: Decoder[MaritalStatusRow] = Decoder.forProduct1[MaritalStatusRow, MaritalStatusId]("id")(MaritalStatusRow.apply)(using MaritalStatusId.decoder)
+
   given encoder: Encoder[MaritalStatusRow] = Encoder.forProduct1[MaritalStatusRow, MaritalStatusId]("id")(x => (x.id))(using MaritalStatusId.encoder)
-  given read: Read[MaritalStatusRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(MaritalStatusId.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    MaritalStatusRow(
-      id = arr(0).asInstanceOf[MaritalStatusId]
+
+  given pgText: Text[MaritalStatusRow] = {
+    Text.instance[MaritalStatusRow]{ (row, sb) =>
+      MaritalStatusId.pgText.unsafeEncode(row.id, sb)
+    }
+  }
+
+  given read: Read[MaritalStatusRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(MaritalStatusId.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      MaritalStatusRow(
+        id = arr(0).asInstanceOf[MaritalStatusId]
+      )
+    }
+  }
+
+  given write: Write[MaritalStatusRow] = {
+    new Write.Composite[MaritalStatusRow](
+      List(new Write.Single(MaritalStatusId.put)),
+      a => List(a.id)
     )
   }
-  given text: Text[MaritalStatusRow] = Text.instance[MaritalStatusRow]{ (row, sb) =>
-    MaritalStatusId.text.unsafeEncode(row.id, sb)
-  }
-  given write: Write[MaritalStatusRow] = new Write.Composite[MaritalStatusRow](
-    List(new Write.Single(MaritalStatusId.put)),
-    a => List(a.id)
-  )
 }

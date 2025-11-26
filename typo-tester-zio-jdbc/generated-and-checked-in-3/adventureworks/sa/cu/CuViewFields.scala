@@ -22,23 +22,22 @@ trait CuViewFields {
 
 object CuViewFields {
   lazy val structure: Relation[CuViewFields, CuViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CuViewFields, CuViewRow] {
-  
+
     override lazy val fields: CuViewFields = new CuViewFields {
       override def id = Field[CurrencyId, CuViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def currencycode = Field[CurrencyId, CuViewRow](_path, "currencycode", None, None, x => x.currencycode, (row, value) => row.copy(currencycode = value))
       override def name = Field[Name, CuViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, CuViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CuViewRow]] =
       List[FieldLike[?, CuViewRow]](fields.id, fields.currencycode, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

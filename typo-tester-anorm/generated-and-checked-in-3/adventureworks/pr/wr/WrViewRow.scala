@@ -52,60 +52,68 @@ case class WrViewRow(
 )
 
 object WrViewRow {
-  given reads: Reads[WrViewRow] = Reads[WrViewRow](json => JsResult.fromTry(
-      Try(
-        WrViewRow(
-          id = json.\("id").as(WorkorderId.reads),
-          workorderid = json.\("workorderid").as(WorkorderId.reads),
-          productid = json.\("productid").as(Reads.IntReads),
-          operationsequence = json.\("operationsequence").as(TypoShort.reads),
-          locationid = json.\("locationid").as(LocationId.reads),
-          scheduledstartdate = json.\("scheduledstartdate").as(TypoLocalDateTime.reads),
-          scheduledenddate = json.\("scheduledenddate").as(TypoLocalDateTime.reads),
-          actualstartdate = json.\("actualstartdate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          actualenddate = json.\("actualenddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          actualresourcehrs = json.\("actualresourcehrs").toOption.map(_.as(Reads.bigDecReads)),
-          plannedcost = json.\("plannedcost").as(Reads.bigDecReads),
-          actualcost = json.\("actualcost").toOption.map(_.as(Reads.bigDecReads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[WrViewRow] = {
+    Reads[WrViewRow](json => JsResult.fromTry(
+        Try(
+          WrViewRow(
+            id = json.\("id").as(WorkorderId.reads),
+            workorderid = json.\("workorderid").as(WorkorderId.reads),
+            productid = json.\("productid").as(Reads.IntReads),
+            operationsequence = json.\("operationsequence").as(TypoShort.reads),
+            locationid = json.\("locationid").as(LocationId.reads),
+            scheduledstartdate = json.\("scheduledstartdate").as(TypoLocalDateTime.reads),
+            scheduledenddate = json.\("scheduledenddate").as(TypoLocalDateTime.reads),
+            actualstartdate = json.\("actualstartdate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            actualenddate = json.\("actualenddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            actualresourcehrs = json.\("actualresourcehrs").toOption.map(_.as(Reads.bigDecReads)),
+            plannedcost = json.\("plannedcost").as(Reads.bigDecReads),
+            actualcost = json.\("actualcost").toOption.map(_.as(Reads.bigDecReads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[WrViewRow] = RowParser[WrViewRow] { row =>
-    Success(
-      WrViewRow(
-        id = row(idx + 0)(using WorkorderId.column),
-        workorderid = row(idx + 1)(using WorkorderId.column),
-        productid = row(idx + 2)(using Column.columnToInt),
-        operationsequence = row(idx + 3)(using TypoShort.column),
-        locationid = row(idx + 4)(using LocationId.column),
-        scheduledstartdate = row(idx + 5)(using TypoLocalDateTime.column),
-        scheduledenddate = row(idx + 6)(using TypoLocalDateTime.column),
-        actualstartdate = row(idx + 7)(using Column.columnToOption(using TypoLocalDateTime.column)),
-        actualenddate = row(idx + 8)(using Column.columnToOption(using TypoLocalDateTime.column)),
-        actualresourcehrs = row(idx + 9)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
-        plannedcost = row(idx + 10)(using Column.columnToScalaBigDecimal),
-        actualcost = row(idx + 11)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
-        modifieddate = row(idx + 12)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[WrViewRow] = OWrites[WrViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> WorkorderId.writes.writes(o.id),
-      "workorderid" -> WorkorderId.writes.writes(o.workorderid),
-      "productid" -> Writes.IntWrites.writes(o.productid),
-      "operationsequence" -> TypoShort.writes.writes(o.operationsequence),
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "scheduledstartdate" -> TypoLocalDateTime.writes.writes(o.scheduledstartdate),
-      "scheduledenddate" -> TypoLocalDateTime.writes.writes(o.scheduledenddate),
-      "actualstartdate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualstartdate),
-      "actualenddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualenddate),
-      "actualresourcehrs" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualresourcehrs),
-      "plannedcost" -> Writes.BigDecimalWrites.writes(o.plannedcost),
-      "actualcost" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualcost),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[WrViewRow] = {
+    RowParser[WrViewRow] { row =>
+      Success(
+        WrViewRow(
+          id = row(idx + 0)(using WorkorderId.column),
+          workorderid = row(idx + 1)(using WorkorderId.column),
+          productid = row(idx + 2)(using Column.columnToInt),
+          operationsequence = row(idx + 3)(using TypoShort.column),
+          locationid = row(idx + 4)(using LocationId.column),
+          scheduledstartdate = row(idx + 5)(using TypoLocalDateTime.column),
+          scheduledenddate = row(idx + 6)(using TypoLocalDateTime.column),
+          actualstartdate = row(idx + 7)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          actualenddate = row(idx + 8)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          actualresourcehrs = row(idx + 9)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
+          plannedcost = row(idx + 10)(using Column.columnToScalaBigDecimal),
+          actualcost = row(idx + 11)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
+          modifieddate = row(idx + 12)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[WrViewRow] = {
+    OWrites[WrViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> WorkorderId.writes.writes(o.id),
+        "workorderid" -> WorkorderId.writes.writes(o.workorderid),
+        "productid" -> Writes.IntWrites.writes(o.productid),
+        "operationsequence" -> TypoShort.writes.writes(o.operationsequence),
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "scheduledstartdate" -> TypoLocalDateTime.writes.writes(o.scheduledstartdate),
+        "scheduledenddate" -> TypoLocalDateTime.writes.writes(o.scheduledenddate),
+        "actualstartdate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualstartdate),
+        "actualenddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualenddate),
+        "actualresourcehrs" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualresourcehrs),
+        "plannedcost" -> Writes.BigDecimalWrites.writes(o.plannedcost),
+        "actualcost" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualcost),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

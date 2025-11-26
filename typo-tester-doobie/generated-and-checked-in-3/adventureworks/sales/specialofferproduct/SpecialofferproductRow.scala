@@ -17,58 +17,93 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.specialofferproduct
-    Cross-reference table mapping products to special offer discounts.
-    Composite primary key: specialofferid, productid */
+ * Cross-reference table mapping products to special offer discounts.
+ * Composite primary key: specialofferid, productid
+ */
 case class SpecialofferproductRow(
   /** Primary key for SpecialOfferProduct records.
-      Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
+   * Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]]
+   */
   specialofferid: SpecialofferId,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: SpecialofferproductId = SpecialofferproductId(specialofferid, productid)
-   val id = compositeId
-   def toUnsavedRow(rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SpecialofferproductRowUnsaved =
-     SpecialofferproductRowUnsaved(specialofferid, productid, rowguid, modifieddate)
- }
+) {
+  def compositeId: SpecialofferproductId = new SpecialofferproductId(specialofferid, productid)
 
-object SpecialofferproductRow {
-  def apply(compositeId: SpecialofferproductId, rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new SpecialofferproductRow(compositeId.specialofferid, compositeId.productid, rowguid, modifieddate)
-  given decoder: Decoder[SpecialofferproductRow] = Decoder.forProduct4[SpecialofferproductRow, SpecialofferId, ProductId, TypoUUID, TypoLocalDateTime]("specialofferid", "productid", "rowguid", "modifieddate")(SpecialofferproductRow.apply)(using SpecialofferId.decoder, ProductId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
-  given encoder: Encoder[SpecialofferproductRow] = Encoder.forProduct4[SpecialofferproductRow, SpecialofferId, ProductId, TypoUUID, TypoLocalDateTime]("specialofferid", "productid", "rowguid", "modifieddate")(x => (x.specialofferid, x.productid, x.rowguid, x.modifieddate))(using SpecialofferId.encoder, ProductId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SpecialofferproductRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SpecialofferproductRow(
-      specialofferid = arr(0).asInstanceOf[SpecialofferId],
-          productid = arr(1).asInstanceOf[ProductId],
-          rowguid = arr(2).asInstanceOf[TypoUUID],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+  def id: SpecialofferproductId = this.compositeId
+
+  def toUnsavedRow(
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): SpecialofferproductRowUnsaved = {
+    new SpecialofferproductRowUnsaved(
+      specialofferid,
+      productid,
+      rowguid,
+      modifieddate
     )
   }
-  given text: Text[SpecialofferproductRow] = Text.instance[SpecialofferproductRow]{ (row, sb) =>
-    SpecialofferId.text.unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object SpecialofferproductRow {
+  def apply(
+    compositeId: SpecialofferproductId,
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): SpecialofferproductRow = {
+    new SpecialofferproductRow(
+      compositeId.specialofferid,
+      compositeId.productid,
+      rowguid,
+      modifieddate
+    )
   }
-  given write: Write[SpecialofferproductRow] = new Write.Composite[SpecialofferproductRow](
-    List(new Write.Single(SpecialofferId.put),
-         new Write.Single(ProductId.put),
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.specialofferid, a.productid, a.rowguid, a.modifieddate)
-  )
+
+  given decoder: Decoder[SpecialofferproductRow] = Decoder.forProduct4[SpecialofferproductRow, SpecialofferId, ProductId, TypoUUID, TypoLocalDateTime]("specialofferid", "productid", "rowguid", "modifieddate")(SpecialofferproductRow.apply)(using SpecialofferId.decoder, ProductId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
+  given encoder: Encoder[SpecialofferproductRow] = Encoder.forProduct4[SpecialofferproductRow, SpecialofferId, ProductId, TypoUUID, TypoLocalDateTime]("specialofferid", "productid", "rowguid", "modifieddate")(x => (x.specialofferid, x.productid, x.rowguid, x.modifieddate))(using SpecialofferId.encoder, ProductId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
+
+  given pgText: Text[SpecialofferproductRow] = {
+    Text.instance[SpecialofferproductRow]{ (row, sb) =>
+      SpecialofferId.pgText.unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[SpecialofferproductRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SpecialofferproductRow(
+        specialofferid = arr(0).asInstanceOf[SpecialofferId],
+            productid = arr(1).asInstanceOf[ProductId],
+            rowguid = arr(2).asInstanceOf[TypoUUID],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[SpecialofferproductRow] = {
+    new Write.Composite[SpecialofferproductRow](
+      List(new Write.Single(SpecialofferId.put),
+           new Write.Single(ProductId.put),
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.specialofferid, a.productid, a.rowguid, a.modifieddate)
+    )
+  }
 }

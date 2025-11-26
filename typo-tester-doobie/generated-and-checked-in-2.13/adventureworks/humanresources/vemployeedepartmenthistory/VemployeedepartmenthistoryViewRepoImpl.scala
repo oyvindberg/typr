@@ -6,16 +6,12 @@
 package adventureworks.humanresources.vemployeedepartmenthistory
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VemployeedepartmenthistoryViewRepoImpl extends VemployeedepartmenthistoryViewRepo {
-  override def select: SelectBuilder[VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow] = {
-    SelectBuilderSql(""""humanresources"."vemployeedepartmenthistory"""", VemployeedepartmenthistoryViewFields.structure, VemployeedepartmenthistoryViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VemployeedepartmenthistoryViewRow] = {
-    sql"""select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate"::text, "enddate"::text from "humanresources"."vemployeedepartmenthistory"""".query(VemployeedepartmenthistoryViewRow.read).stream
-  }
+  def select: SelectBuilder[VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow] = SelectBuilder.of(""""humanresources"."vemployeedepartmenthistory"""", VemployeedepartmenthistoryViewFields.structure, VemployeedepartmenthistoryViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, VemployeedepartmenthistoryViewRow] = sql"""select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate"::text, "enddate"::text from "humanresources"."vemployeedepartmenthistory"""".query(VemployeedepartmenthistoryViewRow.read).stream
 }

@@ -34,8 +34,7 @@ class UsersRepoTest extends AnyFunSuite with TypeCheckedTripleEquals {
         lastName = Some("last_name"),
         email = TypoUnknownCitext(s"email-$idx@asd.no"),
         password = "password",
-        verifiedOn = Some(TypoInstant.now),
-        createdAt = Defaulted.UseDefault
+        verifiedOn = Some(TypoInstant.now)
       )
     )
 

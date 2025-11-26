@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VproductmodelcatalogdescriptionViewRepo {
   def select: SelectBuilder[VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VproductmodelcatalogdescriptionViewRow]
 }

@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.productphoto` */
-case class ProductphotoId(value: Int) extends AnyVal
+case class ProductphotoId(value: Int) extends scala.AnyVal
+
 object ProductphotoId {
   implicit lazy val arrayGet: Get[Array[ProductphotoId]] = adventureworks.IntegerArrayMeta.get.map(_.map(ProductphotoId.apply))
+
   implicit lazy val arrayPut: Put[Array[ProductphotoId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[ProductphotoId, Int] = Bijection[ProductphotoId, Int](_.value)(ProductphotoId.apply)
+
+  implicit lazy val bijection: Bijection[ProductphotoId, Int] = Bijection.apply[ProductphotoId, Int](_.value)(ProductphotoId.apply)
+
   implicit lazy val decoder: Decoder[ProductphotoId] = Decoder.decodeInt.map(ProductphotoId.apply)
+
   implicit lazy val encoder: Encoder[ProductphotoId] = Encoder.encodeInt.contramap(_.value)
+
   implicit lazy val get: Get[ProductphotoId] = Meta.IntMeta.get.map(ProductphotoId.apply)
-  implicit lazy val put: Put[ProductphotoId] = Meta.IntMeta.put.contramap(_.value)
-  implicit lazy val text: Text[ProductphotoId] = new Text[ProductphotoId] {
-    override def unsafeEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[ProductphotoId] = {
+    new Text[ProductphotoId] {
+      override def unsafeEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ProductphotoId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val put: Put[ProductphotoId] = Meta.IntMeta.put.contramap(_.value)
 }

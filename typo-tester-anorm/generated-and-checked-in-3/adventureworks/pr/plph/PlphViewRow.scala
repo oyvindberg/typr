@@ -36,39 +36,47 @@ case class PlphViewRow(
 )
 
 object PlphViewRow {
-  given reads: Reads[PlphViewRow] = Reads[PlphViewRow](json => JsResult.fromTry(
-      Try(
-        PlphViewRow(
-          id = json.\("id").as(ProductId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-          enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          listprice = json.\("listprice").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PlphViewRow] = {
+    Reads[PlphViewRow](json => JsResult.fromTry(
+        Try(
+          PlphViewRow(
+            id = json.\("id").as(ProductId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads),
+            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            listprice = json.\("listprice").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PlphViewRow] = RowParser[PlphViewRow] { row =>
-    Success(
-      PlphViewRow(
-        id = row(idx + 0)(using ProductId.column),
-        productid = row(idx + 1)(using ProductId.column),
-        startdate = row(idx + 2)(using TypoLocalDateTime.column),
-        enddate = row(idx + 3)(using Column.columnToOption(using TypoLocalDateTime.column)),
-        listprice = row(idx + 4)(using Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PlphViewRow] = OWrites[PlphViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductId.writes.writes(o.id),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-      "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
-      "listprice" -> Writes.BigDecimalWrites.writes(o.listprice),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PlphViewRow] = {
+    RowParser[PlphViewRow] { row =>
+      Success(
+        PlphViewRow(
+          id = row(idx + 0)(using ProductId.column),
+          productid = row(idx + 1)(using ProductId.column),
+          startdate = row(idx + 2)(using TypoLocalDateTime.column),
+          enddate = row(idx + 3)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          listprice = row(idx + 4)(using Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PlphViewRow] = {
+    OWrites[PlphViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductId.writes.writes(o.id),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
+        "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
+        "listprice" -> Writes.BigDecimalWrites.writes(o.listprice),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -7,6 +7,7 @@ package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
@@ -23,73 +24,84 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.salesterritoryhistory` which has not been persisted yet */
 case class SalesterritoryhistoryRowUnsaved(
   /** Primary key. The sales rep.  Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
+   * Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary key. Territory identification number. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
+   * Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]]
+   */
   territoryid: SalesterritoryId,
   /** Primary key. Date the sales representive started work in the territory.
-      Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */
+   * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
+   */
   startdate: TypoLocalDateTime,
   /** Date the sales representative left work in the territory.
-      Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL))) */
-  enddate: Option[TypoLocalDateTime],
+   * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
+   */
+  enddate: Option[TypoLocalDateTime] = None,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SalesterritoryhistoryRow =
-    SalesterritoryhistoryRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SalesterritoryhistoryRow = {
+    new SalesterritoryhistoryRow(
       businessentityid = businessentityid,
       territoryid = territoryid,
       startdate = startdate,
       enddate = enddate,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object SalesterritoryhistoryRowUnsaved {
-  given reads: Reads[SalesterritoryhistoryRowUnsaved] = Reads[SalesterritoryhistoryRowUnsaved](json => JsResult.fromTry(
-      Try(
-        SalesterritoryhistoryRowUnsaved(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          territoryid = json.\("territoryid").as(SalesterritoryId.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-          enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[SalesterritoryhistoryRowUnsaved] = Text.instance[SalesterritoryhistoryRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    SalesterritoryId.text.unsafeEncode(row.territoryid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.startdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoLocalDateTime.text).unsafeEncode(row.enddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[SalesterritoryhistoryRowUnsaved] = OWrites[SalesterritoryhistoryRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-      "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object SalesterritoryhistoryRowUnsaved {
+  given pgText: Text[SalesterritoryhistoryRowUnsaved] = {
+    Text.instance[SalesterritoryhistoryRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      SalesterritoryId.pgText.unsafeEncode(row.territoryid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.startdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoLocalDateTime.pgText).unsafeEncode(row.enddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[SalesterritoryhistoryRowUnsaved] = {
+    Reads[SalesterritoryhistoryRowUnsaved](json => JsResult.fromTry(
+        Try(
+          SalesterritoryhistoryRowUnsaved(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            territoryid = json.\("territoryid").as(SalesterritoryId.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads),
+            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[SalesterritoryhistoryRowUnsaved] = {
+    OWrites[SalesterritoryhistoryRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
+        "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

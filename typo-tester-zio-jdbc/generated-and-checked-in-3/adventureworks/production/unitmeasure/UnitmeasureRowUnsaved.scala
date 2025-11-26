@@ -7,6 +7,7 @@ package adventureworks.production.unitmeasure
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import zio.json.JsonDecoder
@@ -21,46 +22,47 @@ case class UnitmeasureRowUnsaved(
   /** Unit of measure description. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): UnitmeasureRow =
-    UnitmeasureRow(
-      unitmeasurecode = unitmeasurecode,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): UnitmeasureRow = new UnitmeasureRow(unitmeasurecode = unitmeasurecode, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object UnitmeasureRowUnsaved {
-  given jsonDecoder: JsonDecoder[UnitmeasureRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val unitmeasurecode = jsonObj.get("unitmeasurecode").toRight("Missing field 'unitmeasurecode'").flatMap(_.as(using UnitmeasureId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (unitmeasurecode.isRight && name.isRight && modifieddate.isRight)
-      Right(UnitmeasureRowUnsaved(unitmeasurecode = unitmeasurecode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](unitmeasurecode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[UnitmeasureRowUnsaved] = new JsonEncoder[UnitmeasureRowUnsaved] {
-    override def unsafeEncode(a: UnitmeasureRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""unitmeasurecode":""")
-      UnitmeasureId.jsonEncoder.unsafeEncode(a.unitmeasurecode, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  given jsonDecoder: JsonDecoder[UnitmeasureRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val unitmeasurecode = jsonObj.get("unitmeasurecode").toRight("Missing field 'unitmeasurecode'").flatMap(_.as(using UnitmeasureId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (unitmeasurecode.isRight && name.isRight && modifieddate.isRight)
+        Right(UnitmeasureRowUnsaved(unitmeasurecode = unitmeasurecode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](unitmeasurecode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[UnitmeasureRowUnsaved] = Text.instance[UnitmeasureRowUnsaved]{ (row, sb) =>
-    UnitmeasureId.text.unsafeEncode(row.unitmeasurecode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[UnitmeasureRowUnsaved] = {
+    new JsonEncoder[UnitmeasureRowUnsaved] {
+      override def unsafeEncode(a: UnitmeasureRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""unitmeasurecode":""")
+        UnitmeasureId.jsonEncoder.unsafeEncode(a.unitmeasurecode, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[UnitmeasureRowUnsaved] = {
+    Text.instance[UnitmeasureRowUnsaved]{ (row, sb) =>
+      UnitmeasureId.pgText.unsafeEncode(row.unitmeasurecode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

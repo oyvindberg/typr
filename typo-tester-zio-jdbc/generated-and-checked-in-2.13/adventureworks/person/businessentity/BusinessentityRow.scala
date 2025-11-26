@@ -17,59 +17,76 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: person.businessentity
-    Source of the ID that connects vendors, customers, and employees with address and contact information.
-    Primary key: businessentityid */
+ * Source of the ID that connects vendors, customers, and employees with address and contact information.
+ * Primary key: businessentityid
+ */
 case class BusinessentityRow(
   /** Primary key for all customers, vendors, and employees.
-      Default: nextval('person.businessentity_businessentityid_seq'::regclass) */
+   * Default: nextval('person.businessentity_businessentityid_seq'::regclass)
+   */
   businessentityid: BusinessentityId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = businessentityid
-   def toUnsavedRow(businessentityid: Defaulted[BusinessentityId], rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): BusinessentityRowUnsaved =
-     BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate)
- }
+) {
+  def id: BusinessentityId = businessentityid
+
+  def toUnsavedRow(
+    businessentityid: Defaulted[BusinessentityId],
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): BusinessentityRowUnsaved = new BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate)
+}
 
 object BusinessentityRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[BusinessentityRow] = new JdbcDecoder[BusinessentityRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, BusinessentityRow) =
-      columIndex + 2 ->
-        BusinessentityRow(
-          businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2
-        )
-  }
-  implicit lazy val jsonDecoder: JsonDecoder[BusinessentityRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (businessentityid.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(BusinessentityRow(businessentityid = businessentityid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  implicit lazy val jsonEncoder: JsonEncoder[BusinessentityRow] = new JsonEncoder[BusinessentityRow] {
-    override def unsafeEncode(a: BusinessentityRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  implicit lazy val jdbcDecoder: JdbcDecoder[BusinessentityRow] = {
+    new JdbcDecoder[BusinessentityRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, BusinessentityRow) =
+        columIndex + 2 ->
+          BusinessentityRow(
+            businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2
+          )
     }
   }
-  implicit lazy val text: Text[BusinessentityRow] = Text.instance[BusinessentityRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonDecoder: JsonDecoder[BusinessentityRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (businessentityid.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(BusinessentityRow(businessentityid = businessentityid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
+  }
+
+  implicit lazy val jsonEncoder: JsonEncoder[BusinessentityRow] = {
+    new JsonEncoder[BusinessentityRow] {
+      override def unsafeEncode(a: BusinessentityRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[BusinessentityRow] = {
+    Text.instance[BusinessentityRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

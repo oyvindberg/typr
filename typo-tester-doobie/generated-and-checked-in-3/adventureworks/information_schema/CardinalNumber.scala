@@ -14,19 +14,29 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Domain `information_schema.cardinal_number`
-  * Constraint: CHECK ((VALUE >= 0))
-  */
+ * Constraint: CHECK ((VALUE >= 0))
+ */
 case class CardinalNumber(value: Int)
+
 object CardinalNumber {
   given arrayGet: Get[Array[CardinalNumber]] = adventureworks.IntegerArrayMeta.get.map(_.map(CardinalNumber.apply))
+
   given arrayPut: Put[Array[CardinalNumber]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[CardinalNumber, Int] = Bijection[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
+  given bijection: Bijection[CardinalNumber, Int] = Bijection.apply[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
   given decoder: Decoder[CardinalNumber] = Decoder.decodeInt.map(CardinalNumber.apply)
+
   given encoder: Encoder[CardinalNumber] = Encoder.encodeInt.contramap(_.value)
+
   given get: Get[CardinalNumber] = Meta.IntMeta.get.map(CardinalNumber.apply)
-  given put: Put[CardinalNumber] = Meta.IntMeta.put.contramap(_.value)
-  given text: Text[CardinalNumber] = new Text[CardinalNumber] {
-    override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CardinalNumber] = {
+    new Text[CardinalNumber] {
+      override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[CardinalNumber] = Meta.IntMeta.put.contramap(_.value)
 }

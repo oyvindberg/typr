@@ -40,30 +40,34 @@ case class BomViewRow(
 
 object BomViewRow {
   given decoder: Decoder[BomViewRow] = Decoder.forProduct10[BomViewRow, Int, Int, Option[ProductId], ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], UnitmeasureId, TypoShort, BigDecimal, TypoLocalDateTime]("id", "billofmaterialsid", "productassemblyid", "componentid", "startdate", "enddate", "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate")(BomViewRow.apply)(using Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeOption(using ProductId.decoder), ProductId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), UnitmeasureId.decoder, TypoShort.decoder, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[BomViewRow] = Encoder.forProduct10[BomViewRow, Int, Int, Option[ProductId], ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], UnitmeasureId, TypoShort, BigDecimal, TypoLocalDateTime]("id", "billofmaterialsid", "productassemblyid", "componentid", "startdate", "enddate", "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate")(x => (x.id, x.billofmaterialsid, x.productassemblyid, x.componentid, x.startdate, x.enddate, x.unitmeasurecode, x.bomlevel, x.perassemblyqty, x.modifieddate))(using Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeOption(using ProductId.encoder), ProductId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), UnitmeasureId.encoder, TypoShort.encoder, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  given read: Read[BomViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+
+  given read: Read[BomViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    BomViewRow(
-      id = arr(0).asInstanceOf[Int],
-          billofmaterialsid = arr(1).asInstanceOf[Int],
-          productassemblyid = arr(2).asInstanceOf[Option[ProductId]],
-          componentid = arr(3).asInstanceOf[ProductId],
-          startdate = arr(4).asInstanceOf[TypoLocalDateTime],
-          enddate = arr(5).asInstanceOf[Option[TypoLocalDateTime]],
-          unitmeasurecode = arr(6).asInstanceOf[UnitmeasureId],
-          bomlevel = arr(7).asInstanceOf[TypoShort],
-          perassemblyqty = arr(8).asInstanceOf[BigDecimal],
-          modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      BomViewRow(
+        id = arr(0).asInstanceOf[Int],
+            billofmaterialsid = arr(1).asInstanceOf[Int],
+            productassemblyid = arr(2).asInstanceOf[Option[ProductId]],
+            componentid = arr(3).asInstanceOf[ProductId],
+            startdate = arr(4).asInstanceOf[TypoLocalDateTime],
+            enddate = arr(5).asInstanceOf[Option[TypoLocalDateTime]],
+            unitmeasurecode = arr(6).asInstanceOf[UnitmeasureId],
+            bomlevel = arr(7).asInstanceOf[TypoShort],
+            perassemblyqty = arr(8).asInstanceOf[BigDecimal],
+            modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

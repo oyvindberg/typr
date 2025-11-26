@@ -45,11 +45,11 @@ trait VproductmodelcatalogdescriptionViewFields {
 
 object VproductmodelcatalogdescriptionViewFields {
   lazy val structure: Relation[VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow] {
-  
+
     override lazy val fields: VproductmodelcatalogdescriptionViewFields = new VproductmodelcatalogdescriptionViewFields {
       override def productmodelid = Field[ProductmodelId, VproductmodelcatalogdescriptionViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def name = Field[Name, VproductmodelcatalogdescriptionViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
@@ -77,12 +77,11 @@ object VproductmodelcatalogdescriptionViewFields {
       override def rowguid = Field[TypoUUID, VproductmodelcatalogdescriptionViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, VproductmodelcatalogdescriptionViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VproductmodelcatalogdescriptionViewRow]] =
       List[FieldLike[?, VproductmodelcatalogdescriptionViewRow]](fields.productmodelid, fields.name, fields.summary, fields.manufacturer, fields.copyright, fields.producturl, fields.warrantyperiod, fields.warrantydescription, fields.noofyears, fields.maintenancedescription, fields.wheel, fields.saddle, fields.pedal, fields.bikeframe, fields.crankset, fields.pictureangle, fields.picturesize, fields.productphotoid, fields.material, fields.color, fields.productline, fields.style, fields.riderexperience, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

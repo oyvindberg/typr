@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait SpViewRepo {
   def select: SelectBuilder[SpViewFields, SpViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, SpViewRow]
 }

@@ -40,28 +40,32 @@ case class VViewRow(
 
 object VViewRow {
   given decoder: Decoder[VViewRow] = Decoder.forProduct9[VViewRow, BusinessentityId, BusinessentityId, AccountNumber, Name, TypoShort, Flag, Flag, Option[/* max 1024 chars */ String], TypoLocalDateTime]("id", "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")(VViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, AccountNumber.decoder, Name.decoder, TypoShort.decoder, Flag.decoder, Flag.decoder, Decoder.decodeOption(using Decoder.decodeString), TypoLocalDateTime.decoder)
+
   given encoder: Encoder[VViewRow] = Encoder.forProduct9[VViewRow, BusinessentityId, BusinessentityId, AccountNumber, Name, TypoShort, Flag, Flag, Option[/* max 1024 chars */ String], TypoLocalDateTime]("id", "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")(x => (x.id, x.businessentityid, x.accountnumber, x.name, x.creditrating, x.preferredvendorstatus, x.activeflag, x.purchasingwebserviceurl, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, AccountNumber.encoder, Name.encoder, TypoShort.encoder, Flag.encoder, Flag.encoder, Encoder.encodeOption(using Encoder.encodeString), TypoLocalDateTime.encoder)
-  given read: Read[VViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[VViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(AccountNumber.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          accountnumber = arr(2).asInstanceOf[AccountNumber],
-          name = arr(3).asInstanceOf[Name],
-          creditrating = arr(4).asInstanceOf[TypoShort],
-          preferredvendorstatus = arr(5).asInstanceOf[Flag],
-          activeflag = arr(6).asInstanceOf[Flag],
-          purchasingwebserviceurl = arr(7).asInstanceOf[Option[/* max 1024 chars */ String]],
-          modifieddate = arr(8).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(AccountNumber.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            accountnumber = arr(2).asInstanceOf[AccountNumber],
+            name = arr(3).asInstanceOf[Name],
+            creditrating = arr(4).asInstanceOf[TypoShort],
+            preferredvendorstatus = arr(5).asInstanceOf[Flag],
+            activeflag = arr(6).asInstanceOf[Flag],
+            purchasingwebserviceurl = arr(7).asInstanceOf[Option[/* max 1024 chars */ String]],
+            modifieddate = arr(8).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

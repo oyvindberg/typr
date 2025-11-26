@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `sales.currencyrate` */
-case class CurrencyrateId(value: Int) extends AnyVal
+case class CurrencyrateId(value: Int) extends scala.AnyVal
+
 object CurrencyrateId {
   given arrayJdbcDecoder: JdbcDecoder[Array[CurrencyrateId]] = adventureworks.IntArrayDecoder.map(_.map(CurrencyrateId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[CurrencyrateId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[CurrencyrateId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[CurrencyrateId, Int] = Bijection[CurrencyrateId, Int](_.value)(CurrencyrateId.apply)
+
+  given bijection: Bijection[CurrencyrateId, Int] = Bijection.apply[CurrencyrateId, Int](_.value)(CurrencyrateId.apply)
+
   given jdbcDecoder: JdbcDecoder[CurrencyrateId] = JdbcDecoder.intDecoder.map(CurrencyrateId.apply)
+
   given jdbcEncoder: JdbcEncoder[CurrencyrateId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[CurrencyrateId] = JsonDecoder.int.map(CurrencyrateId.apply)
+
   given jsonEncoder: JsonEncoder[CurrencyrateId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[CurrencyrateId] = PGType.PGTypeInt.as
-  given setter: Setter[CurrencyrateId] = Setter.intSetter.contramap(_.value)
-  given text: Text[CurrencyrateId] = new Text[CurrencyrateId] {
-    override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CurrencyrateId] = {
+    new Text[CurrencyrateId] {
+      override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[CurrencyrateId] = PGType.PGTypeInt.as
+
+  given setter: Setter[CurrencyrateId] = Setter.intSetter.contramap(_.value)
 }

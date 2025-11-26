@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `sales.customer` */
-case class CustomerId(value: Int) extends AnyVal
+case class CustomerId(value: Int) extends scala.AnyVal
+
 object CustomerId {
   given arrayJdbcDecoder: JdbcDecoder[Array[CustomerId]] = adventureworks.IntArrayDecoder.map(_.map(CustomerId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[CustomerId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[CustomerId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[CustomerId, Int] = Bijection[CustomerId, Int](_.value)(CustomerId.apply)
+
+  given bijection: Bijection[CustomerId, Int] = Bijection.apply[CustomerId, Int](_.value)(CustomerId.apply)
+
   given jdbcDecoder: JdbcDecoder[CustomerId] = JdbcDecoder.intDecoder.map(CustomerId.apply)
+
   given jdbcEncoder: JdbcEncoder[CustomerId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[CustomerId] = JsonDecoder.int.map(CustomerId.apply)
+
   given jsonEncoder: JsonEncoder[CustomerId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[CustomerId] = PGType.PGTypeInt.as
-  given setter: Setter[CustomerId] = Setter.intSetter.contramap(_.value)
-  given text: Text[CustomerId] = new Text[CustomerId] {
-    override def unsafeEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CustomerId] = {
+    new Text[CustomerId] {
+      override def unsafeEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[CustomerId] = PGType.PGTypeInt.as
+
+  given setter: Setter[CustomerId] = Setter.intSetter.contramap(_.value)
 }

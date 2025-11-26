@@ -19,20 +19,26 @@ case class PersonId(
   one: Long,
   two: Option[String]
 )
+
 object PersonId {
-  given reads: Reads[PersonId] = Reads[PersonId](json => JsResult.fromTry(
-      Try(
-        PersonId(
-          one = json.\("one").as(Reads.LongReads),
-          two = json.\("two").toOption.map(_.as(Reads.StringReads))
+  given reads: Reads[PersonId] = {
+    Reads[PersonId](json => JsResult.fromTry(
+        Try(
+          PersonId(
+            one = json.\("one").as(Reads.LongReads),
+            two = json.\("two").toOption.map(_.as(Reads.StringReads))
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[PersonId] = OWrites[PersonId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "one" -> Writes.LongWrites.writes(o.one),
-      "two" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.two)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[PersonId] = {
+    OWrites[PersonId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "one" -> Writes.LongWrites.writes(o.one),
+        "two" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.two)
+      ))
+    )
+  }
 }

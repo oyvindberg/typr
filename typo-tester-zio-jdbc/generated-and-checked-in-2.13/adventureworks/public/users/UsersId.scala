@@ -16,20 +16,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `public.users` */
-case class UsersId(value: TypoUUID) extends AnyVal
+case class UsersId(value: TypoUUID) extends scala.AnyVal
+
 object UsersId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[UsersId]] = TypoUUID.arrayJdbcDecoder.map(_.map(UsersId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[UsersId]] = TypoUUID.arrayJdbcEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[UsersId]] = TypoUUID.arraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[UsersId, TypoUUID] = Bijection[UsersId, TypoUUID](_.value)(UsersId.apply)
+
+  implicit lazy val bijection: Bijection[UsersId, TypoUUID] = Bijection.apply[UsersId, TypoUUID](_.value)(UsersId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[UsersId] = TypoUUID.jdbcDecoder.map(UsersId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[UsersId] = TypoUUID.jdbcEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[UsersId] = TypoUUID.jsonDecoder.map(UsersId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[UsersId] = TypoUUID.jsonEncoder.contramap(_.value)
-  implicit lazy val pgType: PGType[UsersId] = TypoUUID.pgType.as
-  implicit lazy val setter: Setter[UsersId] = TypoUUID.setter.contramap(_.value)
-  implicit lazy val text: Text[UsersId] = new Text[UsersId] {
-    override def unsafeEncode(v: UsersId, sb: StringBuilder): Unit = TypoUUID.text.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: UsersId, sb: StringBuilder): Unit = TypoUUID.text.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[UsersId] = {
+    new Text[UsersId] {
+      override def unsafeEncode(v: UsersId, sb: StringBuilder): Unit = TypoUUID.pgText.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: UsersId, sb: StringBuilder): Unit = TypoUUID.pgText.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[UsersId] = TypoUUID.pgType.as
+
+  implicit lazy val setter: Setter[UsersId] = TypoUUID.setter.contramap(_.value)
 }

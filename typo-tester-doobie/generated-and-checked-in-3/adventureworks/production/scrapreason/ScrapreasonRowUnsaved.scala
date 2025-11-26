@@ -6,6 +6,7 @@
 package adventureworks.production.scrapreason
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -17,32 +18,30 @@ case class ScrapreasonRowUnsaved(
   /** Failure description. */
   name: Name,
   /** Default: nextval('production.scrapreason_scrapreasonid_seq'::regclass)
-      Primary key for ScrapReason records. */
-  scrapreasonid: Defaulted[ScrapreasonId] = Defaulted.UseDefault,
+   * Primary key for ScrapReason records.
+   */
+  scrapreasonid: Defaulted[ScrapreasonId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(scrapreasonidDefault: => ScrapreasonId, modifieddateDefault: => TypoLocalDateTime): ScrapreasonRow =
-    ScrapreasonRow(
-      name = name,
-      scrapreasonid = scrapreasonid match {
-                        case Defaulted.UseDefault => scrapreasonidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    scrapreasonidDefault: => ScrapreasonId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ScrapreasonRow = new ScrapreasonRow(scrapreasonid = scrapreasonid.getOrElse(scrapreasonidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ScrapreasonRowUnsaved {
   given decoder: Decoder[ScrapreasonRowUnsaved] = Decoder.forProduct3[ScrapreasonRowUnsaved, Name, Defaulted[ScrapreasonId], Defaulted[TypoLocalDateTime]]("name", "scrapreasonid", "modifieddate")(ScrapreasonRowUnsaved.apply)(using Name.decoder, Defaulted.decoder(using ScrapreasonId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ScrapreasonRowUnsaved] = Encoder.forProduct3[ScrapreasonRowUnsaved, Name, Defaulted[ScrapreasonId], Defaulted[TypoLocalDateTime]]("name", "scrapreasonid", "modifieddate")(x => (x.name, x.scrapreasonid, x.modifieddate))(using Name.encoder, Defaulted.encoder(using ScrapreasonId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ScrapreasonRowUnsaved] = Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ScrapreasonId.text).unsafeEncode(row.scrapreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ScrapreasonRowUnsaved] = {
+    Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ScrapreasonId.pgText).unsafeEncode(row.scrapreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

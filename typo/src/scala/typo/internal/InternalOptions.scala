@@ -5,6 +5,7 @@ import typo.internal.codegen.{DbLib, JsonLib}
 
 case class InternalOptions(
     dbLib: Option[DbLib],
+    lang: Lang,
     debugTypes: Boolean,
     enableDsl: Boolean,
     enableFieldValue: Selector,
@@ -17,8 +18,7 @@ case class InternalOptions(
     keepDependencies: Boolean,
     logger: TypoLogger,
     naming: Naming,
-    pkg: sc.QIdent,
+    pkg: jvm.QIdent,
     readonlyRepo: Selector,
-    typeOverride: TypeOverride,
-    dialect: Dialect
+    typeOverride: TypeOverride
 )

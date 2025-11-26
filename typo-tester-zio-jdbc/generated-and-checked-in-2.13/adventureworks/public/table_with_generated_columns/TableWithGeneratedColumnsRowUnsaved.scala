@@ -12,31 +12,34 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** This class corresponds to a row in table `public.table-with-generated-columns` which has not been persisted yet */
-case class TableWithGeneratedColumnsRowUnsaved(
-  name: TableWithGeneratedColumnsId
-) {
-  def toRow(nameTypeAlwaysDefault: => String): TableWithGeneratedColumnsRow =
-    TableWithGeneratedColumnsRow(
-      name = name,
-      nameTypeAlways = nameTypeAlwaysDefault
-    )
+case class TableWithGeneratedColumnsRowUnsaved(name: TableWithGeneratedColumnsId) {
+  def toRow(nameTypeAlwaysDefault: => String): TableWithGeneratedColumnsRow = new TableWithGeneratedColumnsRow(name = name, nameTypeAlways = nameTypeAlwaysDefault)
 }
+
 object TableWithGeneratedColumnsRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[TableWithGeneratedColumnsRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(TableWithGeneratedColumnsId.jsonDecoder))
-    if (name.isRight)
-      Right(TableWithGeneratedColumnsRowUnsaved(name = name.toOption.get))
-    else Left(List[Either[String, Any]](name).flatMap(_.left.toOption).mkString(", "))
-  }
-  implicit lazy val jsonEncoder: JsonEncoder[TableWithGeneratedColumnsRowUnsaved] = new JsonEncoder[TableWithGeneratedColumnsRowUnsaved] {
-    override def unsafeEncode(a: TableWithGeneratedColumnsRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""name":""")
-      TableWithGeneratedColumnsId.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write("}")
+  implicit lazy val jsonDecoder: JsonDecoder[TableWithGeneratedColumnsRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(TableWithGeneratedColumnsId.jsonDecoder))
+      if (name.isRight)
+        Right(TableWithGeneratedColumnsRowUnsaved(name = name.toOption.get))
+      else Left(List[Either[String, Any]](name).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[TableWithGeneratedColumnsRowUnsaved] = Text.instance[TableWithGeneratedColumnsRowUnsaved]{ (row, sb) =>
-    TableWithGeneratedColumnsId.text.unsafeEncode(row.name, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[TableWithGeneratedColumnsRowUnsaved] = {
+    new JsonEncoder[TableWithGeneratedColumnsRowUnsaved] {
+      override def unsafeEncode(a: TableWithGeneratedColumnsRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""name":""")
+        TableWithGeneratedColumnsId.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[TableWithGeneratedColumnsRowUnsaved] = {
+    Text.instance[TableWithGeneratedColumnsRowUnsaved]{ (row, sb) =>
+      TableWithGeneratedColumnsId.pgText.unsafeEncode(row.name, sb)
+    }
   }
 }

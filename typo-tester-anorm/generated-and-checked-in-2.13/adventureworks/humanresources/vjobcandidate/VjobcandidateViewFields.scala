@@ -35,11 +35,11 @@ trait VjobcandidateViewFields {
 
 object VjobcandidateViewFields {
   lazy val structure: Relation[VjobcandidateViewFields, VjobcandidateViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VjobcandidateViewFields, VjobcandidateViewRow] {
-  
+
     override lazy val fields: VjobcandidateViewFields = new VjobcandidateViewFields {
       override def jobcandidateid = Field[JobcandidateId, VjobcandidateViewRow](_path, "jobcandidateid", None, None, x => x.jobcandidateid, (row, value) => row.copy(jobcandidateid = value))
       override def businessentityid = OptField[BusinessentityId, VjobcandidateViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -58,12 +58,11 @@ object VjobcandidateViewFields {
       override def webSite = OptField[String, VjobcandidateViewRow](_path, "WebSite", None, None, x => x.webSite, (row, value) => row.copy(webSite = value))
       override def modifieddate = Field[TypoLocalDateTime, VjobcandidateViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VjobcandidateViewRow]] =
       List[FieldLike[?, VjobcandidateViewRow]](fields.jobcandidateid, fields.businessentityid, fields.namePrefix, fields.nameFirst, fields.nameMiddle, fields.nameLast, fields.nameSuffix, fields.skills, fields.addrType, fields.addrLocCountryRegion, fields.addrLocState, fields.addrLocCity, fields.addrPostalCode, fields.eMail, fields.webSite, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

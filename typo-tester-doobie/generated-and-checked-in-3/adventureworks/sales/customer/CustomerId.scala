@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.customer` */
-case class CustomerId(value: Int) extends AnyVal
+case class CustomerId(value: Int) extends scala.AnyVal
+
 object CustomerId {
   given arrayGet: Get[Array[CustomerId]] = adventureworks.IntegerArrayMeta.get.map(_.map(CustomerId.apply))
+
   given arrayPut: Put[Array[CustomerId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[CustomerId, Int] = Bijection[CustomerId, Int](_.value)(CustomerId.apply)
+
+  given bijection: Bijection[CustomerId, Int] = Bijection.apply[CustomerId, Int](_.value)(CustomerId.apply)
+
   given decoder: Decoder[CustomerId] = Decoder.decodeInt.map(CustomerId.apply)
+
   given encoder: Encoder[CustomerId] = Encoder.encodeInt.contramap(_.value)
+
   given get: Get[CustomerId] = Meta.IntMeta.get.map(CustomerId.apply)
-  given put: Put[CustomerId] = Meta.IntMeta.put.contramap(_.value)
-  given text: Text[CustomerId] = new Text[CustomerId] {
-    override def unsafeEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CustomerId] = {
+    new Text[CustomerId] {
+      override def unsafeEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CustomerId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[CustomerId] = Meta.IntMeta.put.contramap(_.value)
 }

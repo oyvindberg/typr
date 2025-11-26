@@ -21,36 +21,54 @@ import typo.dsl.Bijection
 case class TypoLocalDate(value: LocalDate)
 
 object TypoLocalDate {
-  def now = TypoLocalDate(LocalDate.now)
-  def apply(str: String): TypoLocalDate = TypoLocalDate(LocalDate.parse(str))
-  given arrayColumn: Column[Array[TypoLocalDate]] = Column.nonNull[Array[TypoLocalDate]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoLocalDate(LocalDate.parse(v.asInstanceOf[String]))))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLocalDate, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
-  given arrayToStatement: ToStatement[Array[TypoLocalDate]] = ToStatement[Array[TypoLocalDate]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("date", v.map(v => v.value.toString))))
-  given bijection: Bijection[TypoLocalDate, LocalDate] = Bijection[TypoLocalDate, LocalDate](_.value)(TypoLocalDate.apply)
-  given column: Column[TypoLocalDate] = Column.nonNull[TypoLocalDate]((v1: Any, _) =>
-    v1 match {
-      case v: String => Right(TypoLocalDate(LocalDate.parse(v)))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
-    }
-  )
-  given parameterMetadata: ParameterMetaData[TypoLocalDate] = new ParameterMetaData[TypoLocalDate] {
-    override def sqlType: String = "date"
-    override def jdbcType: Int = Types.OTHER
+  def apply(str: String): TypoLocalDate = new TypoLocalDate(LocalDate.parse(str))
+
+  given arrayColumn: Column[Array[TypoLocalDate]] = {
+    Column.nonNull[Array[TypoLocalDate]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoLocalDate(LocalDate.parse(v.asInstanceOf[String]))))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLocalDate, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
   }
+
+  given arrayToStatement: ToStatement[Array[TypoLocalDate]] = ToStatement[Array[TypoLocalDate]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("date", v.map(v => v.value.toString()))))
+
+  given bijection: Bijection[TypoLocalDate, LocalDate] = Bijection.apply[TypoLocalDate, LocalDate](_.value)(TypoLocalDate.apply)
+
+  given column: Column[TypoLocalDate] = {
+    Column.nonNull[TypoLocalDate]((v1: Any, _) =>
+      v1 match {
+        case v: String => Right(new TypoLocalDate(LocalDate.parse(v)))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.lang.String, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  def now: TypoLocalDate = new TypoLocalDate(LocalDate.now())
+
+  given parameterMetadata: ParameterMetaData[TypoLocalDate] = {
+    new ParameterMetaData[TypoLocalDate] {
+      override def sqlType: String = "date"
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  given pgText: Text[TypoLocalDate] = {
+    new Text[TypoLocalDate] {
+      override def unsafeEncode(v: TypoLocalDate, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString(), sb)
+      override def unsafeArrayEncode(v: TypoLocalDate, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString(), sb)
+    }
+  }
+
   given reads: Reads[TypoLocalDate] = Reads.DefaultLocalDateReads.map(TypoLocalDate.apply)
-  given text: Text[TypoLocalDate] = new Text[TypoLocalDate] {
-    override def unsafeEncode(v: TypoLocalDate, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoLocalDate, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
-  given toStatement: ToStatement[TypoLocalDate] = ToStatement[TypoLocalDate]((s, index, v) => s.setObject(index, v.value.toString))
+
+  given toStatement: ToStatement[TypoLocalDate] = ToStatement[TypoLocalDate]((s, index, v) => s.setObject(index, v.value.toString()))
+
   given writes: Writes[TypoLocalDate] = Writes.DefaultLocalDateWrites.contramap(_.value)
 }

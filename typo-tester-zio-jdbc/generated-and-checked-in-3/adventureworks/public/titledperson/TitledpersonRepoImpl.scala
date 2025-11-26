@@ -10,35 +10,32 @@ import adventureworks.public.title_domain.TitleDomainId
 import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
 import zio.ZIO
 import zio.jdbc.SqlFragment.Segment
 import zio.jdbc.SqlFragment.Setter
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class TitledpersonRepoImpl extends TitledpersonRepo {
-  override def delete: DeleteBuilder[TitledpersonFields, TitledpersonRow] = {
-    DeleteBuilder(""""public"."titledperson"""", TitledpersonFields.structure)
-  }
-  override def insert(unsaved: TitledpersonRow): ZIO[ZConnection, Throwable, TitledpersonRow] = {
+  def delete: DeleteBuilder[TitledpersonFields, TitledpersonRow] = DeleteBuilder.of(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.jdbcDecoder)
+
+  def insert(unsaved: TitledpersonRow): ZIO[ZConnection, Throwable, TitledpersonRow] = {
     sql"""insert into "public"."titledperson"("title_short", "title", "name")
-          values (${Segment.paramSegment(unsaved.titleShort)(using TitleDomainId.setter)}::text, ${Segment.paramSegment(unsaved.title)(using TitleId.setter)}, ${Segment.paramSegment(unsaved.name)(using Setter.stringSetter)})
-          returning "title_short", "title", "name"
-       """.insertReturning(using TitledpersonRow.jdbcDecoder).map(_.updatedKeys.head)
+    values (${Segment.paramSegment(unsaved.titleShort)(using TitleDomainId.setter)}::text, ${Segment.paramSegment(unsaved.title)(using TitleId.setter)}, ${Segment.paramSegment(unsaved.name)(using Setter.stringSetter)})
+    returning "title_short", "title", "name"
+    """.insertReturning(using TitledpersonRow.jdbcDecoder).map(_.updatedKeys.head)
   }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, TitledpersonRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
-    streamingInsert(s"""COPY "public"."titledperson"("title_short", "title", "name") FROM STDIN""", batchSize, unsaved)(using TitledpersonRow.text)
-  }
-  override def select: SelectBuilder[TitledpersonFields, TitledpersonRow] = {
-    SelectBuilderSql(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, TitledpersonRow] = {
-    sql"""select "title_short", "title", "name" from "public"."titledperson"""".query(using TitledpersonRow.jdbcDecoder).selectStream()
-  }
-  override def update: UpdateBuilder[TitledpersonFields, TitledpersonRow] = {
-    UpdateBuilder(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.jdbcDecoder)
-  }
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TitledpersonRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = streamingInsert(s"""COPY "public"."titledperson"("title_short", "title", "name") FROM STDIN""", batchSize, unsaved)(using TitledpersonRow.pgText)
+
+  def select: SelectBuilder[TitledpersonFields, TitledpersonRow] = SelectBuilder.of(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, TitledpersonRow] = sql"""select "title_short", "title", "name" from "public"."titledperson"""".query(using TitledpersonRow.jdbcDecoder).selectStream()
+
+  def update: UpdateBuilder[TitledpersonFields, TitledpersonRow] = UpdateBuilder.of(""""public"."titledperson"""", TitledpersonFields.structure, TitledpersonRow.jdbcDecoder)
 }

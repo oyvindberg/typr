@@ -94,10 +94,10 @@ object MetaDb {
       val tableConstraints = logger.timed("fetching tableConstraints")(ds.run(implicit c => (new TableConstraintsViewRepoImpl).selectAll))
       val keyColumnUsage = logger.timed("fetching keyColumnUsage")(ds.run(implicit c => (new KeyColumnUsageViewRepoImpl).selectAll))
       val referentialConstraints = logger.timed("fetching referentialConstraints")(ds.run(implicit c => (new ReferentialConstraintsViewRepoImpl).selectAll))
-      val pgEnums = logger.timed("fetching pgEnums")(ds.run(implicit c => (new EnumsSqlRepoImpl)()))
+      val pgEnums = logger.timed("fetching pgEnums")(ds.run(implicit c => (new EnumsSqlRepoImpl).apply()))
       val tables = logger.timed("fetching tables")(ds.run(implicit c => (new TablesViewRepoImpl).selectAll.filter(_.tableType.contains("BASE TABLE"))))
       val columns = logger.timed("fetching columns")(ds.run(implicit c => (new ColumnsViewRepoImpl).selectAll))
-      val views = logger.timed("fetching and analyzing views")(ds.run(implicit c => (new ViewFindAllSqlRepoImpl)())).flatMap { viewRows =>
+      val views = logger.timed("fetching and analyzing views")(ds.run(implicit c => (new ViewFindAllSqlRepoImpl).apply())).flatMap { viewRows =>
         val analyzedRows: List[Future[(db.RelationName, AnalyzedView)]] = viewRows.flatMap { viewRow =>
           val name = db.RelationName(viewRow.tableSchema, viewRow.tableName.get)
           if (viewRow.viewDefinition.isDefined && viewSelector.include(name)) Some {
@@ -117,10 +117,10 @@ object MetaDb {
         }
         Future.sequence(analyzedRows).map(_.toMap)
       }
-      val domains = logger.timed("fetching domains")(ds.run(implicit c => (new DomainsSqlRepoImpl)()))
-      val columnComments = logger.timed("fetching columnComments")(ds.run(implicit c => (new CommentsSqlRepoImpl)()))
-      val constraints = logger.timed("fetching constraints")(ds.run(implicit c => (new ConstraintsSqlRepoImpl)()))
-      val tableComments = logger.timed("fetching tableComments")(ds.run(implicit c => (new TableCommentsSqlRepoImpl)()))
+      val domains = logger.timed("fetching domains")(ds.run(implicit c => (new DomainsSqlRepoImpl).apply()))
+      val columnComments = logger.timed("fetching columnComments")(ds.run(implicit c => (new CommentsSqlRepoImpl).apply()))
+      val constraints = logger.timed("fetching constraints")(ds.run(implicit c => (new ConstraintsSqlRepoImpl).apply()))
+      val tableComments = logger.timed("fetching tableComments")(ds.run(implicit c => (new TableCommentsSqlRepoImpl).apply()))
       for {
         tableConstraints <- tableConstraints
         keyColumnUsage <- keyColumnUsage

@@ -26,53 +26,77 @@ import zio.json.JsonEncoder
 case class TypoInstant(value: Instant)
 
 object TypoInstant {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter
   def apply(value: Instant): TypoInstant = new TypoInstant(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoInstant = apply(OffsetDateTime.parse(str, parser).toInstant)
-  def now = TypoInstant(Instant.now)
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoInstant]] = JdbcDecoder[Array[TypoInstant]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoInstant(x.asInstanceOf[String]))
-    },
-    "Array[java.lang.String]"
-  )
+
+  def apply(str: String): TypoInstant = new TypoInstant(OffsetDateTime.parse(str, parser).toInstant())
+
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoInstant]] = {
+    JdbcDecoder[Array[TypoInstant]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => apply(x.asInstanceOf[String]))
+      },
+      "Array[java.lang.String]"
+    )
+  }
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TypoInstant]] = JdbcEncoder.singleParamEncoder(arraySetter)
-  implicit lazy val arraySetter: Setter[Array[TypoInstant]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "timestamptz",
-        v.map { vv =>
-          vv.value.toString
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  implicit lazy val bijection: Bijection[TypoInstant, Instant] = Bijection[TypoInstant, Instant](_.value)(TypoInstant.apply)
-  implicit lazy val jdbcDecoder: JdbcDecoder[TypoInstant] = JdbcDecoder[TypoInstant](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoInstant(v.asInstanceOf[String])
-    },
-    "java.lang.String"
-  )
-  implicit lazy val jdbcEncoder: JdbcEncoder[TypoInstant] = JdbcEncoder.singleParamEncoder(setter)
-  implicit lazy val jsonDecoder: JsonDecoder[TypoInstant] = JsonDecoder.instant.map(TypoInstant.apply)
-  implicit lazy val jsonEncoder: JsonEncoder[TypoInstant] = JsonEncoder.instant.contramap(_.value)
-  implicit lazy val pgType: PGType[TypoInstant] = PGType.instance[TypoInstant]("timestamptz", Types.OTHER)
-  implicit lazy val setter: Setter[TypoInstant] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  implicit lazy val arraySetter: Setter[Array[TypoInstant]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value.toString
-      )
-    },
-    "timestamptz"
-  )
-  implicit lazy val text: Text[TypoInstant] = new Text[TypoInstant] {
-    override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+        ps.getConnection.createArrayOf(
+          "timestamptz",
+          v.map { vv =>
+            vv.value.toString
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  implicit lazy val bijection: Bijection[TypoInstant, Instant] = Bijection.apply[TypoInstant, Instant](_.value)(TypoInstant.apply)
+
+  implicit lazy val jdbcDecoder: JdbcDecoder[TypoInstant] = {
+    JdbcDecoder[TypoInstant](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else apply(v.asInstanceOf[String])
+      },
+      "java.lang.String"
+    )
+  }
+
+  implicit lazy val jdbcEncoder: JdbcEncoder[TypoInstant] = JdbcEncoder.singleParamEncoder(setter)
+
+  implicit lazy val jsonDecoder: JsonDecoder[TypoInstant] = JsonDecoder.instant.map(TypoInstant.apply)
+
+  implicit lazy val jsonEncoder: JsonEncoder[TypoInstant] = JsonEncoder.instant.contramap(_.value)
+
+  def now: TypoInstant = new TypoInstant(Instant.now())
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
+
+  implicit lazy val pgText: Text[TypoInstant] = {
+    new Text[TypoInstant] {
+      override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  implicit lazy val pgType: PGType[TypoInstant] = PGType.instance[TypoInstant]("timestamptz", Types.OTHER)
+
+  implicit lazy val setter: Setter[TypoInstant] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value.toString
+        )
+      },
+      "timestamptz"
+    )
   }
 }

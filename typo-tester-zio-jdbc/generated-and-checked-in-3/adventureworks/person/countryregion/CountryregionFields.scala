@@ -21,22 +21,21 @@ trait CountryregionFields {
 
 object CountryregionFields {
   lazy val structure: Relation[CountryregionFields, CountryregionRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CountryregionFields, CountryregionRow] {
-  
+
     override lazy val fields: CountryregionFields = new CountryregionFields {
       override def countryregioncode = IdField[CountryregionId, CountryregionRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))
       override def name = Field[Name, CountryregionRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, CountryregionRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CountryregionRow]] =
       List[FieldLike[?, CountryregionRow]](fields.countryregioncode, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

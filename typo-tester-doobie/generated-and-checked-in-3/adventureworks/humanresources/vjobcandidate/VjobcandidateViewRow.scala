@@ -38,42 +38,46 @@ case class VjobcandidateViewRow(
 
 object VjobcandidateViewRow {
   given decoder: Decoder[VjobcandidateViewRow] = Decoder.forProduct16[VjobcandidateViewRow, JobcandidateId, Option[BusinessentityId], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 20 chars */ String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], TypoLocalDateTime]("jobcandidateid", "businessentityid", "Name.Prefix", "Name.First", "Name.Middle", "Name.Last", "Name.Suffix", "Skills", "Addr.Type", "Addr.Loc.CountryRegion", "Addr.Loc.State", "Addr.Loc.City", "Addr.PostalCode", "EMail", "WebSite", "modifieddate")(VjobcandidateViewRow.apply)(using JobcandidateId.decoder, Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), TypoLocalDateTime.decoder)
+
   given encoder: Encoder[VjobcandidateViewRow] = Encoder.forProduct16[VjobcandidateViewRow, JobcandidateId, Option[BusinessentityId], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 20 chars */ String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], TypoLocalDateTime]("jobcandidateid", "businessentityid", "Name.Prefix", "Name.First", "Name.Middle", "Name.Last", "Name.Suffix", "Skills", "Addr.Type", "Addr.Loc.CountryRegion", "Addr.Loc.State", "Addr.Loc.City", "Addr.PostalCode", "EMail", "WebSite", "modifieddate")(x => (x.jobcandidateid, x.businessentityid, x.namePrefix, x.nameFirst, x.nameMiddle, x.nameLast, x.nameSuffix, x.skills, x.addrType, x.addrLocCountryRegion, x.addrLocState, x.addrLocCity, x.addrPostalCode, x.eMail, x.webSite, x.modifieddate))(using JobcandidateId.encoder, Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), TypoLocalDateTime.encoder)
-  given read: Read[VjobcandidateViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(JobcandidateId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VjobcandidateViewRow(
-      jobcandidateid = arr(0).asInstanceOf[JobcandidateId],
-          businessentityid = arr(1).asInstanceOf[Option[BusinessentityId]],
-          namePrefix = arr(2).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-          nameFirst = arr(3).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-          nameMiddle = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-          nameLast = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-          nameSuffix = arr(6).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-          skills = arr(7).asInstanceOf[/* nullability unknown */ Option[String]],
-          addrType = arr(8).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-          addrLocCountryRegion = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-          addrLocState = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-          addrLocCity = arr(11).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-          addrPostalCode = arr(12).asInstanceOf[/* nullability unknown */ Option[/* max 20 chars */ String]],
-          eMail = arr(13).asInstanceOf[/* nullability unknown */ Option[String]],
-          webSite = arr(14).asInstanceOf[/* nullability unknown */ Option[String]],
-          modifieddate = arr(15).asInstanceOf[TypoLocalDateTime]
-    )
+
+  given read: Read[VjobcandidateViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(JobcandidateId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VjobcandidateViewRow(
+        jobcandidateid = arr(0).asInstanceOf[JobcandidateId],
+            businessentityid = arr(1).asInstanceOf[Option[BusinessentityId]],
+            namePrefix = arr(2).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
+            nameFirst = arr(3).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
+            nameMiddle = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
+            nameLast = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
+            nameSuffix = arr(6).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
+            skills = arr(7).asInstanceOf[/* nullability unknown */ Option[String]],
+            addrType = arr(8).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
+            addrLocCountryRegion = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
+            addrLocState = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
+            addrLocCity = arr(11).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
+            addrPostalCode = arr(12).asInstanceOf[/* nullability unknown */ Option[/* max 20 chars */ String]],
+            eMail = arr(13).asInstanceOf[/* nullability unknown */ Option[String]],
+            webSite = arr(14).asInstanceOf[/* nullability unknown */ Option[String]],
+            modifieddate = arr(15).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

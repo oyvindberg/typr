@@ -18,28 +18,45 @@ import typo.dsl.Bijection
 case class TypoJson(value: String)
 
 object TypoJson {
-  implicit lazy val arrayGet: Get[Array[TypoJson]] = Get.Advanced.array[AnyRef](NonEmptyList.one("json[]"))
-    .map(_.map(v => TypoJson(v.asInstanceOf[String])))
-  implicit lazy val arrayPut: Put[Array[TypoJson]] = Put.Advanced.array[AnyRef](NonEmptyList.one("json[]"), "json")
-    .contramap(_.map(v => {
-                            val obj = new PGobject
-                            obj.setType("json")
-                            obj.setValue(v.value)
-                            obj
-                          }))
-  implicit lazy val bijection: Bijection[TypoJson, String] = Bijection[TypoJson, String](_.value)(TypoJson.apply)
+  implicit lazy val arrayGet: Get[Array[TypoJson]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("json[]"))
+      .map(_.map(v => new TypoJson(v.asInstanceOf[String])))
+  }
+
+  implicit lazy val arrayPut: Put[Array[TypoJson]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("json[]"), "json")
+      .contramap(_.map(v => {
+                              val obj = new PGobject()
+                              obj.setType("json")
+                              obj.setValue(v.value)
+                              obj
+                            }))
+  }
+
+  implicit lazy val bijection: Bijection[TypoJson, String] = Bijection.apply[TypoJson, String](_.value)(TypoJson.apply)
+
   implicit lazy val decoder: Decoder[TypoJson] = Decoder.decodeString.map(TypoJson.apply)
+
   implicit lazy val encoder: Encoder[TypoJson] = Encoder.encodeString.contramap(_.value)
-  implicit lazy val get: Get[TypoJson] = Get.Advanced.other[PGobject](NonEmptyList.one("json"))
-    .map(v => TypoJson(v.getValue))
-  implicit lazy val put: Put[TypoJson] = Put.Advanced.other[PGobject](NonEmptyList.one("json")).contramap(v => {
-                                                                          val obj = new PGobject
-                                                                          obj.setType("json")
-                                                                          obj.setValue(v.value)
-                                                                          obj
-                                                                        })
-  implicit lazy val text: Text[TypoJson] = new Text[TypoJson] {
-    override def unsafeEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val get: Get[TypoJson] = {
+    Get.Advanced.other[PGobject](NonEmptyList.one("json"))
+      .map(v => new TypoJson(v.getValue))
+  }
+
+  implicit lazy val pgText: Text[TypoJson] = {
+    new Text[TypoJson] {
+      override def unsafeEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoJson, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val put: Put[TypoJson] = {
+    Put.Advanced.other[PGobject](NonEmptyList.one("json")).contramap(v => {
+      val obj = new PGobject()
+      obj.setType("json")
+      obj.setValue(v.value)
+      obj
+    })
   }
 }

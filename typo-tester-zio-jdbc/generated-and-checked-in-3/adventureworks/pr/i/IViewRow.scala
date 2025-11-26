@@ -28,40 +28,48 @@ case class IViewRow(
 )
 
 object IViewRow {
-  given jdbcDecoder: JdbcDecoder[IViewRow] = new JdbcDecoder[IViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, IViewRow) =
-      columIndex + 3 ->
-        IViewRow(
-          id = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          illustrationid = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          diagram = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[IViewRow] = {
+    new JdbcDecoder[IViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, IViewRow) =
+        columIndex + 3 ->
+          IViewRow(
+            id = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            illustrationid = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            diagram = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[IViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using IllustrationId.jsonDecoder))
-    val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(using IllustrationId.jsonDecoder))
-    val diagram = jsonObj.get("diagram").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(using JsonDecoder.option(using TypoXml.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && illustrationid.isRight && diagram.isRight && modifieddate.isRight)
-      Right(IViewRow(id = id.toOption.get, illustrationid = illustrationid.toOption.get, diagram = diagram.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, illustrationid, diagram, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[IViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using IllustrationId.jsonDecoder))
+      val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(using IllustrationId.jsonDecoder))
+      val diagram = jsonObj.get("diagram").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(using JsonDecoder.option(using TypoXml.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && illustrationid.isRight && diagram.isRight && modifieddate.isRight)
+        Right(IViewRow(id = id.toOption.get, illustrationid = illustrationid.toOption.get, diagram = diagram.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, illustrationid, diagram, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[IViewRow] = new JsonEncoder[IViewRow] {
-    override def unsafeEncode(a: IViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      IllustrationId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""illustrationid":""")
-      IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
-      out.write(",")
-      out.write(""""diagram":""")
-      JsonEncoder.option(using TypoXml.jsonEncoder).unsafeEncode(a.diagram, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[IViewRow] = {
+    new JsonEncoder[IViewRow] {
+      override def unsafeEncode(a: IViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        IllustrationId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""illustrationid":""")
+        IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
+        out.write(",")
+        out.write(""""diagram":""")
+        JsonEncoder.option(using TypoXml.jsonEncoder).unsafeEncode(a.diagram, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

@@ -6,16 +6,12 @@
 package adventureworks.pr.pr
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PrViewRepoImpl extends PrViewRepo {
-  override def select: SelectBuilder[PrViewFields, PrViewRow] = {
-    SelectBuilderSql(""""pr"."pr"""", PrViewFields.structure, PrViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PrViewRow] = {
-    sql"""select "id", "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text from "pr"."pr"""".query(using PrViewRow.read).stream
-  }
+  def select: SelectBuilder[PrViewFields, PrViewRow] = SelectBuilder.of(""""pr"."pr"""", PrViewFields.structure, PrViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PrViewRow] = sql"""select "id", "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text from "pr"."pr"""".query(using PrViewRow.read).stream
 }

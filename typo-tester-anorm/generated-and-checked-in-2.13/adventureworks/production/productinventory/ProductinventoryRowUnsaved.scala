@@ -7,6 +7,7 @@ package adventureworks.production.productinventory
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
@@ -24,83 +25,92 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productinventory` which has not been persisted yet */
 case class ProductinventoryRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Inventory location identification number. Foreign key to Location.LocationID.
-      Points to [[adventureworks.production.location.LocationRow.locationid]] */
+   * Points to [[adventureworks.production.location.LocationRow.locationid]]
+   */
   locationid: LocationId,
   /** Storage compartment within an inventory location. */
   shelf: /* max 10 chars */ String,
   /** Storage container on a shelf in an inventory location.
-      Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100))) */
+   * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
+   */
   bin: TypoShort,
   /** Default: 0
-      Quantity of products in the inventory location. */
-  quantity: Defaulted[TypoShort] = Defaulted.UseDefault,
+   * Quantity of products in the inventory location.
+   */
+  quantity: Defaulted[TypoShort] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(quantityDefault: => TypoShort, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductinventoryRow =
-    ProductinventoryRow(
+  def toRow(
+    quantityDefault: => TypoShort,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductinventoryRow = {
+    new ProductinventoryRow(
       productid = productid,
       locationid = locationid,
       shelf = shelf,
       bin = bin,
-      quantity = quantity match {
-                   case Defaulted.UseDefault => quantityDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      quantity = quantity.getOrElse(quantityDefault),
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ProductinventoryRowUnsaved {
-  implicit lazy val reads: Reads[ProductinventoryRowUnsaved] = Reads[ProductinventoryRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductinventoryRowUnsaved(
-          productid = json.\("productid").as(ProductId.reads),
-          locationid = json.\("locationid").as(LocationId.reads),
-          shelf = json.\("shelf").as(Reads.StringReads),
-          bin = json.\("bin").as(TypoShort.reads),
-          quantity = json.\("quantity").as(Defaulted.reads(TypoShort.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ProductinventoryRowUnsaved] = Text.instance[ProductinventoryRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    LocationId.text.unsafeEncode(row.locationid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.shelf, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.bin, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoShort.text).unsafeEncode(row.quantity, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[ProductinventoryRowUnsaved] = OWrites[ProductinventoryRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "shelf" -> Writes.StringWrites.writes(o.shelf),
-      "bin" -> TypoShort.writes.writes(o.bin),
-      "quantity" -> Defaulted.writes(TypoShort.writes).writes(o.quantity),
-      "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ProductinventoryRowUnsaved {
+  implicit lazy val pgText: Text[ProductinventoryRowUnsaved] = {
+    Text.instance[ProductinventoryRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      LocationId.pgText.unsafeEncode(row.locationid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.shelf, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.bin, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoShort.pgText).unsafeEncode(row.quantity, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[ProductinventoryRowUnsaved] = {
+    Reads[ProductinventoryRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductinventoryRowUnsaved(
+            productid = json.\("productid").as(ProductId.reads),
+            locationid = json.\("locationid").as(LocationId.reads),
+            shelf = json.\("shelf").as(Reads.StringReads),
+            bin = json.\("bin").as(TypoShort.reads),
+            quantity = json.\("quantity").as(Defaulted.reads(TypoShort.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductinventoryRowUnsaved] = {
+    OWrites[ProductinventoryRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "shelf" -> Writes.StringWrites.writes(o.shelf),
+        "bin" -> TypoShort.writes.writes(o.bin),
+        "quantity" -> Defaulted.writes(TypoShort.writes).writes(o.quantity),
+        "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

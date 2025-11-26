@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait SalesorderheadersalesreasonRepo {
   def delete: DeleteBuilder[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow]
+
   def deleteById(compositeId: SalesorderheadersalesreasonId): ConnectionIO[Boolean]
+
   def deleteByIds(compositeIds: Array[SalesorderheadersalesreasonId]): ConnectionIO[Int]
+
   def insert(unsaved: SalesorderheadersalesreasonRow): ConnectionIO[SalesorderheadersalesreasonRow]
+
   def insert(unsaved: SalesorderheadersalesreasonRowUnsaved): ConnectionIO[SalesorderheadersalesreasonRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, SalesorderheadersalesreasonRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, SalesorderheadersalesreasonRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, SalesorderheadersalesreasonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, SalesorderheadersalesreasonRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow]
+
   def selectAll: Stream[ConnectionIO, SalesorderheadersalesreasonRow]
+
   def selectById(compositeId: SalesorderheadersalesreasonId): ConnectionIO[Option[SalesorderheadersalesreasonRow]]
+
   def selectByIds(compositeIds: Array[SalesorderheadersalesreasonId]): Stream[ConnectionIO, SalesorderheadersalesreasonRow]
+
   def selectByIdsTracked(compositeIds: Array[SalesorderheadersalesreasonId]): ConnectionIO[Map[SalesorderheadersalesreasonId, SalesorderheadersalesreasonRow]]
+
   def update: UpdateBuilder[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow]
+
   def update(row: SalesorderheadersalesreasonRow): ConnectionIO[Option[SalesorderheadersalesreasonRow]]
+
   def upsert(unsaved: SalesorderheadersalesreasonRow): ConnectionIO[SalesorderheadersalesreasonRow]
+
   def upsertBatch(unsaved: List[SalesorderheadersalesreasonRow]): Stream[ConnectionIO, SalesorderheadersalesreasonRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, SalesorderheadersalesreasonRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, SalesorderheadersalesreasonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

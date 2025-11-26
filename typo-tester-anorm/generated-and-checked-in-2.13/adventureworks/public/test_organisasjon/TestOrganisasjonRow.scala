@@ -17,35 +17,45 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.test_organisasjon
-    Primary key: organisasjonskode */
-case class TestOrganisasjonRow(
-  organisasjonskode: TestOrganisasjonId
-){
-   val id = organisasjonskode
- }
+ * Primary key: organisasjonskode
+ */
+case class TestOrganisasjonRow(organisasjonskode: TestOrganisasjonId) {
+  def id: TestOrganisasjonId = organisasjonskode
+}
 
 object TestOrganisasjonRow {
-  implicit lazy val reads: Reads[TestOrganisasjonRow] = Reads[TestOrganisasjonRow](json => JsResult.fromTry(
-      Try(
-        TestOrganisasjonRow(
-          organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads)
+  implicit lazy val pgText: Text[TestOrganisasjonRow] = {
+    Text.instance[TestOrganisasjonRow]{ (row, sb) =>
+      TestOrganisasjonId.pgText.unsafeEncode(row.organisasjonskode, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[TestOrganisasjonRow] = {
+    Reads[TestOrganisasjonRow](json => JsResult.fromTry(
+        Try(
+          TestOrganisasjonRow(
+            organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TestOrganisasjonRow] = RowParser[TestOrganisasjonRow] { row =>
-    Success(
-      TestOrganisasjonRow(
-        organisasjonskode = row(idx + 0)(TestOrganisasjonId.column)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[TestOrganisasjonRow] = Text.instance[TestOrganisasjonRow]{ (row, sb) =>
-    TestOrganisasjonId.text.unsafeEncode(row.organisasjonskode, sb)
+
+  def rowParser(idx: Int): RowParser[TestOrganisasjonRow] = {
+    RowParser[TestOrganisasjonRow] { row =>
+      Success(
+        TestOrganisasjonRow(
+          organisasjonskode = row(idx + 0)(TestOrganisasjonId.column)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[TestOrganisasjonRow] = OWrites[TestOrganisasjonRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[TestOrganisasjonRow] = {
+    OWrites[TestOrganisasjonRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode)
+      ))
+    )
+  }
 }

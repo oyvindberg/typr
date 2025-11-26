@@ -6,6 +6,7 @@
 package adventureworks.production.document
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -21,96 +22,99 @@ case class DocumentRowUnsaved(
   /** Title of the document. */
   title: /* max 50 chars */ String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
-      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
+   * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
+   */
   owner: BusinessentityId,
   /** File name of the document */
   filename: /* max 400 chars */ String,
   /** File extension indicating the document type. For example, .doc or .txt. */
-  fileextension: Option[/* max 8 chars */ String],
+  fileextension: Option[/* max 8 chars */ String] = None,
   /** Revision number of the document. */
   revision: /* bpchar, max 5 chars */ String,
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
-      Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3))) */
+   * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
+   */
   status: TypoShort,
   /** Document abstract. */
-  documentsummary: Option[String],
+  documentsummary: Option[String] = None,
   /** Complete document. */
-  document: Option[TypoBytea],
+  document: Option[TypoBytea] = None,
   /** Default: false
-      0 = This is a folder, 1 = This is a document. */
-  folderflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = This is a folder, 1 = This is a document.
+   */
+  folderflag: Defaulted[Flag] = new UseDefault(),
   /** Default: 0
-      Engineering change approval number. */
-  changenumber: Defaulted[Int] = Defaulted.UseDefault,
+   * Engineering change approval number.
+   */
+  changenumber: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1()
-      ROWGUIDCOL number uniquely identifying the record. Required for FileStream. */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+   * ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
+   */
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Primary key for Document records. */
-  documentnode: Defaulted[DocumentId] = Defaulted.UseDefault
+   * Primary key for Document records.
+   */
+  documentnode: Defaulted[DocumentId] = new UseDefault()
 ) {
-  def toRow(folderflagDefault: => Flag, changenumberDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime, documentnodeDefault: => DocumentId): DocumentRow =
-    DocumentRow(
+  def toRow(
+    folderflagDefault: => Flag,
+    changenumberDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime,
+    documentnodeDefault: => DocumentId
+  ): DocumentRow = {
+    new DocumentRow(
       title = title,
       owner = owner,
+      folderflag = folderflag.getOrElse(folderflagDefault),
       filename = filename,
       fileextension = fileextension,
       revision = revision,
+      changenumber = changenumber.getOrElse(changenumberDefault),
       status = status,
       documentsummary = documentsummary,
       document = document,
-      folderflag = folderflag match {
-                     case Defaulted.UseDefault => folderflagDefault
-                     case Defaulted.Provided(value) => value
-                   },
-      changenumber = changenumber match {
-                       case Defaulted.UseDefault => changenumberDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      documentnode = documentnode match {
-                       case Defaulted.UseDefault => documentnodeDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault),
+      documentnode = documentnode.getOrElse(documentnodeDefault)
     )
+  }
 }
+
 object DocumentRowUnsaved {
   given decoder: Decoder[DocumentRowUnsaved] = Decoder.forProduct13[DocumentRowUnsaved, /* max 50 chars */ String, BusinessentityId, /* max 400 chars */ String, Option[/* max 8 chars */ String], /* bpchar, max 5 chars */ String, TypoShort, Option[String], Option[TypoBytea], Defaulted[Flag], Defaulted[Int], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime], Defaulted[DocumentId]]("title", "owner", "filename", "fileextension", "revision", "status", "documentsummary", "document", "folderflag", "changenumber", "rowguid", "modifieddate", "documentnode")(DocumentRowUnsaved.apply)(using Decoder.decodeString, BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, TypoShort.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoBytea.decoder), Defaulted.decoder(using Flag.decoder), Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using DocumentId.decoder))
+
   given encoder: Encoder[DocumentRowUnsaved] = Encoder.forProduct13[DocumentRowUnsaved, /* max 50 chars */ String, BusinessentityId, /* max 400 chars */ String, Option[/* max 8 chars */ String], /* bpchar, max 5 chars */ String, TypoShort, Option[String], Option[TypoBytea], Defaulted[Flag], Defaulted[Int], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime], Defaulted[DocumentId]]("title", "owner", "filename", "fileextension", "revision", "status", "documentsummary", "document", "folderflag", "changenumber", "rowguid", "modifieddate", "documentnode")(x => (x.title, x.owner, x.filename, x.fileextension, x.revision, x.status, x.documentsummary, x.document, x.folderflag, x.changenumber, x.rowguid, x.modifieddate, x.documentnode))(using Encoder.encodeString, BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, TypoShort.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoBytea.encoder), Defaulted.encoder(using Flag.encoder), Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using DocumentId.encoder))
-  given text: Text[DocumentRowUnsaved] = Text.instance[DocumentRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    BusinessentityId.text.unsafeEncode(row.owner, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.filename, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.fileextension, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.revision, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.status, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.documentsummary, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoBytea.text).unsafeEncode(row.document, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Flag.text).unsafeEncode(row.folderflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.changenumber, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using DocumentId.text).unsafeEncode(row.documentnode, sb)
+
+  given pgText: Text[DocumentRowUnsaved] = {
+    Text.instance[DocumentRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      BusinessentityId.pgText.unsafeEncode(row.owner, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.filename, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.fileextension, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.revision, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.status, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.documentsummary, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoBytea.pgText).unsafeEncode(row.document, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Flag.pgText).unsafeEncode(row.folderflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.changenumber, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using DocumentId.pgText).unsafeEncode(row.documentnode, sb)
+    }
   }
 }

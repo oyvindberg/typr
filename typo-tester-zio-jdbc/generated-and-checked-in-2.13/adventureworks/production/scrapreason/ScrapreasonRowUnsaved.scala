@@ -7,6 +7,7 @@ package adventureworks.production.scrapreason
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import zio.json.JsonDecoder
@@ -19,52 +20,54 @@ case class ScrapreasonRowUnsaved(
   /** Failure description. */
   name: Name,
   /** Default: nextval('production.scrapreason_scrapreasonid_seq'::regclass)
-      Primary key for ScrapReason records. */
-  scrapreasonid: Defaulted[ScrapreasonId] = Defaulted.UseDefault,
+   * Primary key for ScrapReason records.
+   */
+  scrapreasonid: Defaulted[ScrapreasonId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(scrapreasonidDefault: => ScrapreasonId, modifieddateDefault: => TypoLocalDateTime): ScrapreasonRow =
-    ScrapreasonRow(
-      scrapreasonid = scrapreasonid match {
-                        case Defaulted.UseDefault => scrapreasonidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    scrapreasonidDefault: => ScrapreasonId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ScrapreasonRow = new ScrapreasonRow(scrapreasonid = scrapreasonid.getOrElse(scrapreasonidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ScrapreasonRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[ScrapreasonRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val scrapreasonid = jsonObj.get("scrapreasonid").toRight("Missing field 'scrapreasonid'").flatMap(_.as(Defaulted.jsonDecoder(ScrapreasonId.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (name.isRight && scrapreasonid.isRight && modifieddate.isRight)
-      Right(ScrapreasonRowUnsaved(name = name.toOption.get, scrapreasonid = scrapreasonid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](name, scrapreasonid, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  implicit lazy val jsonEncoder: JsonEncoder[ScrapreasonRowUnsaved] = new JsonEncoder[ScrapreasonRowUnsaved] {
-    override def unsafeEncode(a: ScrapreasonRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""scrapreasonid":""")
-      Defaulted.jsonEncoder(ScrapreasonId.jsonEncoder).unsafeEncode(a.scrapreasonid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  implicit lazy val jsonDecoder: JsonDecoder[ScrapreasonRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val scrapreasonid = jsonObj.get("scrapreasonid").toRight("Missing field 'scrapreasonid'").flatMap(_.as(Defaulted.jsonDecoder(ScrapreasonId.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (name.isRight && scrapreasonid.isRight && modifieddate.isRight)
+        Right(ScrapreasonRowUnsaved(name = name.toOption.get, scrapreasonid = scrapreasonid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](name, scrapreasonid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[ScrapreasonRowUnsaved] = Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ScrapreasonId.text).unsafeEncode(row.scrapreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[ScrapreasonRowUnsaved] = {
+    new JsonEncoder[ScrapreasonRowUnsaved] {
+      override def unsafeEncode(a: ScrapreasonRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""scrapreasonid":""")
+        Defaulted.jsonEncoder(ScrapreasonId.jsonEncoder).unsafeEncode(a.scrapreasonid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[ScrapreasonRowUnsaved] = {
+    Text.instance[ScrapreasonRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ScrapreasonId.pgText).unsafeEncode(row.scrapreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

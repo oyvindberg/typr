@@ -21,32 +21,34 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class TransactionhistoryarchiveRepoMock(toRow: Function1[TransactionhistoryarchiveRowUnsaved, TransactionhistoryarchiveRow],
-                                        map: scala.collection.mutable.Map[TransactionhistoryarchiveId, TransactionhistoryarchiveRow] = scala.collection.mutable.Map.empty) extends TransactionhistoryarchiveRepo {
-  override def delete: DeleteBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TransactionhistoryarchiveFields.structure, map)
+case class TransactionhistoryarchiveRepoMock(
+  toRow: TransactionhistoryarchiveRowUnsaved => TransactionhistoryarchiveRow,
+  map: scala.collection.mutable.Map[TransactionhistoryarchiveId, TransactionhistoryarchiveRow] = scala.collection.mutable.Map.empty[TransactionhistoryarchiveId, TransactionhistoryarchiveRow]
+) extends TransactionhistoryarchiveRepo {
+  def delete: DeleteBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] = DeleteBuilderMock(DeleteParams.empty, TransactionhistoryarchiveFields.structure, map)
+
+  def deleteById(transactionid: TransactionhistoryarchiveId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(transactionid).isDefined)
+
+  def deleteByIds(transactionids: Array[TransactionhistoryarchiveId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(transactionids.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: TransactionhistoryarchiveRow): ZIO[ZConnection, Throwable, TransactionhistoryarchiveRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.transactionid))
+        sys.error(s"id ${unsaved.transactionid} already exists")
+      else
+        map.put(unsaved.transactionid, unsaved)
+
+    unsaved
   }
-  override def deleteById(transactionid: TransactionhistoryarchiveId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(transactionid).isDefined)
   }
-  override def deleteByIds(transactionids: Array[TransactionhistoryarchiveId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(transactionids.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: TransactionhistoryarchiveRow): ZIO[ZConnection, Throwable, TransactionhistoryarchiveRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.transactionid))
-          sys.error(s"id ${unsaved.transactionid} already exists")
-        else
-          map.put(unsaved.transactionid, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: TransactionhistoryarchiveRowUnsaved): ZIO[ZConnection, Throwable, TransactionhistoryarchiveRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insert(unsaved: TransactionhistoryarchiveRowUnsaved): ZIO[ZConnection, Throwable, TransactionhistoryarchiveRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.transactionid -> row)
@@ -54,8 +56,12 @@ class TransactionhistoryarchiveRepoMock(toRow: Function1[Transactionhistoryarchi
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
       ZIO.succeed {
         val row = toRow(unsavedRow)
@@ -64,28 +70,25 @@ class TransactionhistoryarchiveRepoMock(toRow: Function1[Transactionhistoryarchi
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] = {
-    SelectBuilderMock(TransactionhistoryarchiveFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(transactionid: TransactionhistoryarchiveId): ZIO[ZConnection, Throwable, Option[TransactionhistoryarchiveRow]] = {
-    ZIO.succeed(map.get(transactionid))
-  }
-  override def selectByIds(transactionids: Array[TransactionhistoryarchiveId]): ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow] = {
-    ZStream.fromIterable(transactionids.flatMap(map.get))
-  }
-  override def selectByIdsTracked(transactionids: Array[TransactionhistoryarchiveId]): ZIO[ZConnection, Throwable, Map[TransactionhistoryarchiveId, TransactionhistoryarchiveRow]] = {
+
+  def select: SelectBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] = SelectBuilderMock(TransactionhistoryarchiveFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow] = ZStream.fromIterable(map.values)
+
+  def selectById(transactionid: TransactionhistoryarchiveId): ZIO[ZConnection, Throwable, Option[TransactionhistoryarchiveRow]] = ZIO.succeed(map.get(transactionid))
+
+  def selectByIds(transactionids: Array[TransactionhistoryarchiveId]): ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow] = ZStream.fromIterable(transactionids.flatMap(map.get))
+
+  def selectByIdsTracked(transactionids: Array[TransactionhistoryarchiveId]): ZIO[ZConnection, Throwable, Map[TransactionhistoryarchiveId, TransactionhistoryarchiveRow]] = {
     selectByIds(transactionids).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.transactionid, x)).toMap
       transactionids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TransactionhistoryarchiveFields.structure, map)
-  }
-  override def update(row: TransactionhistoryarchiveRow): ZIO[ZConnection, Throwable, Option[TransactionhistoryarchiveRow]] = {
+
+  def update: UpdateBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow] = UpdateBuilderMock(UpdateParams.empty, TransactionhistoryarchiveFields.structure, map)
+
+  def update(row: TransactionhistoryarchiveRow): ZIO[ZConnection, Throwable, Option[TransactionhistoryarchiveRow]] = {
     ZIO.succeed {
       map.get(row.transactionid).map { _ =>
         map.put(row.transactionid, row): @nowarn
@@ -93,14 +96,19 @@ class TransactionhistoryarchiveRepoMock(toRow: Function1[Transactionhistoryarchi
       }
     }
   }
-  override def upsert(unsaved: TransactionhistoryarchiveRow): ZIO[ZConnection, Throwable, UpdateResult[TransactionhistoryarchiveRow]] = {
+
+  def upsert(unsaved: TransactionhistoryarchiveRow): ZIO[ZConnection, Throwable, UpdateResult[TransactionhistoryarchiveRow]] = {
     ZIO.succeed {
       map.put(unsaved.transactionid, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TransactionhistoryarchiveRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.transactionid -> row)

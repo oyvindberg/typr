@@ -17,23 +17,29 @@ case class CountryregioncurrencyId(
   countryregioncode: CountryregionId,
   currencycode: CurrencyId
 )
+
 object CountryregioncurrencyId {
-  given jsonDecoder: JsonDecoder[CountryregioncurrencyId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val countryregioncode = jsonObj.get("countryregioncode").toRight("Missing field 'countryregioncode'").flatMap(_.as(using CountryregionId.jsonDecoder))
-    val currencycode = jsonObj.get("currencycode").toRight("Missing field 'currencycode'").flatMap(_.as(using CurrencyId.jsonDecoder))
-    if (countryregioncode.isRight && currencycode.isRight)
-      Right(CountryregioncurrencyId(countryregioncode = countryregioncode.toOption.get, currencycode = currencycode.toOption.get))
-    else Left(List[Either[String, Any]](countryregioncode, currencycode).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[CountryregioncurrencyId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val countryregioncode = jsonObj.get("countryregioncode").toRight("Missing field 'countryregioncode'").flatMap(_.as(using CountryregionId.jsonDecoder))
+      val currencycode = jsonObj.get("currencycode").toRight("Missing field 'currencycode'").flatMap(_.as(using CurrencyId.jsonDecoder))
+      if (countryregioncode.isRight && currencycode.isRight)
+        Right(CountryregioncurrencyId(countryregioncode = countryregioncode.toOption.get, currencycode = currencycode.toOption.get))
+      else Left(List[Either[String, Any]](countryregioncode, currencycode).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[CountryregioncurrencyId] = new JsonEncoder[CountryregioncurrencyId] {
-    override def unsafeEncode(a: CountryregioncurrencyId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""countryregioncode":""")
-      CountryregionId.jsonEncoder.unsafeEncode(a.countryregioncode, indent, out)
-      out.write(",")
-      out.write(""""currencycode":""")
-      CurrencyId.jsonEncoder.unsafeEncode(a.currencycode, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[CountryregioncurrencyId] = {
+    new JsonEncoder[CountryregioncurrencyId] {
+      override def unsafeEncode(a: CountryregioncurrencyId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""countryregioncode":""")
+        CountryregionId.jsonEncoder.unsafeEncode(a.countryregioncode, indent, out)
+        out.write(",")
+        out.write(""""currencycode":""")
+        CurrencyId.jsonEncoder.unsafeEncode(a.currencycode, indent, out)
+        out.write("}")
+      }
     }
   }
 }

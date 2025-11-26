@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `information_schema.character_data`
-  * No constraint
-  */
+ * No constraint
+ */
 case class CharacterData(value: String)
+
 object CharacterData {
   given arrayJdbcDecoder: JdbcDecoder[Array[CharacterData]] = adventureworks.StringArrayDecoder.map(_.map(CharacterData.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[CharacterData]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[CharacterData]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[CharacterData, String] = Bijection[CharacterData, String](_.value)(CharacterData.apply)
+
+  given bijection: Bijection[CharacterData, String] = Bijection.apply[CharacterData, String](_.value)(CharacterData.apply)
+
   given jdbcDecoder: JdbcDecoder[CharacterData] = JdbcDecoder.stringDecoder.map(CharacterData.apply)
+
   given jdbcEncoder: JdbcEncoder[CharacterData] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[CharacterData] = JsonDecoder.string.map(CharacterData.apply)
+
   given jsonEncoder: JsonEncoder[CharacterData] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[CharacterData] = PGType.instance(""""information_schema"."character_data"""", Types.OTHER)
-  given setter: Setter[CharacterData] = Setter.stringSetter.contramap(_.value)
-  given text: Text[CharacterData] = new Text[CharacterData] {
-    override def unsafeEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CharacterData] = {
+    new Text[CharacterData] {
+      override def unsafeEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CharacterData, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[CharacterData] = PGType.instance(""""information_schema"."character_data"""", Types.OTHER)
+
+  given setter: Setter[CharacterData] = Setter.stringSetter.contramap(_.value)
 }

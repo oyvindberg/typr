@@ -21,22 +21,21 @@ trait ContacttypeFields {
 
 object ContacttypeFields {
   lazy val structure: Relation[ContacttypeFields, ContacttypeRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ContacttypeFields, ContacttypeRow] {
-  
+
     override lazy val fields: ContacttypeFields = new ContacttypeFields {
       override def contacttypeid = IdField[ContacttypeId, ContacttypeRow](_path, "contacttypeid", None, Some("int4"), x => x.contacttypeid, (row, value) => row.copy(contacttypeid = value))
       override def name = Field[Name, ContacttypeRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, ContacttypeRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ContacttypeRow]] =
       List[FieldLike[?, ContacttypeRow]](fields.contacttypeid, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

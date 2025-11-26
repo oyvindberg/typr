@@ -17,35 +17,45 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.title
-    Primary key: code */
-case class TitleRow(
-  code: TitleId
-){
-   val id = code
- }
+ * Primary key: code
+ */
+case class TitleRow(code: TitleId) {
+  def id: TitleId = code
+}
 
 object TitleRow {
-  implicit lazy val reads: Reads[TitleRow] = Reads[TitleRow](json => JsResult.fromTry(
-      Try(
-        TitleRow(
-          code = json.\("code").as(TitleId.reads)
+  implicit lazy val pgText: Text[TitleRow] = {
+    Text.instance[TitleRow]{ (row, sb) =>
+      TitleId.pgText.unsafeEncode(row.code, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[TitleRow] = {
+    Reads[TitleRow](json => JsResult.fromTry(
+        Try(
+          TitleRow(
+            code = json.\("code").as(TitleId.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TitleRow] = RowParser[TitleRow] { row =>
-    Success(
-      TitleRow(
-        code = row(idx + 0)(TitleId.column)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[TitleRow] = Text.instance[TitleRow]{ (row, sb) =>
-    TitleId.text.unsafeEncode(row.code, sb)
+
+  def rowParser(idx: Int): RowParser[TitleRow] = {
+    RowParser[TitleRow] { row =>
+      Success(
+        TitleRow(
+          code = row(idx + 0)(TitleId.column)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[TitleRow] = OWrites[TitleRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "code" -> TitleId.writes.writes(o.code)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[TitleRow] = {
+    OWrites[TitleRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "code" -> TitleId.writes.writes(o.code)
+      ))
+    )
+  }
 }

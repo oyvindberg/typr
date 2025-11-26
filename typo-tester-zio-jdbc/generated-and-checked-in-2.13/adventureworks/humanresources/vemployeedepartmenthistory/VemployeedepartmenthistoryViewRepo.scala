@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VemployeedepartmenthistoryViewRepo {
   def select: SelectBuilder[VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VemployeedepartmenthistoryViewRow]
 }

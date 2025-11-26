@@ -36,39 +36,47 @@ case class SViewRow(
 )
 
 object SViewRow {
-  given reads: Reads[SViewRow] = Reads[SViewRow](json => JsResult.fromTry(
-      Try(
-        SViewRow(
-          id = json.\("id").as(ShiftId.reads),
-          shiftid = json.\("shiftid").as(ShiftId.reads),
-          name = json.\("name").as(Name.reads),
-          starttime = json.\("starttime").as(TypoLocalTime.reads),
-          endtime = json.\("endtime").as(TypoLocalTime.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SViewRow] = {
+    Reads[SViewRow](json => JsResult.fromTry(
+        Try(
+          SViewRow(
+            id = json.\("id").as(ShiftId.reads),
+            shiftid = json.\("shiftid").as(ShiftId.reads),
+            name = json.\("name").as(Name.reads),
+            starttime = json.\("starttime").as(TypoLocalTime.reads),
+            endtime = json.\("endtime").as(TypoLocalTime.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SViewRow] = RowParser[SViewRow] { row =>
-    Success(
-      SViewRow(
-        id = row(idx + 0)(using ShiftId.column),
-        shiftid = row(idx + 1)(using ShiftId.column),
-        name = row(idx + 2)(using Name.column),
-        starttime = row(idx + 3)(using TypoLocalTime.column),
-        endtime = row(idx + 4)(using TypoLocalTime.column),
-        modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SViewRow] = OWrites[SViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ShiftId.writes.writes(o.id),
-      "shiftid" -> ShiftId.writes.writes(o.shiftid),
-      "name" -> Name.writes.writes(o.name),
-      "starttime" -> TypoLocalTime.writes.writes(o.starttime),
-      "endtime" -> TypoLocalTime.writes.writes(o.endtime),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SViewRow] = {
+    RowParser[SViewRow] { row =>
+      Success(
+        SViewRow(
+          id = row(idx + 0)(using ShiftId.column),
+          shiftid = row(idx + 1)(using ShiftId.column),
+          name = row(idx + 2)(using Name.column),
+          starttime = row(idx + 3)(using TypoLocalTime.column),
+          endtime = row(idx + 4)(using TypoLocalTime.column),
+          modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SViewRow] = {
+    OWrites[SViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ShiftId.writes.writes(o.id),
+        "shiftid" -> ShiftId.writes.writes(o.shiftid),
+        "name" -> Name.writes.writes(o.name),
+        "starttime" -> TypoLocalTime.writes.writes(o.starttime),
+        "endtime" -> TypoLocalTime.writes.writes(o.endtime),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

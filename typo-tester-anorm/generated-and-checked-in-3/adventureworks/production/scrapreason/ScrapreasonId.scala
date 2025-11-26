@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.scrapreason` */
-case class ScrapreasonId(value: Int) extends AnyVal
+case class ScrapreasonId(value: Int) extends scala.AnyVal
+
 object ScrapreasonId {
   given arrayColumn: Column[Array[ScrapreasonId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[ScrapreasonId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[ScrapreasonId, Int] = Bijection[ScrapreasonId, Int](_.value)(ScrapreasonId.apply)
+
+  given bijection: Bijection[ScrapreasonId, Int] = Bijection.apply[ScrapreasonId, Int](_.value)(ScrapreasonId.apply)
+
   given column: Column[ScrapreasonId] = Column.columnToInt.map(ScrapreasonId.apply)
-  given parameterMetadata: ParameterMetaData[ScrapreasonId] = new ParameterMetaData[ScrapreasonId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[ScrapreasonId] = {
+    new ParameterMetaData[ScrapreasonId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[ScrapreasonId] = {
+    new Text[ScrapreasonId] {
+      override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[ScrapreasonId] = Reads.IntReads.map(ScrapreasonId.apply)
-  given text: Text[ScrapreasonId] = new Text[ScrapreasonId] {
-    override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[ScrapreasonId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[ScrapreasonId] = Writes.IntWrites.contramap(_.value)
 }

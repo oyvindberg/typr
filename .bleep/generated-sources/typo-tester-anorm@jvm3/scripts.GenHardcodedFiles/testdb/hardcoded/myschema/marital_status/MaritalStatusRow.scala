@@ -17,33 +17,43 @@ import scala.util.Try
 import testdb.hardcoded.Text
 
 /** Table: myschema.marital_status
-    Primary key: id */
-case class MaritalStatusRow(
-  id: MaritalStatusId
-)
+ * Primary key: id
+ */
+case class MaritalStatusRow(id: MaritalStatusId)
 
 object MaritalStatusRow {
-  given reads: Reads[MaritalStatusRow] = Reads[MaritalStatusRow](json => JsResult.fromTry(
-      Try(
-        MaritalStatusRow(
-          id = json.\("id").as(MaritalStatusId.reads)
+  given pgText: Text[MaritalStatusRow] = {
+    Text.instance[MaritalStatusRow]{ (row, sb) =>
+      MaritalStatusId.pgText.unsafeEncode(row.id, sb)
+    }
+  }
+
+  given reads: Reads[MaritalStatusRow] = {
+    Reads[MaritalStatusRow](json => JsResult.fromTry(
+        Try(
+          MaritalStatusRow(
+            id = json.\("id").as(MaritalStatusId.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[MaritalStatusRow] = RowParser[MaritalStatusRow] { row =>
-    Success(
-      MaritalStatusRow(
-        id = row(idx + 0)(using MaritalStatusId.column)
-      )
+      ),
     )
   }
-  given text: Text[MaritalStatusRow] = Text.instance[MaritalStatusRow]{ (row, sb) =>
-    MaritalStatusId.text.unsafeEncode(row.id, sb)
+
+  def rowParser(idx: Int): RowParser[MaritalStatusRow] = {
+    RowParser[MaritalStatusRow] { row =>
+      Success(
+        MaritalStatusRow(
+          id = row(idx + 0)(using MaritalStatusId.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[MaritalStatusRow] = OWrites[MaritalStatusRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> MaritalStatusId.writes.writes(o.id)
-    ))
-  )
+
+  given writes: OWrites[MaritalStatusRow] = {
+    OWrites[MaritalStatusRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> MaritalStatusId.writes.writes(o.id)
+      ))
+    )
+  }
 }

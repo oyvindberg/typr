@@ -18,28 +18,45 @@ import typo.dsl.Bijection
 case class TypoInt2Vector(value: String)
 
 object TypoInt2Vector {
-  given arrayGet: Get[Array[TypoInt2Vector]] = Get.Advanced.array[AnyRef](NonEmptyList.one("int2vector[]"))
-    .map(_.map(v => TypoInt2Vector(v.asInstanceOf[PGobject].getValue)))
-  given arrayPut: Put[Array[TypoInt2Vector]] = Put.Advanced.array[AnyRef](NonEmptyList.one("int2vector[]"), "int2vector")
-    .contramap(_.map(v => {
-                            val obj = new PGobject
-                            obj.setType("int2vector")
-                            obj.setValue(v.value)
-                            obj
-                          }))
-  given bijection: Bijection[TypoInt2Vector, String] = Bijection[TypoInt2Vector, String](_.value)(TypoInt2Vector.apply)
+  given arrayGet: Get[Array[TypoInt2Vector]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("int2vector[]"))
+      .map(_.map(v => new TypoInt2Vector(v.asInstanceOf[PGobject].getValue)))
+  }
+
+  given arrayPut: Put[Array[TypoInt2Vector]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("int2vector[]"), "int2vector")
+      .contramap(_.map(v => {
+                              val obj = new PGobject()
+                              obj.setType("int2vector")
+                              obj.setValue(v.value)
+                              obj
+                            }))
+  }
+
+  given bijection: Bijection[TypoInt2Vector, String] = Bijection.apply[TypoInt2Vector, String](_.value)(TypoInt2Vector.apply)
+
   given decoder: Decoder[TypoInt2Vector] = Decoder.decodeString.map(TypoInt2Vector.apply)
+
   given encoder: Encoder[TypoInt2Vector] = Encoder.encodeString.contramap(_.value)
-  given get: Get[TypoInt2Vector] = Get.Advanced.other[PGobject](NonEmptyList.one("int2vector"))
-    .map(v => TypoInt2Vector(v.getValue))
-  given put: Put[TypoInt2Vector] = Put.Advanced.other[PGobject](NonEmptyList.one("int2vector")).contramap(v => {
-                                                                                val obj = new PGobject
-                                                                                obj.setType("int2vector")
-                                                                                obj.setValue(v.value)
-                                                                                obj
-                                                                              })
-  given text: Text[TypoInt2Vector] = new Text[TypoInt2Vector] {
-    override def unsafeEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given get: Get[TypoInt2Vector] = {
+    Get.Advanced.other[PGobject](NonEmptyList.one("int2vector"))
+      .map(v => new TypoInt2Vector(v.getValue))
+  }
+
+  given pgText: Text[TypoInt2Vector] = {
+    new Text[TypoInt2Vector] {
+      override def unsafeEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given put: Put[TypoInt2Vector] = {
+    Put.Advanced.other[PGobject](NonEmptyList.one("int2vector")).contramap(v => {
+      val obj = new PGobject()
+      obj.setType("int2vector")
+      obj.setValue(v.value)
+      obj
+    })
   }
 }

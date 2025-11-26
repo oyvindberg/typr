@@ -11,7 +11,6 @@ import doobie.free.connection.ConnectionIO
 import doobie.free.connection.pure
 import doobie.postgres.syntax.FragmentOps
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
-import doobie.syntax.string.toSqlInterpolator
 import doobie.util.Write
 import doobie.util.fragment.Fragment
 import doobie.util.fragments
@@ -21,63 +20,63 @@ import fs2.Stream
 import testdb.hardcoded.customtypes.Defaulted
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import doobie.syntax.string.toSqlInterpolator
 
 class PersonRepoImpl extends PersonRepo {
-  override def delete: DeleteBuilder[PersonFields, PersonRow] = {
-    DeleteBuilder(""""compositepk"."person"""", PersonFields.structure)
-  }
-  override def deleteById(compositeId: PersonId): ConnectionIO[Boolean] = {
-    sql"""delete from "compositepk"."person" where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}""".update.run.map(_ > 0)
-  }
-  override def insert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
+  def delete: DeleteBuilder[PersonFields, PersonRow] = DeleteBuilder.of(""""compositepk"."person"""", PersonFields.structure, PersonRow.read)
+
+  def deleteById(compositeId: PersonId): ConnectionIO[Boolean] = sql"""delete from "compositepk"."person" where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}""".update.run.map(_ > 0)
+
+  def insert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
     sql"""insert into "compositepk"."person"("one", "two", "name")
-          values (${fromWrite(unsaved.one)(new Write.Single(Meta.LongMeta.put))}::int8, ${fromWrite(unsaved.two)(new Write.SingleOpt(Meta.StringMeta.put))}, ${fromWrite(unsaved.name)(new Write.SingleOpt(Meta.StringMeta.put))})
-          returning "one", "two", "name"
-       """.query(PersonRow.read).unique
+    values (${fromWrite(unsaved.one)(new Write.Single(Meta.LongMeta.put))}::int8, ${fromWrite(unsaved.two)(new Write.SingleOpt(Meta.StringMeta.put))}, ${fromWrite(unsaved.name)(new Write.SingleOpt(Meta.StringMeta.put))})
+    returning "one", "two", "name"
+    """.query(PersonRow.read).unique
   }
-  override def insert(unsaved: PersonRowUnsaved): ConnectionIO[PersonRow] = {
+
+  def insert(unsaved: PersonRowUnsaved): ConnectionIO[PersonRow] = {
     val fs = List(
       Some((Fragment.const0(s""""name""""), fr"${fromWrite(unsaved.name)(new Write.SingleOpt(Meta.StringMeta.put))}")),
       unsaved.one match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""one""""), fr"${fromWrite(value: Long)(new Write.Single(Meta.LongMeta.put))}::int8"))
       },
       unsaved.two match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""two""""), fr"${fromWrite(value: Option[String])(new Write.SingleOpt(Meta.StringMeta.put))}"))
       }
     ).flatten
-    
     val q = if (fs.isEmpty) {
       sql"""insert into "compositepk"."person" default values
-            returning "one", "two", "name"
-         """
+      returning "one", "two", "name"
+      """
     } else {
       val CommaSeparate = Fragment.FragmentMonoid.intercalate(fr", ")
       sql"""insert into "compositepk"."person"(${CommaSeparate.combineAllOption(fs.map { case (n, _) => n }).get})
-            values (${CommaSeparate.combineAllOption(fs.map { case (_, f) => f }).get})
-            returning "one", "two", "name"
-         """
+      values (${CommaSeparate.combineAllOption(fs.map { case (_, f) => f }).get})
+      returning "one", "two", "name"
+      """
     }
     q.query(PersonRow.read).unique
-    
   }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, PersonRow], batchSize: Int = 10000): ConnectionIO[Long] = {
-    new FragmentOps(sql"""COPY "compositepk"."person"("one", "two", "name") FROM STDIN""").copyIn(unsaved, batchSize)(PersonRow.text)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, PersonRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long] = {
-    new FragmentOps(sql"""COPY "compositepk"."person"("name", "one", "two") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""").copyIn(unsaved, batchSize)(PersonRowUnsaved.text)
-  }
-  override def select: SelectBuilder[PersonFields, PersonRow] = {
-    SelectBuilderSql(""""compositepk"."person"""", PersonFields.structure, PersonRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PersonRow] = {
-    sql"""select "one", "two", "name" from "compositepk"."person"""".query(PersonRow.read).stream
-  }
-  override def selectByFieldValues(fieldValues: List[PersonFieldOrIdValue[?]]): Stream[ConnectionIO, PersonRow] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, PersonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = new FragmentOps(sql"""COPY "compositepk"."person"("one", "two", "name") FROM STDIN""").copyIn(unsaved, batchSize)(PersonRow.pgText)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, PersonRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = new FragmentOps(sql"""COPY "compositepk"."person"("name", "one", "two") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""").copyIn(unsaved, batchSize)(PersonRowUnsaved.pgText)
+
+  def select: SelectBuilder[PersonFields, PersonRow] = SelectBuilder.of(""""compositepk"."person"""", PersonFields.structure, PersonRow.read)
+
+  def selectAll: Stream[ConnectionIO, PersonRow] = sql"""select "one", "two", "name" from "compositepk"."person"""".query(PersonRow.read).stream
+
+  def selectByFieldValues(fieldValues: List[PersonFieldValue[?]]): Stream[ConnectionIO, PersonRow] = {
     val where = fragments.whereAndOpt(
       fieldValues.map {
         case PersonFieldValue.one(value) => fr""""one" = ${fromWrite(value)(new Write.Single(Meta.LongMeta.put))}"""
@@ -87,69 +86,80 @@ class PersonRepoImpl extends PersonRepo {
     )
     sql"""select "one", "two", "name" from "compositepk"."person" $where""".query(PersonRow.read).stream
   }
-  override def selectById(compositeId: PersonId): ConnectionIO[Option[PersonRow]] = {
-    sql"""select "one", "two", "name" from "compositepk"."person" where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}""".query(PersonRow.read).option
-  }
-  override def update: UpdateBuilder[PersonFields, PersonRow] = {
-    UpdateBuilder(""""compositepk"."person"""", PersonFields.structure, PersonRow.read)
-  }
-  override def update(row: PersonRow): ConnectionIO[Option[PersonRow]] = {
+
+  def selectById(compositeId: PersonId): ConnectionIO[Option[PersonRow]] = sql"""select "one", "two", "name" from "compositepk"."person" where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}""".query(PersonRow.read).option
+
+  def update: UpdateBuilder[PersonFields, PersonRow] = UpdateBuilder.of(""""compositepk"."person"""", PersonFields.structure, PersonRow.read)
+
+  def update(row: PersonRow): ConnectionIO[Option[PersonRow]] = {
     val compositeId = row.compositeId
     sql"""update "compositepk"."person"
-          set "name" = ${fromWrite(row.name)(new Write.SingleOpt(Meta.StringMeta.put))}
-          where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}
-          returning "one", "two", "name"""".query(PersonRow.read).option
+    set "name" = ${fromWrite(row.name)(new Write.SingleOpt(Meta.StringMeta.put))}
+    where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}
+    returning "one", "two", "name"""".query(PersonRow.read).option
   }
-  override def updateFieldValues(compositeId: PersonId, fieldValues: List[PersonFieldValue[?]]): ConnectionIO[Boolean] = {
+
+  def updateFieldValues(
+    compositeId: PersonId,
+    fieldValues: List[PersonFieldValue[?]]
+  ): ConnectionIO[Boolean] = {
     NonEmptyList.fromList(fieldValues) match {
       case None => pure(false)
       case Some(nonEmpty) =>
         val updates = fragments.set(
           nonEmpty.map {
+            case PersonFieldValue.one(value) => fr""""one" = ${fromWrite(value)(new Write.Single(Meta.LongMeta.put))}::int8"""
+            case PersonFieldValue.two(value) => fr""""two" = ${fromWrite(value)(new Write.SingleOpt(Meta.StringMeta.put))}"""
             case PersonFieldValue.name(value) => fr""""name" = ${fromWrite(value)(new Write.SingleOpt(Meta.StringMeta.put))}"""
           }
         )
         sql"""update "compositepk"."person"
-              $updates
-              where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}""".update.run.map(_ > 0)
+        $updates
+        where "one" = ${fromWrite(compositeId.one)(new Write.Single(Meta.LongMeta.put))} AND "two" = ${fromWrite(compositeId.two)(new Write.SingleOpt(Meta.StringMeta.put))}""".update.run.map(_ > 0)
     }
   }
-  override def upsert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
+
+  def upsert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
     sql"""insert into "compositepk"."person"("one", "two", "name")
-          values (
-            ${fromWrite(unsaved.one)(new Write.Single(Meta.LongMeta.put))}::int8,
-            ${fromWrite(unsaved.two)(new Write.SingleOpt(Meta.StringMeta.put))},
-            ${fromWrite(unsaved.name)(new Write.SingleOpt(Meta.StringMeta.put))}
-          )
-          on conflict ("one", "two")
-          do update set
-            "name" = EXCLUDED."name"
-          returning "one", "two", "name"
-       """.query(PersonRow.read).unique
+    values (
+      ${fromWrite(unsaved.one)(new Write.Single(Meta.LongMeta.put))}::int8,
+    ${fromWrite(unsaved.two)(new Write.SingleOpt(Meta.StringMeta.put))},
+    ${fromWrite(unsaved.name)(new Write.SingleOpt(Meta.StringMeta.put))}
+    )
+    on conflict ("one", "two")
+    do update set
+      "name" = EXCLUDED."name"
+    returning "one", "two", "name"
+    """.query(PersonRow.read).unique
   }
-  override def upsertBatch(unsaved: List[PersonRow]): Stream[ConnectionIO, PersonRow] = {
+
+  def upsertBatch(unsaved: List[PersonRow]): Stream[ConnectionIO, PersonRow] = {
     Update[PersonRow](
       s"""insert into "compositepk"."person"("one", "two", "name")
-          values (?::int8,?,?)
-          on conflict ("one", "two")
-          do update set
-            "name" = EXCLUDED."name"
-          returning "one", "two", "name""""
+      values (?::int8,?,?)
+      on conflict ("one", "two")
+      do update set
+        "name" = EXCLUDED."name"
+      returning "one", "two", "name""""
     )(PersonRow.write)
     .updateManyWithGeneratedKeys[PersonRow]("one", "two", "name")(unsaved)(catsStdInstancesForList, PersonRow.read)
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, PersonRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, PersonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     for {
       _ <- sql"""create temporary table person_TEMP (like "compositepk"."person") on commit drop""".update.run
-      _ <- new FragmentOps(sql"""copy person_TEMP("one", "two", "name") from stdin""").copyIn(unsaved, batchSize)(PersonRow.text)
+      _ <- new FragmentOps(sql"""copy person_TEMP("one", "two", "name") from stdin""").copyIn(unsaved, batchSize)(PersonRow.pgText)
       res <- sql"""insert into "compositepk"."person"("one", "two", "name")
-                   select * from person_TEMP
-                   on conflict ("one", "two")
-                   do update set
-                     "name" = EXCLUDED."name"
-                   ;
-                   drop table person_TEMP;""".update.run
+             select * from person_TEMP
+             on conflict ("one", "two")
+             do update set
+               "name" = EXCLUDED."name"
+             ;
+             drop table person_TEMP;""".update.run
     } yield res
   }
 }

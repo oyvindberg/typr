@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait VproductmodelinstructionsViewRepo {
   def select: SelectBuilder[VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow]
+
   def selectAll(using c: Connection): List[VproductmodelinstructionsViewRow]
 }

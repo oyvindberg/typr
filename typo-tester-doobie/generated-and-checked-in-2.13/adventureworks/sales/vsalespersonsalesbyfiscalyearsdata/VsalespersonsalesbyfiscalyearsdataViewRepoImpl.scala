@@ -6,16 +6,12 @@
 package adventureworks.sales.vsalespersonsalesbyfiscalyearsdata
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VsalespersonsalesbyfiscalyearsdataViewRepoImpl extends VsalespersonsalesbyfiscalyearsdataViewRepo {
-  override def select: SelectBuilder[VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow] = {
-    SelectBuilderSql(""""sales"."vsalespersonsalesbyfiscalyearsdata"""", VsalespersonsalesbyfiscalyearsdataViewFields.structure, VsalespersonsalesbyfiscalyearsdataViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VsalespersonsalesbyfiscalyearsdataViewRow] = {
-    sql"""select "salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear" from "sales"."vsalespersonsalesbyfiscalyearsdata"""".query(VsalespersonsalesbyfiscalyearsdataViewRow.read).stream
-  }
+  def select: SelectBuilder[VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow] = SelectBuilder.of(""""sales"."vsalespersonsalesbyfiscalyearsdata"""", VsalespersonsalesbyfiscalyearsdataViewFields.structure, VsalespersonsalesbyfiscalyearsdataViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, VsalespersonsalesbyfiscalyearsdataViewRow] = sql"""select "salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear" from "sales"."vsalespersonsalesbyfiscalyearsdata"""".query(VsalespersonsalesbyfiscalyearsdataViewRow.read).stream
 }

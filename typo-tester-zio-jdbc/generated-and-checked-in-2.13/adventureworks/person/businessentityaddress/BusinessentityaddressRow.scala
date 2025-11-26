@@ -20,82 +20,121 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: person.businessentityaddress
-    Cross-reference table mapping customers, vendors, and employees to their addresses.
-    Composite primary key: businessentityid, addressid, addresstypeid */
+ * Cross-reference table mapping customers, vendors, and employees to their addresses.
+ * Composite primary key: businessentityid, addressid, addresstypeid
+ */
 case class BusinessentityaddressRow(
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary key. Foreign key to Address.AddressID.
-      Points to [[adventureworks.person.address.AddressRow.addressid]] */
+   * Points to [[adventureworks.person.address.AddressRow.addressid]]
+   */
   addressid: AddressId,
   /** Primary key. Foreign key to AddressType.AddressTypeID.
-      Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]] */
+   * Points to [[adventureworks.person.addresstype.AddresstypeRow.addresstypeid]]
+   */
   addresstypeid: AddresstypeId,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: BusinessentityaddressId = BusinessentityaddressId(businessentityid, addressid, addresstypeid)
-   val id = compositeId
-   def toUnsavedRow(rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): BusinessentityaddressRowUnsaved =
-     BusinessentityaddressRowUnsaved(businessentityid, addressid, addresstypeid, rowguid, modifieddate)
- }
+) {
+  def compositeId: BusinessentityaddressId = new BusinessentityaddressId(businessentityid, addressid, addresstypeid)
+
+  def id: BusinessentityaddressId = this.compositeId
+
+  def toUnsavedRow(
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): BusinessentityaddressRowUnsaved = {
+    new BusinessentityaddressRowUnsaved(
+      businessentityid,
+      addressid,
+      addresstypeid,
+      rowguid,
+      modifieddate
+    )
+  }
+}
 
 object BusinessentityaddressRow {
-  def apply(compositeId: BusinessentityaddressId, rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new BusinessentityaddressRow(compositeId.businessentityid, compositeId.addressid, compositeId.addresstypeid, rowguid, modifieddate)
-  implicit lazy val jdbcDecoder: JdbcDecoder[BusinessentityaddressRow] = new JdbcDecoder[BusinessentityaddressRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, BusinessentityaddressRow) =
-      columIndex + 4 ->
-        BusinessentityaddressRow(
-          businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          addressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          addresstypeid = AddresstypeId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2
-        )
+  def apply(
+    compositeId: BusinessentityaddressId,
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): BusinessentityaddressRow = {
+    new BusinessentityaddressRow(
+      compositeId.businessentityid,
+      compositeId.addressid,
+      compositeId.addresstypeid,
+      rowguid,
+      modifieddate
+    )
   }
-  implicit lazy val jsonDecoder: JsonDecoder[BusinessentityaddressRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val addressid = jsonObj.get("addressid").toRight("Missing field 'addressid'").flatMap(_.as(AddressId.jsonDecoder))
-    val addresstypeid = jsonObj.get("addresstypeid").toRight("Missing field 'addresstypeid'").flatMap(_.as(AddresstypeId.jsonDecoder))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (businessentityid.isRight && addressid.isRight && addresstypeid.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(BusinessentityaddressRow(businessentityid = businessentityid.toOption.get, addressid = addressid.toOption.get, addresstypeid = addresstypeid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, addressid, addresstypeid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  implicit lazy val jsonEncoder: JsonEncoder[BusinessentityaddressRow] = new JsonEncoder[BusinessentityaddressRow] {
-    override def unsafeEncode(a: BusinessentityaddressRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""addressid":""")
-      AddressId.jsonEncoder.unsafeEncode(a.addressid, indent, out)
-      out.write(",")
-      out.write(""""addresstypeid":""")
-      AddresstypeId.jsonEncoder.unsafeEncode(a.addresstypeid, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jdbcDecoder: JdbcDecoder[BusinessentityaddressRow] = {
+    new JdbcDecoder[BusinessentityaddressRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, BusinessentityaddressRow) =
+        columIndex + 4 ->
+          BusinessentityaddressRow(
+            businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            addressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            addresstypeid = AddresstypeId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2
+          )
     }
   }
-  implicit lazy val text: Text[BusinessentityaddressRow] = Text.instance[BusinessentityaddressRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    AddressId.text.unsafeEncode(row.addressid, sb)
-    sb.append(Text.DELIMETER)
-    AddresstypeId.text.unsafeEncode(row.addresstypeid, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonDecoder: JsonDecoder[BusinessentityaddressRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val addressid = jsonObj.get("addressid").toRight("Missing field 'addressid'").flatMap(_.as(AddressId.jsonDecoder))
+      val addresstypeid = jsonObj.get("addresstypeid").toRight("Missing field 'addresstypeid'").flatMap(_.as(AddresstypeId.jsonDecoder))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (businessentityid.isRight && addressid.isRight && addresstypeid.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(BusinessentityaddressRow(businessentityid = businessentityid.toOption.get, addressid = addressid.toOption.get, addresstypeid = addresstypeid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, addressid, addresstypeid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
+  }
+
+  implicit lazy val jsonEncoder: JsonEncoder[BusinessentityaddressRow] = {
+    new JsonEncoder[BusinessentityaddressRow] {
+      override def unsafeEncode(a: BusinessentityaddressRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""addressid":""")
+        AddressId.jsonEncoder.unsafeEncode(a.addressid, indent, out)
+        out.write(",")
+        out.write(""""addresstypeid":""")
+        AddresstypeId.jsonEncoder.unsafeEncode(a.addresstypeid, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[BusinessentityaddressRow] = {
+    Text.instance[BusinessentityaddressRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      AddressId.pgText.unsafeEncode(row.addressid, sb)
+      sb.append(Text.DELIMETER)
+      AddresstypeId.pgText.unsafeEncode(row.addresstypeid, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

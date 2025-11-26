@@ -5,18 +5,16 @@
  */
 package adventureworks.hr.d
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class DViewRepoImpl extends DViewRepo {
-  override def select: SelectBuilder[DViewFields, DViewRow] = {
-    SelectBuilderSql(""""hr"."d"""", DViewFields.structure, DViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[DViewRow] = {
+  def select: SelectBuilder[DViewFields, DViewRow] = SelectBuilder.of(""""hr"."d"""", DViewFields.structure, DViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[DViewRow] = {
     SQL"""select "id", "departmentid", "name", "groupname", "modifieddate"::text
-          from "hr"."d"
-       """.as(DViewRow.rowParser(1).*)
+    from "hr"."d"
+    """.as(DViewRow.rowParser(1).*)
   }
 }

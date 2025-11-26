@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.pch
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PchViewRepoImpl extends PchViewRepo {
-  override def select: SelectBuilder[PchViewFields, PchViewRow] = {
-    SelectBuilderSql(""""pr"."pch"""", PchViewFields.structure, PchViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[PchViewRow] = {
+  def select: SelectBuilder[PchViewFields, PchViewRow] = SelectBuilder.of(""""pr"."pch"""", PchViewFields.structure, PchViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[PchViewRow] = {
     SQL"""select "id", "productid", "startdate"::text, "enddate"::text, "standardcost", "modifieddate"::text
-          from "pr"."pch"
-       """.as(PchViewRow.rowParser(1).*)
+    from "pr"."pch"
+    """.as(PchViewRow.rowParser(1).*)
   }
 }

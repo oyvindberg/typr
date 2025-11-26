@@ -16,51 +16,68 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: production.productmodelillustration
-    Cross-reference table mapping product models and illustrations.
-    Composite primary key: productmodelid, illustrationid */
+ * Cross-reference table mapping product models and illustrations.
+ * Composite primary key: productmodelid, illustrationid
+ */
 case class ProductmodelillustrationRow(
   /** Primary key. Foreign key to ProductModel.ProductModelID.
-      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
+   * Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]]
+   */
   productmodelid: ProductmodelId,
   /** Primary key. Foreign key to Illustration.IllustrationID.
-      Points to [[adventureworks.production.illustration.IllustrationRow.illustrationid]] */
+   * Points to [[adventureworks.production.illustration.IllustrationRow.illustrationid]]
+   */
   illustrationid: IllustrationId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: ProductmodelillustrationId = ProductmodelillustrationId(productmodelid, illustrationid)
-   val id = compositeId
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductmodelillustrationRowUnsaved =
-     ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate)
- }
+) {
+  def compositeId: ProductmodelillustrationId = new ProductmodelillustrationId(productmodelid, illustrationid)
+
+  def id: ProductmodelillustrationId = this.compositeId
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductmodelillustrationRowUnsaved = new ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate)
+}
 
 object ProductmodelillustrationRow {
-  def apply(compositeId: ProductmodelillustrationId, modifieddate: TypoLocalDateTime) =
-    new ProductmodelillustrationRow(compositeId.productmodelid, compositeId.illustrationid, modifieddate)
+  def apply(
+    compositeId: ProductmodelillustrationId,
+    modifieddate: TypoLocalDateTime
+  ): ProductmodelillustrationRow = new ProductmodelillustrationRow(compositeId.productmodelid, compositeId.illustrationid, modifieddate)
+
   given decoder: Decoder[ProductmodelillustrationRow] = Decoder.forProduct3[ProductmodelillustrationRow, ProductmodelId, IllustrationId, TypoLocalDateTime]("productmodelid", "illustrationid", "modifieddate")(ProductmodelillustrationRow.apply)(using ProductmodelId.decoder, IllustrationId.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[ProductmodelillustrationRow] = Encoder.forProduct3[ProductmodelillustrationRow, ProductmodelId, IllustrationId, TypoLocalDateTime]("productmodelid", "illustrationid", "modifieddate")(x => (x.productmodelid, x.illustrationid, x.modifieddate))(using ProductmodelId.encoder, IllustrationId.encoder, TypoLocalDateTime.encoder)
-  given read: Read[ProductmodelillustrationRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
-      new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    ProductmodelillustrationRow(
-      productmodelid = arr(0).asInstanceOf[ProductmodelId],
-          illustrationid = arr(1).asInstanceOf[IllustrationId],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[ProductmodelillustrationRow] = {
+    Text.instance[ProductmodelillustrationRow]{ (row, sb) =>
+      ProductmodelId.pgText.unsafeEncode(row.productmodelid, sb)
+      sb.append(Text.DELIMETER)
+      IllustrationId.pgText.unsafeEncode(row.illustrationid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[ProductmodelillustrationRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
+        new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      ProductmodelillustrationRow(
+        productmodelid = arr(0).asInstanceOf[ProductmodelId],
+            illustrationid = arr(1).asInstanceOf[IllustrationId],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[ProductmodelillustrationRow] = {
+    new Write.Composite[ProductmodelillustrationRow](
+      List(new Write.Single(ProductmodelId.put),
+           new Write.Single(IllustrationId.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.productmodelid, a.illustrationid, a.modifieddate)
     )
   }
-  given text: Text[ProductmodelillustrationRow] = Text.instance[ProductmodelillustrationRow]{ (row, sb) =>
-    ProductmodelId.text.unsafeEncode(row.productmodelid, sb)
-    sb.append(Text.DELIMETER)
-    IllustrationId.text.unsafeEncode(row.illustrationid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[ProductmodelillustrationRow] = new Write.Composite[ProductmodelillustrationRow](
-    List(new Write.Single(ProductmodelId.put),
-         new Write.Single(IllustrationId.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.productmodelid, a.illustrationid, a.modifieddate)
-  )
 }

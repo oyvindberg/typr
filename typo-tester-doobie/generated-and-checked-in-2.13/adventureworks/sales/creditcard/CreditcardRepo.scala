@@ -14,22 +14,47 @@ import typo.dsl.UpdateBuilder
 
 trait CreditcardRepo {
   def delete: DeleteBuilder[CreditcardFields, CreditcardRow]
+
   def deleteById(creditcardid: /* user-picked */ CustomCreditcardId): ConnectionIO[Boolean]
+
   def deleteByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ConnectionIO[Int]
+
   def insert(unsaved: CreditcardRow): ConnectionIO[CreditcardRow]
+
   def insert(unsaved: CreditcardRowUnsaved): ConnectionIO[CreditcardRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, CreditcardRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, CreditcardRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, CreditcardRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, CreditcardRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[CreditcardFields, CreditcardRow]
+
   def selectAll: Stream[ConnectionIO, CreditcardRow]
+
   def selectById(creditcardid: /* user-picked */ CustomCreditcardId): ConnectionIO[Option[CreditcardRow]]
+
   def selectByIds(creditcardids: Array[/* user-picked */ CustomCreditcardId]): Stream[ConnectionIO, CreditcardRow]
+
   def selectByIdsTracked(creditcardids: Array[/* user-picked */ CustomCreditcardId]): ConnectionIO[Map[/* user-picked */ CustomCreditcardId, CreditcardRow]]
+
   def update: UpdateBuilder[CreditcardFields, CreditcardRow]
+
   def update(row: CreditcardRow): ConnectionIO[Option[CreditcardRow]]
+
   def upsert(unsaved: CreditcardRow): ConnectionIO[CreditcardRow]
+
   def upsertBatch(unsaved: List[CreditcardRow]): Stream[ConnectionIO, CreditcardRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, CreditcardRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, CreditcardRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

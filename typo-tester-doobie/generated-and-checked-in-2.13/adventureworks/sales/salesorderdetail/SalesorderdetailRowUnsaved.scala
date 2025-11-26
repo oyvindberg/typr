@@ -6,6 +6,7 @@
 package adventureworks.sales.salesorderdetail
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
@@ -19,82 +20,88 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.salesorderdetail` which has not been persisted yet */
 case class SalesorderdetailRowUnsaved(
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
-      Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
+   * Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]]
+   */
   salesorderid: SalesorderheaderId,
   /** Shipment tracking number supplied by the shipper. */
-  carriertrackingnumber: Option[/* max 25 chars */ String],
+  carriertrackingnumber: Option[/* max 25 chars */ String] = None,
   /** Quantity ordered per product.
-      Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0)) */
+   * Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
+   */
   orderqty: TypoShort,
   /** Product sold to customer. Foreign key to Product.ProductID.
-      Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]] */
+   * Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]]
+   */
   productid: ProductId,
   /** Promotional code. Foreign key to SpecialOffer.SpecialOfferID.
-      Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.specialofferid]] */
+   * Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.specialofferid]]
+   */
   specialofferid: SpecialofferId,
   /** Selling price of a single product.
-      Constraint CK_SalesOrderDetail_UnitPrice affecting columns unitprice:  ((unitprice >= 0.00)) */
+   * Constraint CK_SalesOrderDetail_UnitPrice affecting columns unitprice:  ((unitprice >= 0.00))
+   */
   unitprice: BigDecimal,
   /** Default: nextval('sales.salesorderdetail_salesorderdetailid_seq'::regclass)
-      Primary key. One incremental unique number per product sold. */
-  salesorderdetailid: Defaulted[Int] = Defaulted.UseDefault,
+   * Primary key. One incremental unique number per product sold.
+   */
+  salesorderdetailid: Defaulted[Int] = new UseDefault(),
   /** Default: 0.0
-      Discount amount.
-      Constraint CK_SalesOrderDetail_UnitPriceDiscount affecting columns unitpricediscount:  ((unitpricediscount >= 0.00)) */
-  unitpricediscount: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Discount amount.
+   * Constraint CK_SalesOrderDetail_UnitPriceDiscount affecting columns unitpricediscount:  ((unitpricediscount >= 0.00))
+   */
+  unitpricediscount: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(salesorderdetailidDefault: => Int, unitpricediscountDefault: => BigDecimal, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SalesorderdetailRow =
-    SalesorderdetailRow(
+  def toRow(
+    salesorderdetailidDefault: => Int,
+    unitpricediscountDefault: => BigDecimal,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SalesorderdetailRow = {
+    new SalesorderdetailRow(
       salesorderid = salesorderid,
-      salesorderdetailid = salesorderdetailid match {
-                             case Defaulted.UseDefault => salesorderdetailidDefault
-                             case Defaulted.Provided(value) => value
-                           },
+      salesorderdetailid = salesorderdetailid.getOrElse(salesorderdetailidDefault),
       carriertrackingnumber = carriertrackingnumber,
       orderqty = orderqty,
       productid = productid,
       specialofferid = specialofferid,
       unitprice = unitprice,
-      unitpricediscount = unitpricediscount match {
-                            case Defaulted.UseDefault => unitpricediscountDefault
-                            case Defaulted.Provided(value) => value
-                          },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      unitpricediscount = unitpricediscount.getOrElse(unitpricediscountDefault),
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object SalesorderdetailRowUnsaved {
   implicit lazy val decoder: Decoder[SalesorderdetailRowUnsaved] = Decoder.forProduct10[SalesorderdetailRowUnsaved, SalesorderheaderId, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, Defaulted[Int], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("salesorderid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "salesorderdetailid", "unitpricediscount", "rowguid", "modifieddate")(SalesorderdetailRowUnsaved.apply)(SalesorderheaderId.decoder, Decoder.decodeOption(Decoder.decodeString), TypoShort.decoder, ProductId.decoder, SpecialofferId.decoder, Decoder.decodeBigDecimal, Defaulted.decoder(Decoder.decodeInt), Defaulted.decoder(Decoder.decodeBigDecimal), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[SalesorderdetailRowUnsaved] = Encoder.forProduct10[SalesorderdetailRowUnsaved, SalesorderheaderId, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, Defaulted[Int], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("salesorderid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "salesorderdetailid", "unitpricediscount", "rowguid", "modifieddate")(x => (x.salesorderid, x.carriertrackingnumber, x.orderqty, x.productid, x.specialofferid, x.unitprice, x.salesorderdetailid, x.unitpricediscount, x.rowguid, x.modifieddate))(SalesorderheaderId.encoder, Encoder.encodeOption(Encoder.encodeString), TypoShort.encoder, ProductId.encoder, SpecialofferId.encoder, Encoder.encodeBigDecimal, Defaulted.encoder(Encoder.encodeInt), Defaulted.encoder(Encoder.encodeBigDecimal), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[SalesorderdetailRowUnsaved] = Text.instance[SalesorderdetailRowUnsaved]{ (row, sb) =>
-    SalesorderheaderId.text.unsafeEncode(row.salesorderid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.carriertrackingnumber, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.orderqty, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    SpecialofferId.text.unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.unitprice, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.intInstance).unsafeEncode(row.salesorderdetailid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.bigDecimalInstance).unsafeEncode(row.unitpricediscount, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[SalesorderdetailRowUnsaved] = {
+    Text.instance[SalesorderdetailRowUnsaved]{ (row, sb) =>
+      SalesorderheaderId.pgText.unsafeEncode(row.salesorderid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.carriertrackingnumber, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.orderqty, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      SpecialofferId.pgText.unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.unitprice, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.intInstance).unsafeEncode(row.salesorderdetailid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.bigDecimalInstance).unsafeEncode(row.unitpricediscount, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

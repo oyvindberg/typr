@@ -34,11 +34,11 @@ trait ProductreviewFields {
 
 object ProductreviewFields {
   lazy val structure: Relation[ProductreviewFields, ProductreviewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductreviewFields, ProductreviewRow] {
-  
+
     override lazy val fields: ProductreviewFields = new ProductreviewFields {
       override def productreviewid = IdField[ProductreviewId, ProductreviewRow](_path, "productreviewid", None, Some("int4"), x => x.productreviewid, (row, value) => row.copy(productreviewid = value))
       override def productid = Field[ProductId, ProductreviewRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
@@ -49,12 +49,11 @@ object ProductreviewFields {
       override def comments = OptField[/* max 3850 chars */ String, ProductreviewRow](_path, "comments", None, None, x => x.comments, (row, value) => row.copy(comments = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductreviewRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductreviewRow]] =
       List[FieldLike[?, ProductreviewRow]](fields.productreviewid, fields.productid, fields.reviewername, fields.reviewdate, fields.emailaddress, fields.rating, fields.comments, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

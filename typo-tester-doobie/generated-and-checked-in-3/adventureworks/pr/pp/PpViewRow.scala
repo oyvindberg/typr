@@ -33,24 +33,28 @@ case class PpViewRow(
 
 object PpViewRow {
   given decoder: Decoder[PpViewRow] = Decoder.forProduct7[PpViewRow, ProductphotoId, ProductphotoId, Option[TypoBytea], Option[/* max 50 chars */ String], Option[TypoBytea], Option[/* max 50 chars */ String], TypoLocalDateTime]("id", "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate")(PpViewRow.apply)(using ProductphotoId.decoder, ProductphotoId.decoder, Decoder.decodeOption(using TypoBytea.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoBytea.decoder), Decoder.decodeOption(using Decoder.decodeString), TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PpViewRow] = Encoder.forProduct7[PpViewRow, ProductphotoId, ProductphotoId, Option[TypoBytea], Option[/* max 50 chars */ String], Option[TypoBytea], Option[/* max 50 chars */ String], TypoLocalDateTime]("id", "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate")(x => (x.id, x.productphotoid, x.thumbnailphoto, x.thumbnailphotofilename, x.largephoto, x.largephotofilename, x.modifieddate))(using ProductphotoId.encoder, ProductphotoId.encoder, Encoder.encodeOption(using TypoBytea.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoBytea.encoder), Encoder.encodeOption(using Encoder.encodeString), TypoLocalDateTime.encoder)
-  given read: Read[PpViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PpViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PpViewRow(
-      id = arr(0).asInstanceOf[ProductphotoId],
-          productphotoid = arr(1).asInstanceOf[ProductphotoId],
-          thumbnailphoto = arr(2).asInstanceOf[Option[TypoBytea]],
-          thumbnailphotofilename = arr(3).asInstanceOf[Option[/* max 50 chars */ String]],
-          largephoto = arr(4).asInstanceOf[Option[TypoBytea]],
-          largephotofilename = arr(5).asInstanceOf[Option[/* max 50 chars */ String]],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PpViewRow(
+        id = arr(0).asInstanceOf[ProductphotoId],
+            productphotoid = arr(1).asInstanceOf[ProductphotoId],
+            thumbnailphoto = arr(2).asInstanceOf[Option[TypoBytea]],
+            thumbnailphotofilename = arr(3).asInstanceOf[Option[/* max 50 chars */ String]],
+            largephoto = arr(4).asInstanceOf[Option[TypoBytea]],
+            largephotofilename = arr(5).asInstanceOf[Option[/* max 50 chars */ String]],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

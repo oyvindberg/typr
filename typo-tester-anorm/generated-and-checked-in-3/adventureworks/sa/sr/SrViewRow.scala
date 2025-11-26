@@ -33,36 +33,44 @@ case class SrViewRow(
 )
 
 object SrViewRow {
-  given reads: Reads[SrViewRow] = Reads[SrViewRow](json => JsResult.fromTry(
-      Try(
-        SrViewRow(
-          id = json.\("id").as(SalesreasonId.reads),
-          salesreasonid = json.\("salesreasonid").as(SalesreasonId.reads),
-          name = json.\("name").as(Name.reads),
-          reasontype = json.\("reasontype").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SrViewRow] = {
+    Reads[SrViewRow](json => JsResult.fromTry(
+        Try(
+          SrViewRow(
+            id = json.\("id").as(SalesreasonId.reads),
+            salesreasonid = json.\("salesreasonid").as(SalesreasonId.reads),
+            name = json.\("name").as(Name.reads),
+            reasontype = json.\("reasontype").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SrViewRow] = RowParser[SrViewRow] { row =>
-    Success(
-      SrViewRow(
-        id = row(idx + 0)(using SalesreasonId.column),
-        salesreasonid = row(idx + 1)(using SalesreasonId.column),
-        name = row(idx + 2)(using Name.column),
-        reasontype = row(idx + 3)(using Name.column),
-        modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SrViewRow] = OWrites[SrViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> SalesreasonId.writes.writes(o.id),
-      "salesreasonid" -> SalesreasonId.writes.writes(o.salesreasonid),
-      "name" -> Name.writes.writes(o.name),
-      "reasontype" -> Name.writes.writes(o.reasontype),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SrViewRow] = {
+    RowParser[SrViewRow] { row =>
+      Success(
+        SrViewRow(
+          id = row(idx + 0)(using SalesreasonId.column),
+          salesreasonid = row(idx + 1)(using SalesreasonId.column),
+          name = row(idx + 2)(using Name.column),
+          reasontype = row(idx + 3)(using Name.column),
+          modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SrViewRow] = {
+    OWrites[SrViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> SalesreasonId.writes.writes(o.id),
+        "salesreasonid" -> SalesreasonId.writes.writes(o.salesreasonid),
+        "name" -> Name.writes.writes(o.name),
+        "reasontype" -> Name.writes.writes(o.reasontype),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

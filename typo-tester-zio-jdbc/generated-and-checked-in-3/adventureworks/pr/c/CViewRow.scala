@@ -28,40 +28,48 @@ case class CViewRow(
 )
 
 object CViewRow {
-  given jdbcDecoder: JdbcDecoder[CViewRow] = new JdbcDecoder[CViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, CViewRow) =
-      columIndex + 3 ->
-        CViewRow(
-          id = CultureId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          cultureid = CultureId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[CViewRow] = {
+    new JdbcDecoder[CViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, CViewRow) =
+        columIndex + 3 ->
+          CViewRow(
+            id = CultureId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            cultureid = CultureId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[CViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using CultureId.jsonDecoder))
-    val cultureid = jsonObj.get("cultureid").toRight("Missing field 'cultureid'").flatMap(_.as(using CultureId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && cultureid.isRight && name.isRight && modifieddate.isRight)
-      Right(CViewRow(id = id.toOption.get, cultureid = cultureid.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, cultureid, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[CViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using CultureId.jsonDecoder))
+      val cultureid = jsonObj.get("cultureid").toRight("Missing field 'cultureid'").flatMap(_.as(using CultureId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && cultureid.isRight && name.isRight && modifieddate.isRight)
+        Right(CViewRow(id = id.toOption.get, cultureid = cultureid.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, cultureid, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[CViewRow] = new JsonEncoder[CViewRow] {
-    override def unsafeEncode(a: CViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      CultureId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""cultureid":""")
-      CultureId.jsonEncoder.unsafeEncode(a.cultureid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[CViewRow] = {
+    new JsonEncoder[CViewRow] {
+      override def unsafeEncode(a: CViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        CultureId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""cultureid":""")
+        CultureId.jsonEncoder.unsafeEncode(a.cultureid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

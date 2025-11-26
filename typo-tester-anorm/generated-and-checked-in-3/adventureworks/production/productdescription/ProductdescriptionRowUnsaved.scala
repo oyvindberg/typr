@@ -7,6 +7,7 @@ package adventureworks.production.productdescription
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import play.api.libs.json.JsObject
@@ -23,57 +24,63 @@ case class ProductdescriptionRowUnsaved(
   /** Description of the product. */
   description: /* max 400 chars */ String,
   /** Default: nextval('production.productdescription_productdescriptionid_seq'::regclass)
-      Primary key for ProductDescription records. */
-  productdescriptionid: Defaulted[ProductdescriptionId] = Defaulted.UseDefault,
+   * Primary key for ProductDescription records.
+   */
+  productdescriptionid: Defaulted[ProductdescriptionId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productdescriptionidDefault: => ProductdescriptionId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductdescriptionRow =
-    ProductdescriptionRow(
+  def toRow(
+    productdescriptionidDefault: => ProductdescriptionId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductdescriptionRow = {
+    new ProductdescriptionRow(
+      productdescriptionid = productdescriptionid.getOrElse(productdescriptionidDefault),
       description = description,
-      productdescriptionid = productdescriptionid match {
-                               case Defaulted.UseDefault => productdescriptionidDefault
-                               case Defaulted.Provided(value) => value
-                             },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ProductdescriptionRowUnsaved {
-  given reads: Reads[ProductdescriptionRowUnsaved] = Reads[ProductdescriptionRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductdescriptionRowUnsaved(
-          description = json.\("description").as(Reads.StringReads),
-          productdescriptionid = json.\("productdescriptionid").as(Defaulted.reads(using ProductdescriptionId.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[ProductdescriptionRowUnsaved] = Text.instance[ProductdescriptionRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.description, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ProductdescriptionId.text).unsafeEncode(row.productdescriptionid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[ProductdescriptionRowUnsaved] = OWrites[ProductdescriptionRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "description" -> Writes.StringWrites.writes(o.description),
-      "productdescriptionid" -> Defaulted.writes(using ProductdescriptionId.writes).writes(o.productdescriptionid),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ProductdescriptionRowUnsaved {
+  given pgText: Text[ProductdescriptionRowUnsaved] = {
+    Text.instance[ProductdescriptionRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.description, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ProductdescriptionId.pgText).unsafeEncode(row.productdescriptionid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[ProductdescriptionRowUnsaved] = {
+    Reads[ProductdescriptionRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductdescriptionRowUnsaved(
+            description = json.\("description").as(Reads.StringReads),
+            productdescriptionid = json.\("productdescriptionid").as(Defaulted.reads(using ProductdescriptionId.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[ProductdescriptionRowUnsaved] = {
+    OWrites[ProductdescriptionRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "description" -> Writes.StringWrites.writes(o.description),
+        "productdescriptionid" -> Defaulted.writes(using ProductdescriptionId.writes).writes(o.productdescriptionid),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

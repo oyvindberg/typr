@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `sales.shoppingcartitem` */
-case class ShoppingcartitemId(value: Int) extends AnyVal
+case class ShoppingcartitemId(value: Int) extends scala.AnyVal
+
 object ShoppingcartitemId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ShoppingcartitemId]] = adventureworks.IntArrayDecoder.map(_.map(ShoppingcartitemId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ShoppingcartitemId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ShoppingcartitemId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ShoppingcartitemId, Int] = Bijection[ShoppingcartitemId, Int](_.value)(ShoppingcartitemId.apply)
+
+  given bijection: Bijection[ShoppingcartitemId, Int] = Bijection.apply[ShoppingcartitemId, Int](_.value)(ShoppingcartitemId.apply)
+
   given jdbcDecoder: JdbcDecoder[ShoppingcartitemId] = JdbcDecoder.intDecoder.map(ShoppingcartitemId.apply)
+
   given jdbcEncoder: JdbcEncoder[ShoppingcartitemId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ShoppingcartitemId] = JsonDecoder.int.map(ShoppingcartitemId.apply)
+
   given jsonEncoder: JsonEncoder[ShoppingcartitemId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ShoppingcartitemId] = PGType.PGTypeInt.as
-  given setter: Setter[ShoppingcartitemId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ShoppingcartitemId] = new Text[ShoppingcartitemId] {
-    override def unsafeEncode(v: ShoppingcartitemId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShoppingcartitemId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ShoppingcartitemId] = {
+    new Text[ShoppingcartitemId] {
+      override def unsafeEncode(v: ShoppingcartitemId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShoppingcartitemId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ShoppingcartitemId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ShoppingcartitemId] = Setter.intSetter.contramap(_.value)
 }

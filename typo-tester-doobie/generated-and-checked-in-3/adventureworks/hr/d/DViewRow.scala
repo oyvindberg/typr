@@ -28,20 +28,24 @@ case class DViewRow(
 
 object DViewRow {
   given decoder: Decoder[DViewRow] = Decoder.forProduct5[DViewRow, DepartmentId, DepartmentId, Name, Name, TypoLocalDateTime]("id", "departmentid", "name", "groupname", "modifieddate")(DViewRow.apply)(using DepartmentId.decoder, DepartmentId.decoder, Name.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[DViewRow] = Encoder.forProduct5[DViewRow, DepartmentId, DepartmentId, Name, Name, TypoLocalDateTime]("id", "departmentid", "name", "groupname", "modifieddate")(x => (x.id, x.departmentid, x.name, x.groupname, x.modifieddate))(using DepartmentId.encoder, DepartmentId.encoder, Name.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[DViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[DViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    DViewRow(
-      id = arr(0).asInstanceOf[DepartmentId],
-          departmentid = arr(1).asInstanceOf[DepartmentId],
-          name = arr(2).asInstanceOf[Name],
-          groupname = arr(3).asInstanceOf[Name],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(DepartmentId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      DViewRow(
+        id = arr(0).asInstanceOf[DepartmentId],
+            departmentid = arr(1).asInstanceOf[DepartmentId],
+            name = arr(2).asInstanceOf[Name],
+            groupname = arr(3).asInstanceOf[Name],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

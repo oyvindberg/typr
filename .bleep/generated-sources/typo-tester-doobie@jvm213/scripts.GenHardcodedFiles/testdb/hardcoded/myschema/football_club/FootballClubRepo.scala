@@ -13,21 +13,46 @@ import typo.dsl.UpdateBuilder
 
 trait FootballClubRepo {
   def delete: DeleteBuilder[FootballClubFields, FootballClubRow]
+
   def deleteById(id: FootballClubId): ConnectionIO[Boolean]
+
   def deleteByIds(ids: Array[FootballClubId]): ConnectionIO[Int]
+
   def insert(unsaved: FootballClubRow): ConnectionIO[FootballClubRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, FootballClubRow], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, FootballClubRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[FootballClubFields, FootballClubRow]
+
   def selectAll: Stream[ConnectionIO, FootballClubRow]
-  def selectByFieldValues(fieldValues: List[FootballClubFieldOrIdValue[?]]): Stream[ConnectionIO, FootballClubRow]
+
+  def selectByFieldValues(fieldValues: List[FootballClubFieldValue[?]]): Stream[ConnectionIO, FootballClubRow]
+
   def selectById(id: FootballClubId): ConnectionIO[Option[FootballClubRow]]
+
   def selectByIds(ids: Array[FootballClubId]): Stream[ConnectionIO, FootballClubRow]
+
   def selectByIdsTracked(ids: Array[FootballClubId]): ConnectionIO[Map[FootballClubId, FootballClubRow]]
+
   def update: UpdateBuilder[FootballClubFields, FootballClubRow]
+
   def update(row: FootballClubRow): ConnectionIO[Option[FootballClubRow]]
-  def updateFieldValues(id: FootballClubId, fieldValues: List[FootballClubFieldValue[?]]): ConnectionIO[Boolean]
+
+  def updateFieldValues(
+    id: FootballClubId,
+    fieldValues: List[FootballClubFieldValue[?]]
+  ): ConnectionIO[Boolean]
+
   def upsert(unsaved: FootballClubRow): ConnectionIO[FootballClubRow]
+
   def upsertBatch(unsaved: List[FootballClubRow]): Stream[ConnectionIO, FootballClubRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, FootballClubRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, FootballClubRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

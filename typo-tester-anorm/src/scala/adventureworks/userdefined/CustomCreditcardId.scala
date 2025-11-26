@@ -22,7 +22,7 @@ object CustomCreditcardId {
     override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
   }
   implicit lazy val reads: Reads[CustomCreditcardId] = Reads.IntReads.map(CustomCreditcardId.apply)
-  implicit lazy val text: Text[CustomCreditcardId] = new Text[CustomCreditcardId] {
+  implicit lazy val pgText: Text[CustomCreditcardId] = new Text[CustomCreditcardId] {
     override def unsafeEncode(v: CustomCreditcardId, sb: StringBuilder) = Text.intInstance.unsafeEncode(v.value, sb)
     override def unsafeArrayEncode(v: CustomCreditcardId, sb: StringBuilder) = Text.intInstance.unsafeArrayEncode(v.value, sb)
   }

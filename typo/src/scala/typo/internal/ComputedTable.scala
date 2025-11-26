@@ -5,11 +5,12 @@ import typo.internal.metadb.OpenEnum
 import typo.internal.rewriteDependentData.Eval
 
 case class ComputedTable(
+    lang: Lang,
     options: InternalOptions,
     default: ComputedDefault,
     dbTable: db.Table,
     naming: Naming,
-    scalaTypeMapper: TypeMapperScala,
+    scalaTypeMapper: TypeMapperJvm,
     eval: Eval[db.RelationName, HasSource],
     openEnumsByTable: Map[db.RelationName, OpenEnum]
 ) extends HasSource {
@@ -52,14 +53,14 @@ case class ComputedTable(
           lazy val underlying = scalaTypeMapper.col(dbTable.name, dbCol, None)
 
           val fromFk: Option[IdComputed.UnaryInherited] =
-            findTypeFromFk(options.logger, source, dbCol.name, pointsTo, eval.asMaybe, options.dialect)(_ => None).map { tpe =>
+            findTypeFromFk(options.logger, source, dbCol.name, pointsTo, eval.asMaybe, options.lang)(_ => None).map { tpe =>
               val col = ComputedColumn(pointsTo = pointsTo, name = naming.field(dbCol.name), tpe = tpe, dbCol = dbCol)
               IdComputed.UnaryInherited(col, tpe)
             }
 
           val fromOpenEnum: Option[IdComputed.UnaryOpenEnum] =
             openEnumsByTable.get(dbTable.name).map { values =>
-              val tpe = sc.Type.Qualified(naming.idName(source, List(dbCol)))
+              val tpe = jvm.Type.Qualified(naming.idName(source, List(dbCol)))
               val col = ComputedColumn(pointsTo = pointsTo, name = naming.field(dbCol.name), tpe = tpe, dbCol = dbCol)
               IdComputed.UnaryOpenEnum(col, tpe, underlying, values)
             }
@@ -67,12 +68,12 @@ case class ComputedTable(
           fromFk.orElse(fromOpenEnum).orElse {
             val underlying = scalaTypeMapper.col(dbTable.name, dbCol, None)
             val col = ComputedColumn(pointsTo = pointsTo, name = naming.field(dbCol.name), tpe = underlying, dbCol = dbCol)
-            if (sc.Type.containsUserDefined(underlying))
+            if (jvm.Type.containsUserDefined(underlying))
               Some(IdComputed.UnaryUserSpecified(col, underlying))
             else if (!options.enablePrimaryKeyType.include(dbTable.name))
               Some(IdComputed.UnaryNoIdType(col, underlying))
             else {
-              val tpe = sc.Type.Qualified(naming.idName(source, List(col.dbCol)))
+              val tpe = jvm.Type.Qualified(naming.idName(source, List(col.dbCol)))
               Some(IdComputed.UnaryNormal(col, tpe))
             }
           }
@@ -87,8 +88,8 @@ case class ComputedTable(
                 dbCol = dbColsByName(colName)
               )
             }
-          val tpe = sc.Type.Qualified(naming.idName(source, cols.toList.map(_.dbCol)))
-          Some(IdComputed.Composite(cols, tpe, paramName = sc.Ident("compositeId")))
+          val tpe = jvm.Type.Qualified(naming.idName(source, cols.toList.map(_.dbCol)))
+          Some(IdComputed.Composite(cols, tpe, paramName = jvm.Ident("compositeId")))
       }
     }
 
@@ -102,13 +103,13 @@ case class ComputedTable(
       )
     }
 
-  def deriveType(colName: db.ColName): sc.Type = {
+  def deriveType(colName: db.ColName): jvm.Type = {
     val dbCol = dbColsByName(colName)
     // we let types flow through constraints down to this column, the point is to reuse id types downstream
-    val typeFromFk: Option[sc.Type] =
-      findTypeFromFk(options.logger, source, colName, deps.getOrElse(colName, Nil), eval.asMaybe, options.dialect)(otherColName => Some(deriveType(otherColName)))
+    val typeFromFk: Option[jvm.Type] =
+      findTypeFromFk(options.logger, source, colName, deps.getOrElse(colName, Nil), eval.asMaybe, options.lang)(otherColName => Some(deriveType(otherColName)))
 
-    val typeFromId: Option[sc.Type] =
+    val typeFromId: Option[jvm.Type] =
       maybeId match {
         case Some(id: IdComputed.Unary) if id.col.dbName == colName => Some(id.tpe)
         case _                                                      => None
@@ -157,49 +158,43 @@ case class ComputedTable(
           id <- maybeId
           writeableColumnsWithId <- writeableColumnsWithId
         } yield {
-          val unsavedParam = sc.Param(sc.Ident("unsaved"), names.RowName, None)
+          val unsavedParam = jvm.Param(jvm.Ident("unsaved"), names.RowName)
           RepoMethod.Upsert(dbTable.name, cols, id, unsavedParam, names.RowName, writeableColumnsWithId)
         },
         maybeId
           .collect {
             case unary: IdComputed.Unary =>
-              RepoMethod.SelectByIds(dbTable.name, cols, unary, sc.Param(unary.paramName.appended("s"), sc.Type.ArrayOf(unary.tpe), None), names.RowName)
+              RepoMethod.SelectByIds(dbTable.name, cols, unary, jvm.Param(unary.paramName.appended("s"), jvm.Type.ArrayOf(unary.tpe)), names.RowName)
             case x: IdComputed.Composite if x.cols.forall(col => col.dbCol.nullability == Nullability.NoNulls) =>
-              RepoMethod.SelectByIds(dbTable.name, cols, x, sc.Param(x.paramName.appended("s"), sc.Type.ArrayOf(x.tpe), None), names.RowName)
+              RepoMethod.SelectByIds(dbTable.name, cols, x, jvm.Param(x.paramName.appended("s"), jvm.Type.ArrayOf(x.tpe)), names.RowName)
           }
           .toList
           .flatMap { x => List(x, RepoMethod.SelectByIdsTracked(x)) },
         for {
-          name <- names.FieldOrIdValueName
-          fieldValueName <- names.FieldValueName
+          fieldValueName <- names.FieldOrIdValueName
         } yield {
-          val fieldValueOrIdsParam = sc.Param(sc.Ident("fieldValues"), TypesScala.List.of(name.of(sc.Type.Wildcard)), None)
+          val fieldValueOrIdsParam = jvm.Param(jvm.Ident("fieldValues"), lang.ListType.tpe.of(fieldValueName.of(jvm.Type.Wildcard)))
           RepoMethod.SelectByFieldValues(dbTable.name, cols, fieldValueName, fieldValueOrIdsParam, names.RowName)
         },
         for {
           id <- maybeId
-          colsNotId <- colsNotId
-          fieldValueName <- names.FieldValueName
+          fieldValueName <- names.FieldOrIdValueName
         } yield RepoMethod.UpdateFieldValues(
           dbTable.name,
           id,
-          sc.Param(
-            sc.Ident("fieldValues"),
-            TypesScala.List.of(fieldValueName.of(sc.Type.Wildcard)),
-            None
-          ),
+          jvm.Param(jvm.Ident("fieldValues"), lang.ListType.tpe.of(fieldValueName.of(jvm.Type.Wildcard))),
           fieldValueName,
-          colsNotId,
+          cols,
           names.RowName
         ),
         for {
           id <- maybeId
           writeableColumnsNotId <- writeableColumnsNotId
-        } yield RepoMethod.Update(dbTable.name, cols, id, sc.Param(sc.Ident("row"), names.RowName, None), writeableColumnsNotId),
+        } yield RepoMethod.Update(dbTable.name, cols, id, jvm.Param(jvm.Ident("row"), names.RowName), writeableColumnsNotId),
         for {
           writeableColumnsWithId <- writeableColumnsWithId
         } yield {
-          val unsavedParam = sc.Param(sc.Ident("unsaved"), names.RowName, None)
+          val unsavedParam = jvm.Param(jvm.Ident("unsaved"), names.RowName)
           RepoMethod.Insert(dbTable.name, cols, unsavedParam, names.RowName, writeableColumnsWithId)
         },
         for {
@@ -216,7 +211,7 @@ case class ComputedTable(
           writeableColumnsWithId <- writeableColumnsWithId
         } yield RepoMethod.UpsertBatch(dbTable.name, cols, id, names.RowName, writeableColumnsWithId),
         maybeUnsavedRow.map { unsavedRow =>
-          val unsavedParam = sc.Param(sc.Ident("unsaved"), unsavedRow.tpe, None)
+          val unsavedParam = jvm.Param(jvm.Ident("unsaved"), unsavedRow.tpe)
           RepoMethod.InsertUnsaved(dbTable.name, cols, unsavedRow, unsavedParam, default, names.RowName)
         },
         maybeUnsavedRow.collect {
@@ -226,9 +221,9 @@ case class ComputedTable(
         maybeId.map(id => RepoMethod.Delete(dbTable.name, id)),
         maybeId.collect {
           case unary: IdComputed.Unary =>
-            RepoMethod.DeleteByIds(dbTable.name, unary, sc.Param(unary.paramName.appended("s"), sc.Type.ArrayOf(unary.tpe), None))
+            RepoMethod.DeleteByIds(dbTable.name, unary, jvm.Param(unary.paramName.appended("s"), jvm.Type.ArrayOf(unary.tpe)))
           case x: IdComputed.Composite if x.cols.forall(col => col.dbCol.nullability == Nullability.NoNulls) =>
-            RepoMethod.DeleteByIds(dbTable.name, x, sc.Param(x.paramName.appended("s"), sc.Type.ArrayOf(x.tpe), None))
+            RepoMethod.DeleteByIds(dbTable.name, x, jvm.Param(x.paramName.appended("s"), jvm.Type.ArrayOf(x.tpe)))
         }
       ).flatten,
       dbTable.uniqueKeys

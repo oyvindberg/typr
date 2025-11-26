@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `person.address` */
-case class AddressId(value: Int) extends AnyVal
+case class AddressId(value: Int) extends scala.AnyVal
+
 object AddressId {
   given arrayJdbcDecoder: JdbcDecoder[Array[AddressId]] = adventureworks.IntArrayDecoder.map(_.map(AddressId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[AddressId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[AddressId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[AddressId, Int] = Bijection[AddressId, Int](_.value)(AddressId.apply)
+
+  given bijection: Bijection[AddressId, Int] = Bijection.apply[AddressId, Int](_.value)(AddressId.apply)
+
   given jdbcDecoder: JdbcDecoder[AddressId] = JdbcDecoder.intDecoder.map(AddressId.apply)
+
   given jdbcEncoder: JdbcEncoder[AddressId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[AddressId] = JsonDecoder.int.map(AddressId.apply)
+
   given jsonEncoder: JsonEncoder[AddressId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[AddressId] = PGType.PGTypeInt.as
-  given setter: Setter[AddressId] = Setter.intSetter.contramap(_.value)
-  given text: Text[AddressId] = new Text[AddressId] {
-    override def unsafeEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[AddressId] = {
+    new Text[AddressId] {
+      override def unsafeEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[AddressId] = PGType.PGTypeInt.as
+
+  given setter: Setter[AddressId] = Setter.intSetter.contramap(_.value)
 }

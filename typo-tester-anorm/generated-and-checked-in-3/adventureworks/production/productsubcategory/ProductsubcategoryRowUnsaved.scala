@@ -7,6 +7,7 @@ package adventureworks.production.productsubcategory
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
@@ -22,67 +23,74 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productsubcategory` which has not been persisted yet */
 case class ProductsubcategoryRowUnsaved(
   /** Product category identification number. Foreign key to ProductCategory.ProductCategoryID.
-      Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]] */
+   * Points to [[adventureworks.production.productcategory.ProductcategoryRow.productcategoryid]]
+   */
   productcategoryid: ProductcategoryId,
   /** Subcategory description. */
   name: Name,
   /** Default: nextval('production.productsubcategory_productsubcategoryid_seq'::regclass)
-      Primary key for ProductSubcategory records. */
-  productsubcategoryid: Defaulted[ProductsubcategoryId] = Defaulted.UseDefault,
+   * Primary key for ProductSubcategory records.
+   */
+  productsubcategoryid: Defaulted[ProductsubcategoryId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productsubcategoryidDefault: => ProductsubcategoryId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductsubcategoryRow =
-    ProductsubcategoryRow(
+  def toRow(
+    productsubcategoryidDefault: => ProductsubcategoryId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductsubcategoryRow = {
+    new ProductsubcategoryRow(
+      productsubcategoryid = productsubcategoryid.getOrElse(productsubcategoryidDefault),
       productcategoryid = productcategoryid,
       name = name,
-      productsubcategoryid = productsubcategoryid match {
-                               case Defaulted.UseDefault => productsubcategoryidDefault
-                               case Defaulted.Provided(value) => value
-                             },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ProductsubcategoryRowUnsaved {
-  given reads: Reads[ProductsubcategoryRowUnsaved] = Reads[ProductsubcategoryRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductsubcategoryRowUnsaved(
-          productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
-          name = json.\("name").as(Name.reads),
-          productsubcategoryid = json.\("productsubcategoryid").as(Defaulted.reads(using ProductsubcategoryId.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[ProductsubcategoryRowUnsaved] = Text.instance[ProductsubcategoryRowUnsaved]{ (row, sb) =>
-    ProductcategoryId.text.unsafeEncode(row.productcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ProductsubcategoryId.text).unsafeEncode(row.productsubcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[ProductsubcategoryRowUnsaved] = OWrites[ProductsubcategoryRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
-      "name" -> Name.writes.writes(o.name),
-      "productsubcategoryid" -> Defaulted.writes(using ProductsubcategoryId.writes).writes(o.productsubcategoryid),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object ProductsubcategoryRowUnsaved {
+  given pgText: Text[ProductsubcategoryRowUnsaved] = {
+    Text.instance[ProductsubcategoryRowUnsaved]{ (row, sb) =>
+      ProductcategoryId.pgText.unsafeEncode(row.productcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ProductsubcategoryId.pgText).unsafeEncode(row.productsubcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[ProductsubcategoryRowUnsaved] = {
+    Reads[ProductsubcategoryRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductsubcategoryRowUnsaved(
+            productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
+            name = json.\("name").as(Name.reads),
+            productsubcategoryid = json.\("productsubcategoryid").as(Defaulted.reads(using ProductsubcategoryId.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[ProductsubcategoryRowUnsaved] = {
+    OWrites[ProductsubcategoryRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
+        "name" -> Name.writes.writes(o.name),
+        "productsubcategoryid" -> Defaulted.writes(using ProductsubcategoryId.writes).writes(o.productsubcategoryid),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

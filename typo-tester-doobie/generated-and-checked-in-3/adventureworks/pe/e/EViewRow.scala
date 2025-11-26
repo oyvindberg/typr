@@ -31,22 +31,26 @@ case class EViewRow(
 
 object EViewRow {
   given decoder: Decoder[EViewRow] = Decoder.forProduct6[EViewRow, Int, BusinessentityId, Int, Option[/* max 50 chars */ String], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")(EViewRow.apply)(using Decoder.decodeInt, BusinessentityId.decoder, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[EViewRow] = Encoder.forProduct6[EViewRow, Int, BusinessentityId, Int, Option[/* max 50 chars */ String], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.emailaddressid, x.emailaddress, x.rowguid, x.modifieddate))(using Encoder.encodeInt, BusinessentityId.encoder, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[EViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[EViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    EViewRow(
-      id = arr(0).asInstanceOf[Int],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          emailaddressid = arr(2).asInstanceOf[Int],
-          emailaddress = arr(3).asInstanceOf[Option[/* max 50 chars */ String]],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      EViewRow(
+        id = arr(0).asInstanceOf[Int],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            emailaddressid = arr(2).asInstanceOf[Int],
+            emailaddress = arr(3).asInstanceOf[Option[/* max 50 chars */ String]],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

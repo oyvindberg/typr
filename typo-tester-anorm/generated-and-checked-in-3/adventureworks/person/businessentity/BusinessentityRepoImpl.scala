@@ -15,128 +15,131 @@ import anorm.ParameterValue
 import anorm.RowParser
 import anorm.SQL
 import anorm.SimpleSql
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class BusinessentityRepoImpl extends BusinessentityRepo {
-  override def delete: DeleteBuilder[BusinessentityFields, BusinessentityRow] = {
-    DeleteBuilder(""""person"."businessentity"""", BusinessentityFields.structure)
-  }
-  override def deleteById(businessentityid: BusinessentityId)(using c: Connection): Boolean = {
-    SQL"""delete from "person"."businessentity" where "businessentityid" = ${ParameterValue(businessentityid, null, BusinessentityId.toStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = {
+  def delete: DeleteBuilder[BusinessentityFields, BusinessentityRow] = DeleteBuilder.of(""""person"."businessentity"""", BusinessentityFields.structure, BusinessentityRow.rowParser(1).*)
+
+  def deleteById(businessentityid: BusinessentityId)(using c: Connection): Boolean = SQL"""delete from "person"."businessentity" where "businessentityid" = ${ParameterValue(businessentityid, null, BusinessentityId.toStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(businessentityids: Array[BusinessentityId])(using c: Connection): Int = {
     SQL"""delete
-          from "person"."businessentity"
-          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
-       """.executeUpdate()
-    
+    from "person"."businessentity"
+    where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
+    """.executeUpdate()
   }
-  override def insert(unsaved: BusinessentityRow)(using c: Connection): BusinessentityRow = {
-    SQL"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-          values (${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4, ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid, ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp)
-          returning "businessentityid", "rowguid", "modifieddate"::text
-       """
-      .executeInsert(BusinessentityRow.rowParser(1).single)
-    
+
+  def insert(unsaved: BusinessentityRow)(using c: Connection): BusinessentityRow = {
+  SQL"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
+    values (${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4, ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid, ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp)
+    returning "businessentityid", "rowguid", "modifieddate"::text
+    """
+    .executeInsert(BusinessentityRow.rowParser(1).single)
   }
-  override def insert(unsaved: BusinessentityRowUnsaved)(using c: Connection): BusinessentityRow = {
+
+  def insert(unsaved: BusinessentityRowUnsaved)(using c: Connection): BusinessentityRow = {
     val namedParameters = List(
       unsaved.businessentityid match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("businessentityid", ParameterValue(value, null, BusinessentityId.toStatement)), "::int4"))
       },
       unsaved.rowguid match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("rowguid", ParameterValue(value, null, TypoUUID.toStatement)), "::uuid"))
       },
       unsaved.modifieddate match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("modifieddate", ParameterValue(value, null, TypoLocalDateTime.toStatement)), "::timestamp"))
       }
     ).flatten
     val quote = '"'.toString
     if (namedParameters.isEmpty) {
       SQL"""insert into "person"."businessentity" default values
-            returning "businessentityid", "rowguid", "modifieddate"::text
-         """
+      returning "businessentityid", "rowguid", "modifieddate"::text
+      """
         .executeInsert(BusinessentityRow.rowParser(1).single)
     } else {
       val q = s"""insert into "person"."businessentity"(${namedParameters.map{case (x, _) => quote + x.name + quote}.mkString(", ")})
-                  values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
-                  returning "businessentityid", "rowguid", "modifieddate"::text
-               """
+              values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
+              returning "businessentityid", "rowguid", "modifieddate"::text
+              """
       SimpleSql(SQL(q), namedParameters.map { case (np, _) => np.tupled }.toMap, RowParser.successful)
         .executeInsert(BusinessentityRow.rowParser(1).single)
     }
-    
   }
-  override def insertStreaming(unsaved: Iterator[BusinessentityRow], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "person"."businessentity"("businessentityid", "rowguid", "modifieddate") FROM STDIN""", batchSize, unsaved)(using BusinessentityRow.text, c)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[BusinessentityRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "person"."businessentity"("businessentityid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using BusinessentityRowUnsaved.text, c)
-  }
-  override def select: SelectBuilder[BusinessentityFields, BusinessentityRow] = {
-    SelectBuilderSql(""""person"."businessentity"""", BusinessentityFields.structure, BusinessentityRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[BusinessentityRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[BusinessentityRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "person"."businessentity"("businessentityid", "rowguid", "modifieddate") FROM STDIN""", batchSize, unsaved)(using BusinessentityRow.pgText, c)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[BusinessentityRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "person"."businessentity"("businessentityid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using BusinessentityRowUnsaved.pgText, c)
+
+  def select: SelectBuilder[BusinessentityFields, BusinessentityRow] = SelectBuilder.of(""""person"."businessentity"""", BusinessentityFields.structure, BusinessentityRow.rowParser)
+
+  def selectAll(using c: Connection): List[BusinessentityRow] = {
     SQL"""select "businessentityid", "rowguid", "modifieddate"::text
-          from "person"."businessentity"
-       """.as(BusinessentityRow.rowParser(1).*)
+    from "person"."businessentity"
+    """.as(BusinessentityRow.rowParser(1).*)
   }
-  override def selectById(businessentityid: BusinessentityId)(using c: Connection): Option[BusinessentityRow] = {
+
+  def selectById(businessentityid: BusinessentityId)(using c: Connection): Option[BusinessentityRow] = {
     SQL"""select "businessentityid", "rowguid", "modifieddate"::text
-          from "person"."businessentity"
-          where "businessentityid" = ${ParameterValue(businessentityid, null, BusinessentityId.toStatement)}
-       """.as(BusinessentityRow.rowParser(1).singleOpt)
+    from "person"."businessentity"
+    where "businessentityid" = ${ParameterValue(businessentityid, null, BusinessentityId.toStatement)}
+    """.as(BusinessentityRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[BusinessentityRow] = {
+
+  def selectByIds(businessentityids: Array[BusinessentityId])(using c: Connection): List[BusinessentityRow] = {
     SQL"""select "businessentityid", "rowguid", "modifieddate"::text
-          from "person"."businessentity"
-          where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
-       """.as(BusinessentityRow.rowParser(1).*)
-    
+    from "person"."businessentity"
+    where "businessentityid" = ANY(${ParameterValue(businessentityids, null, BusinessentityId.arrayToStatement)})
+    """.as(BusinessentityRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(businessentityids: Array[BusinessentityId])(using c: Connection): Map[BusinessentityId, BusinessentityRow] = {
+
+  def selectByIdsTracked(businessentityids: Array[BusinessentityId])(using c: Connection): Map[BusinessentityId, BusinessentityRow] = {
     val byId = selectByIds(businessentityids).view.map(x => (x.businessentityid, x)).toMap
     businessentityids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[BusinessentityFields, BusinessentityRow] = {
-    UpdateBuilder(""""person"."businessentity"""", BusinessentityFields.structure, BusinessentityRow.rowParser)
-  }
-  override def update(row: BusinessentityRow)(using c: Connection): Option[BusinessentityRow] = {
+
+  def update: UpdateBuilder[BusinessentityFields, BusinessentityRow] = UpdateBuilder.of(""""person"."businessentity"""", BusinessentityFields.structure, BusinessentityRow.rowParser(1).*)
+
+  def update(row: BusinessentityRow)(using c: Connection): Option[BusinessentityRow] = {
     val businessentityid = row.businessentityid
     SQL"""update "person"."businessentity"
-          set "rowguid" = ${ParameterValue(row.rowguid, null, TypoUUID.toStatement)}::uuid,
-              "modifieddate" = ${ParameterValue(row.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
-          where "businessentityid" = ${ParameterValue(businessentityid, null, BusinessentityId.toStatement)}
-          returning "businessentityid", "rowguid", "modifieddate"::text
-       """.executeInsert(BusinessentityRow.rowParser(1).singleOpt)
+    set "rowguid" = ${ParameterValue(row.rowguid, null, TypoUUID.toStatement)}::uuid,
+    "modifieddate" = ${ParameterValue(row.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
+    where "businessentityid" = ${ParameterValue(businessentityid, null, BusinessentityId.toStatement)}
+    returning "businessentityid", "rowguid", "modifieddate"::text
+    """.executeInsert(BusinessentityRow.rowParser(1).singleOpt)
   }
-  override def upsert(unsaved: BusinessentityRow)(using c: Connection): BusinessentityRow = {
-    SQL"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-          values (
-            ${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4,
-            ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid,
-            ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
-          )
-          on conflict ("businessentityid")
-          do update set
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "businessentityid", "rowguid", "modifieddate"::text
-       """
-      .executeInsert(BusinessentityRow.rowParser(1).single)
-    
+
+  def upsert(unsaved: BusinessentityRow)(using c: Connection): BusinessentityRow = {
+  SQL"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
+    values (
+      ${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4,
+    ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid,
+    ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
+    )
+    on conflict ("businessentityid")
+    do update set
+      "rowguid" = EXCLUDED."rowguid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    returning "businessentityid", "rowguid", "modifieddate"::text
+    """
+    .executeInsert(BusinessentityRow.rowParser(1).single)
   }
-  override def upsertBatch(unsaved: Iterable[BusinessentityRow])(using c: Connection): List[BusinessentityRow] = {
+
+  def upsertBatch(unsaved: Iterable[BusinessentityRow])(using c: Connection): List[BusinessentityRow] = {
     def toNamedParameter(row: BusinessentityRow): List[NamedParameter] = List(
       NamedParameter("businessentityid", ParameterValue(row.businessentityid, null, BusinessentityId.toStatement)),
       NamedParameter("rowguid", ParameterValue(row.rowguid, null, TypoUUID.toStatement)),
@@ -148,30 +151,34 @@ class BusinessentityRepoImpl extends BusinessentityRepo {
         new anorm.adventureworks.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-                values ({businessentityid}::int4, {rowguid}::uuid, {modifieddate}::timestamp)
-                on conflict ("businessentityid")
-                do update set
-                  "rowguid" = EXCLUDED."rowguid",
-                  "modifieddate" = EXCLUDED."modifieddate"
-                returning "businessentityid", "rowguid", "modifieddate"::text
-             """,
+            values ({businessentityid}::int4, {rowguid}::uuid, {modifieddate}::timestamp)
+            on conflict ("businessentityid")
+            do update set
+              "rowguid" = EXCLUDED."rowguid",
+            "modifieddate" = EXCLUDED."modifieddate"
+            returning "businessentityid", "rowguid", "modifieddate"::text
+            """,
             toNamedParameter(head),
             rest.map(toNamedParameter)*
           )
         ).executeReturning(BusinessentityRow.rowParser(1).*)
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[BusinessentityRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[BusinessentityRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     SQL"""create temporary table businessentity_TEMP (like "person"."businessentity") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy businessentity_TEMP("businessentityid", "rowguid", "modifieddate") from stdin""", batchSize, unsaved)(using BusinessentityRow.text, c): @nowarn
+    streamingInsert(s"""copy businessentity_TEMP("businessentityid", "rowguid", "modifieddate") from stdin""", batchSize, unsaved)(using BusinessentityRow.pgText, c): @nowarn
     SQL"""insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-          select * from businessentity_TEMP
-          on conflict ("businessentityid")
-          do update set
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          ;
-          drop table businessentity_TEMP;""".executeUpdate()
+    select * from businessentity_TEMP
+    on conflict ("businessentityid")
+    do update set
+      "rowguid" = EXCLUDED."rowguid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    ;
+    drop table businessentity_TEMP;""".executeUpdate()
   }
 }

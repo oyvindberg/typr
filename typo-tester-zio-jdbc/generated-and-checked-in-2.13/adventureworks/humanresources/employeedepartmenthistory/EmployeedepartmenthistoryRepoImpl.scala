@@ -14,7 +14,6 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.streamingInsert
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
 import zio.ZIO
 import zio.jdbc.SqlFragment
@@ -22,35 +21,34 @@ import zio.jdbc.SqlFragment.Segment
 import zio.jdbc.SqlFragment.Setter
 import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
-  override def delete: DeleteBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = {
-    DeleteBuilder(""""humanresources"."employeedepartmenthistory"""", EmployeedepartmenthistoryFields.structure)
-  }
-  override def deleteById(compositeId: EmployeedepartmenthistoryId): ZIO[ZConnection, Throwable, Boolean] = {
-    sql"""delete from "humanresources"."employeedepartmenthistory" where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(BusinessentityId.setter)} AND "startdate" = ${Segment.paramSegment(compositeId.startdate)(TypoLocalDate.setter)} AND "departmentid" = ${Segment.paramSegment(compositeId.departmentid)(DepartmentId.setter)} AND "shiftid" = ${Segment.paramSegment(compositeId.shiftid)(ShiftId.setter)}""".delete.map(_ > 0)
-  }
-  override def deleteByIds(compositeIds: Array[EmployeedepartmenthistoryId]): ZIO[ZConnection, Throwable, Long] = {
+  def delete: DeleteBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = DeleteBuilder.of(""""humanresources"."employeedepartmenthistory"""", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow.jdbcDecoder)
+
+  def deleteById(compositeId: EmployeedepartmenthistoryId): ZIO[ZConnection, Throwable, Boolean] = sql"""delete from "humanresources"."employeedepartmenthistory" where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(BusinessentityId.setter)} AND "startdate" = ${Segment.paramSegment(compositeId.startdate)(TypoLocalDate.setter)} AND "departmentid" = ${Segment.paramSegment(compositeId.departmentid)(DepartmentId.setter)} AND "shiftid" = ${Segment.paramSegment(compositeId.shiftid)(ShiftId.setter)}""".delete.map(_ > 0)
+
+  def deleteByIds(compositeIds: Array[EmployeedepartmenthistoryId]): ZIO[ZConnection, Throwable, Long] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val startdate = compositeIds.map(_.startdate)
     val departmentid = compositeIds.map(_.departmentid)
     val shiftid = compositeIds.map(_.shiftid)
     sql"""delete
-          from "humanresources"."employeedepartmenthistory"
-          where ("businessentityid", "startdate", "departmentid", "shiftid")
-          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDate.arraySetter)}), unnest(${Segment.paramSegment(departmentid)(DepartmentId.arraySetter)}), unnest(${Segment.paramSegment(shiftid)(ShiftId.arraySetter)}))
-       """.delete
-    
+    from "humanresources"."employeedepartmenthistory"
+    where ("businessentityid", "startdate", "departmentid", "shiftid")
+    in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDate.arraySetter)}), unnest(${Segment.paramSegment(departmentid)(DepartmentId.arraySetter)}), unnest(${Segment.paramSegment(shiftid)(ShiftId.arraySetter)}))
+    """.delete
   }
-  override def insert(unsaved: EmployeedepartmenthistoryRow): ZIO[ZConnection, Throwable, EmployeedepartmenthistoryRow] = {
+
+  def insert(unsaved: EmployeedepartmenthistoryRow): ZIO[ZConnection, Throwable, EmployeedepartmenthistoryRow] = {
     sql"""insert into "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")
-          values (${Segment.paramSegment(unsaved.businessentityid)(BusinessentityId.setter)}::int4, ${Segment.paramSegment(unsaved.departmentid)(DepartmentId.setter)}::int2, ${Segment.paramSegment(unsaved.shiftid)(ShiftId.setter)}::int2, ${Segment.paramSegment(unsaved.startdate)(TypoLocalDate.setter)}::date, ${Segment.paramSegment(unsaved.enddate)(Setter.optionParamSetter(TypoLocalDate.setter))}::date, ${Segment.paramSegment(unsaved.modifieddate)(TypoLocalDateTime.setter)}::timestamp)
-          returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-       """.insertReturning(EmployeedepartmenthistoryRow.jdbcDecoder).map(_.updatedKeys.head)
+    values (${Segment.paramSegment(unsaved.businessentityid)(BusinessentityId.setter)}::int4, ${Segment.paramSegment(unsaved.departmentid)(DepartmentId.setter)}::int2, ${Segment.paramSegment(unsaved.shiftid)(ShiftId.setter)}::int2, ${Segment.paramSegment(unsaved.startdate)(TypoLocalDate.setter)}::date, ${Segment.paramSegment(unsaved.enddate)(Setter.optionParamSetter(TypoLocalDate.setter))}::date, ${Segment.paramSegment(unsaved.modifieddate)(TypoLocalDateTime.setter)}::timestamp)
+    returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
+    """.insertReturning(EmployeedepartmenthistoryRow.jdbcDecoder).map(_.updatedKeys.head)
   }
-  override def insert(unsaved: EmployeedepartmenthistoryRowUnsaved): ZIO[ZConnection, Throwable, EmployeedepartmenthistoryRow] = {
+
+  def insert(unsaved: EmployeedepartmenthistoryRowUnsaved): ZIO[ZConnection, Throwable, EmployeedepartmenthistoryRow] = {
     val fs = List(
       Some((sql""""businessentityid"""", sql"${Segment.paramSegment(unsaved.businessentityid)(BusinessentityId.setter)}::int4")),
       Some((sql""""departmentid"""", sql"${Segment.paramSegment(unsaved.departmentid)(DepartmentId.setter)}::int2")),
@@ -58,98 +56,103 @@ class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
       Some((sql""""startdate"""", sql"${Segment.paramSegment(unsaved.startdate)(TypoLocalDate.setter)}::date")),
       Some((sql""""enddate"""", sql"${Segment.paramSegment(unsaved.enddate)(Setter.optionParamSetter(TypoLocalDate.setter))}::date")),
       unsaved.modifieddate match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((sql""""modifieddate"""", sql"${Segment.paramSegment(value: TypoLocalDateTime)(TypoLocalDateTime.setter)}::timestamp"))
       }
     ).flatten
-    
     val q = if (fs.isEmpty) {
       sql"""insert into "humanresources"."employeedepartmenthistory" default values
-            returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-         """
+      returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
+      """
     } else {
       val names  = fs.map { case (n, _) => n }.mkFragment(SqlFragment(", "))
       val values = fs.map { case (_, f) => f }.mkFragment(SqlFragment(", "))
       sql"""insert into "humanresources"."employeedepartmenthistory"($names) values ($values) returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text"""
     }
     q.insertReturning(EmployeedepartmenthistoryRow.jdbcDecoder).map(_.updatedKeys.head)
-    
   }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
-    streamingInsert(s"""COPY "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") FROM STDIN""", batchSize, unsaved)(EmployeedepartmenthistoryRow.text)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
-    streamingInsert(s"""COPY "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(EmployeedepartmenthistoryRowUnsaved.text)
-  }
-  override def select: SelectBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = {
-    SelectBuilderSql(""""humanresources"."employeedepartmenthistory"""", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow] = {
-    sql"""select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text from "humanresources"."employeedepartmenthistory"""".query(EmployeedepartmenthistoryRow.jdbcDecoder).selectStream()
-  }
-  override def selectById(compositeId: EmployeedepartmenthistoryId): ZIO[ZConnection, Throwable, Option[EmployeedepartmenthistoryRow]] = {
-    sql"""select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text from "humanresources"."employeedepartmenthistory" where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(BusinessentityId.setter)} AND "startdate" = ${Segment.paramSegment(compositeId.startdate)(TypoLocalDate.setter)} AND "departmentid" = ${Segment.paramSegment(compositeId.departmentid)(DepartmentId.setter)} AND "shiftid" = ${Segment.paramSegment(compositeId.shiftid)(ShiftId.setter)}""".query(EmployeedepartmenthistoryRow.jdbcDecoder).selectOne
-  }
-  override def selectByIds(compositeIds: Array[EmployeedepartmenthistoryId]): ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow] = {
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = streamingInsert(s"""COPY "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") FROM STDIN""", batchSize, unsaved)(EmployeedepartmenthistoryRow.pgText)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = streamingInsert(s"""COPY "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(EmployeedepartmenthistoryRowUnsaved.pgText)
+
+  def select: SelectBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = SelectBuilder.of(""""humanresources"."employeedepartmenthistory"""", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow] = sql"""select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text from "humanresources"."employeedepartmenthistory"""".query(EmployeedepartmenthistoryRow.jdbcDecoder).selectStream()
+
+  def selectById(compositeId: EmployeedepartmenthistoryId): ZIO[ZConnection, Throwable, Option[EmployeedepartmenthistoryRow]] = sql"""select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text from "humanresources"."employeedepartmenthistory" where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(BusinessentityId.setter)} AND "startdate" = ${Segment.paramSegment(compositeId.startdate)(TypoLocalDate.setter)} AND "departmentid" = ${Segment.paramSegment(compositeId.departmentid)(DepartmentId.setter)} AND "shiftid" = ${Segment.paramSegment(compositeId.shiftid)(ShiftId.setter)}""".query(EmployeedepartmenthistoryRow.jdbcDecoder).selectOne
+
+  def selectByIds(compositeIds: Array[EmployeedepartmenthistoryId]): ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val startdate = compositeIds.map(_.startdate)
     val departmentid = compositeIds.map(_.departmentid)
     val shiftid = compositeIds.map(_.shiftid)
     sql"""select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-          from "humanresources"."employeedepartmenthistory"
-          where ("businessentityid", "startdate", "departmentid", "shiftid")
-          in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDate.arraySetter)}), unnest(${Segment.paramSegment(departmentid)(DepartmentId.arraySetter)}), unnest(${Segment.paramSegment(shiftid)(ShiftId.arraySetter)}))
-       """.query(EmployeedepartmenthistoryRow.jdbcDecoder).selectStream()
-    
+    from "humanresources"."employeedepartmenthistory"
+    where ("businessentityid", "startdate", "departmentid", "shiftid")
+    in (select unnest(${Segment.paramSegment(businessentityid)(BusinessentityId.arraySetter)}), unnest(${Segment.paramSegment(startdate)(TypoLocalDate.arraySetter)}), unnest(${Segment.paramSegment(departmentid)(DepartmentId.arraySetter)}), unnest(${Segment.paramSegment(shiftid)(ShiftId.arraySetter)}))
+    """.query(using EmployeedepartmenthistoryRow.jdbcDecoder).selectStream()
   }
-  override def selectByIdsTracked(compositeIds: Array[EmployeedepartmenthistoryId]): ZIO[ZConnection, Throwable, Map[EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow]] = {
+
+  def selectByIdsTracked(compositeIds: Array[EmployeedepartmenthistoryId]): ZIO[ZConnection, Throwable, Map[EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow]] = {
     selectByIds(compositeIds).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = {
-    UpdateBuilder(""""humanresources"."employeedepartmenthistory"""", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow.jdbcDecoder)
-  }
-  override def update(row: EmployeedepartmenthistoryRow): ZIO[ZConnection, Throwable, Option[EmployeedepartmenthistoryRow]] = {
+
+  def update: UpdateBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = UpdateBuilder.of(""""humanresources"."employeedepartmenthistory"""", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow.jdbcDecoder)
+
+  def update(row: EmployeedepartmenthistoryRow): ZIO[ZConnection, Throwable, Option[EmployeedepartmenthistoryRow]] = {
     val compositeId = row.compositeId
     sql"""update "humanresources"."employeedepartmenthistory"
-          set "enddate" = ${Segment.paramSegment(row.enddate)(Setter.optionParamSetter(TypoLocalDate.setter))}::date,
-              "modifieddate" = ${Segment.paramSegment(row.modifieddate)(TypoLocalDateTime.setter)}::timestamp
-          where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(BusinessentityId.setter)} AND "startdate" = ${Segment.paramSegment(compositeId.startdate)(TypoLocalDate.setter)} AND "departmentid" = ${Segment.paramSegment(compositeId.departmentid)(DepartmentId.setter)} AND "shiftid" = ${Segment.paramSegment(compositeId.shiftid)(ShiftId.setter)}
-          returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text"""
+    set "enddate" = ${Segment.paramSegment(row.enddate)(Setter.optionParamSetter(TypoLocalDate.setter))}::date,
+    "modifieddate" = ${Segment.paramSegment(row.modifieddate)(TypoLocalDateTime.setter)}::timestamp
+    where "businessentityid" = ${Segment.paramSegment(compositeId.businessentityid)(BusinessentityId.setter)} AND "startdate" = ${Segment.paramSegment(compositeId.startdate)(TypoLocalDate.setter)} AND "departmentid" = ${Segment.paramSegment(compositeId.departmentid)(DepartmentId.setter)} AND "shiftid" = ${Segment.paramSegment(compositeId.shiftid)(ShiftId.setter)}
+    returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text"""
       .query(EmployeedepartmenthistoryRow.jdbcDecoder)
       .selectOne
   }
-  override def upsert(unsaved: EmployeedepartmenthistoryRow): ZIO[ZConnection, Throwable, UpdateResult[EmployeedepartmenthistoryRow]] = {
+
+  def upsert(unsaved: EmployeedepartmenthistoryRow): ZIO[ZConnection, Throwable, UpdateResult[EmployeedepartmenthistoryRow]] = {
     sql"""insert into "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")
-          values (
-            ${Segment.paramSegment(unsaved.businessentityid)(BusinessentityId.setter)}::int4,
-            ${Segment.paramSegment(unsaved.departmentid)(DepartmentId.setter)}::int2,
-            ${Segment.paramSegment(unsaved.shiftid)(ShiftId.setter)}::int2,
-            ${Segment.paramSegment(unsaved.startdate)(TypoLocalDate.setter)}::date,
-            ${Segment.paramSegment(unsaved.enddate)(Setter.optionParamSetter(TypoLocalDate.setter))}::date,
-            ${Segment.paramSegment(unsaved.modifieddate)(TypoLocalDateTime.setter)}::timestamp
-          )
-          on conflict ("businessentityid", "startdate", "departmentid", "shiftid")
-          do update set
-            "enddate" = EXCLUDED."enddate",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text""".insertReturning(EmployeedepartmenthistoryRow.jdbcDecoder)
+    values (
+      ${Segment.paramSegment(unsaved.businessentityid)(BusinessentityId.setter)}::int4,
+    ${Segment.paramSegment(unsaved.departmentid)(DepartmentId.setter)}::int2,
+    ${Segment.paramSegment(unsaved.shiftid)(ShiftId.setter)}::int2,
+    ${Segment.paramSegment(unsaved.startdate)(TypoLocalDate.setter)}::date,
+    ${Segment.paramSegment(unsaved.enddate)(Setter.optionParamSetter(TypoLocalDate.setter))}::date,
+    ${Segment.paramSegment(unsaved.modifieddate)(TypoLocalDateTime.setter)}::timestamp
+    )
+    on conflict ("businessentityid", "startdate", "departmentid", "shiftid")
+    do update set
+      "enddate" = EXCLUDED."enddate",
+    "modifieddate" = EXCLUDED."modifieddate"
+    returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text""".insertReturning(EmployeedepartmenthistoryRow.jdbcDecoder)
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, EmployeedepartmenthistoryRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     val created = sql"""create temporary table employeedepartmenthistory_TEMP (like "humanresources"."employeedepartmenthistory") on commit drop""".execute
-    val copied = streamingInsert(s"""copy employeedepartmenthistory_TEMP("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") from stdin""", batchSize, unsaved)(EmployeedepartmenthistoryRow.text)
+    val copied = streamingInsert(s"""copy employeedepartmenthistory_TEMP("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") from stdin""", batchSize, unsaved)(EmployeedepartmenthistoryRow.pgText)
     val merged = sql"""insert into "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")
-                       select * from employeedepartmenthistory_TEMP
-                       on conflict ("businessentityid", "startdate", "departmentid", "shiftid")
-                       do update set
-                         "enddate" = EXCLUDED."enddate",
-                         "modifieddate" = EXCLUDED."modifieddate"
-                       ;
-                       drop table employeedepartmenthistory_TEMP;""".update
+    select * from employeedepartmenthistory_TEMP
+    on conflict ("businessentityid", "startdate", "departmentid", "shiftid")
+    do update set
+      "enddate" = EXCLUDED."enddate",
+    "modifieddate" = EXCLUDED."modifieddate"
+    ;
+    drop table employeedepartmenthistory_TEMP;""".update
     created *> copied *> merged
   }
 }

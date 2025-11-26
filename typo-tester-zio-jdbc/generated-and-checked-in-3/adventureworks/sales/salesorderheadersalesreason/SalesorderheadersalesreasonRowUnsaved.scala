@@ -7,6 +7,7 @@ package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
@@ -18,52 +19,55 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `sales.salesorderheadersalesreason` which has not been persisted yet */
 case class SalesorderheadersalesreasonRowUnsaved(
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
-      Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
+   * Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]]
+   */
   salesorderid: SalesorderheaderId,
   /** Primary key. Foreign key to SalesReason.SalesReasonID.
-      Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]] */
+   * Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]]
+   */
   salesreasonid: SalesreasonId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): SalesorderheadersalesreasonRow =
-    SalesorderheadersalesreasonRow(
-      salesorderid = salesorderid,
-      salesreasonid = salesreasonid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): SalesorderheadersalesreasonRow = new SalesorderheadersalesreasonRow(salesorderid = salesorderid, salesreasonid = salesreasonid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object SalesorderheadersalesreasonRowUnsaved {
-  given jsonDecoder: JsonDecoder[SalesorderheadersalesreasonRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val salesorderid = jsonObj.get("salesorderid").toRight("Missing field 'salesorderid'").flatMap(_.as(using SalesorderheaderId.jsonDecoder))
-    val salesreasonid = jsonObj.get("salesreasonid").toRight("Missing field 'salesreasonid'").flatMap(_.as(using SalesreasonId.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (salesorderid.isRight && salesreasonid.isRight && modifieddate.isRight)
-      Right(SalesorderheadersalesreasonRowUnsaved(salesorderid = salesorderid.toOption.get, salesreasonid = salesreasonid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](salesorderid, salesreasonid, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[SalesorderheadersalesreasonRowUnsaved] = new JsonEncoder[SalesorderheadersalesreasonRowUnsaved] {
-    override def unsafeEncode(a: SalesorderheadersalesreasonRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""salesorderid":""")
-      SalesorderheaderId.jsonEncoder.unsafeEncode(a.salesorderid, indent, out)
-      out.write(",")
-      out.write(""""salesreasonid":""")
-      SalesreasonId.jsonEncoder.unsafeEncode(a.salesreasonid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  given jsonDecoder: JsonDecoder[SalesorderheadersalesreasonRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val salesorderid = jsonObj.get("salesorderid").toRight("Missing field 'salesorderid'").flatMap(_.as(using SalesorderheaderId.jsonDecoder))
+      val salesreasonid = jsonObj.get("salesreasonid").toRight("Missing field 'salesreasonid'").flatMap(_.as(using SalesreasonId.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (salesorderid.isRight && salesreasonid.isRight && modifieddate.isRight)
+        Right(SalesorderheadersalesreasonRowUnsaved(salesorderid = salesorderid.toOption.get, salesreasonid = salesreasonid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](salesorderid, salesreasonid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[SalesorderheadersalesreasonRowUnsaved] = Text.instance[SalesorderheadersalesreasonRowUnsaved]{ (row, sb) =>
-    SalesorderheaderId.text.unsafeEncode(row.salesorderid, sb)
-    sb.append(Text.DELIMETER)
-    SalesreasonId.text.unsafeEncode(row.salesreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[SalesorderheadersalesreasonRowUnsaved] = {
+    new JsonEncoder[SalesorderheadersalesreasonRowUnsaved] {
+      override def unsafeEncode(a: SalesorderheadersalesreasonRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""salesorderid":""")
+        SalesorderheaderId.jsonEncoder.unsafeEncode(a.salesorderid, indent, out)
+        out.write(",")
+        out.write(""""salesreasonid":""")
+        SalesreasonId.jsonEncoder.unsafeEncode(a.salesreasonid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[SalesorderheadersalesreasonRowUnsaved] = {
+    Text.instance[SalesorderheadersalesreasonRowUnsaved]{ (row, sb) =>
+      SalesorderheaderId.pgText.unsafeEncode(row.salesorderid, sb)
+      sb.append(Text.DELIMETER)
+      SalesreasonId.pgText.unsafeEncode(row.salesreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

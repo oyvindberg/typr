@@ -10,5 +10,8 @@ import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
 
 trait PersonDetailSqlRepo {
-  def apply(businessentityid: /* user-picked */ BusinessentityId, modifiedAfter: TypoLocalDateTime)(using c: Connection): List[PersonDetailSqlRow]
+  def apply(
+    businessentityid: /* user-picked */ BusinessentityId,
+    modifiedAfter: TypoLocalDateTime
+  )(using c: Connection): List[PersonDetailSqlRow]
 }

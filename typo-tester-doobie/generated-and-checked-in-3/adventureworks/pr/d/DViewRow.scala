@@ -49,36 +49,40 @@ case class DViewRow(
 
 object DViewRow {
   given decoder: Decoder[DViewRow] = Decoder.forProduct13[DViewRow, /* max 50 chars */ String, BusinessentityId, Flag, /* max 400 chars */ String, Option[/* max 8 chars */ String], /* bpchar, max 5 chars */ String, Int, TypoShort, Option[String], Option[TypoBytea], TypoUUID, TypoLocalDateTime, DocumentId]("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")(DViewRow.apply)(using Decoder.decodeString, BusinessentityId.decoder, Flag.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Decoder.decodeInt, TypoShort.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoBytea.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder, DocumentId.decoder)
+
   given encoder: Encoder[DViewRow] = Encoder.forProduct13[DViewRow, /* max 50 chars */ String, BusinessentityId, Flag, /* max 400 chars */ String, Option[/* max 8 chars */ String], /* bpchar, max 5 chars */ String, Int, TypoShort, Option[String], Option[TypoBytea], TypoUUID, TypoLocalDateTime, DocumentId]("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")(x => (x.title, x.owner, x.folderflag, x.filename, x.fileextension, x.revision, x.changenumber, x.status, x.documentsummary, x.document, x.rowguid, x.modifieddate, x.documentnode))(using Encoder.encodeString, BusinessentityId.encoder, Flag.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Encoder.encodeInt, TypoShort.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoBytea.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder, DocumentId.encoder)
-  given read: Read[DViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+
+  given read: Read[DViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(DocumentId.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    DViewRow(
-      title = arr(0).asInstanceOf[/* max 50 chars */ String],
-          owner = arr(1).asInstanceOf[BusinessentityId],
-          folderflag = arr(2).asInstanceOf[Flag],
-          filename = arr(3).asInstanceOf[/* max 400 chars */ String],
-          fileextension = arr(4).asInstanceOf[Option[/* max 8 chars */ String]],
-          revision = arr(5).asInstanceOf[/* bpchar, max 5 chars */ String],
-          changenumber = arr(6).asInstanceOf[Int],
-          status = arr(7).asInstanceOf[TypoShort],
-          documentsummary = arr(8).asInstanceOf[Option[String]],
-          document = arr(9).asInstanceOf[Option[TypoBytea]],
-          rowguid = arr(10).asInstanceOf[TypoUUID],
-          modifieddate = arr(11).asInstanceOf[TypoLocalDateTime],
-          documentnode = arr(12).asInstanceOf[DocumentId]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(DocumentId.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      DViewRow(
+        title = arr(0).asInstanceOf[/* max 50 chars */ String],
+            owner = arr(1).asInstanceOf[BusinessentityId],
+            folderflag = arr(2).asInstanceOf[Flag],
+            filename = arr(3).asInstanceOf[/* max 400 chars */ String],
+            fileextension = arr(4).asInstanceOf[Option[/* max 8 chars */ String]],
+            revision = arr(5).asInstanceOf[/* bpchar, max 5 chars */ String],
+            changenumber = arr(6).asInstanceOf[Int],
+            status = arr(7).asInstanceOf[TypoShort],
+            documentsummary = arr(8).asInstanceOf[Option[String]],
+            document = arr(9).asInstanceOf[Option[TypoBytea]],
+            rowguid = arr(10).asInstanceOf[TypoUUID],
+            modifieddate = arr(11).asInstanceOf[TypoLocalDateTime],
+            documentnode = arr(12).asInstanceOf[DocumentId]
+      )
+    }
   }
 }

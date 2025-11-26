@@ -6,6 +6,7 @@
 package adventureworks.person.countryregion
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -19,26 +20,23 @@ case class CountryregionRowUnsaved(
   /** Country or region name. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow =
-    CountryregionRow(
-      countryregioncode = countryregioncode,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): CountryregionRow = new CountryregionRow(countryregioncode = countryregioncode, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object CountryregionRowUnsaved {
   given decoder: Decoder[CountryregionRowUnsaved] = Decoder.forProduct3[CountryregionRowUnsaved, CountryregionId, Name, Defaulted[TypoLocalDateTime]]("countryregioncode", "name", "modifieddate")(CountryregionRowUnsaved.apply)(using CountryregionId.decoder, Name.decoder, Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[CountryregionRowUnsaved] = Encoder.forProduct3[CountryregionRowUnsaved, CountryregionId, Name, Defaulted[TypoLocalDateTime]]("countryregioncode", "name", "modifieddate")(x => (x.countryregioncode, x.name, x.modifieddate))(using CountryregionId.encoder, Name.encoder, Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[CountryregionRowUnsaved] = Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
-    CountryregionId.text.unsafeEncode(row.countryregioncode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[CountryregionRowUnsaved] = {
+    Text.instance[CountryregionRowUnsaved]{ (row, sb) =>
+      CountryregionId.pgText.unsafeEncode(row.countryregioncode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

@@ -5,18 +5,16 @@
  */
 package adventureworks.purchasing.vvendorwithaddresses
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class VvendorwithaddressesViewRepoImpl extends VvendorwithaddressesViewRepo {
-  override def select: SelectBuilder[VvendorwithaddressesViewFields, VvendorwithaddressesViewRow] = {
-    SelectBuilderSql(""""purchasing"."vvendorwithaddresses"""", VvendorwithaddressesViewFields.structure, VvendorwithaddressesViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[VvendorwithaddressesViewRow] = {
+  def select: SelectBuilder[VvendorwithaddressesViewFields, VvendorwithaddressesViewRow] = SelectBuilder.of(""""purchasing"."vvendorwithaddresses"""", VvendorwithaddressesViewFields.structure, VvendorwithaddressesViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[VvendorwithaddressesViewRow] = {
     SQL"""select "businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname"
-          from "purchasing"."vvendorwithaddresses"
-       """.as(VvendorwithaddressesViewRow.rowParser(1).*)
+    from "purchasing"."vvendorwithaddresses"
+    """.as(VvendorwithaddressesViewRow.rowParser(1).*)
   }
 }

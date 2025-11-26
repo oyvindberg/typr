@@ -38,30 +38,34 @@ case class ThaViewRow(
 
 object ThaViewRow {
   implicit lazy val decoder: Decoder[ThaViewRow] = Decoder.forProduct10[ThaViewRow, TransactionhistoryarchiveId, TransactionhistoryarchiveId, Int, Int, Int, TypoLocalDateTime, /* bpchar, max 1 chars */ String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(ThaViewRow.apply)(TransactionhistoryarchiveId.decoder, TransactionhistoryarchiveId.decoder, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[ThaViewRow] = Encoder.forProduct10[ThaViewRow, TransactionhistoryarchiveId, TransactionhistoryarchiveId, Int, Int, Int, TypoLocalDateTime, /* bpchar, max 1 chars */ String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(x => (x.id, x.transactionid, x.productid, x.referenceorderid, x.referenceorderlineid, x.transactiondate, x.transactiontype, x.quantity, x.actualcost, x.modifieddate))(TransactionhistoryarchiveId.encoder, TransactionhistoryarchiveId.encoder, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[ThaViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(TransactionhistoryarchiveId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[ThaViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(TransactionhistoryarchiveId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    ThaViewRow(
-      id = arr(0).asInstanceOf[TransactionhistoryarchiveId],
-          transactionid = arr(1).asInstanceOf[TransactionhistoryarchiveId],
-          productid = arr(2).asInstanceOf[Int],
-          referenceorderid = arr(3).asInstanceOf[Int],
-          referenceorderlineid = arr(4).asInstanceOf[Int],
-          transactiondate = arr(5).asInstanceOf[TypoLocalDateTime],
-          transactiontype = arr(6).asInstanceOf[/* bpchar, max 1 chars */ String],
-          quantity = arr(7).asInstanceOf[Int],
-          actualcost = arr(8).asInstanceOf[BigDecimal],
-          modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(TransactionhistoryarchiveId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      ThaViewRow(
+        id = arr(0).asInstanceOf[TransactionhistoryarchiveId],
+            transactionid = arr(1).asInstanceOf[TransactionhistoryarchiveId],
+            productid = arr(2).asInstanceOf[Int],
+            referenceorderid = arr(3).asInstanceOf[Int],
+            referenceorderlineid = arr(4).asInstanceOf[Int],
+            transactiondate = arr(5).asInstanceOf[TypoLocalDateTime],
+            transactiontype = arr(6).asInstanceOf[/* bpchar, max 1 chars */ String],
+            quantity = arr(7).asInstanceOf[Int],
+            actualcost = arr(8).asInstanceOf[BigDecimal],
+            modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

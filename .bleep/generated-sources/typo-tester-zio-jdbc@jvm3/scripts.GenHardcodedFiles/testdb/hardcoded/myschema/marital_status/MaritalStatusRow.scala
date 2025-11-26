@@ -13,28 +13,36 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: myschema.marital_status
-    Primary key: id */
-case class MaritalStatusRow(
-  id: MaritalStatusId
-)
+ * Primary key: id
+ */
+case class MaritalStatusRow(id: MaritalStatusId)
 
 object MaritalStatusRow {
   given jdbcDecoder: JdbcDecoder[MaritalStatusRow] = MaritalStatusId.jdbcDecoder.map(v => MaritalStatusRow(id = v))
-  given jsonDecoder: JsonDecoder[MaritalStatusRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using MaritalStatusId.jsonDecoder))
-    if (id.isRight)
-      Right(MaritalStatusRow(id = id.toOption.get))
-    else Left(List[Either[String, Any]](id).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[MaritalStatusRow] = new JsonEncoder[MaritalStatusRow] {
-    override def unsafeEncode(a: MaritalStatusRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      MaritalStatusId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write("}")
+
+  given jsonDecoder: JsonDecoder[MaritalStatusRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using MaritalStatusId.jsonDecoder))
+      if (id.isRight)
+        Right(MaritalStatusRow(id = id.toOption.get))
+      else Left(List[Either[String, Any]](id).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[MaritalStatusRow] = Text.instance[MaritalStatusRow]{ (row, sb) =>
-    MaritalStatusId.text.unsafeEncode(row.id, sb)
+
+  given jsonEncoder: JsonEncoder[MaritalStatusRow] = {
+    new JsonEncoder[MaritalStatusRow] {
+      override def unsafeEncode(a: MaritalStatusRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        MaritalStatusId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[MaritalStatusRow] = {
+    Text.instance[MaritalStatusRow]{ (row, sb) =>
+      MaritalStatusId.pgText.unsafeEncode(row.id, sb)
+    }
   }
 }

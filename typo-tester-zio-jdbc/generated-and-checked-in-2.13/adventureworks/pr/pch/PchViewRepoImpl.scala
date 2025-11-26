@@ -6,16 +6,12 @@
 package adventureworks.pr.pch
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PchViewRepoImpl extends PchViewRepo {
-  override def select: SelectBuilder[PchViewFields, PchViewRow] = {
-    SelectBuilderSql(""""pr"."pch"""", PchViewFields.structure, PchViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, PchViewRow] = {
-    sql"""select "id", "productid", "startdate"::text, "enddate"::text, "standardcost", "modifieddate"::text from "pr"."pch"""".query(PchViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[PchViewFields, PchViewRow] = SelectBuilder.of(""""pr"."pch"""", PchViewFields.structure, PchViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, PchViewRow] = sql"""select "id", "productid", "startdate"::text, "enddate"::text, "standardcost", "modifieddate"::text from "pr"."pch"""".query(PchViewRow.jdbcDecoder).selectStream()
 }

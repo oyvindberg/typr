@@ -6,6 +6,7 @@
 package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
@@ -16,32 +17,31 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.salesorderheadersalesreason` which has not been persisted yet */
 case class SalesorderheadersalesreasonRowUnsaved(
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
-      Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
+   * Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]]
+   */
   salesorderid: SalesorderheaderId,
   /** Primary key. Foreign key to SalesReason.SalesReasonID.
-      Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]] */
+   * Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]]
+   */
   salesreasonid: SalesreasonId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): SalesorderheadersalesreasonRow =
-    SalesorderheadersalesreasonRow(
-      salesorderid = salesorderid,
-      salesreasonid = salesreasonid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): SalesorderheadersalesreasonRow = new SalesorderheadersalesreasonRow(salesorderid = salesorderid, salesreasonid = salesreasonid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object SalesorderheadersalesreasonRowUnsaved {
   implicit lazy val decoder: Decoder[SalesorderheadersalesreasonRowUnsaved] = Decoder.forProduct3[SalesorderheadersalesreasonRowUnsaved, SalesorderheaderId, SalesreasonId, Defaulted[TypoLocalDateTime]]("salesorderid", "salesreasonid", "modifieddate")(SalesorderheadersalesreasonRowUnsaved.apply)(SalesorderheaderId.decoder, SalesreasonId.decoder, Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[SalesorderheadersalesreasonRowUnsaved] = Encoder.forProduct3[SalesorderheadersalesreasonRowUnsaved, SalesorderheaderId, SalesreasonId, Defaulted[TypoLocalDateTime]]("salesorderid", "salesreasonid", "modifieddate")(x => (x.salesorderid, x.salesreasonid, x.modifieddate))(SalesorderheaderId.encoder, SalesreasonId.encoder, Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[SalesorderheadersalesreasonRowUnsaved] = Text.instance[SalesorderheadersalesreasonRowUnsaved]{ (row, sb) =>
-    SalesorderheaderId.text.unsafeEncode(row.salesorderid, sb)
-    sb.append(Text.DELIMETER)
-    SalesreasonId.text.unsafeEncode(row.salesreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[SalesorderheadersalesreasonRowUnsaved] = {
+    Text.instance[SalesorderheadersalesreasonRowUnsaved]{ (row, sb) =>
+      SalesorderheaderId.pgText.unsafeEncode(row.salesorderid, sb)
+      sb.append(Text.DELIMETER)
+      SalesreasonId.pgText.unsafeEncode(row.salesreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

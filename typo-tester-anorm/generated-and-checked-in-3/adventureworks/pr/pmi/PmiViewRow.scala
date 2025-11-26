@@ -29,30 +29,38 @@ case class PmiViewRow(
 )
 
 object PmiViewRow {
-  given reads: Reads[PmiViewRow] = Reads[PmiViewRow](json => JsResult.fromTry(
-      Try(
-        PmiViewRow(
-          productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
-          illustrationid = json.\("illustrationid").as(IllustrationId.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PmiViewRow] = {
+    Reads[PmiViewRow](json => JsResult.fromTry(
+        Try(
+          PmiViewRow(
+            productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
+            illustrationid = json.\("illustrationid").as(IllustrationId.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PmiViewRow] = RowParser[PmiViewRow] { row =>
-    Success(
-      PmiViewRow(
-        productmodelid = row(idx + 0)(using ProductmodelId.column),
-        illustrationid = row(idx + 1)(using IllustrationId.column),
-        modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PmiViewRow] = OWrites[PmiViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
-      "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PmiViewRow] = {
+    RowParser[PmiViewRow] { row =>
+      Success(
+        PmiViewRow(
+          productmodelid = row(idx + 0)(using ProductmodelId.column),
+          illustrationid = row(idx + 1)(using IllustrationId.column),
+          modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PmiViewRow] = {
+    OWrites[PmiViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
+        "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

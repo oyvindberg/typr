@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `person.phonenumbertype` */
-case class PhonenumbertypeId(value: Int) extends AnyVal
+case class PhonenumbertypeId(value: Int) extends scala.AnyVal
+
 object PhonenumbertypeId {
   given arrayJdbcDecoder: JdbcDecoder[Array[PhonenumbertypeId]] = adventureworks.IntArrayDecoder.map(_.map(PhonenumbertypeId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[PhonenumbertypeId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[PhonenumbertypeId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[PhonenumbertypeId, Int] = Bijection[PhonenumbertypeId, Int](_.value)(PhonenumbertypeId.apply)
+
+  given bijection: Bijection[PhonenumbertypeId, Int] = Bijection.apply[PhonenumbertypeId, Int](_.value)(PhonenumbertypeId.apply)
+
   given jdbcDecoder: JdbcDecoder[PhonenumbertypeId] = JdbcDecoder.intDecoder.map(PhonenumbertypeId.apply)
+
   given jdbcEncoder: JdbcEncoder[PhonenumbertypeId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[PhonenumbertypeId] = JsonDecoder.int.map(PhonenumbertypeId.apply)
+
   given jsonEncoder: JsonEncoder[PhonenumbertypeId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[PhonenumbertypeId] = PGType.PGTypeInt.as
-  given setter: Setter[PhonenumbertypeId] = Setter.intSetter.contramap(_.value)
-  given text: Text[PhonenumbertypeId] = new Text[PhonenumbertypeId] {
-    override def unsafeEncode(v: PhonenumbertypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: PhonenumbertypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[PhonenumbertypeId] = {
+    new Text[PhonenumbertypeId] {
+      override def unsafeEncode(v: PhonenumbertypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: PhonenumbertypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[PhonenumbertypeId] = PGType.PGTypeInt.as
+
+  given setter: Setter[PhonenumbertypeId] = Setter.intSetter.contramap(_.value)
 }

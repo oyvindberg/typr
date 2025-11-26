@@ -4,31 +4,32 @@ package codegen
 
 import typo.internal.analysis.MaybeReturnsRows
 
-class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean, default: ComputedDefault, enableStreamingInserts: Boolean, dialect: Dialect) extends DbLib {
-  private val ZConnection = sc.Type.Qualified("zio.jdbc.ZConnection")
-  private val Throwable = sc.Type.Qualified("java.lang.Throwable")
-  private val ZStream = sc.Type.Qualified("zio.stream.ZStream")
-  private val ZIO = sc.Type.Qualified("zio.ZIO")
-  private val JdbcEncoder = sc.Type.Qualified("zio.jdbc.JdbcEncoder")
-  private val JdbcDecoder = sc.Type.Qualified("zio.jdbc.JdbcDecoder")
-  private val SqlFragment = sc.Type.Qualified("zio.jdbc.SqlFragment")
-  private val Segment = sc.Type.Qualified("zio.jdbc.SqlFragment.Segment")
-  private val Setter = sc.Type.Qualified("zio.jdbc.SqlFragment.Setter")
-  private val UpdateResult = sc.Type.Qualified("zio.jdbc.UpdateResult")
-  private val Chunk = sc.Type.Qualified("zio.Chunk")
-  private val NonEmptyChunk = sc.Type.Qualified("zio.NonEmptyChunk")
-  private val sqlInterpolator = sc.Type.Qualified("zio.jdbc.sqlInterpolator")
-  private val JdbcDecoderError = sc.Type.Qualified("zio.jdbc.JdbcDecoderError")
+class DbLibZioJdbc(pkg: jvm.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean, default: ComputedDefault, enableStreamingInserts: Boolean, override val lang: LangScala) extends DbLib {
+  val dialect = lang.dialect
+  private val ZConnection = jvm.Type.Qualified("zio.jdbc.ZConnection")
+  private val Throwable = jvm.Type.Qualified("java.lang.Throwable")
+  private val ZStream = jvm.Type.Qualified("zio.stream.ZStream")
+  private val ZIO = jvm.Type.Qualified("zio.ZIO")
+  private val JdbcEncoder = jvm.Type.Qualified("zio.jdbc.JdbcEncoder")
+  private val JdbcDecoder = jvm.Type.Qualified("zio.jdbc.JdbcDecoder")
+  private val SqlFragment = jvm.Type.Qualified("zio.jdbc.SqlFragment")
+  private val Segment = jvm.Type.Qualified("zio.jdbc.SqlFragment.Segment")
+  private val Setter = jvm.Type.Qualified("zio.jdbc.SqlFragment.Setter")
+  private val UpdateResult = jvm.Type.Qualified("zio.jdbc.UpdateResult")
+  private val Chunk = jvm.Type.Qualified("zio.Chunk")
+  private val NonEmptyChunk = jvm.Type.Qualified("zio.NonEmptyChunk")
+  private val sqlInterpolator = jvm.Type.Qualified("zio.jdbc.sqlInterpolator")
+  private val JdbcDecoderError = jvm.Type.Qualified("zio.jdbc.JdbcDecoderError")
 
   val textSupport: Option[DbLibTextSupport] =
-    if (enableStreamingInserts) Some(new DbLibTextSupport(pkg, inlineImplicits, None, default, dialect)) else None
+    if (enableStreamingInserts) Some(new DbLibTextSupport(pkg, inlineImplicits, None, default, lang)) else None
 
-  override val additionalFiles: List[typo.sc.File] =
+  override val additionalFiles: List[typo.jvm.File] =
     textSupport match {
       case Some(textSupport) =>
         List(
-          sc.File(textSupport.Text, DbLibTextImplementations.Text(dialect), Nil, scope = Scope.Main),
-          sc.File(textSupport.streamingInsert, DbLibTextImplementations.streamingInsertZio(textSupport.Text, dialect), Nil, scope = Scope.Main)
+          jvm.File(textSupport.Text, DbLibTextImplementations.Text(dialect), Nil, scope = Scope.Main),
+          jvm.File(textSupport.streamingInsert, DbLibTextImplementations.streamingInsertZio(textSupport.Text, dialect), Nil, scope = Scope.Main)
         )
       case None => Nil
     }
@@ -38,49 +39,49 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
     *
     * A bit unfortunate maybe, but it's not the end of the world to provide it ourselves.
     */
-  private val PGType = sc.Type.Qualified("typo.dsl.PGType")
+  private val PGType = jvm.Type.Qualified("typo.dsl.PGType")
 
-  def ifDsl(g: sc.Given): Option[sc.Given] =
+  def ifDsl(g: jvm.Given): Option[jvm.Given] =
     if (dslEnabled) Some(g) else None
 
-  private def SQL(content: sc.Code) = sc.StringInterpolate(sqlInterpolator, sc.Ident("sql"), content)
+  private def SQL(content: jvm.Code) = jvm.StringInterpolate(sqlInterpolator, jvm.Ident("sql"), content)
 
-  private val arraySetterName: sc.Ident = sc.Ident("arraySetter")
-  private val arrayJdbcDecoderName: sc.Ident = sc.Ident("arrayJdbcDecoder")
-  private val arrayJdbcEncoderName: sc.Ident = sc.Ident("arrayJdbcEncoder")
-  private val jdbcDecoderName: sc.Ident = sc.Ident("jdbcDecoder")
-  private val jdbcEncoderName: sc.Ident = sc.Ident("jdbcEncoder")
-  private val setterName: sc.Ident = sc.Ident("setter")
-  private val pgTypeName: sc.Ident = sc.Ident("pgType")
+  private val arraySetterName: jvm.Ident = jvm.Ident("arraySetter")
+  private val arrayJdbcDecoderName: jvm.Ident = jvm.Ident("arrayJdbcDecoder")
+  private val arrayJdbcEncoderName: jvm.Ident = jvm.Ident("arrayJdbcEncoder")
+  private val jdbcDecoderName: jvm.Ident = jvm.Ident("jdbcDecoder")
+  private val jdbcEncoderName: jvm.Ident = jvm.Ident("jdbcEncoder")
+  private val setterName: jvm.Ident = jvm.Ident("setter")
+  private val pgTypeName: jvm.Ident = jvm.Ident("pgType")
 
-  private def dbNames(cols: NonEmptyList[ComputedColumn], isRead: Boolean): sc.Code =
+  private def dbNames(cols: NonEmptyList[ComputedColumn], isRead: Boolean): jvm.Code =
     cols
-      .map(c => code"${c.dbName}" ++ (if (isRead) SqlCast.fromPgCode(c) else sc.Code.Empty))
+      .map(c => code"${c.dbName}" ++ (if (isRead) SqlCast.fromPgCode(c) else jvm.Code.Empty))
       .mkCode(", ")
 
-  private val missingInstancesByType: Map[sc.Type, sc.QIdent] =
-    missingInstances.collect { case x: sc.Given => (x.tpe, pkg / x.name) }.toMap
+  private val missingInstancesByType: Map[jvm.Type, jvm.QIdent] =
+    missingInstances.collect { case x: jvm.Given => (x.tpe, pkg / x.name) }.toMap
 
   /** Resolve known implicits at generation-time instead of at compile-time */
-  private def lookupJdbcDecoder(tpe: sc.Type): sc.Code =
+  private def lookupJdbcDecoder(tpe: jvm.Type): jvm.Code =
     if (!inlineImplicits) JdbcDecoder.of(tpe)
     else
-      sc.Type.base(tpe) match {
-        case TypesScala.BigDecimal            => code"$JdbcDecoder.bigDecimalDecoderScala"
-        case TypesScala.Boolean               => code"$JdbcDecoder.booleanDecoder"
-        case TypesScala.Byte                  => code"$JdbcDecoder.byteDecoder"
-        case TypesScala.Double                => code"$JdbcDecoder.doubleDecoder"
-        case TypesScala.Float                 => code"$JdbcDecoder.floatDecoder"
-        case TypesScala.Int                   => code"$JdbcDecoder.intDecoder"
-        case TypesScala.Long                  => code"$JdbcDecoder.longDecoder"
-        case TypesJava.String                 => code"$JdbcDecoder.stringDecoder"
-        case TypesJava.UUID                   => code"$JdbcDecoder.uuidDecoder"
-        case TypesScala.Optional(targ)        => code"$JdbcDecoder.optionDecoder(${dialect.usingCall}${lookupJdbcDecoder(targ)})"
-        case sc.Type.ArrayOf(TypesScala.Byte) => code"$JdbcDecoder.byteArrayDecoder"
+      jvm.Type.base(tpe) match {
+        case TypesScala.BigDecimal             => code"$JdbcDecoder.bigDecimalDecoderScala"
+        case TypesScala.Boolean                => code"$JdbcDecoder.booleanDecoder"
+        case TypesScala.Byte                   => code"$JdbcDecoder.byteDecoder"
+        case TypesScala.Double                 => code"$JdbcDecoder.doubleDecoder"
+        case TypesScala.Float                  => code"$JdbcDecoder.floatDecoder"
+        case TypesScala.Int                    => code"$JdbcDecoder.intDecoder"
+        case TypesScala.Long                   => code"$JdbcDecoder.longDecoder"
+        case TypesJava.String                  => code"$JdbcDecoder.stringDecoder"
+        case TypesJava.UUID                    => code"$JdbcDecoder.uuidDecoder"
+        case lang.Optional(targ)               => code"$JdbcDecoder.optionDecoder(${dialect.usingCall}${lookupJdbcDecoder(targ)})"
+        case jvm.Type.ArrayOf(TypesScala.Byte) => code"$JdbcDecoder.byteArrayDecoder"
         // generated type
-        case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
+        case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
           code"$x.$jdbcDecoderName"
-        case sc.Type.ArrayOf(targ: sc.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
+        case jvm.Type.ArrayOf(targ: jvm.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
           code"$targ.$arrayJdbcDecoderName"
         case x if missingInstancesByType.contains(JdbcDecoder.of(x)) =>
           code"${missingInstancesByType(JdbcDecoder.of(x))}"
@@ -89,25 +90,25 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
       }
 
   /** Resolve known implicits at generation-time instead of at compile-time */
-  private def lookupJdbcEncoder(tpe: sc.Type): sc.Code =
+  private def lookupJdbcEncoder(tpe: jvm.Type): jvm.Code =
     if (!inlineImplicits) JdbcEncoder.of(tpe)
     else
-      sc.Type.base(tpe) match {
-        case TypesScala.BigDecimal            => code"$JdbcEncoder.bigDecimalEncoderScala"
-        case TypesScala.Boolean               => code"$JdbcEncoder.booleanEncoder"
-        case TypesScala.Byte                  => code"$JdbcEncoder.byteEncoder"
-        case TypesScala.Double                => code"$JdbcEncoder.doubleEncoder"
-        case TypesScala.Float                 => code"$JdbcEncoder.floatEncoder"
-        case TypesScala.Int                   => code"$JdbcEncoder.intEncoder"
-        case TypesScala.Long                  => code"$JdbcEncoder.longEncoder"
-        case TypesJava.String                 => code"$JdbcEncoder.stringEncoder"
-        case TypesJava.UUID                   => code"$JdbcEncoder.uuidEncoder"
-        case TypesScala.Optional(targ)        => code"$JdbcEncoder.optionEncoder(${dialect.usingCall}${lookupJdbcEncoder(targ)})"
-        case sc.Type.ArrayOf(TypesScala.Byte) => code"$JdbcEncoder.byteArrayEncoder"
+      jvm.Type.base(tpe) match {
+        case TypesScala.BigDecimal             => code"$JdbcEncoder.bigDecimalEncoderScala"
+        case TypesScala.Boolean                => code"$JdbcEncoder.booleanEncoder"
+        case TypesScala.Byte                   => code"$JdbcEncoder.byteEncoder"
+        case TypesScala.Double                 => code"$JdbcEncoder.doubleEncoder"
+        case TypesScala.Float                  => code"$JdbcEncoder.floatEncoder"
+        case TypesScala.Int                    => code"$JdbcEncoder.intEncoder"
+        case TypesScala.Long                   => code"$JdbcEncoder.longEncoder"
+        case TypesJava.String                  => code"$JdbcEncoder.stringEncoder"
+        case TypesJava.UUID                    => code"$JdbcEncoder.uuidEncoder"
+        case lang.Optional(targ)               => code"$JdbcEncoder.optionEncoder(${dialect.usingCall}${lookupJdbcEncoder(targ)})"
+        case jvm.Type.ArrayOf(TypesScala.Byte) => code"$JdbcEncoder.byteArrayEncoder"
         // generated type
-        case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
+        case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
           code"$x.$jdbcEncoderName"
-        case sc.Type.ArrayOf(targ: sc.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
+        case jvm.Type.ArrayOf(targ: jvm.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
           code"$targ.$arrayJdbcEncoderName"
         case x if missingInstancesByType.contains(JdbcDecoder.of(x)) =>
           code"${missingInstancesByType(JdbcEncoder.of(x))}"
@@ -116,25 +117,25 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
       }
 
   /** Resolve known implicits at generation-time instead of at compile-time */
-  private def lookupSetter(tpe: sc.Type): sc.Code =
+  private def lookupSetter(tpe: jvm.Type): jvm.Code =
     if (!inlineImplicits) Setter.of(tpe)
     else
-      sc.Type.base(tpe) match {
-        case TypesScala.BigDecimal            => code"$Setter.bigDecimalScalaSetter"
-        case TypesScala.Boolean               => code"$Setter.booleanSetter"
-        case TypesScala.Byte                  => code"$Setter.byteSetter"
-        case TypesScala.Double                => code"$Setter.doubleSetter"
-        case TypesScala.Float                 => code"$Setter.floatSetter"
-        case TypesScala.Int                   => code"$Setter.intSetter"
-        case TypesScala.Long                  => code"$Setter.longSetter"
-        case TypesJava.String                 => code"$Setter.stringSetter"
-        case TypesJava.UUID                   => code"$Setter.uuidParamSetter"
-        case TypesScala.Optional(targ)        => code"$Setter.optionParamSetter(${dialect.usingCall}${lookupSetter(targ)})"
-        case sc.Type.ArrayOf(TypesScala.Byte) => code"$Setter.byteArraySetter"
+      jvm.Type.base(tpe) match {
+        case TypesScala.BigDecimal             => code"$Setter.bigDecimalScalaSetter"
+        case TypesScala.Boolean                => code"$Setter.booleanSetter"
+        case TypesScala.Byte                   => code"$Setter.byteSetter"
+        case TypesScala.Double                 => code"$Setter.doubleSetter"
+        case TypesScala.Float                  => code"$Setter.floatSetter"
+        case TypesScala.Int                    => code"$Setter.intSetter"
+        case TypesScala.Long                   => code"$Setter.longSetter"
+        case TypesJava.String                  => code"$Setter.stringSetter"
+        case TypesJava.UUID                    => code"$Setter.uuidParamSetter"
+        case lang.Optional(targ)               => code"$Setter.optionParamSetter(${dialect.usingCall}${lookupSetter(targ)})"
+        case jvm.Type.ArrayOf(TypesScala.Byte) => code"$Setter.byteArraySetter"
         // generated type
-        case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
+        case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
           code"$tpe.$setterName"
-        case sc.Type.ArrayOf(targ: sc.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
+        case jvm.Type.ArrayOf(targ: jvm.Type.Qualified) if targ.value.idents.startsWith(pkg.idents) =>
           code"$targ.$arraySetterName"
         case x if missingInstancesByType.contains(Setter.of(x)) =>
           code"${missingInstancesByType(Setter.of(x))}"
@@ -143,10 +144,10 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
       }
 
   /** Resolve known implicits at generation-time instead of at compile-time */
-  def lookupPgTypeFor(tpe: sc.Type): sc.Code =
-    if (!inlineImplicits) sc.Summon(PGType.of(tpe)).code
+  def lookupPgTypeFor(tpe: jvm.Type): jvm.Code =
+    if (!inlineImplicits) jvm.Summon(PGType.of(tpe)).code
     else
-      sc.Type.base(tpe) match {
+      jvm.Type.base(tpe) match {
         case TypesScala.BigDecimal => code"$PGType.PGTypeBigDecimal"
         case TypesScala.Boolean    => code"$PGType.PGTypeBoolean"
         case TypesScala.Double     => code"$PGType.PGTypeDouble"
@@ -157,24 +158,24 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         case TypesJava.UUID        => code"$PGType.PGTypeUUID"
         //        case ScalaTypes.Optional(targ) => lookupParameterMetaDataFor(targ)
         // generated type
-        case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
+        case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
           code"$tpe.$pgTypeName"
         // customized type mapping
         case x if missingInstancesByType.contains(PGType.of(x)) =>
           code"${missingInstancesByType(PGType.of(x))}"
-        case sc.Type.ArrayOf(TypesScala.Byte) => code"$PGType.PGTypeByteArray"
+        case jvm.Type.ArrayOf(TypesScala.Byte) => code"$PGType.PGTypeByteArray"
         // fallback array case.
-        case sc.Type.ArrayOf(targ) => code"$PGType.forArray(${dialect.usingCall}${lookupPgTypeFor(targ)})"
-        case other                 => sc.Summon(PGType.of(other)).code
+        case jvm.Type.ArrayOf(targ) => code"$PGType.forArray(${dialect.usingCall}${lookupPgTypeFor(targ)})"
+        case other                  => jvm.Summon(PGType.of(other)).code
       }
 
-  private def runtimeInterpolateValue(name: sc.Code, tpe: sc.Type): sc.Code = {
+  private def runtimeInterpolateValue(name: jvm.Code, tpe: jvm.Type): jvm.Code = {
     if (inlineImplicits)
       code"$${$Segment.paramSegment($name)(${dialect.usingCall}${lookupSetter(tpe)})}"
     else code"$${$name}"
   }
 
-  private def matchId(id: IdComputed): sc.Code =
+  private def matchId(id: IdComputed): jvm.Code =
     id match {
       case id: IdComputed.Unary =>
         code"${id.col.dbName} = ${runtimeInterpolateValue(id.paramName, id.tpe)}"
@@ -182,121 +183,126 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         code"${composite.cols.map(cc => code"${cc.dbName} = ${runtimeInterpolateValue(code"${composite.paramName}.${cc.name}", cc.tpe)}").mkCode(" AND ")}"
     }
 
-  override def resolveConstAs(tpe: sc.Type): sc.Code =
+  override def resolveConstAs(tpe: jvm.Type): jvm.Code =
     tpe match {
-      case TypesScala.Optional(underlying) =>
-        code"${sc.Type.dsl.ConstAsAs}[$underlying](${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
+      case lang.Optional(underlying) =>
+        code"${jvm.Type.dsl.ConstAsAs}[$underlying](${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
       case _ =>
-        code"${sc.Type.dsl.ConstAsAs}[$tpe](${dialect.usingCall}${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
+        code"${jvm.Type.dsl.ConstAsAs}[$tpe](${dialect.usingCall}${lookupJdbcEncoder(tpe)}, ${lookupPgTypeFor(tpe)})"
     }
 
-  override def repoSig(repoMethod: RepoMethod): Either[DbLib.NotImplementedFor, sc.Code] = {
-    val name = repoMethod.methodName
+  val batchSize = jvm.Param(jvm.Comments.Empty, jvm.Ident("batchSize"), TypesScala.Int, Some(code"10000"))
+
+  override def repoSig(repoMethod: RepoMethod): Either[DbLib.NotImplementedFor, jvm.Method] = {
+    def sig(params: List[jvm.Param[jvm.Type]], returnType: jvm.Type) = Right(
+      jvm.Method(
+        comments = repoMethod.comment,
+        tparams = Nil,
+        name = jvm.Ident(repoMethod.methodName),
+        params = params,
+        implicitParams = Nil,
+        tpe = returnType,
+        body = Nil
+      )
+    )
+
     repoMethod match {
       case RepoMethod.SelectBuilder(_, fieldsType, rowType) =>
-        Right(code"def $name: ${sc.Type.dsl.SelectBuilder.of(fieldsType, rowType)}")
+        sig(params = Nil, returnType = jvm.Type.dsl.SelectBuilder.of(fieldsType, rowType))
       case RepoMethod.SelectAll(_, _, rowType) =>
-        Right(code"def $name: ${ZStream.of(ZConnection, Throwable, rowType)}")
+        sig(params = Nil, returnType = ZStream.of(ZConnection, Throwable, rowType))
       case RepoMethod.SelectById(_, _, id, rowType) =>
-        Right(code"def $name(${id.param}): ${ZIO.of(ZConnection, Throwable, TypesScala.Option.of(rowType))}")
+        sig(params = List(id.param), returnType = ZIO.of(ZConnection, Throwable, TypesScala.Option.of(rowType)))
       case RepoMethod.SelectByIds(_, _, _, idsParam, rowType) =>
-        Right(code"def $name($idsParam): ${ZStream.of(ZConnection, Throwable, rowType)}")
+        sig(params = List(idsParam), returnType = ZStream.of(ZConnection, Throwable, rowType))
       case RepoMethod.SelectByIdsTracked(x) =>
-        val returnType = ZIO.of(ZConnection, Throwable, TypesScala.Map.of(x.idComputed.tpe, x.rowType))
-        Right(code"def $name(${x.idsParam}): $returnType")
+        sig(params = List(x.idsParam), returnType = ZIO.of(ZConnection, Throwable, TypesScala.Map.of(x.idComputed.tpe, x.rowType)))
       case RepoMethod.SelectByUnique(_, keyColumns, _, rowType) =>
-        Right(code"def $name(${keyColumns.map(_.param.code).mkCode(", ")}): ${ZIO.of(ZConnection, Throwable, TypesScala.Option.of(rowType))}")
+        sig(params = keyColumns.toList.map(_.param), returnType = ZIO.of(ZConnection, Throwable, TypesScala.Option.of(rowType)))
       case RepoMethod.SelectByFieldValues(_, _, _, fieldValueOrIdsParam, rowType) =>
-        Right(code"def $name($fieldValueOrIdsParam): ${ZStream.of(ZConnection, Throwable, rowType)}")
+        sig(params = List(fieldValueOrIdsParam), returnType = ZStream.of(ZConnection, Throwable, rowType))
       case RepoMethod.UpdateBuilder(_, fieldsType, rowType) =>
-        Right(code"def $name: ${sc.Type.dsl.UpdateBuilder.of(fieldsType, rowType)}")
+        sig(params = Nil, returnType = jvm.Type.dsl.UpdateBuilder.of(fieldsType, rowType))
       case RepoMethod.UpdateFieldValues(_, id, varargs, _, _, _) =>
-        Right(code"def $name(${id.param}, $varargs): ${ZIO.of(ZConnection, Throwable, TypesScala.Boolean)}")
+        sig(params = List(id.param, varargs), returnType = ZIO.of(ZConnection, Throwable, TypesScala.Boolean))
       case RepoMethod.Update(_, _, _, param, _) =>
-        Right(code"def $name($param): ${ZIO.of(ZConnection, Throwable, TypesScala.Option.of(param.tpe))}")
+        sig(params = List(param), returnType = ZIO.of(ZConnection, Throwable, TypesScala.Option.of(param.tpe)))
       case RepoMethod.Insert(_, _, unsavedParam, rowType, _) =>
-        Right(code"def $name($unsavedParam): ${ZIO.of(ZConnection, Throwable, rowType)}")
+        sig(params = List(unsavedParam), returnType = ZIO.of(ZConnection, Throwable, rowType))
       case RepoMethod.InsertUnsaved(_, _, _, unsavedParam, _, rowType) =>
-        Right(code"def $name($unsavedParam): ${ZIO.of(ZConnection, Throwable, rowType)}")
+        sig(params = List(unsavedParam), returnType = ZIO.of(ZConnection, Throwable, rowType))
       case RepoMethod.InsertStreaming(_, rowType, _) =>
-        val in = ZStream.of(ZConnection, TypesJava.Throwable, rowType)
-        val out = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long)
-        Right(code"def $name(unsaved: $in, batchSize: Int = 10000): $out")
+        val unsavedParam = jvm.Param(jvm.Ident("unsaved"), ZStream.of(ZConnection, TypesJava.Throwable, rowType))
+        sig(params = List(unsavedParam, batchSize), returnType = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long))
       case RepoMethod.UpsertBatch(_, _, _, _, _) =>
-//        val in = TypesScala.List.of(rowType)
-//        val out = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.List.of(rowType))
-//        Right(code"def $name(unsaved: $in): $out")
-        Left(DbLib.NotImplementedFor("zio-jdbc"))
+        Left(DbLib.NotImplementedFor(repoMethod, "zio-jdbc"))
       case RepoMethod.UpsertStreaming(_, _, rowType, _) =>
-        val in = ZStream.of(ZConnection, TypesJava.Throwable, rowType)
-        val out = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long)
-        Right(code"def $name(unsaved: $in, batchSize: Int = 10000): $out")
+        val unsavedParam = jvm.Param(jvm.Ident("unsaved"), ZStream.of(ZConnection, TypesJava.Throwable, rowType))
+        sig(params = List(unsavedParam, batchSize), returnType = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long))
       case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _) =>
-        Right(code"def $name($unsavedParam): ${ZIO.of(ZConnection, Throwable, UpdateResult.of(rowType))}")
+        sig(params = List(unsavedParam), returnType = ZIO.of(ZConnection, Throwable, UpdateResult.of(rowType)))
       case RepoMethod.InsertUnsavedStreaming(_, unsaved) =>
-        val in = ZStream.of(ZConnection, TypesJava.Throwable, unsaved.tpe)
-        val out = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long)
-        Right(code"def $name(unsaved: $in, batchSize: ${TypesScala.Int} = 10000): $out")
+        val unsavedParam = jvm.Param(jvm.Ident("unsaved"), ZStream.of(ZConnection, TypesJava.Throwable, unsaved.tpe))
+        sig(params = List(unsavedParam, batchSize), returnType = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long))
       case RepoMethod.DeleteBuilder(_, fieldsType, rowType) =>
-        Right(code"def $name: ${sc.Type.dsl.DeleteBuilder.of(fieldsType, rowType)}")
+        sig(params = Nil, returnType = jvm.Type.dsl.DeleteBuilder.of(fieldsType, rowType))
       case RepoMethod.Delete(_, id) =>
-        Right(code"def $name(${id.param}): ${ZIO.of(ZConnection, Throwable, TypesScala.Boolean)}")
+        sig(params = List(id.param), returnType = ZIO.of(ZConnection, Throwable, TypesScala.Boolean))
       case RepoMethod.DeleteByIds(_, _, idsParam) =>
-        Right(code"def $name(${idsParam}): ${ZIO.of(ZConnection, Throwable, TypesScala.Long)}")
+        sig(params = List(idsParam), returnType = ZIO.of(ZConnection, Throwable, TypesScala.Long))
       case RepoMethod.SqlFile(sqlScript) =>
-        val params = sc.Params(sqlScript.params.map(p => sc.Param(p.name, p.tpe, None)))
+        val params = sqlScript.params.map(p => jvm.Param(p.name, p.tpe))
 
         val retType = sqlScript.maybeRowName match {
           case MaybeReturnsRows.Query(rowName) => ZStream.of(ZConnection, Throwable, rowName)
           case MaybeReturnsRows.Update         => ZIO.of(ZConnection, Throwable, TypesScala.Long)
         }
-
-        Right(code"def $name$params: $retType")
+        sig(params = params, returnType = retType)
     }
   }
 
-  override def repoImpl(repoMethod: RepoMethod): sc.Code =
+  override def repoImpl(repoMethod: RepoMethod): List[jvm.Code] =
     repoMethod match {
       case RepoMethod.SelectBuilder(relName, fieldsType, rowType) =>
-        code"""${sc.Type.dsl.SelectBuilderSql}(${sc.StrLit(relName.quotedValue)}, $fieldsType.structure, ${lookupJdbcDecoder(rowType)})"""
+        List(code"""${jvm.Type.dsl.SelectBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, ${lookupJdbcDecoder(rowType)})""")
 
       case RepoMethod.SelectAll(relName, cols, rowType) =>
         val joinedColNames = dbNames(cols, isRead = true)
         val sql = SQL(code"""select $joinedColNames from $relName""")
-        code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectStream()"""
+        List(code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectStream()""")
 
       case RepoMethod.SelectById(relName, cols, id, rowType) =>
         val joinedColNames = dbNames(cols, isRead = true)
         val sql = SQL(code"""select $joinedColNames from $relName where ${matchId(id)}""")
-        code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectOne"""
+        List(code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectOne""")
 
       case RepoMethod.SelectByIds(relName, cols, computedId, idsParam, rowType) =>
         val joinedColNames = dbNames(cols, isRead = true)
         computedId match {
           case x: IdComputed.Composite =>
-            val vals = x.cols.map(col => code"val ${col.name} = ${idsParam.name}.map(_.${col.name})").mkCode("\n")
+            val vals = x.cols.map(col => code"val ${col.name} = ${idsParam.name}.map(_.${col.name})")
             val sql = SQL {
               code"""|select ${dbNames(cols, isRead = true)}
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, jvm.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
-            code"""|$vals
-                   |$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectStream()
-                   |""".stripMargin
+            vals.toList ++ List(code"$sql.query(using ${lookupJdbcDecoder(rowType)}).selectStream()")
 
           case unaryId: IdComputed.Unary =>
             val sql = SQL(
               code"""select $joinedColNames from $relName where ${unaryId.col.dbName} = ANY(${runtimeInterpolateValue(idsParam.name, idsParam.tpe)})"""
             )
-            code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectStream()"""
+            List(code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectStream()""")
         }
       case RepoMethod.SelectByIdsTracked(x) =>
-        code"""|${x.methodName}(${x.idsParam.name}).runCollect.map { rows =>
-               |  val byId = rows.view.map(x => (x.${x.idComputed.paramName}, x)).toMap
-               |  ${x.idsParam.name}.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
-               |}""".stripMargin
+        List(
+          code"""|${x.methodName}(${x.idsParam.name}).runCollect.map { rows =>
+                 |  val byId = rows.view.map(x => (x.${x.idComputed.paramName}, x)).toMap
+                 |  ${x.idsParam.name}.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
+                 |}""".stripMargin
+        )
 
       case RepoMethod.SelectByUnique(relName, keyColumns, allCols, rowType) =>
         val sql = SQL {
@@ -305,30 +311,32 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                  |where ${keyColumns.map(c => code"${c.dbName} = ${runtimeInterpolateValue(c.name, c.tpe)}").mkCode(" AND ")}
                  |""".stripMargin
         }
-        code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectOne"""
+        List(code"""$sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectOne""")
 
       case RepoMethod.SelectByFieldValues(relName, cols, fieldValue, fieldValueOrIdsParam, rowType) =>
         val cases =
           cols.map { col =>
-            val fr = SQL(code"${col.dbName} = ${runtimeInterpolateValue(sc.Ident("value"), col.tpe)}")
+            val fr = SQL(code"${col.dbName} = ${runtimeInterpolateValue(jvm.Ident("value"), col.tpe)}")
             code"case $fieldValue.${col.name}(value) => $fr"
           }
 
-        code"""${fieldValueOrIdsParam.name} match {
-              |  case Nil      => selectAll
-              |  case nonEmpty =>
-              |    val wheres = $SqlFragment.empty.and(
-              |      nonEmpty.map {
-              |        ${cases.mkCode("\n")}
-              |      }
-              |    )
+        List(
+          code"""${fieldValueOrIdsParam.name} match {
+                |  case Nil      => selectAll
+                |  case nonEmpty =>
+                |    val wheres = $SqlFragment.empty.and(
+                |      nonEmpty.map {
+                |        ${cases.mkCode("\n")}
+                |      }
+                |    )
               |    ${SQL(code"""select ${dbNames(cols, isRead = true)} from $relName where $$wheres""")}.query(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).selectStream()
-              |}""".stripMargin
+                |}""".stripMargin
+        )
 
       case RepoMethod.UpdateFieldValues(relName, id, varargs, fieldValue, cases0, _) =>
-        val cases: NonEmptyList[sc.Code] =
+        val cases: NonEmptyList[jvm.Code] =
           cases0.map { col =>
-            val sql = SQL(code"${col.dbName} = ${runtimeInterpolateValue(sc.Ident("value"), col.tpe)}${SqlCast.toPgCode(col)}")
+            val sql = SQL(code"${col.dbName} = ${runtimeInterpolateValue(jvm.Ident("value"), col.tpe)}${SqlCast.toPgCode(col)}")
             code"case $fieldValue.${col.name}(value) => $sql"
           }
 
@@ -338,28 +346,31 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                  |where ${matchId(id)}
                  |""".stripMargin
         }
-
-        code"""$NonEmptyChunk.fromIterableOption(${varargs.name}) match {
-              |  case None           => $ZIO.succeed(false)
-              |  case Some(nonEmpty) =>
-              |    val updates = nonEmpty.map { ${cases.mkCode("\n")} }.mkFragment($SqlFragment(", "))
-              |    $sql.update.map(_ > 0)
-              |}""".stripMargin
+        List(
+          code"""$NonEmptyChunk.fromIterableOption(${varargs.name}) match {
+                |  case None           => $ZIO.succeed(false)
+                |  case Some(nonEmpty) =>
+                |    val updates = nonEmpty.map { ${cases.mkCode("\n")} }.mkFragment($SqlFragment(", "))
+                |    $sql.update.map(_ > 0)
+                |}""".stripMargin
+        )
 
       case RepoMethod.UpdateBuilder(relName, fieldsType, rowType) =>
-        code"${sc.Type.dsl.UpdateBuilder}(${sc.StrLit(relName.quotedValue)}, $fieldsType.structure, ${lookupJdbcDecoder(rowType)})"
+        List(code"${jvm.Type.dsl.UpdateBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, ${lookupJdbcDecoder(rowType)})")
 
       case RepoMethod.Update(relName, cols, id, param, writeableCols) =>
         val sql = SQL(
-          code"""update $relName
-                |set ${writeableCols.map { col => code"${col.dbName} = ${runtimeInterpolateValue(code"${param.name}.${col.name}", col.tpe)}${SqlCast.toPgCode(col)}" }.mkCode(",\n")}
+          code"""|update $relName
+                 |set ${writeableCols.map { col => code"${col.dbName} = ${runtimeInterpolateValue(code"${param.name}.${col.name}", col.tpe)}${SqlCast.toPgCode(col)}" }.mkCode(",\n")}
                 |where ${matchId(id)}
                 |returning ${dbNames(cols, isRead = true)}""".stripMargin
         )
-        code"""|val ${id.paramName} = ${param.name}.${id.paramName}
-               |$sql
+        List(
+          code"val ${id.paramName} = ${param.name}.${id.paramName}",
+          code"""|$sql
                |  .query(${dialect.usingCall}${lookupJdbcDecoder(param.tpe)})
-               |  .selectOne"""
+               |  .selectOne""".stripMargin
+        )
 
       case RepoMethod.InsertUnsaved(relName, cols, unsaved, unsavedParam, default, rowType) =>
         val cases0 = unsaved.normalColumns.map { col =>
@@ -369,9 +380,9 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         val cases1 = unsaved.defaultedCols.map { case ComputedRowUnsaved.DefaultedCol(col @ ComputedColumn(_, ident, _, _), origType) =>
           val setValue = SQL(code"${runtimeInterpolateValue(code"value: $origType", origType)}${SqlCast.toPgCode(col)}")
           code"""|${unsavedParam.name}.$ident match {
-                 |  case ${default.Defaulted}.${default.UseDefault} => None
+                 |  case ${default.Defaulted}.${default.UseDefault}() => None
                  |  case ${default.Defaulted}.${default.Provided}(value) => Some((${SQL(col.dbName)}, $setValue))
-                 |}"""
+                 |}""".stripMargin
         }
 
         val sqlEmpty = SQL {
@@ -379,20 +390,19 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                  |returning ${dbNames(cols, isRead = true)}
                  |""".stripMargin
         }
-
-        code"""|val fs = List(
-               |  ${(cases0 ++ cases1.toList).mkCode(",\n")}
-               |).flatten
-               |
-               |val q = if (fs.isEmpty) {
-               |  $sqlEmpty
-               |} else {
-               |  val names  = fs.map { case (n, _) => n }.mkFragment($SqlFragment(", "))
-               |  val values = fs.map { case (_, f) => f }.mkFragment($SqlFragment(", "))
-               |  ${SQL(code"insert into $relName($$names) values ($$values) returning ${dbNames(cols, isRead = true)}")}
-               |}
-               |q.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).map(_.updatedKeys.head)
-               |"""
+        List(
+          code"""|val fs = List(
+                 |  ${(cases0 ++ cases1.toList).mkCode(",\n")}
+                 |).flatten""".stripMargin,
+          code"""|val q = if (fs.isEmpty) {
+                 |  $sqlEmpty
+                 |} else {
+                 |  val names  = fs.map { case (n, _) => n }.mkFragment($SqlFragment(", "))
+                 |  val values = fs.map { case (_, f) => f }.mkFragment($SqlFragment(", "))
+                 |  ${SQL(code"insert into $relName($$names) values ($$values) returning ${dbNames(cols, isRead = true)}")}
+                 |}""".stripMargin,
+          code"q.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).map(_.updatedKeys.head)"
+        )
       case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
@@ -419,10 +429,10 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                  |returning ${dbNames(cols, isRead = true)}""".stripMargin
         }
 
-        code"$sql.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)})"
+        List(code"$sql.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)})")
 
       case RepoMethod.UpsertBatch(_, _, _, _, _) =>
-        "???"
+        List("???")
       case RepoMethod.UpsertStreaming(relName, id, rowType, writeableColumnsWithId) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
@@ -434,7 +444,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         }
         val tempTablename = s"${relName.name}_TEMP"
 
-        val copySql = sc.s(code"copy $tempTablename(${dbNames(writeableColumnsWithId, isRead = false)}) from stdin")
+        val copySql = lang.s(code"copy $tempTablename(${dbNames(writeableColumnsWithId, isRead = false)}) from stdin")
 
         val mergeSql = SQL {
           code"""|insert into $relName(${dbNames(writeableColumnsWithId, isRead = false)})
@@ -444,10 +454,12 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                  |;
                  |drop table $tempTablename;""".stripMargin
         }
-        code"""|val created = ${SQL(code"create temporary table $tempTablename (like $relName) on commit drop")}.execute
-               |val copied = ${textSupport.get.streamingInsert}($copySql, batchSize, unsaved)(${dialect.usingCall}${textSupport.get.lookupTextFor(rowType)})
-               |val merged = $mergeSql.update
-               |created *> copied *> merged""".stripMargin
+        List(
+          code"val created = ${SQL(code"create temporary table $tempTablename (like $relName) on commit drop")}.execute",
+          code"val copied = ${textSupport.get.streamingInsert}($copySql, batchSize, unsaved)(${dialect.usingCall}${textSupport.get.lookupTextFor(rowType)})",
+          code"val merged = $mergeSql.update",
+          code"created *> copied *> merged"
+        )
 
       case RepoMethod.Insert(relName, cols, unsavedParam, rowType, writeableColumnsWithId) =>
         val values = writeableColumnsWithId.map { c =>
@@ -460,44 +472,42 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                  |""".stripMargin
         }
 
-        code"$sql.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).map(_.updatedKeys.head)"
+        List(code"$sql.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).map(_.updatedKeys.head)")
       case RepoMethod.InsertStreaming(relName, rowType, writeableColumnsWithId) =>
-        val sql = sc.s(code"COPY $relName(${dbNames(writeableColumnsWithId, isRead = false)}) FROM STDIN")
-        code"${textSupport.get.streamingInsert}($sql, batchSize, unsaved)(${dialect.usingCall}${textSupport.get.lookupTextFor(rowType)})"
+        val sql = lang.s(code"COPY $relName(${dbNames(writeableColumnsWithId, isRead = false)}) FROM STDIN")
+        List(code"${textSupport.get.streamingInsert}($sql, batchSize, unsaved)(${dialect.usingCall}${textSupport.get.lookupTextFor(rowType)})")
       case RepoMethod.InsertUnsavedStreaming(relName, unsaved) =>
-        val sql = sc.s(code"COPY $relName(${dbNames(unsaved.unsavedCols, isRead = false)}) FROM STDIN (DEFAULT '${textSupport.get.DefaultValue}')")
-        code"${textSupport.get.streamingInsert}($sql, batchSize, unsaved)(${dialect.usingCall}${textSupport.get.lookupTextFor(unsaved.tpe)})"
+        val sql = lang.s(code"COPY $relName(${dbNames(unsaved.unsavedCols, isRead = false)}) FROM STDIN (DEFAULT '${DbLibTextSupport.DefaultValue}')")
+        List(code"${textSupport.get.streamingInsert}($sql, batchSize, unsaved)(${dialect.usingCall}${textSupport.get.lookupTextFor(unsaved.tpe)})")
 
-      case RepoMethod.DeleteBuilder(relName, fieldsType, _) =>
-        code"${sc.Type.dsl.DeleteBuilder}(${sc.StrLit(relName.quotedValue)}, $fieldsType.structure)"
+      case RepoMethod.DeleteBuilder(relName, fieldsType, rowType) =>
+        List(code"${jvm.Type.dsl.DeleteBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, ${lookupJdbcDecoder(rowType)})")
       case RepoMethod.Delete(relName, id) =>
         val sql = SQL(code"""delete from $relName where ${matchId(id)}""")
-        code"$sql.delete.map(_ > 0)"
+        List(code"$sql.delete.map(_ > 0)")
 
       case RepoMethod.DeleteByIds(relName, computedId, idsParam) =>
         computedId match {
           case x: IdComputed.Composite =>
-            val vals = x.cols.map(col => code"val ${col.name} = ${idsParam.name}.map(_.${col.name})").mkCode("\n")
+            val vals = x.cols.map(col => code"val ${col.name} = ${idsParam.name}.map(_.${col.name})")
             val sql = SQL {
               code"""|delete
                      |from $relName
                      |where (${x.cols.map(col => col.dbCol.name.code).mkCode(", ")})
-                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, sc.Type.ArrayOf(col.tpe))})").mkCode(", ")})
+                     |in (select ${x.cols.map(col => code"unnest(${runtimeInterpolateValue(col.name, jvm.Type.ArrayOf(col.tpe))})").mkCode(", ")})
                      |""".stripMargin
             }
-            code"""|$vals
-                   |$sql.delete
-                   |""".stripMargin
+            vals.toList ++ List(code"$sql.delete")
 
           case x: IdComputed.Unary =>
             val sql = SQL(
-              code"""delete from $relName where ${code"${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, sc.Type.ArrayOf(x.tpe))})"}"""
+              code"""delete from $relName where ${code"${x.col.dbName.code} = ANY(${runtimeInterpolateValue(idsParam.name, jvm.Type.ArrayOf(x.tpe))})"}"""
             )
-            code"$sql.delete"
+            List(code"$sql.delete")
         }
 
       case RepoMethod.SqlFile(sqlScript) =>
-        val renderedScript: sc.Code = sqlScript.sqlFile.decomposedSql.renderCode { (paramAtIndex: Int) =>
+        val renderedScript: jvm.Code = sqlScript.sqlFile.decomposedSql.renderCode { (paramAtIndex: Int) =>
           val param = sqlScript.params.find(_.indices.contains(paramAtIndex)).get
           val cast = SqlCast.toPg(param).fold("")(_.withColons)
           code"${runtimeInterpolateValue(param.name, param.tpe)}$cast"
@@ -507,11 +517,11 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
           rowName <- sqlScript.maybeRowName.toOption
         } yield {
           // this is necessary to make custom types work with sql scripts, unfortunately.
-          val renderedWithCasts: sc.Code =
+          val renderedWithCasts: jvm.Code =
             cols.toList.flatMap(c => SqlCast.fromPg(c.dbCol.tpe)) match {
               case Nil => renderedScript.code
               case _ =>
-                val row = sc.Ident("row")
+                val row = jvm.Ident("row")
 
                 code"""|with $row as (
                        |  $renderedScript
@@ -519,51 +529,52 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                        |select ${cols.map(c => code"$row.${c.dbCol.parsedName.originalName.code}${SqlCast.fromPgCode(c)}").mkCode(", ")}
                        |from $row""".stripMargin
             }
-
-          code"""|val sql =
-                 |  ${SQL(renderedWithCasts)}
-                 |sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowName)}).selectStream()""".stripMargin
+          List(
+            code"""|val sql =
+                   |  ${SQL(renderedWithCasts)}""".stripMargin,
+            code"sql.query(${dialect.usingCall}${lookupJdbcDecoder(rowName)}).selectStream()"
+          )
         }
         ret.getOrElse {
-          code"${SQL(renderedScript)}.update"
+          List(code"${SQL(renderedScript)}.update")
         }
     }
 
-  override def mockRepoImpl(id: IdComputed, repoMethod: RepoMethod, maybeToRow: Option[sc.Param]): sc.Code =
+  override def mockRepoImpl(id: IdComputed, repoMethod: RepoMethod, maybeToRow: Option[jvm.Param[jvm.Type.Function1]]): List[jvm.Code] =
     repoMethod match {
       case RepoMethod.SelectBuilder(_, fieldsType, _) =>
-        code"${sc.Type.dsl.SelectBuilderMock}($fieldsType.structure, $ZIO.succeed($Chunk.fromIterable(map.values)), ${sc.Type.dsl.SelectParams}.empty)"
+        List(code"${jvm.Type.dsl.SelectBuilderMock}($fieldsType.structure, $ZIO.succeed($Chunk.fromIterable(map.values)), ${jvm.Type.dsl.SelectParams}.empty)")
       case RepoMethod.SelectAll(_, _, _) =>
-        code"$ZStream.fromIterable(map.values)"
+        List(code"$ZStream.fromIterable(map.values)")
       case RepoMethod.SelectById(_, _, id, _) =>
-        code"$ZIO.succeed(map.get(${id.paramName}))"
+        List(code"$ZIO.succeed(map.get(${id.paramName}))")
       case RepoMethod.SelectByIds(_, _, _, idsParam, _) =>
-        code"$ZStream.fromIterable(${idsParam.name}.flatMap(map.get))"
+        List(code"$ZStream.fromIterable(${idsParam.name}.flatMap(map.get))")
       case RepoMethod.SelectByIdsTracked(x) =>
-        code"""|${x.methodName}(${x.idsParam.name}).runCollect.map { rows =>
+        List(code"""|${x.methodName}(${x.idsParam.name}).runCollect.map { rows =>
                |  val byId = rows.view.map(x => (x.${x.idComputed.paramName}, x)).toMap
                |  ${x.idsParam.name}.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
-               |}""".stripMargin
+               |}""".stripMargin)
       case RepoMethod.SelectByUnique(_, keyColumns, _, _) =>
-        code"$ZIO.succeed(map.values.find(v => ${keyColumns.map(c => code"${c.name} == v.${c.name}").mkCode(" && ")}))"
+        List(code"$ZIO.succeed(map.values.find(v => ${keyColumns.map(c => code"${c.name} == v.${c.name}").mkCode(" && ")}))")
 
       case RepoMethod.SelectByFieldValues(_, cols, fieldValue, fieldValueOrIdsParam, _) =>
         val cases = cols.map { col =>
           code"case (acc, $fieldValue.${col.name}(value)) => acc.filter(_.${col.name} == value)"
         }
-        code"""$ZStream.fromIterable {
+        List(code"""$ZStream.fromIterable {
               |  ${fieldValueOrIdsParam.name}.foldLeft(map.values) {
               |    ${cases.mkCode("\n")}
               |  }
-              |}""".stripMargin
+              |}""".stripMargin)
       case RepoMethod.UpdateBuilder(_, fieldsType, _) =>
-        code"${sc.Type.dsl.UpdateBuilderMock}(${sc.Type.dsl.UpdateParams}.empty, $fieldsType.structure, map)"
+        List(code"${jvm.Type.dsl.UpdateBuilderMock}(${jvm.Type.dsl.UpdateParams}.empty, $fieldsType.structure, map)")
       case RepoMethod.UpdateFieldValues(_, id, varargs, fieldValue, cases0, _) =>
         val cases = cases0.map { col =>
           code"case (acc, $fieldValue.${col.name}(value)) => acc.copy(${col.name} = value)"
         }
 
-        code"""|$ZIO.succeed {
+        List(code"""|$ZIO.succeed {
                |  map.get(${id.paramName}) match {
                |    case ${TypesScala.Some}(oldRow) =>
                |      val updatedRow = ${varargs.name}.foldLeft(oldRow) {
@@ -577,16 +588,16 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                |      }
                |    case ${TypesScala.None} => false
                |  }
-               |}""".stripMargin
+               |}""".stripMargin)
       case RepoMethod.Update(_, _, _, param, _) =>
-        code"""$ZIO.succeed {
+        List(code"""$ZIO.succeed {
               |  map.get(${param.name}.${id.paramName}).map { _ =>
               |    map.put(${param.name}.${id.paramName}, ${param.name}): @${TypesScala.nowarn}
               |    ${param.name}
               |  }
-              |}""".stripMargin
+              |}""".stripMargin)
       case RepoMethod.Insert(_, _, unsavedParam, _, _) =>
-        code"""|$ZIO.succeed {
+        List(code"""|$ZIO.succeed {
                |  val _ =
                |    if (map.contains(${unsavedParam.name}.${id.paramName}))
                |      sys.error(s"id $${${unsavedParam.name}.${id.paramName}} already exists")
@@ -594,94 +605,95 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                |      map.put(${unsavedParam.name}.${id.paramName}, ${unsavedParam.name})
                |
                |  ${unsavedParam.name}
-               |}"""
+               |}""")
       case RepoMethod.Upsert(_, _, _, unsavedParam, _, _) =>
-        code"""|$ZIO.succeed {
+        List(code"""|$ZIO.succeed {
                |  map.put(${unsavedParam.name}.${id.paramName}, ${unsavedParam.name}): @${TypesScala.nowarn}
                |  $UpdateResult(1, $Chunk.single(${unsavedParam.name}))
-               |}""".stripMargin
+               |}""".stripMargin)
       case RepoMethod.UpsertBatch(_, _, id, _, _) =>
-        code"""|ZIO.succeed {
+        List(code"""|ZIO.succeed {
                |  unsaved.map{ row =>
                |    map += (row.${id.paramName} -> row)
                |    row
                |  }
-               |}""".stripMargin
+               |}""".stripMargin)
       case RepoMethod.UpsertStreaming(_, _, _, _) =>
-        code"""|unsaved.scanZIO(0L) { case (acc, row) =>
+        List(code"""|unsaved.scanZIO(0L) { case (acc, row) =>
                |  ZIO.succeed {
                |    map += (row.${id.paramName} -> row)
                |    acc + 1
                |  }
-               |}.runLast.map(_.getOrElse(0L))""".stripMargin
+               |}.runLast.map(_.getOrElse(0L))""".stripMargin)
       case RepoMethod.InsertUnsaved(_, _, _, unsavedParam, _, _) =>
-        code"insert(${maybeToRow.get.name}(${unsavedParam.name}))"
+        List(code"insert(${maybeToRow.get.name}(${unsavedParam.name}))")
 
       case RepoMethod.DeleteBuilder(_, fieldsType, _) =>
-        code"${sc.Type.dsl.DeleteBuilderMock}(${sc.Type.dsl.DeleteParams}.empty, $fieldsType.structure, map)"
+        List(code"${jvm.Type.dsl.DeleteBuilderMock}(${jvm.Type.dsl.DeleteParams}.empty, $fieldsType.structure, map)")
       case RepoMethod.Delete(_, id) =>
-        code"$ZIO.succeed(map.remove(${id.paramName}).isDefined)"
+        List(code"$ZIO.succeed(map.remove(${id.paramName}).isDefined)")
       case RepoMethod.DeleteByIds(_, _, idsParam) =>
-        code"$ZIO.succeed(${idsParam.name}.map(id => map.remove(id)).count(_.isDefined).toLong)"
+        List(code"$ZIO.succeed(${idsParam.name}.map(id => map.remove(id)).count(_.isDefined).toLong)")
       case RepoMethod.InsertStreaming(_, _, _) =>
-        code"""|unsaved.scanZIO(0L) { case (acc, row) =>
+        List(code"""|unsaved.scanZIO(0L) { case (acc, row) =>
                |  ZIO.succeed {
                |    map += (row.${id.paramName} -> row)
                |    acc + 1
                |  }
-               |}.runLast.map(_.getOrElse(0L))""".stripMargin
+               |}.runLast.map(_.getOrElse(0L))""".stripMargin)
       case RepoMethod.InsertUnsavedStreaming(_, _) =>
-        code"""|unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
+        List(code"""|unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
                |  ZIO.succeed {
                |    val row = toRow(unsavedRow)
                |    map += (row.${id.paramName} -> row)
                |    acc + 1
                |  }
-               |}.runLast.map(_.getOrElse(0L))""".stripMargin
+               |}.runLast.map(_.getOrElse(0L))""".stripMargin)
       case RepoMethod.SqlFile(_) =>
         // should not happen (tm)
-        code"???"
+        List(code"???")
     }
 
-  override def testInsertMethod(x: ComputedTestInserts.InsertMethod): sc.Value =
-    sc.Value(
+  override def testInsertMethod(x: ComputedTestInserts.InsertMethod): jvm.Method =
+    jvm.Method(
+      comments = jvm.Comments.Empty,
       Nil,
       x.name,
       x.params,
       Nil,
       ZIO.of(ZConnection, Throwable, x.table.names.RowName),
-      code"(new ${x.table.names.RepoImplName}).insert(new ${x.cls}(${x.values.map { case (p, expr) => code"$p = $expr" }.mkCode(", ")}))"
+      List(code"(new ${x.table.names.RepoImplName}).insert(new ${x.cls}(${x.values.map { case (p, expr) => code"$p = $expr" }.mkCode(", ")}))")
     )
 
-  override val defaultedInstance: List[sc.Given] =
+  override val defaultedInstance: List[jvm.Given] =
     textSupport.map(_.defaultedInstance).toList
 
-  override def stringEnumInstances(wrapperType: sc.Type, underlying: sc.Type, sqlType: String, openEnum: Boolean): List[sc.ClassMember] = {
-    val sqlTypeLit = sc.StrLit(sqlType)
-    val arrayWrapper = sc.Type.ArrayOf(wrapperType)
-    val arraySetter = sc.Given(
+  override def stringEnumInstances(wrapperType: jvm.Type, underlying: jvm.Type, sqlType: String, openEnum: Boolean): List[jvm.ClassMember] = {
+    val sqlTypeLit = jvm.StrLit(sqlType)
+    val arrayWrapper = jvm.Type.ArrayOf(wrapperType)
+    val arraySetter = jvm.Given(
       tparams = Nil,
       name = arraySetterName,
       implicitParams = Nil,
       tpe = Setter.of(arrayWrapper),
       body =
-        if (openEnum) code"${lookupSetter(sc.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"
+        if (openEnum) code"${lookupSetter(jvm.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"
         else code"""|$Setter.forSqlType[$arrayWrapper](
                     |    (ps, i, v) => ps.setArray(i, ps.getConnection.createArrayOf($sqlTypeLit, v.map(x => x.value))),
                     |    java.sql.Types.ARRAY
                     |  )""".stripMargin
     )
-    val arrayJdbcDecoder = sc.Given(
+    val arrayJdbcDecoder = jvm.Given(
       tparams = Nil,
       name = arrayJdbcDecoderName,
       implicitParams = Nil,
       tpe = JdbcDecoder.of(arrayWrapper),
       body =
         if (openEnum)
-          code"""${lookupJdbcDecoder(sc.Type.ArrayOf(underlying))}.map(a => if (a == null) null else a.map(apply))"""
-        else code"""${lookupJdbcDecoder(sc.Type.ArrayOf(underlying))}.map(a => if (a == null) null else a.map(force))"""
+          code"""${lookupJdbcDecoder(jvm.Type.ArrayOf(underlying))}.map(a => if (a == null) null else a.map(apply))"""
+        else code"""${lookupJdbcDecoder(jvm.Type.ArrayOf(underlying))}.map(a => if (a == null) null else a.map(force))"""
     )
-    val arrayJdbcEncoder = sc.Given(
+    val arrayJdbcEncoder = jvm.Given(
       tparams = Nil,
       name = arrayJdbcEncoderName,
       implicitParams = Nil,
@@ -689,7 +701,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
       // JdbcEncoder for unary types defined in terms of `Setter`
       body = code"""$JdbcEncoder.singleParamEncoder(${dialect.usingCall}${arraySetterName})"""
     )
-    val jdbcEncoder = sc.Given(
+    val jdbcEncoder = jvm.Given(
       tparams = Nil,
       name = jdbcEncoderName,
       implicitParams = Nil,
@@ -714,14 +726,14 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                   |    }
                   |  }
                   |}""".stripMargin
-      sc.Given(tparams = Nil, name = jdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(wrapperType), body = body)
+      jvm.Given(tparams = Nil, name = jdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(wrapperType), body = body)
     }
 
-    val setter = sc.Given(tparams = Nil, name = setterName, implicitParams = Nil, tpe = Setter.of(wrapperType), body = code"""${lookupSetter(underlying)}.contramap(_.value)""")
+    val setter = jvm.Given(tparams = Nil, name = setterName, implicitParams = Nil, tpe = Setter.of(wrapperType), body = code"""${lookupSetter(underlying)}.contramap(_.value)""")
 
     val parameterMetadata = {
       val body = code"$PGType.instance[$wrapperType](${sqlTypeLit}, ${TypesJava.SqlTypes}.OTHER)"
-      sc.Given(tparams = Nil, name = pgTypeName, implicitParams = Nil, tpe = PGType.of(wrapperType), body = body)
+      jvm.Given(tparams = Nil, name = pgTypeName, implicitParams = Nil, tpe = PGType.of(wrapperType), body = body)
     }
 
     val text = textSupport.map(_.anyValInstance(wrapperType, underlying))
@@ -738,10 +750,10 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
     ).flatten
   }
 
-  override def wrapperTypeInstances(wrapperType: sc.Type.Qualified, underlying: sc.Type, overrideDbType: Option[String]): List[sc.ClassMember] =
+  override def wrapperTypeInstances(wrapperType: jvm.Type.Qualified, underlying: jvm.Type, overrideDbType: Option[String]): List[jvm.ClassMember] =
     List(
       Option(
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
           name = jdbcEncoderName,
           implicitParams = Nil,
@@ -750,16 +762,16 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         )
       ),
       Option(
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
           name = arrayJdbcEncoderName,
           implicitParams = Nil,
-          tpe = JdbcEncoder.of(sc.Type.ArrayOf(wrapperType)),
-          body = code"""${lookupJdbcEncoder(sc.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"""
+          tpe = JdbcEncoder.of(jvm.Type.ArrayOf(wrapperType)),
+          body = code"""${lookupJdbcEncoder(jvm.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"""
         )
       ),
       Option(
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
           name = jdbcDecoderName,
           implicitParams = Nil,
@@ -768,34 +780,34 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
         )
       ),
       Option(
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
           name = arrayJdbcDecoderName,
           implicitParams = Nil,
-          tpe = JdbcDecoder.of(sc.Type.ArrayOf(wrapperType)),
-          body = code"""${lookupJdbcDecoder(sc.Type.ArrayOf(underlying))}.map(_.map($wrapperType.apply))"""
+          tpe = JdbcDecoder.of(jvm.Type.ArrayOf(wrapperType)),
+          body = code"""${lookupJdbcDecoder(jvm.Type.ArrayOf(underlying))}.map(_.map($wrapperType.apply))"""
         )
       ),
       Option(
-        sc.Given(tparams = Nil, name = setterName, implicitParams = Nil, tpe = Setter.of(wrapperType), body = code"""${lookupSetter(underlying)}.contramap(_.value)""")
+        jvm.Given(tparams = Nil, name = setterName, implicitParams = Nil, tpe = Setter.of(wrapperType), body = code"""${lookupSetter(underlying)}.contramap(_.value)""")
       ),
       Option(
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
           name = arraySetterName,
           implicitParams = Nil,
-          tpe = Setter.of(sc.Type.ArrayOf(wrapperType)),
-          body = code"""${lookupSetter(sc.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"""
+          tpe = Setter.of(jvm.Type.ArrayOf(wrapperType)),
+          body = code"""${lookupSetter(jvm.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"""
         )
       ),
       ifDsl(
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
           name = pgTypeName,
           implicitParams = Nil,
           tpe = PGType.of(wrapperType),
           body = overrideDbType match {
-            case Some(dbType) => code"PGType.instance(${sc.StrLit(dbType)}, ${TypesJava.SqlTypes}.OTHER)"
+            case Some(dbType) => code"PGType.instance(${jvm.StrLit(dbType)}, ${TypesJava.SqlTypes}.OTHER)"
             case None         => code"${lookupPgTypeFor(underlying)}.as"
           }
         )
@@ -803,16 +815,16 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
       textSupport.map(_.anyValInstance(wrapperType, underlying))
     ).flatten
 
-  override def missingInstances: List[sc.ClassMember] = {
+  override def missingInstances: List[jvm.ClassMember] = {
 
     /** Adapted from Quill implementation
       *
       * Works for primitive types but not for more complex types
       */
-    def primitiveArrayDecoder(T: sc.Type.Qualified) = {
+    def primitiveArrayDecoder(T: jvm.Type.Qualified) = {
       val body =
-        code"""|new ${JdbcDecoder.of(sc.Type.ArrayOf(T))} {
-               |  override def unsafeDecode(columIndex: ${TypesScala.Int}, rs: ${TypesJava.ResultSet}): (${TypesScala.Int}, ${sc.Type.ArrayOf(T)}) = {
+        code"""|new ${JdbcDecoder.of(jvm.Type.ArrayOf(T))} {
+               |  override def unsafeDecode(columIndex: ${TypesScala.Int}, rs: ${TypesJava.ResultSet}): (${TypesScala.Int}, ${jvm.Type.ArrayOf(T)}) = {
                |    val arr = rs.getArray(columIndex)
                |    if (arr eq null) columIndex -> null
                |    else {
@@ -837,58 +849,58 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                |    }
                |  }
                |}""".stripMargin
-      sc.Given(tparams = Nil, name = sc.Ident(s"${T.name.value}ArrayDecoder"), implicitParams = Nil, tpe = JdbcDecoder.of(sc.Type.ArrayOf(T)), body = body)
+      jvm.Given(tparams = Nil, name = jvm.Ident(s"${T.name.value}ArrayDecoder"), implicitParams = Nil, tpe = JdbcDecoder.of(jvm.Type.ArrayOf(T)), body = body)
     }
 
-    def primitiveArraySetter(T: sc.Type.Qualified, sqlType: sc.StrLit, asAnyRef: sc.Code => sc.Code) = {
-      val v = sc.Ident("v")
+    def primitiveArraySetter(T: jvm.Type.Qualified, sqlType: jvm.StrLit, asAnyRef: jvm.Code => jvm.Code) = {
+      val v = jvm.Ident("v")
       val body =
-        code"""|$Setter.forSqlType[${sc.Type.ArrayOf(T)}](
+        code"""|$Setter.forSqlType[${jvm.Type.ArrayOf(T)}](
                |  (ps, i, $v) => {
                |    ps.setArray(i, ps.getConnection.createArrayOf($sqlType, ${asAnyRef(v)}))
                |  },
                |  ${TypesJava.SqlTypes}.ARRAY
                |)""".stripMargin
-      sc.Given(tparams = Nil, name = sc.Ident(s"${T.name.value}ArraySetter"), implicitParams = Nil, tpe = Setter.of(sc.Type.ArrayOf(T)), body = body)
+      jvm.Given(tparams = Nil, name = jvm.Ident(s"${T.name.value}ArraySetter"), implicitParams = Nil, tpe = Setter.of(jvm.Type.ArrayOf(T)), body = body)
     }
 
-    def primitiveArrayEncoder(T: sc.Type.Qualified) = {
-      sc.Given(
+    def primitiveArrayEncoder(T: jvm.Type.Qualified) = {
+      jvm.Given(
         tparams = Nil,
-        name = sc.Ident(s"${T.name.value}ArrayEncoder"),
+        name = jvm.Ident(s"${T.name.value}ArrayEncoder"),
         implicitParams = Nil,
-        tpe = JdbcEncoder.of(sc.Type.ArrayOf(T)),
+        tpe = JdbcEncoder.of(jvm.Type.ArrayOf(T)),
         body = code"""$JdbcEncoder.singleParamEncoder(${dialect.usingCall}${T.name.value}ArraySetter)"""
       )
     }
 
     def ScalaBigDecimal =
       List(
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
-          name = sc.Ident("ScalaBigDecimalArrayEncoder"),
+          name = jvm.Ident("ScalaBigDecimalArrayEncoder"),
           implicitParams = Nil,
-          tpe = JdbcEncoder.of(sc.Type.ArrayOf(TypesScala.BigDecimal)),
+          tpe = JdbcEncoder.of(jvm.Type.ArrayOf(TypesScala.BigDecimal)),
           body = code"""BigDecimalArrayEncoder.contramap(_.map(_.bigDecimal))"""
         ),
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
-          name = sc.Ident("ScalaBigDecimalArrayDecoder"),
+          name = jvm.Ident("ScalaBigDecimalArrayDecoder"),
           implicitParams = Nil,
-          tpe = JdbcDecoder.of(sc.Type.ArrayOf(TypesScala.BigDecimal)),
+          tpe = JdbcDecoder.of(jvm.Type.ArrayOf(TypesScala.BigDecimal)),
           body = code"""BigDecimalArrayDecoder.map(v => if (v eq null) null else v.map(${TypesScala.BigDecimal}.apply))"""
         ),
-        sc.Given(
+        jvm.Given(
           tparams = Nil,
-          name = sc.Ident("ScalaBigDecimalArraySetter"),
+          name = jvm.Ident("ScalaBigDecimalArraySetter"),
           implicitParams = Nil,
-          tpe = Setter.of(sc.Type.ArrayOf(TypesScala.BigDecimal)),
+          tpe = Setter.of(jvm.Type.ArrayOf(TypesScala.BigDecimal)),
           body = code"""BigDecimalArraySetter.contramap(_.map(_.bigDecimal))"""
         )
       )
 
-    def all(T: sc.Type.Qualified, sqlType: String, asAnyRef: sc.Code => sc.Code) = {
-      List(primitiveArrayDecoder(T), primitiveArraySetter(T, sc.StrLit(sqlType), asAnyRef), primitiveArrayEncoder(T))
+    def all(T: jvm.Type.Qualified, sqlType: String, asAnyRef: jvm.Code => jvm.Code) = {
+      List(primitiveArrayDecoder(T), primitiveArraySetter(T, jvm.StrLit(sqlType), asAnyRef), primitiveArrayEncoder(T))
     }
 
     all(TypesJava.String, "varchar", array => code"$array.map(x => x: ${TypesScala.AnyRef})") ++
@@ -901,7 +913,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
       all(TypesScala.Boolean, "bool", array => code"$array.map(x => boolean2Boolean(x): ${TypesScala.AnyRef})")
   }
 
-  override def rowInstances(tpe: sc.Type, cols: NonEmptyList[ComputedColumn], rowType: DbLib.RowType): List[sc.ClassMember] = {
+  override def rowInstances(tpe: jvm.Type, cols: NonEmptyList[ComputedColumn], rowType: DbLib.RowType): List[jvm.ClassMember] = {
     val text = textSupport.map(_.rowInstance(tpe, cols))
     val decoder = {
       val body =
@@ -920,7 +932,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                  |      )
                  |}""".stripMargin
         }
-      sc.Given(tparams = Nil, name = jdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(tpe), body = body)
+      jvm.Given(tparams = Nil, name = jdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(tpe), body = body)
     }
     rowType match {
       case DbLib.RowType.Writable      => text.toList
@@ -929,12 +941,12 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
     }
   }
 
-  override def customTypeInstances(ct: CustomType): List[sc.ClassMember] =
+  override def customTypeInstances(ct: CustomType): List[jvm.ClassMember] =
     customTypeOne(ct) ++ (if (ct.forbidArray) Nil else customTypeArray(ct))
 
-  def customTypeOne(ct: CustomType): List[sc.Given] = {
+  def customTypeOne(ct: CustomType): List[jvm.Given] = {
 
-    val jdbcEncoder = sc.Given(
+    val jdbcEncoder = jvm.Given(
       tparams = Nil,
       name = jdbcEncoderName,
       implicitParams = Nil,
@@ -944,7 +956,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
     )
 
     val jdbcDecoder = {
-      val expectedType = sc.StrLit(ct.fromTypo.jdbcType.render(dialect).asString)
+      val expectedType = jvm.StrLit(ct.fromTypo.jdbcType.render(lang).asString)
       val body =
         code"""|${JdbcDecoder.of(ct.typoType)}(
                |  (rs: ${TypesJava.ResultSet}) => (i: ${TypesScala.Int}) => {
@@ -953,11 +965,11 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                |  },
                |  $expectedType
                |)""".stripMargin
-      sc.Given(tparams = Nil, name = jdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(ct.typoType), body = body)
+      jvm.Given(tparams = Nil, name = jdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(ct.typoType), body = body)
     }
 
     val setter = {
-      val v = sc.Ident("v")
+      val v = jvm.Ident("v")
       val body =
         code"""|$Setter.other(
                |  (ps, i, $v) => {
@@ -966,54 +978,54 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                |      ${ct.fromTypo0(v)}
                |    )
                |  },
-               |  ${sc.StrLit(ct.sqlType)}
+               |  ${jvm.StrLit(ct.sqlType)}
                |)""".stripMargin
-      sc.Given(tparams = Nil, name = setterName, implicitParams = Nil, tpe = Setter.of(ct.typoType), body = body)
+      jvm.Given(tparams = Nil, name = setterName, implicitParams = Nil, tpe = Setter.of(ct.typoType), body = body)
     }
 
     val pgType = {
-      val body = code"$PGType.instance[${ct.typoType}](${sc.StrLit(ct.sqlType)}, ${TypesJava.SqlTypes}.OTHER)"
-      sc.Given(Nil, pgTypeName, Nil, PGType.of(ct.typoType), body)
+      val body = code"$PGType.instance[${ct.typoType}](${jvm.StrLit(ct.sqlType)}, ${TypesJava.SqlTypes}.OTHER)"
+      jvm.Given(Nil, pgTypeName, Nil, PGType.of(ct.typoType), body)
     }
     val text = textSupport.map(_.customTypeInstance(ct))
 
     List(Option(jdbcEncoder), Option(jdbcDecoder), Option(setter), ifDsl(pgType), text).flatten
   }
 
-  def customTypeArray(ct: CustomType): List[sc.Given] = {
+  def customTypeArray(ct: CustomType): List[jvm.Given] = {
     val fromTypo = ct.fromTypoInArray.getOrElse(ct.fromTypo)
     val toTypo = ct.toTypoInArray.getOrElse(ct.toTypo)
-    val jdbcEncoder = sc.Given(
+    val jdbcEncoder = jvm.Given(
       tparams = Nil,
       name = arrayJdbcEncoderName,
       implicitParams = Nil,
-      tpe = JdbcEncoder.of(sc.Type.ArrayOf(ct.typoType)),
+      tpe = JdbcEncoder.of(jvm.Type.ArrayOf(ct.typoType)),
       // JdbcEncoder for unary types defined in terms of `Setter`
       body = code"""$JdbcEncoder.singleParamEncoder(${dialect.usingCall}${arraySetterName})"""
     )
 
     val jdbcDecoder = {
-      val expectedType = sc.StrLit(sc.Type.ArrayOf(ct.fromTypo.jdbcType).render(dialect).asString)
+      val expectedType = jvm.StrLit(jvm.Type.ArrayOf(ct.fromTypo.jdbcType).render(lang).asString)
       val body =
-        code"""|${JdbcDecoder.of(sc.Type.ArrayOf(ct.typoType))}((rs: ${TypesJava.ResultSet}) => (i: ${TypesScala.Int}) =>
+        code"""|${JdbcDecoder.of(jvm.Type.ArrayOf(ct.typoType))}((rs: ${TypesJava.ResultSet}) => (i: ${TypesScala.Int}) =>
                |  rs.getArray(i) match {
                |    case null => null
                |    case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => ${toTypo.toTypo(code"x.asInstanceOf[${toTypo.jdbcType}]", ct.typoType)})
                |  },
                |  $expectedType
                |)""".stripMargin
-      sc.Given(tparams = Nil, name = arrayJdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(sc.Type.ArrayOf(ct.typoType)), body = body)
+      jvm.Given(tparams = Nil, name = arrayJdbcDecoderName, implicitParams = Nil, tpe = JdbcDecoder.of(jvm.Type.ArrayOf(ct.typoType)), body = body)
     }
 
     val setter = {
-      val v = sc.Ident("v")
-      val vv = sc.Ident("vv")
+      val v = jvm.Ident("v")
+      val vv = jvm.Ident("vv")
       val body =
         code"""|$Setter.forSqlType((ps, i, $v) =>
                |  ps.setArray(
                |    i,
                |    ps.getConnection.createArrayOf(
-               |      ${sc.StrLit(ct.sqlType)},
+               |      ${jvm.StrLit(ct.sqlType)},
                |      $v.map { $vv =>
                |        ${fromTypo.fromTypo0(vv)}
                |      }
@@ -1022,7 +1034,7 @@ class DbLibZioJdbc(pkg: sc.QIdent, inlineImplicits: Boolean, dslEnabled: Boolean
                |  ${TypesJava.SqlTypes}.ARRAY
                |)""".stripMargin
 
-      sc.Given(tparams = Nil, name = arraySetterName, implicitParams = Nil, tpe = Setter.of(sc.Type.ArrayOf(ct.typoType)), body = body)
+      jvm.Given(tparams = Nil, name = arraySetterName, implicitParams = Nil, tpe = Setter.of(jvm.Type.ArrayOf(ct.typoType)), body = body)
     }
 
     List(jdbcEncoder, jdbcDecoder, setter)

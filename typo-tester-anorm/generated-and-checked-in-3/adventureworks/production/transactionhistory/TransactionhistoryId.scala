@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.transactionhistory` */
-case class TransactionhistoryId(value: Int) extends AnyVal
+case class TransactionhistoryId(value: Int) extends scala.AnyVal
+
 object TransactionhistoryId {
   given arrayColumn: Column[Array[TransactionhistoryId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[TransactionhistoryId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[TransactionhistoryId, Int] = Bijection[TransactionhistoryId, Int](_.value)(TransactionhistoryId.apply)
+
+  given bijection: Bijection[TransactionhistoryId, Int] = Bijection.apply[TransactionhistoryId, Int](_.value)(TransactionhistoryId.apply)
+
   given column: Column[TransactionhistoryId] = Column.columnToInt.map(TransactionhistoryId.apply)
-  given parameterMetadata: ParameterMetaData[TransactionhistoryId] = new ParameterMetaData[TransactionhistoryId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[TransactionhistoryId] = {
+    new ParameterMetaData[TransactionhistoryId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[TransactionhistoryId] = {
+    new Text[TransactionhistoryId] {
+      override def unsafeEncode(v: TransactionhistoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TransactionhistoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[TransactionhistoryId] = Reads.IntReads.map(TransactionhistoryId.apply)
-  given text: Text[TransactionhistoryId] = new Text[TransactionhistoryId] {
-    override def unsafeEncode(v: TransactionhistoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TransactionhistoryId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[TransactionhistoryId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[TransactionhistoryId] = Writes.IntWrites.contramap(_.value)
 }

@@ -12,22 +12,47 @@ import typo.dsl.UpdateBuilder
 
 trait PurchaseorderheaderRepo {
   def delete: DeleteBuilder[PurchaseorderheaderFields, PurchaseorderheaderRow]
+
   def deleteById(purchaseorderid: PurchaseorderheaderId)(implicit c: Connection): Boolean
+
   def deleteByIds(purchaseorderids: Array[PurchaseorderheaderId])(implicit c: Connection): Int
+
   def insert(unsaved: PurchaseorderheaderRow)(implicit c: Connection): PurchaseorderheaderRow
+
   def insert(unsaved: PurchaseorderheaderRowUnsaved)(implicit c: Connection): PurchaseorderheaderRow
-  def insertStreaming(unsaved: Iterator[PurchaseorderheaderRow], batchSize: Int = 10000)(implicit c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[PurchaseorderheaderRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[PurchaseorderheaderRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[PurchaseorderheaderRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
   def select: SelectBuilder[PurchaseorderheaderFields, PurchaseorderheaderRow]
+
   def selectAll(implicit c: Connection): List[PurchaseorderheaderRow]
+
   def selectById(purchaseorderid: PurchaseorderheaderId)(implicit c: Connection): Option[PurchaseorderheaderRow]
+
   def selectByIds(purchaseorderids: Array[PurchaseorderheaderId])(implicit c: Connection): List[PurchaseorderheaderRow]
+
   def selectByIdsTracked(purchaseorderids: Array[PurchaseorderheaderId])(implicit c: Connection): Map[PurchaseorderheaderId, PurchaseorderheaderRow]
+
   def update: UpdateBuilder[PurchaseorderheaderFields, PurchaseorderheaderRow]
+
   def update(row: PurchaseorderheaderRow)(implicit c: Connection): Option[PurchaseorderheaderRow]
+
   def upsert(unsaved: PurchaseorderheaderRow)(implicit c: Connection): PurchaseorderheaderRow
+
   def upsertBatch(unsaved: Iterable[PurchaseorderheaderRow])(implicit c: Connection): List[PurchaseorderheaderRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[PurchaseorderheaderRow], batchSize: Int = 10000)(implicit c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[PurchaseorderheaderRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int
 }

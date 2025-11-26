@@ -28,40 +28,48 @@ case class PdocViewRow(
 )
 
 object PdocViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[PdocViewRow] = new JdbcDecoder[PdocViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PdocViewRow) =
-      columIndex + 3 ->
-        PdocViewRow(
-          id = ProductId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          documentnode = DocumentId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[PdocViewRow] = {
+    new JdbcDecoder[PdocViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PdocViewRow) =
+        columIndex + 3 ->
+          PdocViewRow(
+            id = ProductId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            documentnode = DocumentId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[PdocViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(ProductId.jsonDecoder))
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(DocumentId.jsonDecoder))
-    if (id.isRight && productid.isRight && modifieddate.isRight && documentnode.isRight)
-      Right(PdocViewRow(id = id.toOption.get, productid = productid.toOption.get, modifieddate = modifieddate.toOption.get, documentnode = documentnode.toOption.get))
-    else Left(List[Either[String, Any]](id, productid, modifieddate, documentnode).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[PdocViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(ProductId.jsonDecoder))
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(DocumentId.jsonDecoder))
+      if (id.isRight && productid.isRight && modifieddate.isRight && documentnode.isRight)
+        Right(PdocViewRow(id = id.toOption.get, productid = productid.toOption.get, modifieddate = modifieddate.toOption.get, documentnode = documentnode.toOption.get))
+      else Left(List[Either[String, Any]](id, productid, modifieddate, documentnode).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[PdocViewRow] = new JsonEncoder[PdocViewRow] {
-    override def unsafeEncode(a: PdocViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      ProductId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write(",")
-      out.write(""""documentnode":""")
-      DocumentId.jsonEncoder.unsafeEncode(a.documentnode, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[PdocViewRow] = {
+    new JsonEncoder[PdocViewRow] {
+      override def unsafeEncode(a: PdocViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        ProductId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write(",")
+        out.write(""""documentnode":""")
+        DocumentId.jsonEncoder.unsafeEncode(a.documentnode, indent, out)
+        out.write("}")
+      }
     }
   }
 }

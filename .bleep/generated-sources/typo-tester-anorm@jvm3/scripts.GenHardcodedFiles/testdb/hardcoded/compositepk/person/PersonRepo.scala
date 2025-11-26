@@ -12,21 +12,48 @@ import typo.dsl.UpdateBuilder
 
 trait PersonRepo {
   def delete: DeleteBuilder[PersonFields, PersonRow]
+
   def deleteById(compositeId: PersonId)(using c: Connection): Boolean
+
   def insert(unsaved: PersonRow)(using c: Connection): PersonRow
+
   def insert(unsaved: PersonRowUnsaved)(using c: Connection): PersonRow
-  def insertStreaming(unsaved: Iterator[PersonRow], batchSize: Int = 10000)(using c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[PersonRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[PersonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[PersonRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[PersonFields, PersonRow]
+
   def selectAll(using c: Connection): List[PersonRow]
-  def selectByFieldValues(fieldValues: List[PersonFieldOrIdValue[?]])(using c: Connection): List[PersonRow]
+
+  def selectByFieldValues(fieldValues: List[PersonFieldValue[?]])(using c: Connection): List[PersonRow]
+
   def selectById(compositeId: PersonId)(using c: Connection): Option[PersonRow]
+
   def update: UpdateBuilder[PersonFields, PersonRow]
+
   def update(row: PersonRow)(using c: Connection): Option[PersonRow]
-  def updateFieldValues(compositeId: PersonId, fieldValues: List[PersonFieldValue[?]])(using c: Connection): Boolean
+
+  def updateFieldValues(
+    compositeId: PersonId,
+    fieldValues: List[PersonFieldValue[?]]
+  )(using c: Connection): Boolean
+
   def upsert(unsaved: PersonRow)(using c: Connection): PersonRow
+
   def upsertBatch(unsaved: Iterable[PersonRow])(using c: Connection): List[PersonRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[PersonRow], batchSize: Int = 10000)(using c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[PersonRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int
 }

@@ -7,6 +7,7 @@ package adventureworks.person.contacttype
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import zio.json.JsonDecoder
@@ -19,52 +20,54 @@ case class ContacttypeRowUnsaved(
   /** Contact type description. */
   name: Name,
   /** Default: nextval('person.contacttype_contacttypeid_seq'::regclass)
-      Primary key for ContactType records. */
-  contacttypeid: Defaulted[ContacttypeId] = Defaulted.UseDefault,
+   * Primary key for ContactType records.
+   */
+  contacttypeid: Defaulted[ContacttypeId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(contacttypeidDefault: => ContacttypeId, modifieddateDefault: => TypoLocalDateTime): ContacttypeRow =
-    ContacttypeRow(
-      name = name,
-      contacttypeid = contacttypeid match {
-                        case Defaulted.UseDefault => contacttypeidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    contacttypeidDefault: => ContacttypeId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ContacttypeRow = new ContacttypeRow(contacttypeid = contacttypeid.getOrElse(contacttypeidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ContacttypeRowUnsaved {
-  given jsonDecoder: JsonDecoder[ContacttypeRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val contacttypeid = jsonObj.get("contacttypeid").toRight("Missing field 'contacttypeid'").flatMap(_.as(using Defaulted.jsonDecoder(using ContacttypeId.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (name.isRight && contacttypeid.isRight && modifieddate.isRight)
-      Right(ContacttypeRowUnsaved(name = name.toOption.get, contacttypeid = contacttypeid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](name, contacttypeid, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[ContacttypeRowUnsaved] = new JsonEncoder[ContacttypeRowUnsaved] {
-    override def unsafeEncode(a: ContacttypeRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""contacttypeid":""")
-      Defaulted.jsonEncoder(using ContacttypeId.jsonEncoder).unsafeEncode(a.contacttypeid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  given jsonDecoder: JsonDecoder[ContacttypeRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val contacttypeid = jsonObj.get("contacttypeid").toRight("Missing field 'contacttypeid'").flatMap(_.as(using Defaulted.jsonDecoder(using ContacttypeId.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (name.isRight && contacttypeid.isRight && modifieddate.isRight)
+        Right(ContacttypeRowUnsaved(name = name.toOption.get, contacttypeid = contacttypeid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](name, contacttypeid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[ContacttypeRowUnsaved] = Text.instance[ContacttypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ContacttypeId.text).unsafeEncode(row.contacttypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[ContacttypeRowUnsaved] = {
+    new JsonEncoder[ContacttypeRowUnsaved] {
+      override def unsafeEncode(a: ContacttypeRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""contacttypeid":""")
+        Defaulted.jsonEncoder(using ContacttypeId.jsonEncoder).unsafeEncode(a.contacttypeid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[ContacttypeRowUnsaved] = {
+    Text.instance[ContacttypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ContacttypeId.pgText).unsafeEncode(row.contacttypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

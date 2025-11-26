@@ -46,16 +46,16 @@ trait BusinessentitycontactFields {
     businessentityid.isEqual(compositeId.businessentityid).and(personid.isEqual(compositeId.personid)).and(contacttypeid.isEqual(compositeId.contacttypeid))
   def compositeIdIn(compositeIds: Array[BusinessentitycontactId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[BusinessentitycontactId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](using BusinessentityId.arrayJdbcEncoder, PGType.forArray(using BusinessentityId.pgType)), implicitly), TuplePart[BusinessentitycontactId](personid)(_.personid)(using as[Array[BusinessentityId]](using BusinessentityId.arrayJdbcEncoder, PGType.forArray(using BusinessentityId.pgType)), implicitly), TuplePart[BusinessentitycontactId](contacttypeid)(_.contacttypeid)(using as[Array[ContacttypeId]](using ContacttypeId.arrayJdbcEncoder, PGType.forArray(using ContacttypeId.pgType)), implicitly))
-  
+
 }
 
 object BusinessentitycontactFields {
   lazy val structure: Relation[BusinessentitycontactFields, BusinessentitycontactRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[BusinessentitycontactFields, BusinessentitycontactRow] {
-  
+
     override lazy val fields: BusinessentitycontactFields = new BusinessentitycontactFields {
       override def businessentityid = IdField[BusinessentityId, BusinessentitycontactRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def personid = IdField[BusinessentityId, BusinessentitycontactRow](_path, "personid", None, Some("int4"), x => x.personid, (row, value) => row.copy(personid = value))
@@ -63,12 +63,11 @@ object BusinessentitycontactFields {
       override def rowguid = Field[TypoUUID, BusinessentitycontactRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, BusinessentitycontactRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, BusinessentitycontactRow]] =
       List[FieldLike[?, BusinessentitycontactRow]](fields.businessentityid, fields.personid, fields.contacttypeid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

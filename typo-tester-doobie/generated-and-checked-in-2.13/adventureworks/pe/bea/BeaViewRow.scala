@@ -32,22 +32,26 @@ case class BeaViewRow(
 
 object BeaViewRow {
   implicit lazy val decoder: Decoder[BeaViewRow] = Decoder.forProduct6[BeaViewRow, BusinessentityId, BusinessentityId, AddressId, AddresstypeId, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(BeaViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, AddressId.decoder, AddresstypeId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[BeaViewRow] = Encoder.forProduct6[BeaViewRow, BusinessentityId, BusinessentityId, AddressId, AddresstypeId, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.addressid, x.addresstypeid, x.rowguid, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, AddressId.encoder, AddresstypeId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[BeaViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[BeaViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
-      new Read.Single(AddresstypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    BeaViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          addressid = arr(2).asInstanceOf[AddressId],
-          addresstypeid = arr(3).asInstanceOf[AddresstypeId],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
+        new Read.Single(AddresstypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      BeaViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            addressid = arr(2).asInstanceOf[AddressId],
+            addresstypeid = arr(3).asInstanceOf[AddresstypeId],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

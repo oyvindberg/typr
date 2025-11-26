@@ -15,23 +15,36 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Domain `information_schema.cardinal_number`
-  * Constraint: CHECK ((VALUE >= 0))
-  */
+ * Constraint: CHECK ((VALUE >= 0))
+ */
 case class CardinalNumber(value: Int)
+
 object CardinalNumber {
   given arrayColumn: Column[Array[CardinalNumber]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[CardinalNumber]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[CardinalNumber, Int] = Bijection[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
+  given bijection: Bijection[CardinalNumber, Int] = Bijection.apply[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
   given column: Column[CardinalNumber] = Column.columnToInt.map(CardinalNumber.apply)
-  given parameterMetadata: ParameterMetaData[CardinalNumber] = new ParameterMetaData[CardinalNumber] {
-    override def sqlType: String = """"information_schema"."cardinal_number""""
-    override def jdbcType: Int = Types.OTHER
+
+  given parameterMetadata: ParameterMetaData[CardinalNumber] = {
+    new ParameterMetaData[CardinalNumber] {
+      override def sqlType: String = """"information_schema"."cardinal_number""""
+      override def jdbcType: Int = Types.OTHER
+    }
   }
+
+  given pgText: Text[CardinalNumber] = {
+    new Text[CardinalNumber] {
+      override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[CardinalNumber] = Reads.IntReads.map(CardinalNumber.apply)
-  given text: Text[CardinalNumber] = new Text[CardinalNumber] {
-    override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[CardinalNumber] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[CardinalNumber] = Writes.IntWrites.contramap(_.value)
 }

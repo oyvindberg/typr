@@ -26,18 +26,22 @@ case class IViewRow(
 
 object IViewRow {
   implicit lazy val decoder: Decoder[IViewRow] = Decoder.forProduct4[IViewRow, IllustrationId, IllustrationId, Option[TypoXml], TypoLocalDateTime]("id", "illustrationid", "diagram", "modifieddate")(IViewRow.apply)(IllustrationId.decoder, IllustrationId.decoder, Decoder.decodeOption(TypoXml.decoder), TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[IViewRow] = Encoder.forProduct4[IViewRow, IllustrationId, IllustrationId, Option[TypoXml], TypoLocalDateTime]("id", "illustrationid", "diagram", "modifieddate")(x => (x.id, x.illustrationid, x.diagram, x.modifieddate))(IllustrationId.encoder, IllustrationId.encoder, Encoder.encodeOption(TypoXml.encoder), TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[IViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[IViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    IViewRow(
-      id = arr(0).asInstanceOf[IllustrationId],
-          illustrationid = arr(1).asInstanceOf[IllustrationId],
-          diagram = arr(2).asInstanceOf[Option[TypoXml]],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(IllustrationId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      IViewRow(
+        id = arr(0).asInstanceOf[IllustrationId],
+            illustrationid = arr(1).asInstanceOf[IllustrationId],
+            diagram = arr(2).asInstanceOf[Option[TypoXml]],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

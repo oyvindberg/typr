@@ -5,18 +5,16 @@
  */
 package adventureworks.pe.pa
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PaViewRepoImpl extends PaViewRepo {
-  override def select: SelectBuilder[PaViewFields, PaViewRow] = {
-    SelectBuilderSql(""""pe"."pa"""", PaViewFields.structure, PaViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[PaViewRow] = {
+  def select: SelectBuilder[PaViewFields, PaViewRow] = SelectBuilder.of(""""pe"."pa"""", PaViewFields.structure, PaViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[PaViewRow] = {
     SQL"""select "id", "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
-          from "pe"."pa"
-       """.as(PaViewRow.rowParser(1).*)
+    from "pe"."pa"
+    """.as(PaViewRow.rowParser(1).*)
   }
 }

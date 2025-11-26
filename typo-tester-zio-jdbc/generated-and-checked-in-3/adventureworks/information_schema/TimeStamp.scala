@@ -17,22 +17,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `information_schema.time_stamp`
-  * No constraint
-  */
+ * No constraint
+ */
 case class TimeStamp(value: TypoInstant)
+
 object TimeStamp {
   given arrayJdbcDecoder: JdbcDecoder[Array[TimeStamp]] = TypoInstant.arrayJdbcDecoder.map(_.map(TimeStamp.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TimeStamp]] = TypoInstant.arrayJdbcEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[TimeStamp]] = TypoInstant.arraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[TimeStamp, TypoInstant] = Bijection[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
+
+  given bijection: Bijection[TimeStamp, TypoInstant] = Bijection.apply[TimeStamp, TypoInstant](_.value)(TimeStamp.apply)
+
   given jdbcDecoder: JdbcDecoder[TimeStamp] = TypoInstant.jdbcDecoder.map(TimeStamp.apply)
+
   given jdbcEncoder: JdbcEncoder[TimeStamp] = TypoInstant.jdbcEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[TimeStamp] = TypoInstant.jsonDecoder.map(TimeStamp.apply)
+
   given jsonEncoder: JsonEncoder[TimeStamp] = TypoInstant.jsonEncoder.contramap(_.value)
-  given pgType: PGType[TimeStamp] = PGType.instance(""""information_schema"."time_stamp"""", Types.OTHER)
-  given setter: Setter[TimeStamp] = TypoInstant.setter.contramap(_.value)
-  given text: Text[TimeStamp] = new Text[TimeStamp] {
-    override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.text.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[TimeStamp] = {
+    new Text[TimeStamp] {
+      override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.pgText.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.pgText.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[TimeStamp] = PGType.instance(""""information_schema"."time_stamp"""", Types.OTHER)
+
+  given setter: Setter[TimeStamp] = TypoInstant.setter.contramap(_.value)
 }

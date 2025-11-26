@@ -17,7 +17,7 @@ object FirstName {
     override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
   }
   implicit lazy val reads: Reads[FirstName] = Reads.StringReads.map(FirstName.apply)
-  implicit lazy val text: Text[FirstName] = new Text[FirstName] {
+  implicit lazy val pgText: Text[FirstName] = new Text[FirstName] {
     override def unsafeEncode(v: FirstName, sb: StringBuilder) = Text.stringInstance.unsafeEncode(v.value, sb)
     override def unsafeArrayEncode(v: FirstName, sb: StringBuilder) = Text.stringInstance.unsafeArrayEncode(v.value, sb)
   }

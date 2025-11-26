@@ -34,16 +34,16 @@ trait FlaffFields {
     code.isEqual(compositeId.code).and(anotherCode.isEqual(compositeId.anotherCode)).and(someNumber.isEqual(compositeId.someNumber)).and(specifier.isEqual(compositeId.specifier))
   def compositeIdIn(compositeIds: Array[FlaffId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[FlaffId](code)(_.code)(using as[Array[ShortText]](using ShortText.arrayJdbcEncoder, PGType.forArray(using ShortText.pgType)), implicitly), TuplePart[FlaffId](anotherCode)(_.anotherCode)(using as[Array[/* max 20 chars */ String]](using adventureworks.StringArrayEncoder, PGType.forArray(using PGType.PGTypeString)), implicitly), TuplePart[FlaffId](someNumber)(_.someNumber)(using as[Array[Int]](using adventureworks.IntArrayEncoder, PGType.forArray(using PGType.PGTypeInt)), implicitly), TuplePart[FlaffId](specifier)(_.specifier)(using as[Array[ShortText]](using ShortText.arrayJdbcEncoder, PGType.forArray(using ShortText.pgType)), implicitly))
-  
+
 }
 
 object FlaffFields {
   lazy val structure: Relation[FlaffFields, FlaffRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[FlaffFields, FlaffRow] {
-  
+
     override lazy val fields: FlaffFields = new FlaffFields {
       override def code = IdField[ShortText, FlaffRow](_path, "code", None, Some("text"), x => x.code, (row, value) => row.copy(code = value))
       override def anotherCode = IdField[/* max 20 chars */ String, FlaffRow](_path, "another_code", None, None, x => x.anotherCode, (row, value) => row.copy(anotherCode = value))
@@ -51,12 +51,11 @@ object FlaffFields {
       override def specifier = IdField[ShortText, FlaffRow](_path, "specifier", None, Some("text"), x => x.specifier, (row, value) => row.copy(specifier = value))
       override def parentspecifier = OptField[ShortText, FlaffRow](_path, "parentspecifier", None, Some("text"), x => x.parentspecifier, (row, value) => row.copy(parentspecifier = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, FlaffRow]] =
       List[FieldLike[?, FlaffRow]](fields.code, fields.anotherCode, fields.someNumber, fields.specifier, fields.parentspecifier)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

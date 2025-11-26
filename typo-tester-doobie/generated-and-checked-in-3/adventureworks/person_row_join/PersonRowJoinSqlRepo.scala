@@ -9,5 +9,5 @@ import doobie.free.connection.ConnectionIO
 import fs2.Stream
 
 trait PersonRowJoinSqlRepo {
-  def apply(): Stream[ConnectionIO, PersonRowJoinSqlRow]
+  def apply: Stream[ConnectionIO, PersonRowJoinSqlRow]
 }

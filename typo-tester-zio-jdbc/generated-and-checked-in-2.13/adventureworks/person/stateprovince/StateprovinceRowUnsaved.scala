@@ -7,6 +7,7 @@ package adventureworks.person.stateprovince
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
@@ -23,106 +24,113 @@ case class StateprovinceRowUnsaved(
   /** ISO standard state or province code. */
   stateprovincecode: /* bpchar, max 3 chars */ String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
-      Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]] */
+   * Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]]
+   */
   countryregioncode: CountryregionId,
   /** State or province description. */
   name: Name,
   /** ID of the territory in which the state or province is located. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
+   * Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]]
+   */
   territoryid: SalesterritoryId,
   /** Default: nextval('person.stateprovince_stateprovinceid_seq'::regclass)
-      Primary key for StateProvince records. */
-  stateprovinceid: Defaulted[StateprovinceId] = Defaulted.UseDefault,
+   * Primary key for StateProvince records.
+   */
+  stateprovinceid: Defaulted[StateprovinceId] = new UseDefault(),
   /** Default: true
-      0 = StateProvinceCode exists. 1 = StateProvinceCode unavailable, using CountryRegionCode. */
-  isonlystateprovinceflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = StateProvinceCode exists. 1 = StateProvinceCode unavailable, using CountryRegionCode.
+   */
+  isonlystateprovinceflag: Defaulted[Flag] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(stateprovinceidDefault: => StateprovinceId, isonlystateprovinceflagDefault: => Flag, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): StateprovinceRow =
-    StateprovinceRow(
-      stateprovinceid = stateprovinceid match {
-                          case Defaulted.UseDefault => stateprovinceidDefault
-                          case Defaulted.Provided(value) => value
-                        },
+  def toRow(
+    stateprovinceidDefault: => StateprovinceId,
+    isonlystateprovinceflagDefault: => Flag,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): StateprovinceRow = {
+    new StateprovinceRow(
+      stateprovinceid = stateprovinceid.getOrElse(stateprovinceidDefault),
       stateprovincecode = stateprovincecode,
       countryregioncode = countryregioncode,
-      isonlystateprovinceflag = isonlystateprovinceflag match {
-                                  case Defaulted.UseDefault => isonlystateprovinceflagDefault
-                                  case Defaulted.Provided(value) => value
-                                },
+      isonlystateprovinceflag = isonlystateprovinceflag.getOrElse(isonlystateprovinceflagDefault),
       name = name,
       territoryid = territoryid,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object StateprovinceRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[StateprovinceRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val stateprovincecode = jsonObj.get("stateprovincecode").toRight("Missing field 'stateprovincecode'").flatMap(_.as(JsonDecoder.string))
-    val countryregioncode = jsonObj.get("countryregioncode").toRight("Missing field 'countryregioncode'").flatMap(_.as(CountryregionId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val territoryid = jsonObj.get("territoryid").toRight("Missing field 'territoryid'").flatMap(_.as(SalesterritoryId.jsonDecoder))
-    val stateprovinceid = jsonObj.get("stateprovinceid").toRight("Missing field 'stateprovinceid'").flatMap(_.as(Defaulted.jsonDecoder(StateprovinceId.jsonDecoder)))
-    val isonlystateprovinceflag = jsonObj.get("isonlystateprovinceflag").toRight("Missing field 'isonlystateprovinceflag'").flatMap(_.as(Defaulted.jsonDecoder(Flag.jsonDecoder)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (stateprovincecode.isRight && countryregioncode.isRight && name.isRight && territoryid.isRight && stateprovinceid.isRight && isonlystateprovinceflag.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(StateprovinceRowUnsaved(stateprovincecode = stateprovincecode.toOption.get, countryregioncode = countryregioncode.toOption.get, name = name.toOption.get, territoryid = territoryid.toOption.get, stateprovinceid = stateprovinceid.toOption.get, isonlystateprovinceflag = isonlystateprovinceflag.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  implicit lazy val jsonEncoder: JsonEncoder[StateprovinceRowUnsaved] = new JsonEncoder[StateprovinceRowUnsaved] {
-    override def unsafeEncode(a: StateprovinceRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""stateprovincecode":""")
-      JsonEncoder.string.unsafeEncode(a.stateprovincecode, indent, out)
-      out.write(",")
-      out.write(""""countryregioncode":""")
-      CountryregionId.jsonEncoder.unsafeEncode(a.countryregioncode, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""territoryid":""")
-      SalesterritoryId.jsonEncoder.unsafeEncode(a.territoryid, indent, out)
-      out.write(",")
-      out.write(""""stateprovinceid":""")
-      Defaulted.jsonEncoder(StateprovinceId.jsonEncoder).unsafeEncode(a.stateprovinceid, indent, out)
-      out.write(",")
-      out.write(""""isonlystateprovinceflag":""")
-      Defaulted.jsonEncoder(Flag.jsonEncoder).unsafeEncode(a.isonlystateprovinceflag, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object StateprovinceRowUnsaved {
+  implicit lazy val jsonDecoder: JsonDecoder[StateprovinceRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val stateprovincecode = jsonObj.get("stateprovincecode").toRight("Missing field 'stateprovincecode'").flatMap(_.as(JsonDecoder.string))
+      val countryregioncode = jsonObj.get("countryregioncode").toRight("Missing field 'countryregioncode'").flatMap(_.as(CountryregionId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val territoryid = jsonObj.get("territoryid").toRight("Missing field 'territoryid'").flatMap(_.as(SalesterritoryId.jsonDecoder))
+      val stateprovinceid = jsonObj.get("stateprovinceid").toRight("Missing field 'stateprovinceid'").flatMap(_.as(Defaulted.jsonDecoder(StateprovinceId.jsonDecoder)))
+      val isonlystateprovinceflag = jsonObj.get("isonlystateprovinceflag").toRight("Missing field 'isonlystateprovinceflag'").flatMap(_.as(Defaulted.jsonDecoder(Flag.jsonDecoder)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (stateprovincecode.isRight && countryregioncode.isRight && name.isRight && territoryid.isRight && stateprovinceid.isRight && isonlystateprovinceflag.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(StateprovinceRowUnsaved(stateprovincecode = stateprovincecode.toOption.get, countryregioncode = countryregioncode.toOption.get, name = name.toOption.get, territoryid = territoryid.toOption.get, stateprovinceid = stateprovinceid.toOption.get, isonlystateprovinceflag = isonlystateprovinceflag.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[StateprovinceRowUnsaved] = Text.instance[StateprovinceRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.stateprovincecode, sb)
-    sb.append(Text.DELIMETER)
-    CountryregionId.text.unsafeEncode(row.countryregioncode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    SalesterritoryId.text.unsafeEncode(row.territoryid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(StateprovinceId.text).unsafeEncode(row.stateprovinceid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Flag.text).unsafeEncode(row.isonlystateprovinceflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[StateprovinceRowUnsaved] = {
+    new JsonEncoder[StateprovinceRowUnsaved] {
+      override def unsafeEncode(a: StateprovinceRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""stateprovincecode":""")
+        JsonEncoder.string.unsafeEncode(a.stateprovincecode, indent, out)
+        out.write(",")
+        out.write(""""countryregioncode":""")
+        CountryregionId.jsonEncoder.unsafeEncode(a.countryregioncode, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""territoryid":""")
+        SalesterritoryId.jsonEncoder.unsafeEncode(a.territoryid, indent, out)
+        out.write(",")
+        out.write(""""stateprovinceid":""")
+        Defaulted.jsonEncoder(StateprovinceId.jsonEncoder).unsafeEncode(a.stateprovinceid, indent, out)
+        out.write(",")
+        out.write(""""isonlystateprovinceflag":""")
+        Defaulted.jsonEncoder(Flag.jsonEncoder).unsafeEncode(a.isonlystateprovinceflag, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[StateprovinceRowUnsaved] = {
+    Text.instance[StateprovinceRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.stateprovincecode, sb)
+      sb.append(Text.DELIMETER)
+      CountryregionId.pgText.unsafeEncode(row.countryregioncode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      SalesterritoryId.pgText.unsafeEncode(row.territoryid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(StateprovinceId.pgText).unsafeEncode(row.stateprovinceid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Flag.pgText).unsafeEncode(row.isonlystateprovinceflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

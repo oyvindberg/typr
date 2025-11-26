@@ -15,7 +15,9 @@ case class ProductcosthistoryId(
   productid: ProductId,
   startdate: TypoLocalDateTime
 )
+
 object ProductcosthistoryId {
   given decoder: Decoder[ProductcosthistoryId] = Decoder.forProduct2[ProductcosthistoryId, ProductId, TypoLocalDateTime]("productid", "startdate")(ProductcosthistoryId.apply)(using ProductId.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[ProductcosthistoryId] = Encoder.forProduct2[ProductcosthistoryId, ProductId, TypoLocalDateTime]("productid", "startdate")(x => (x.productid, x.startdate))(using ProductId.encoder, TypoLocalDateTime.encoder)
 }

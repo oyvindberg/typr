@@ -39,11 +39,11 @@ trait VadditionalcontactinfoViewFields {
 
 object VadditionalcontactinfoViewFields {
   lazy val structure: Relation[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] {
-  
+
     override lazy val fields: VadditionalcontactinfoViewFields = new VadditionalcontactinfoViewFields {
       override def businessentityid = Field[BusinessentityId, VadditionalcontactinfoViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def firstname = Field[/* user-picked */ FirstName, VadditionalcontactinfoViewRow](_path, "firstname", None, None, x => x.firstname, (row, value) => row.copy(firstname = value))
@@ -63,12 +63,11 @@ object VadditionalcontactinfoViewFields {
       override def rowguid = Field[TypoUUID, VadditionalcontactinfoViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, VadditionalcontactinfoViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VadditionalcontactinfoViewRow]] =
       List[FieldLike[?, VadditionalcontactinfoViewRow]](fields.businessentityid, fields.firstname, fields.middlename, fields.lastname, fields.telephonenumber, fields.telephonespecialinstructions, fields.street, fields.city, fields.stateprovince, fields.postalcode, fields.countryregion, fields.homeaddressspecialinstructions, fields.emailaddress, fields.emailspecialinstructions, fields.emailtelephonenumber, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

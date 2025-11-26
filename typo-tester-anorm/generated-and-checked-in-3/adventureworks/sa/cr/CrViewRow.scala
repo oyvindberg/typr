@@ -39,42 +39,50 @@ case class CrViewRow(
 )
 
 object CrViewRow {
-  given reads: Reads[CrViewRow] = Reads[CrViewRow](json => JsResult.fromTry(
-      Try(
-        CrViewRow(
-          currencyrateid = json.\("currencyrateid").as(CurrencyrateId.reads),
-          currencyratedate = json.\("currencyratedate").as(TypoLocalDateTime.reads),
-          fromcurrencycode = json.\("fromcurrencycode").as(CurrencyId.reads),
-          tocurrencycode = json.\("tocurrencycode").as(CurrencyId.reads),
-          averagerate = json.\("averagerate").as(Reads.bigDecReads),
-          endofdayrate = json.\("endofdayrate").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[CrViewRow] = {
+    Reads[CrViewRow](json => JsResult.fromTry(
+        Try(
+          CrViewRow(
+            currencyrateid = json.\("currencyrateid").as(CurrencyrateId.reads),
+            currencyratedate = json.\("currencyratedate").as(TypoLocalDateTime.reads),
+            fromcurrencycode = json.\("fromcurrencycode").as(CurrencyId.reads),
+            tocurrencycode = json.\("tocurrencycode").as(CurrencyId.reads),
+            averagerate = json.\("averagerate").as(Reads.bigDecReads),
+            endofdayrate = json.\("endofdayrate").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CrViewRow] = RowParser[CrViewRow] { row =>
-    Success(
-      CrViewRow(
-        currencyrateid = row(idx + 0)(using CurrencyrateId.column),
-        currencyratedate = row(idx + 1)(using TypoLocalDateTime.column),
-        fromcurrencycode = row(idx + 2)(using CurrencyId.column),
-        tocurrencycode = row(idx + 3)(using CurrencyId.column),
-        averagerate = row(idx + 4)(using Column.columnToScalaBigDecimal),
-        endofdayrate = row(idx + 5)(using Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[CrViewRow] = OWrites[CrViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "currencyrateid" -> CurrencyrateId.writes.writes(o.currencyrateid),
-      "currencyratedate" -> TypoLocalDateTime.writes.writes(o.currencyratedate),
-      "fromcurrencycode" -> CurrencyId.writes.writes(o.fromcurrencycode),
-      "tocurrencycode" -> CurrencyId.writes.writes(o.tocurrencycode),
-      "averagerate" -> Writes.BigDecimalWrites.writes(o.averagerate),
-      "endofdayrate" -> Writes.BigDecimalWrites.writes(o.endofdayrate),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[CrViewRow] = {
+    RowParser[CrViewRow] { row =>
+      Success(
+        CrViewRow(
+          currencyrateid = row(idx + 0)(using CurrencyrateId.column),
+          currencyratedate = row(idx + 1)(using TypoLocalDateTime.column),
+          fromcurrencycode = row(idx + 2)(using CurrencyId.column),
+          tocurrencycode = row(idx + 3)(using CurrencyId.column),
+          averagerate = row(idx + 4)(using Column.columnToScalaBigDecimal),
+          endofdayrate = row(idx + 5)(using Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[CrViewRow] = {
+    OWrites[CrViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "currencyrateid" -> CurrencyrateId.writes.writes(o.currencyrateid),
+        "currencyratedate" -> TypoLocalDateTime.writes.writes(o.currencyratedate),
+        "fromcurrencycode" -> CurrencyId.writes.writes(o.fromcurrencycode),
+        "tocurrencycode" -> CurrencyId.writes.writes(o.tocurrencycode),
+        "averagerate" -> Writes.BigDecimalWrites.writes(o.averagerate),
+        "endofdayrate" -> Writes.BigDecimalWrites.writes(o.endofdayrate),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

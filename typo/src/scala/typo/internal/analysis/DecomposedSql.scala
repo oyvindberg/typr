@@ -2,7 +2,7 @@ package typo.internal.analysis
 
 import typo.internal.codegen.CodeOps
 import typo.internal.compat.*
-import typo.{db, sc}
+import typo.{db, jvm}
 
 case class DecomposedSql(frags: List[DecomposedSql.Fragment]) {
   val sqlWithQuestionMarks: String = render(_ => "?")
@@ -19,17 +19,17 @@ case class DecomposedSql(frags: List[DecomposedSql.Fragment]) {
     }.mkString
   }
 
-  def renderCode(f: Int => sc.Code): sc.Code = {
+  def renderCode(f: Int => jvm.Code): jvm.Code = {
     var paramNum = 0
     frags
       .collect {
-        case DecomposedSql.SqlText(text) => sc.Code.Str(text)
+        case DecomposedSql.SqlText(text) => jvm.Code.Str(text)
         case _: DecomposedSql.Param =>
           val rendered = f(paramNum)
           paramNum += 1
           rendered
       }
-      .mkCode(sc.Code.Empty)
+      .mkCode(jvm.Code.Empty)
   }
 
   val params: List[DecomposedSql.Param] =

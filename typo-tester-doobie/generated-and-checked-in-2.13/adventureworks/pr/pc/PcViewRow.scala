@@ -29,20 +29,24 @@ case class PcViewRow(
 
 object PcViewRow {
   implicit lazy val decoder: Decoder[PcViewRow] = Decoder.forProduct5[PcViewRow, ProductcategoryId, ProductcategoryId, Name, TypoUUID, TypoLocalDateTime]("id", "productcategoryid", "name", "rowguid", "modifieddate")(PcViewRow.apply)(ProductcategoryId.decoder, ProductcategoryId.decoder, Name.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[PcViewRow] = Encoder.forProduct5[PcViewRow, ProductcategoryId, ProductcategoryId, Name, TypoUUID, TypoLocalDateTime]("id", "productcategoryid", "name", "rowguid", "modifieddate")(x => (x.id, x.productcategoryid, x.name, x.rowguid, x.modifieddate))(ProductcategoryId.encoder, ProductcategoryId.encoder, Name.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[PcViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductcategoryId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[PcViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ProductcategoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    PcViewRow(
-      id = arr(0).asInstanceOf[ProductcategoryId],
-          productcategoryid = arr(1).asInstanceOf[ProductcategoryId],
-          name = arr(2).asInstanceOf[Name],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ProductcategoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      PcViewRow(
+        id = arr(0).asInstanceOf[ProductcategoryId],
+            productcategoryid = arr(1).asInstanceOf[ProductcategoryId],
+            name = arr(2).asInstanceOf[Name],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

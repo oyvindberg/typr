@@ -20,20 +20,26 @@ case class SalespersonquotahistoryId(
   businessentityid: BusinessentityId,
   quotadate: TypoLocalDateTime
 )
+
 object SalespersonquotahistoryId {
-  given reads: Reads[SalespersonquotahistoryId] = Reads[SalespersonquotahistoryId](json => JsResult.fromTry(
-      Try(
-        SalespersonquotahistoryId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          quotadate = json.\("quotadate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SalespersonquotahistoryId] = {
+    Reads[SalespersonquotahistoryId](json => JsResult.fromTry(
+        Try(
+          SalespersonquotahistoryId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            quotadate = json.\("quotadate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[SalespersonquotahistoryId] = OWrites[SalespersonquotahistoryId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "quotadate" -> TypoLocalDateTime.writes.writes(o.quotadate)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[SalespersonquotahistoryId] = {
+    OWrites[SalespersonquotahistoryId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "quotadate" -> TypoLocalDateTime.writes.writes(o.quotadate)
+      ))
+    )
+  }
 }

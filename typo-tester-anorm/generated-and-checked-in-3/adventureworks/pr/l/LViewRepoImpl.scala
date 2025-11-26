@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.l
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class LViewRepoImpl extends LViewRepo {
-  override def select: SelectBuilder[LViewFields, LViewRow] = {
-    SelectBuilderSql(""""pr"."l"""", LViewFields.structure, LViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[LViewRow] = {
+  def select: SelectBuilder[LViewFields, LViewRow] = SelectBuilder.of(""""pr"."l"""", LViewFields.structure, LViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[LViewRow] = {
     SQL"""select "id", "locationid", "name", "costrate", "availability", "modifieddate"::text
-          from "pr"."l"
-       """.as(LViewRow.rowParser(1).*)
+    from "pr"."l"
+    """.as(LViewRow.rowParser(1).*)
   }
 }

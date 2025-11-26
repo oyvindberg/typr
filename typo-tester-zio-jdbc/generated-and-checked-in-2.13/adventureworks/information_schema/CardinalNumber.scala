@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `information_schema.cardinal_number`
-  * Constraint: CHECK ((VALUE >= 0))
-  */
+ * Constraint: CHECK ((VALUE >= 0))
+ */
 case class CardinalNumber(value: Int)
+
 object CardinalNumber {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[CardinalNumber]] = adventureworks.IntArrayDecoder.map(_.map(CardinalNumber.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[CardinalNumber]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[CardinalNumber]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[CardinalNumber, Int] = Bijection[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
+  implicit lazy val bijection: Bijection[CardinalNumber, Int] = Bijection.apply[CardinalNumber, Int](_.value)(CardinalNumber.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[CardinalNumber] = JdbcDecoder.intDecoder.map(CardinalNumber.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[CardinalNumber] = JdbcEncoder.intEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[CardinalNumber] = JsonDecoder.int.map(CardinalNumber.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[CardinalNumber] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val pgType: PGType[CardinalNumber] = PGType.instance(""""information_schema"."cardinal_number"""", Types.OTHER)
-  implicit lazy val setter: Setter[CardinalNumber] = Setter.intSetter.contramap(_.value)
-  implicit lazy val text: Text[CardinalNumber] = new Text[CardinalNumber] {
-    override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[CardinalNumber] = {
+    new Text[CardinalNumber] {
+      override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[CardinalNumber] = PGType.instance(""""information_schema"."cardinal_number"""", Types.OTHER)
+
+  implicit lazy val setter: Setter[CardinalNumber] = Setter.intSetter.contramap(_.value)
 }

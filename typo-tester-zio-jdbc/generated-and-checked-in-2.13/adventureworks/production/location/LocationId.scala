@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.location` */
-case class LocationId(value: Int) extends AnyVal
+case class LocationId(value: Int) extends scala.AnyVal
+
 object LocationId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[LocationId]] = adventureworks.IntArrayDecoder.map(_.map(LocationId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[LocationId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[LocationId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[LocationId, Int] = Bijection[LocationId, Int](_.value)(LocationId.apply)
+
+  implicit lazy val bijection: Bijection[LocationId, Int] = Bijection.apply[LocationId, Int](_.value)(LocationId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[LocationId] = JdbcDecoder.intDecoder.map(LocationId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[LocationId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[LocationId] = JsonDecoder.int.map(LocationId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[LocationId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val pgType: PGType[LocationId] = PGType.PGTypeInt.as
-  implicit lazy val setter: Setter[LocationId] = Setter.intSetter.contramap(_.value)
-  implicit lazy val text: Text[LocationId] = new Text[LocationId] {
-    override def unsafeEncode(v: LocationId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: LocationId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[LocationId] = {
+    new Text[LocationId] {
+      override def unsafeEncode(v: LocationId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: LocationId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[LocationId] = PGType.PGTypeInt.as
+
+  implicit lazy val setter: Setter[LocationId] = Setter.intSetter.contramap(_.value)
 }

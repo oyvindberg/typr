@@ -17,23 +17,29 @@ case class ProductmodelillustrationId(
   productmodelid: ProductmodelId,
   illustrationid: IllustrationId
 )
+
 object ProductmodelillustrationId {
-  given jsonDecoder: JsonDecoder[ProductmodelillustrationId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(using ProductmodelId.jsonDecoder))
-    val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(using IllustrationId.jsonDecoder))
-    if (productmodelid.isRight && illustrationid.isRight)
-      Right(ProductmodelillustrationId(productmodelid = productmodelid.toOption.get, illustrationid = illustrationid.toOption.get))
-    else Left(List[Either[String, Any]](productmodelid, illustrationid).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[ProductmodelillustrationId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(using ProductmodelId.jsonDecoder))
+      val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(using IllustrationId.jsonDecoder))
+      if (productmodelid.isRight && illustrationid.isRight)
+        Right(ProductmodelillustrationId(productmodelid = productmodelid.toOption.get, illustrationid = illustrationid.toOption.get))
+      else Left(List[Either[String, Any]](productmodelid, illustrationid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[ProductmodelillustrationId] = new JsonEncoder[ProductmodelillustrationId] {
-    override def unsafeEncode(a: ProductmodelillustrationId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productmodelid":""")
-      ProductmodelId.jsonEncoder.unsafeEncode(a.productmodelid, indent, out)
-      out.write(",")
-      out.write(""""illustrationid":""")
-      IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[ProductmodelillustrationId] = {
+    new JsonEncoder[ProductmodelillustrationId] {
+      override def unsafeEncode(a: ProductmodelillustrationId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productmodelid":""")
+        ProductmodelId.jsonEncoder.unsafeEncode(a.productmodelid, indent, out)
+        out.write(",")
+        out.write(""""illustrationid":""")
+        IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

@@ -17,23 +17,29 @@ case class ProductdocumentId(
   productid: ProductId,
   documentnode: DocumentId
 )
+
 object ProductdocumentId {
-  given jsonDecoder: JsonDecoder[ProductdocumentId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
-    val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(using DocumentId.jsonDecoder))
-    if (productid.isRight && documentnode.isRight)
-      Right(ProductdocumentId(productid = productid.toOption.get, documentnode = documentnode.toOption.get))
-    else Left(List[Either[String, Any]](productid, documentnode).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[ProductdocumentId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
+      val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(using DocumentId.jsonDecoder))
+      if (productid.isRight && documentnode.isRight)
+        Right(ProductdocumentId(productid = productid.toOption.get, documentnode = documentnode.toOption.get))
+      else Left(List[Either[String, Any]](productid, documentnode).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[ProductdocumentId] = new JsonEncoder[ProductdocumentId] {
-    override def unsafeEncode(a: ProductdocumentId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""documentnode":""")
-      DocumentId.jsonEncoder.unsafeEncode(a.documentnode, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[ProductdocumentId] = {
+    new JsonEncoder[ProductdocumentId] {
+      override def unsafeEncode(a: ProductdocumentId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""documentnode":""")
+        DocumentId.jsonEncoder.unsafeEncode(a.documentnode, indent, out)
+        out.write("}")
+      }
     }
   }
 }

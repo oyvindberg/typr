@@ -6,16 +6,12 @@
 package adventureworks.humanresources.vjobcandidateeducation
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VjobcandidateeducationViewRepoImpl extends VjobcandidateeducationViewRepo {
-  override def select: SelectBuilder[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] = {
-    SelectBuilderSql(""""humanresources"."vjobcandidateeducation"""", VjobcandidateeducationViewFields.structure, VjobcandidateeducationViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VjobcandidateeducationViewRow] = {
-    sql"""select "jobcandidateid", "Edu.Level", "Edu.StartDate"::text, "Edu.EndDate"::text, "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City" from "humanresources"."vjobcandidateeducation"""".query(using VjobcandidateeducationViewRow.read).stream
-  }
+  def select: SelectBuilder[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] = SelectBuilder.of(""""humanresources"."vjobcandidateeducation"""", VjobcandidateeducationViewFields.structure, VjobcandidateeducationViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, VjobcandidateeducationViewRow] = sql"""select "jobcandidateid", "Edu.Level", "Edu.StartDate"::text, "Edu.EndDate"::text, "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City" from "humanresources"."vjobcandidateeducation"""".query(using VjobcandidateeducationViewRow.read).stream
 }

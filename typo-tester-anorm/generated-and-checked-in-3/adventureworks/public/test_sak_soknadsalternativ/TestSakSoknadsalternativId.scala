@@ -20,24 +20,31 @@ case class TestSakSoknadsalternativId(
   organisasjonskodeSaksbehandler: String,
   utdanningsmulighetKode: String
 )
+
 object TestSakSoknadsalternativId {
-  def from(TestUtdanningstilbudId: TestUtdanningstilbudId, organisasjonskodeSaksbehandler: String): TestSakSoknadsalternativId = TestSakSoknadsalternativId(
-    organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler,
-    utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode
-  )
-  given reads: Reads[TestSakSoknadsalternativId] = Reads[TestSakSoknadsalternativId](json => JsResult.fromTry(
-      Try(
-        TestSakSoknadsalternativId(
-          organisasjonskodeSaksbehandler = json.\("organisasjonskode_saksbehandler").as(Reads.StringReads),
-          utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+  def from(
+    TestUtdanningstilbudId: TestUtdanningstilbudId,
+    organisasjonskodeSaksbehandler: String
+  ): TestSakSoknadsalternativId = new TestSakSoknadsalternativId(organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler, utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode)
+
+  given reads: Reads[TestSakSoknadsalternativId] = {
+    Reads[TestSakSoknadsalternativId](json => JsResult.fromTry(
+        Try(
+          TestSakSoknadsalternativId(
+            organisasjonskodeSaksbehandler = json.\("organisasjonskode_saksbehandler").as(Reads.StringReads),
+            utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[TestSakSoknadsalternativId] = OWrites[TestSakSoknadsalternativId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "organisasjonskode_saksbehandler" -> Writes.StringWrites.writes(o.organisasjonskodeSaksbehandler),
-      "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[TestSakSoknadsalternativId] = {
+    OWrites[TestSakSoknadsalternativId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "organisasjonskode_saksbehandler" -> Writes.StringWrites.writes(o.organisasjonskodeSaksbehandler),
+        "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
+      ))
+    )
+  }
 }

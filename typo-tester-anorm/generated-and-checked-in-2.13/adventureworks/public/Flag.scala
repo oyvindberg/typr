@@ -15,23 +15,36 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Domain `public.Flag`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Flag(value: Boolean)
+
 object Flag {
   implicit lazy val arrayColumn: Column[Array[Flag]] = Column.columnToArray(column, implicitly)
+
   implicit lazy val arrayToStatement: ToStatement[Array[Flag]] = adventureworks.BooleanArrayToStatement.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[Flag, Boolean] = Bijection[Flag, Boolean](_.value)(Flag.apply)
+
+  implicit lazy val bijection: Bijection[Flag, Boolean] = Bijection.apply[Flag, Boolean](_.value)(Flag.apply)
+
   implicit lazy val column: Column[Flag] = Column.columnToBoolean.map(Flag.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[Flag] = new ParameterMetaData[Flag] {
-    override def sqlType: String = """"public"."Flag""""
-    override def jdbcType: Int = Types.OTHER
+
+  implicit lazy val parameterMetadata: ParameterMetaData[Flag] = {
+    new ParameterMetaData[Flag] {
+      override def sqlType: String = """"public"."Flag""""
+      override def jdbcType: Int = Types.OTHER
+    }
   }
+
+  implicit lazy val pgText: Text[Flag] = {
+    new Text[Flag] {
+      override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[Flag] = Reads.BooleanReads.map(Flag.apply)
-  implicit lazy val text: Text[Flag] = new Text[Flag] {
-    override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[Flag] = ToStatement.booleanToStatement.contramap(_.value)
+
   implicit lazy val writes: Writes[Flag] = Writes.BooleanWrites.contramap(_.value)
 }

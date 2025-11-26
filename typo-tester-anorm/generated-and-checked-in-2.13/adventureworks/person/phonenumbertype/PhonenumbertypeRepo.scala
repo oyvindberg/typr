@@ -12,22 +12,47 @@ import typo.dsl.UpdateBuilder
 
 trait PhonenumbertypeRepo {
   def delete: DeleteBuilder[PhonenumbertypeFields, PhonenumbertypeRow]
+
   def deleteById(phonenumbertypeid: PhonenumbertypeId)(implicit c: Connection): Boolean
+
   def deleteByIds(phonenumbertypeids: Array[PhonenumbertypeId])(implicit c: Connection): Int
+
   def insert(unsaved: PhonenumbertypeRow)(implicit c: Connection): PhonenumbertypeRow
+
   def insert(unsaved: PhonenumbertypeRowUnsaved)(implicit c: Connection): PhonenumbertypeRow
-  def insertStreaming(unsaved: Iterator[PhonenumbertypeRow], batchSize: Int = 10000)(implicit c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[PhonenumbertypeRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[PhonenumbertypeRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[PhonenumbertypeRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long
+
   def select: SelectBuilder[PhonenumbertypeFields, PhonenumbertypeRow]
+
   def selectAll(implicit c: Connection): List[PhonenumbertypeRow]
+
   def selectById(phonenumbertypeid: PhonenumbertypeId)(implicit c: Connection): Option[PhonenumbertypeRow]
+
   def selectByIds(phonenumbertypeids: Array[PhonenumbertypeId])(implicit c: Connection): List[PhonenumbertypeRow]
+
   def selectByIdsTracked(phonenumbertypeids: Array[PhonenumbertypeId])(implicit c: Connection): Map[PhonenumbertypeId, PhonenumbertypeRow]
+
   def update: UpdateBuilder[PhonenumbertypeFields, PhonenumbertypeRow]
+
   def update(row: PhonenumbertypeRow)(implicit c: Connection): Option[PhonenumbertypeRow]
+
   def upsert(unsaved: PhonenumbertypeRow)(implicit c: Connection): PhonenumbertypeRow
+
   def upsertBatch(unsaved: Iterable[PhonenumbertypeRow])(implicit c: Connection): List[PhonenumbertypeRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[PhonenumbertypeRow], batchSize: Int = 10000)(implicit c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[PhonenumbertypeRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int
 }

@@ -13,7 +13,9 @@ case class PersonId(
   one: Long,
   two: Option[String]
 )
+
 object PersonId {
   given decoder: Decoder[PersonId] = Decoder.forProduct2[PersonId, Long, Option[String]]("one", "two")(PersonId.apply)(using Decoder.decodeLong, Decoder.decodeOption(using Decoder.decodeString))
+
   given encoder: Encoder[PersonId] = Encoder.forProduct2[PersonId, Long, Option[String]]("one", "two")(x => (x.one, x.two))(using Encoder.encodeLong, Encoder.encodeOption(using Encoder.encodeString))
 }

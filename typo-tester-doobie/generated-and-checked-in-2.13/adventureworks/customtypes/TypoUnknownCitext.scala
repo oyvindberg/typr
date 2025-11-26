@@ -17,18 +17,33 @@ import typo.dsl.Bijection
 case class TypoUnknownCitext(value: String)
 
 object TypoUnknownCitext {
-  implicit lazy val arrayGet: Get[Array[TypoUnknownCitext]] = Get.Advanced.array[AnyRef](NonEmptyList.one("citext[]"))
-    .map(_.map(v => TypoUnknownCitext(v.asInstanceOf[String])))
-  implicit lazy val arrayPut: Put[Array[TypoUnknownCitext]] = Put.Advanced.array[AnyRef](NonEmptyList.one("citext[]"), "citext")
-    .contramap(_.map(v => v.value))
-  implicit lazy val bijection: Bijection[TypoUnknownCitext, String] = Bijection[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
-  implicit lazy val decoder: Decoder[TypoUnknownCitext] = Decoder.decodeString.map(TypoUnknownCitext.apply)
-  implicit lazy val encoder: Encoder[TypoUnknownCitext] = Encoder.encodeString.contramap(_.value)
-  implicit lazy val get: Get[TypoUnknownCitext] = Get.Advanced.other[String](NonEmptyList.one("citext"))
-    .map(v => TypoUnknownCitext(v))
-  implicit lazy val put: Put[TypoUnknownCitext] = Put.Advanced.other[String](NonEmptyList.one("citext")).contramap(v => v.value)
-  implicit lazy val text: Text[TypoUnknownCitext] = new Text[TypoUnknownCitext] {
-    override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+  implicit lazy val arrayGet: Get[Array[TypoUnknownCitext]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("citext[]"))
+      .map(_.map(v => new TypoUnknownCitext(v.asInstanceOf[String])))
   }
+
+  implicit lazy val arrayPut: Put[Array[TypoUnknownCitext]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("citext[]"), "citext")
+      .contramap(_.map(v => v.value))
+  }
+
+  implicit lazy val bijection: Bijection[TypoUnknownCitext, String] = Bijection.apply[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
+
+  implicit lazy val decoder: Decoder[TypoUnknownCitext] = Decoder.decodeString.map(TypoUnknownCitext.apply)
+
+  implicit lazy val encoder: Encoder[TypoUnknownCitext] = Encoder.encodeString.contramap(_.value)
+
+  implicit lazy val get: Get[TypoUnknownCitext] = {
+    Get.Advanced.other[String](NonEmptyList.one("citext"))
+      .map(v => new TypoUnknownCitext(v))
+  }
+
+  implicit lazy val pgText: Text[TypoUnknownCitext] = {
+    new Text[TypoUnknownCitext] {
+      override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  implicit lazy val put: Put[TypoUnknownCitext] = Put.Advanced.other[String](NonEmptyList.one("citext")).contramap(v => v.value)
 }

@@ -22,50 +22,72 @@ import play.api.libs.json.Reads
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
-/** This implements a line represented by the linear equation Ax + By + C = 0 */
-case class TypoLineSegment(p1: TypoPoint, p2: TypoPoint)
+/** Line segment datatype in PostgreSQL */
+case class TypoLineSegment(
+  p1: TypoPoint,
+  p2: TypoPoint
+)
 
 object TypoLineSegment {
-  given arrayColumn: Column[Array[TypoLineSegment]] = Column.nonNull[Array[TypoLineSegment]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoLineSegment(TypoPoint(v.asInstanceOf[PGlseg].point(0).x, v.asInstanceOf[PGlseg].point(0).y), TypoPoint(v.asInstanceOf[PGlseg].point(1).x, v.asInstanceOf[PGlseg].point(1).y))))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLineSegment, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+  given arrayColumn: Column[Array[TypoLineSegment]] = {
+    Column.nonNull[Array[TypoLineSegment]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoLineSegment(new TypoPoint(v.asInstanceOf[PGlseg].point(0).x, v.asInstanceOf[PGlseg].point(0).y), new TypoPoint(v.asInstanceOf[PGlseg].point(1).x, v.asInstanceOf[PGlseg].point(1).y))))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoLineSegment, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   given arrayToStatement: ToStatement[Array[TypoLineSegment]] = ToStatement[Array[TypoLineSegment]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("lseg", v.map(v => new PGlseg(new PGpoint(v.p1.x, v.p1.y), new PGpoint(v.p2.x, v.p2.y))))))
-  given column: Column[TypoLineSegment] = Column.nonNull[TypoLineSegment]((v1: Any, _) =>
-    v1 match {
-      case v: PGlseg => Right(TypoLineSegment(TypoPoint(v.point(0).x, v.point(0).y), TypoPoint(v.point(1).x, v.point(1).y)))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGlseg, got ${other.getClass.getName}"))
+
+  given column: Column[TypoLineSegment] = {
+    Column.nonNull[TypoLineSegment]((v1: Any, _) =>
+      v1 match {
+        case v: PGlseg => Right(new TypoLineSegment(new TypoPoint(v.point(0).x, v.point(0).y), new TypoPoint(v.point(1).x, v.point(1).y)))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGlseg, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  given parameterMetadata: ParameterMetaData[TypoLineSegment] = {
+    new ParameterMetaData[TypoLineSegment] {
+      override def sqlType: String = "lseg"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  given parameterMetadata: ParameterMetaData[TypoLineSegment] = new ParameterMetaData[TypoLineSegment] {
-    override def sqlType: String = "lseg"
-    override def jdbcType: Int = Types.OTHER
   }
-  given reads: Reads[TypoLineSegment] = Reads[TypoLineSegment](json => JsResult.fromTry(
-      Try(
-        TypoLineSegment(
-          p1 = json.\("p1").as(TypoPoint.reads),
-          p2 = json.\("p2").as(TypoPoint.reads)
+
+  given pgText: Text[TypoLineSegment] = {
+    new Text[TypoLineSegment] {
+      override def unsafeEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
+      override def unsafeArrayEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
+    }
+  }
+
+  given reads: Reads[TypoLineSegment] = {
+    Reads[TypoLineSegment](json => JsResult.fromTry(
+        Try(
+          TypoLineSegment(
+            p1 = json.\("p1").as(TypoPoint.reads),
+            p2 = json.\("p2").as(TypoPoint.reads)
+          )
         )
-      )
-    ),
-  )
-  given text: Text[TypoLineSegment] = new Text[TypoLineSegment] {
-    override def unsafeEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
-    override def unsafeArrayEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
+      ),
+    )
   }
+
   given toStatement: ToStatement[TypoLineSegment] = ToStatement[TypoLineSegment]((s, index, v) => s.setObject(index, new PGlseg(new PGpoint(v.p1.x, v.p1.y), new PGpoint(v.p2.x, v.p2.y))))
-  given writes: OWrites[TypoLineSegment] = OWrites[TypoLineSegment](o =>
-    new JsObject(ListMap[String, JsValue](
-      "p1" -> TypoPoint.writes.writes(o.p1),
-      "p2" -> TypoPoint.writes.writes(o.p2)
-    ))
-  )
+
+  given writes: OWrites[TypoLineSegment] = {
+    OWrites[TypoLineSegment](o =>
+      new JsObject(ListMap[String, JsValue](
+        "p1" -> TypoPoint.writes.writes(o.p1),
+        "p2" -> TypoPoint.writes.writes(o.p2)
+      ))
+    )
+  }
 }

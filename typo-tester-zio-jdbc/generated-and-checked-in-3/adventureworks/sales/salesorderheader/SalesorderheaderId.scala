@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `sales.salesorderheader` */
-case class SalesorderheaderId(value: Int) extends AnyVal
+case class SalesorderheaderId(value: Int) extends scala.AnyVal
+
 object SalesorderheaderId {
   given arrayJdbcDecoder: JdbcDecoder[Array[SalesorderheaderId]] = adventureworks.IntArrayDecoder.map(_.map(SalesorderheaderId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[SalesorderheaderId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[SalesorderheaderId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[SalesorderheaderId, Int] = Bijection[SalesorderheaderId, Int](_.value)(SalesorderheaderId.apply)
+
+  given bijection: Bijection[SalesorderheaderId, Int] = Bijection.apply[SalesorderheaderId, Int](_.value)(SalesorderheaderId.apply)
+
   given jdbcDecoder: JdbcDecoder[SalesorderheaderId] = JdbcDecoder.intDecoder.map(SalesorderheaderId.apply)
+
   given jdbcEncoder: JdbcEncoder[SalesorderheaderId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[SalesorderheaderId] = JsonDecoder.int.map(SalesorderheaderId.apply)
+
   given jsonEncoder: JsonEncoder[SalesorderheaderId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[SalesorderheaderId] = PGType.PGTypeInt.as
-  given setter: Setter[SalesorderheaderId] = Setter.intSetter.contramap(_.value)
-  given text: Text[SalesorderheaderId] = new Text[SalesorderheaderId] {
-    override def unsafeEncode(v: SalesorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: SalesorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[SalesorderheaderId] = {
+    new Text[SalesorderheaderId] {
+      override def unsafeEncode(v: SalesorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: SalesorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[SalesorderheaderId] = PGType.PGTypeInt.as
+
+  given setter: Setter[SalesorderheaderId] = Setter.intSetter.contramap(_.value)
 }

@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.d
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class DViewRepoImpl extends DViewRepo {
-  override def select: SelectBuilder[DViewFields, DViewRow] = {
-    SelectBuilderSql(""""pr"."d"""", DViewFields.structure, DViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[DViewRow] = {
+  def select: SelectBuilder[DViewFields, DViewRow] = SelectBuilder.of(""""pr"."d"""", DViewFields.structure, DViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[DViewRow] = {
     SQL"""select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-          from "pr"."d"
-       """.as(DViewRow.rowParser(1).*)
+    from "pr"."d"
+    """.as(DViewRow.rowParser(1).*)
   }
 }

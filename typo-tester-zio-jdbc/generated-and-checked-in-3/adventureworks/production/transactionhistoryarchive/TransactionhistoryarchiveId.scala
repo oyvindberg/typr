@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.transactionhistoryarchive` */
-case class TransactionhistoryarchiveId(value: Int) extends AnyVal
+case class TransactionhistoryarchiveId(value: Int) extends scala.AnyVal
+
 object TransactionhistoryarchiveId {
   given arrayJdbcDecoder: JdbcDecoder[Array[TransactionhistoryarchiveId]] = adventureworks.IntArrayDecoder.map(_.map(TransactionhistoryarchiveId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TransactionhistoryarchiveId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[TransactionhistoryarchiveId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[TransactionhistoryarchiveId, Int] = Bijection[TransactionhistoryarchiveId, Int](_.value)(TransactionhistoryarchiveId.apply)
+
+  given bijection: Bijection[TransactionhistoryarchiveId, Int] = Bijection.apply[TransactionhistoryarchiveId, Int](_.value)(TransactionhistoryarchiveId.apply)
+
   given jdbcDecoder: JdbcDecoder[TransactionhistoryarchiveId] = JdbcDecoder.intDecoder.map(TransactionhistoryarchiveId.apply)
+
   given jdbcEncoder: JdbcEncoder[TransactionhistoryarchiveId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[TransactionhistoryarchiveId] = JsonDecoder.int.map(TransactionhistoryarchiveId.apply)
+
   given jsonEncoder: JsonEncoder[TransactionhistoryarchiveId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[TransactionhistoryarchiveId] = PGType.PGTypeInt.as
-  given setter: Setter[TransactionhistoryarchiveId] = Setter.intSetter.contramap(_.value)
-  given text: Text[TransactionhistoryarchiveId] = new Text[TransactionhistoryarchiveId] {
-    override def unsafeEncode(v: TransactionhistoryarchiveId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TransactionhistoryarchiveId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[TransactionhistoryarchiveId] = {
+    new Text[TransactionhistoryarchiveId] {
+      override def unsafeEncode(v: TransactionhistoryarchiveId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TransactionhistoryarchiveId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[TransactionhistoryarchiveId] = PGType.PGTypeInt.as
+
+  given setter: Setter[TransactionhistoryarchiveId] = Setter.intSetter.contramap(_.value)
 }

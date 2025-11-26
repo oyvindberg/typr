@@ -46,51 +46,59 @@ case class SpViewRow(
 )
 
 object SpViewRow {
-  given reads: Reads[SpViewRow] = Reads[SpViewRow](json => JsResult.fromTry(
-      Try(
-        SpViewRow(
-          id = json.\("id").as(BusinessentityId.reads),
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
-          salesquota = json.\("salesquota").toOption.map(_.as(Reads.bigDecReads)),
-          bonus = json.\("bonus").as(Reads.bigDecReads),
-          commissionpct = json.\("commissionpct").as(Reads.bigDecReads),
-          salesytd = json.\("salesytd").as(Reads.bigDecReads),
-          saleslastyear = json.\("saleslastyear").as(Reads.bigDecReads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SpViewRow] = {
+    Reads[SpViewRow](json => JsResult.fromTry(
+        Try(
+          SpViewRow(
+            id = json.\("id").as(BusinessentityId.reads),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
+            salesquota = json.\("salesquota").toOption.map(_.as(Reads.bigDecReads)),
+            bonus = json.\("bonus").as(Reads.bigDecReads),
+            commissionpct = json.\("commissionpct").as(Reads.bigDecReads),
+            salesytd = json.\("salesytd").as(Reads.bigDecReads),
+            saleslastyear = json.\("saleslastyear").as(Reads.bigDecReads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SpViewRow] = RowParser[SpViewRow] { row =>
-    Success(
-      SpViewRow(
-        id = row(idx + 0)(using BusinessentityId.column),
-        businessentityid = row(idx + 1)(using BusinessentityId.column),
-        territoryid = row(idx + 2)(using Column.columnToOption(using SalesterritoryId.column)),
-        salesquota = row(idx + 3)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
-        bonus = row(idx + 4)(using Column.columnToScalaBigDecimal),
-        commissionpct = row(idx + 5)(using Column.columnToScalaBigDecimal),
-        salesytd = row(idx + 6)(using Column.columnToScalaBigDecimal),
-        saleslastyear = row(idx + 7)(using Column.columnToScalaBigDecimal),
-        rowguid = row(idx + 8)(using TypoUUID.column),
-        modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SpViewRow] = OWrites[SpViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> BusinessentityId.writes.writes(o.id),
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "territoryid" -> Writes.OptionWrites(using SalesterritoryId.writes).writes(o.territoryid),
-      "salesquota" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.salesquota),
-      "bonus" -> Writes.BigDecimalWrites.writes(o.bonus),
-      "commissionpct" -> Writes.BigDecimalWrites.writes(o.commissionpct),
-      "salesytd" -> Writes.BigDecimalWrites.writes(o.salesytd),
-      "saleslastyear" -> Writes.BigDecimalWrites.writes(o.saleslastyear),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SpViewRow] = {
+    RowParser[SpViewRow] { row =>
+      Success(
+        SpViewRow(
+          id = row(idx + 0)(using BusinessentityId.column),
+          businessentityid = row(idx + 1)(using BusinessentityId.column),
+          territoryid = row(idx + 2)(using Column.columnToOption(using SalesterritoryId.column)),
+          salesquota = row(idx + 3)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
+          bonus = row(idx + 4)(using Column.columnToScalaBigDecimal),
+          commissionpct = row(idx + 5)(using Column.columnToScalaBigDecimal),
+          salesytd = row(idx + 6)(using Column.columnToScalaBigDecimal),
+          saleslastyear = row(idx + 7)(using Column.columnToScalaBigDecimal),
+          rowguid = row(idx + 8)(using TypoUUID.column),
+          modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SpViewRow] = {
+    OWrites[SpViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> BusinessentityId.writes.writes(o.id),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "territoryid" -> Writes.OptionWrites(using SalesterritoryId.writes).writes(o.territoryid),
+        "salesquota" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.salesquota),
+        "bonus" -> Writes.BigDecimalWrites.writes(o.bonus),
+        "commissionpct" -> Writes.BigDecimalWrites.writes(o.commissionpct),
+        "salesytd" -> Writes.BigDecimalWrites.writes(o.salesytd),
+        "saleslastyear" -> Writes.BigDecimalWrites.writes(o.saleslastyear),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

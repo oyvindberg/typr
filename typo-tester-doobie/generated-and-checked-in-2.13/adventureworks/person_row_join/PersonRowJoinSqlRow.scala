@@ -21,16 +21,20 @@ case class PersonRowJoinSqlRow(
 
 object PersonRowJoinSqlRow {
   implicit lazy val decoder: Decoder[PersonRowJoinSqlRow] = Decoder.forProduct3[PersonRowJoinSqlRow, BusinessentityId, /* nullability unknown */ Option[Array[TypoRecord]], /* nullability unknown */ Option[Array[TypoRecord]]]("businessentityid", "email", "emails")(PersonRowJoinSqlRow.apply)(BusinessentityId.decoder, Decoder.decodeOption(Decoder.decodeArray[TypoRecord](TypoRecord.decoder, implicitly)), Decoder.decodeOption(Decoder.decodeArray[TypoRecord](TypoRecord.decoder, implicitly)))
+
   implicit lazy val encoder: Encoder[PersonRowJoinSqlRow] = Encoder.forProduct3[PersonRowJoinSqlRow, BusinessentityId, /* nullability unknown */ Option[Array[TypoRecord]], /* nullability unknown */ Option[Array[TypoRecord]]]("businessentityid", "email", "emails")(x => (x.businessentityid, x.email, x.emails))(BusinessentityId.encoder, Encoder.encodeOption(Encoder.encodeIterable[TypoRecord, Array](TypoRecord.encoder, implicitly)), Encoder.encodeOption(Encoder.encodeIterable[TypoRecord, Array](TypoRecord.encoder, implicitly)))
-  implicit lazy val read: Read[PersonRowJoinSqlRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoRecord.arrayGet).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoRecord.arrayGet).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    PersonRowJoinSqlRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          email = arr(1).asInstanceOf[/* nullability unknown */ Option[Array[TypoRecord]]],
-          emails = arr(2).asInstanceOf[/* nullability unknown */ Option[Array[TypoRecord]]]
-    )
+
+  implicit lazy val read: Read[PersonRowJoinSqlRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoRecord.arrayGet).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoRecord.arrayGet).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      PersonRowJoinSqlRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            email = arr(1).asInstanceOf[/* nullability unknown */ Option[Array[TypoRecord]]],
+            emails = arr(2).asInstanceOf[/* nullability unknown */ Option[Array[TypoRecord]]]
+      )
+    }
   }
 }

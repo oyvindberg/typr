@@ -39,57 +39,65 @@ case class VstorewithdemographicsViewRow(
 )
 
 object VstorewithdemographicsViewRow {
-  implicit lazy val reads: Reads[VstorewithdemographicsViewRow] = Reads[VstorewithdemographicsViewRow](json => JsResult.fromTry(
-      Try(
-        VstorewithdemographicsViewRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          name = json.\("name").as(Name.reads),
-          annualSales = json.\("AnnualSales").toOption.map(_.as(TypoMoney.reads)),
-          annualRevenue = json.\("AnnualRevenue").toOption.map(_.as(TypoMoney.reads)),
-          bankName = json.\("BankName").toOption.map(_.as(Reads.StringReads)),
-          businessType = json.\("BusinessType").toOption.map(_.as(Reads.StringReads)),
-          yearOpened = json.\("YearOpened").toOption.map(_.as(Reads.IntReads)),
-          specialty = json.\("Specialty").toOption.map(_.as(Reads.StringReads)),
-          squareFeet = json.\("SquareFeet").toOption.map(_.as(Reads.IntReads)),
-          brands = json.\("Brands").toOption.map(_.as(Reads.StringReads)),
-          internet = json.\("Internet").toOption.map(_.as(Reads.StringReads)),
-          numberEmployees = json.\("NumberEmployees").toOption.map(_.as(Reads.IntReads))
+  implicit lazy val reads: Reads[VstorewithdemographicsViewRow] = {
+    Reads[VstorewithdemographicsViewRow](json => JsResult.fromTry(
+        Try(
+          VstorewithdemographicsViewRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            name = json.\("name").as(Name.reads),
+            annualSales = json.\("AnnualSales").toOption.map(_.as(TypoMoney.reads)),
+            annualRevenue = json.\("AnnualRevenue").toOption.map(_.as(TypoMoney.reads)),
+            bankName = json.\("BankName").toOption.map(_.as(Reads.StringReads)),
+            businessType = json.\("BusinessType").toOption.map(_.as(Reads.StringReads)),
+            yearOpened = json.\("YearOpened").toOption.map(_.as(Reads.IntReads)),
+            specialty = json.\("Specialty").toOption.map(_.as(Reads.StringReads)),
+            squareFeet = json.\("SquareFeet").toOption.map(_.as(Reads.IntReads)),
+            brands = json.\("Brands").toOption.map(_.as(Reads.StringReads)),
+            internet = json.\("Internet").toOption.map(_.as(Reads.StringReads)),
+            numberEmployees = json.\("NumberEmployees").toOption.map(_.as(Reads.IntReads))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VstorewithdemographicsViewRow] = RowParser[VstorewithdemographicsViewRow] { row =>
-    Success(
-      VstorewithdemographicsViewRow(
-        businessentityid = row(idx + 0)(BusinessentityId.column),
-        name = row(idx + 1)(Name.column),
-        annualSales = row(idx + 2)(Column.columnToOption(TypoMoney.column)),
-        annualRevenue = row(idx + 3)(Column.columnToOption(TypoMoney.column)),
-        bankName = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-        businessType = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-        yearOpened = row(idx + 6)(Column.columnToOption(Column.columnToInt)),
-        specialty = row(idx + 7)(Column.columnToOption(Column.columnToString)),
-        squareFeet = row(idx + 8)(Column.columnToOption(Column.columnToInt)),
-        brands = row(idx + 9)(Column.columnToOption(Column.columnToString)),
-        internet = row(idx + 10)(Column.columnToOption(Column.columnToString)),
-        numberEmployees = row(idx + 11)(Column.columnToOption(Column.columnToInt))
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[VstorewithdemographicsViewRow] = OWrites[VstorewithdemographicsViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "name" -> Name.writes.writes(o.name),
-      "AnnualSales" -> Writes.OptionWrites(TypoMoney.writes).writes(o.annualSales),
-      "AnnualRevenue" -> Writes.OptionWrites(TypoMoney.writes).writes(o.annualRevenue),
-      "BankName" -> Writes.OptionWrites(Writes.StringWrites).writes(o.bankName),
-      "BusinessType" -> Writes.OptionWrites(Writes.StringWrites).writes(o.businessType),
-      "YearOpened" -> Writes.OptionWrites(Writes.IntWrites).writes(o.yearOpened),
-      "Specialty" -> Writes.OptionWrites(Writes.StringWrites).writes(o.specialty),
-      "SquareFeet" -> Writes.OptionWrites(Writes.IntWrites).writes(o.squareFeet),
-      "Brands" -> Writes.OptionWrites(Writes.StringWrites).writes(o.brands),
-      "Internet" -> Writes.OptionWrites(Writes.StringWrites).writes(o.internet),
-      "NumberEmployees" -> Writes.OptionWrites(Writes.IntWrites).writes(o.numberEmployees)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VstorewithdemographicsViewRow] = {
+    RowParser[VstorewithdemographicsViewRow] { row =>
+      Success(
+        VstorewithdemographicsViewRow(
+          businessentityid = row(idx + 0)(BusinessentityId.column),
+          name = row(idx + 1)(Name.column),
+          annualSales = row(idx + 2)(Column.columnToOption(TypoMoney.column)),
+          annualRevenue = row(idx + 3)(Column.columnToOption(TypoMoney.column)),
+          bankName = row(idx + 4)(Column.columnToOption(Column.columnToString)),
+          businessType = row(idx + 5)(Column.columnToOption(Column.columnToString)),
+          yearOpened = row(idx + 6)(Column.columnToOption(Column.columnToInt)),
+          specialty = row(idx + 7)(Column.columnToOption(Column.columnToString)),
+          squareFeet = row(idx + 8)(Column.columnToOption(Column.columnToInt)),
+          brands = row(idx + 9)(Column.columnToOption(Column.columnToString)),
+          internet = row(idx + 10)(Column.columnToOption(Column.columnToString)),
+          numberEmployees = row(idx + 11)(Column.columnToOption(Column.columnToInt))
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[VstorewithdemographicsViewRow] = {
+    OWrites[VstorewithdemographicsViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "name" -> Name.writes.writes(o.name),
+        "AnnualSales" -> Writes.OptionWrites(TypoMoney.writes).writes(o.annualSales),
+        "AnnualRevenue" -> Writes.OptionWrites(TypoMoney.writes).writes(o.annualRevenue),
+        "BankName" -> Writes.OptionWrites(Writes.StringWrites).writes(o.bankName),
+        "BusinessType" -> Writes.OptionWrites(Writes.StringWrites).writes(o.businessType),
+        "YearOpened" -> Writes.OptionWrites(Writes.IntWrites).writes(o.yearOpened),
+        "Specialty" -> Writes.OptionWrites(Writes.StringWrites).writes(o.specialty),
+        "SquareFeet" -> Writes.OptionWrites(Writes.IntWrites).writes(o.squareFeet),
+        "Brands" -> Writes.OptionWrites(Writes.StringWrites).writes(o.brands),
+        "Internet" -> Writes.OptionWrites(Writes.StringWrites).writes(o.internet),
+        "NumberEmployees" -> Writes.OptionWrites(Writes.IntWrites).writes(o.numberEmployees)
+      ))
+    )
+  }
 }

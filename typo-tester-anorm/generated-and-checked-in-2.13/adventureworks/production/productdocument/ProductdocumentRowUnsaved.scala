@@ -7,6 +7,7 @@ package adventureworks.production.productdocument
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
@@ -21,51 +22,54 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productdocument` which has not been persisted yet */
 case class ProductdocumentRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Document identification number. Foreign key to Document.DocumentNode.
-      Points to [[adventureworks.production.document.DocumentRow.documentnode]] */
-  documentnode: Defaulted[DocumentId] = Defaulted.UseDefault
+   * Document identification number. Foreign key to Document.DocumentNode.
+   * Points to [[adventureworks.production.document.DocumentRow.documentnode]]
+   */
+  documentnode: Defaulted[DocumentId] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime, documentnodeDefault: => DocumentId): ProductdocumentRow =
-    ProductdocumentRow(
-      productid = productid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      documentnode = documentnode match {
-                       case Defaulted.UseDefault => documentnodeDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    modifieddateDefault: => TypoLocalDateTime,
+    documentnodeDefault: => DocumentId
+  ): ProductdocumentRow = new ProductdocumentRow(productid = productid, modifieddate = modifieddate.getOrElse(modifieddateDefault), documentnode = documentnode.getOrElse(documentnodeDefault))
 }
+
 object ProductdocumentRowUnsaved {
-  implicit lazy val reads: Reads[ProductdocumentRowUnsaved] = Reads[ProductdocumentRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductdocumentRowUnsaved(
-          productid = json.\("productid").as(ProductId.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads)),
-          documentnode = json.\("documentnode").as(Defaulted.reads(DocumentId.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ProductdocumentRowUnsaved] = Text.instance[ProductdocumentRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(DocumentId.text).unsafeEncode(row.documentnode, sb)
+  implicit lazy val pgText: Text[ProductdocumentRowUnsaved] = {
+    Text.instance[ProductdocumentRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(DocumentId.pgText).unsafeEncode(row.documentnode, sb)
+    }
   }
-  implicit lazy val writes: OWrites[ProductdocumentRowUnsaved] = OWrites[ProductdocumentRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate),
-      "documentnode" -> Defaulted.writes(DocumentId.writes).writes(o.documentnode)
-    ))
-  )
+
+  implicit lazy val reads: Reads[ProductdocumentRowUnsaved] = {
+    Reads[ProductdocumentRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductdocumentRowUnsaved(
+            productid = json.\("productid").as(ProductId.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads)),
+            documentnode = json.\("documentnode").as(Defaulted.reads(DocumentId.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductdocumentRowUnsaved] = {
+    OWrites[ProductdocumentRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate),
+        "documentnode" -> Defaulted.writes(DocumentId.writes).writes(o.documentnode)
+      ))
+    )
+  }
 }

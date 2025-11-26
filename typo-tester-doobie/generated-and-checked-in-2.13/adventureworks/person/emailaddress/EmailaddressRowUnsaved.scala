@@ -6,6 +6,7 @@
 package adventureworks.person.emailaddress
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
@@ -16,48 +17,51 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `person.emailaddress` which has not been persisted yet */
 case class EmailaddressRowUnsaved(
   /** Primary key. Person associated with this email address.  Foreign key to Person.BusinessEntityID
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** E-mail address for the person. */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: Option[/* max 50 chars */ String] = None,
   /** Default: nextval('person.emailaddress_emailaddressid_seq'::regclass)
-      Primary key. ID of this email address. */
-  emailaddressid: Defaulted[Int] = Defaulted.UseDefault,
+   * Primary key. ID of this email address.
+   */
+  emailaddressid: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(emailaddressidDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): EmailaddressRow =
-    EmailaddressRow(
+  def toRow(
+    emailaddressidDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): EmailaddressRow = {
+    new EmailaddressRow(
       businessentityid = businessentityid,
-      emailaddressid = emailaddressid match {
-                         case Defaulted.UseDefault => emailaddressidDefault
-                         case Defaulted.Provided(value) => value
-                       },
+      emailaddressid = emailaddressid.getOrElse(emailaddressidDefault),
       emailaddress = emailaddress,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object EmailaddressRowUnsaved {
   implicit lazy val decoder: Decoder[EmailaddressRowUnsaved] = Decoder.forProduct5[EmailaddressRowUnsaved, BusinessentityId, Option[/* max 50 chars */ String], Defaulted[Int], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "emailaddress", "emailaddressid", "rowguid", "modifieddate")(EmailaddressRowUnsaved.apply)(BusinessentityId.decoder, Decoder.decodeOption(Decoder.decodeString), Defaulted.decoder(Decoder.decodeInt), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[EmailaddressRowUnsaved] = Encoder.forProduct5[EmailaddressRowUnsaved, BusinessentityId, Option[/* max 50 chars */ String], Defaulted[Int], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "emailaddress", "emailaddressid", "rowguid", "modifieddate")(x => (x.businessentityid, x.emailaddress, x.emailaddressid, x.rowguid, x.modifieddate))(BusinessentityId.encoder, Encoder.encodeOption(Encoder.encodeString), Defaulted.encoder(Encoder.encodeInt), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[EmailaddressRowUnsaved] = Text.instance[EmailaddressRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.emailaddress, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.intInstance).unsafeEncode(row.emailaddressid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[EmailaddressRowUnsaved] = {
+    Text.instance[EmailaddressRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.emailaddress, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.intInstance).unsafeEncode(row.emailaddressid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

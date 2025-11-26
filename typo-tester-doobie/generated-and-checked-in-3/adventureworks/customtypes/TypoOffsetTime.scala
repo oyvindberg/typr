@@ -22,22 +22,41 @@ import typo.dsl.Bijection
 case class TypoOffsetTime(value: OffsetTime)
 
 object TypoOffsetTime {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter
   def apply(value: OffsetTime): TypoOffsetTime = new TypoOffsetTime(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoOffsetTime = apply(OffsetTime.parse(str, parser))
-  def now = TypoOffsetTime(OffsetTime.now)
-  given arrayGet: Get[Array[TypoOffsetTime]] = Get.Advanced.array[AnyRef](NonEmptyList.one("timetz[]"))
-    .map(_.map(v => TypoOffsetTime(OffsetTime.parse(v.asInstanceOf[String], parser))))
-  given arrayPut: Put[Array[TypoOffsetTime]] = Put.Advanced.array[AnyRef](NonEmptyList.one("timetz[]"), "timetz")
-    .contramap(_.map(v => v.value.toString))
-  given bijection: Bijection[TypoOffsetTime, OffsetTime] = Bijection[TypoOffsetTime, OffsetTime](_.value)(TypoOffsetTime.apply)
-  given decoder: Decoder[TypoOffsetTime] = Decoder.decodeOffsetTime.map(TypoOffsetTime.apply)
-  given encoder: Encoder[TypoOffsetTime] = Encoder.encodeOffsetTime.contramap(_.value)
-  given get: Get[TypoOffsetTime] = Get.Advanced.other[String](NonEmptyList.one("timetz"))
-    .map(v => TypoOffsetTime(OffsetTime.parse(v, parser)))
-  given put: Put[TypoOffsetTime] = Put.Advanced.other[String](NonEmptyList.one("timetz")).contramap(v => v.value.toString)
-  given text: Text[TypoOffsetTime] = new Text[TypoOffsetTime] {
-    override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+
+  def apply(str: String): TypoOffsetTime = new TypoOffsetTime(OffsetTime.parse(str, parser))
+
+  given arrayGet: Get[Array[TypoOffsetTime]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("timetz[]"))
+      .map(_.map(v => new TypoOffsetTime(OffsetTime.parse(v.asInstanceOf[String], parser))))
   }
+
+  given arrayPut: Put[Array[TypoOffsetTime]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("timetz[]"), "timetz")
+      .contramap(_.map(v => v.value.toString))
+  }
+
+  given bijection: Bijection[TypoOffsetTime, OffsetTime] = Bijection.apply[TypoOffsetTime, OffsetTime](_.value)(TypoOffsetTime.apply)
+
+  given decoder: Decoder[TypoOffsetTime] = Decoder.decodeOffsetTime.map(TypoOffsetTime.apply)
+
+  given encoder: Encoder[TypoOffsetTime] = Encoder.encodeOffsetTime.contramap(_.value)
+
+  given get: Get[TypoOffsetTime] = {
+    Get.Advanced.other[String](NonEmptyList.one("timetz"))
+      .map(v => new TypoOffsetTime(OffsetTime.parse(v, parser)))
+  }
+
+  def now: TypoOffsetTime = new TypoOffsetTime(OffsetTime.now())
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
+
+  given pgText: Text[TypoOffsetTime] = {
+    new Text[TypoOffsetTime] {
+      override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given put: Put[TypoOffsetTime] = Put.Advanced.other[String](NonEmptyList.one("timetz")).contramap(v => v.value.toString)
 }

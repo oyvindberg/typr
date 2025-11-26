@@ -6,16 +6,12 @@
 package adventureworks.hr.jc
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class JcViewRepoImpl extends JcViewRepo {
-  override def select: SelectBuilder[JcViewFields, JcViewRow] = {
-    SelectBuilderSql(""""hr"."jc"""", JcViewFields.structure, JcViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, JcViewRow] = {
-    sql"""select "id", "jobcandidateid", "businessentityid", "resume", "modifieddate"::text from "hr"."jc"""".query(JcViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[JcViewFields, JcViewRow] = SelectBuilder.of(""""hr"."jc"""", JcViewFields.structure, JcViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, JcViewRow] = sql"""select "id", "jobcandidateid", "businessentityid", "resume", "modifieddate"::text from "hr"."jc"""".query(JcViewRow.jdbcDecoder).selectStream()
 }

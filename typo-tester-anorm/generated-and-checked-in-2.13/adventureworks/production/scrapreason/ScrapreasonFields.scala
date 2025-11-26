@@ -21,22 +21,21 @@ trait ScrapreasonFields {
 
 object ScrapreasonFields {
   lazy val structure: Relation[ScrapreasonFields, ScrapreasonRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ScrapreasonFields, ScrapreasonRow] {
-  
+
     override lazy val fields: ScrapreasonFields = new ScrapreasonFields {
       override def scrapreasonid = IdField[ScrapreasonId, ScrapreasonRow](_path, "scrapreasonid", None, Some("int4"), x => x.scrapreasonid, (row, value) => row.copy(scrapreasonid = value))
       override def name = Field[Name, ScrapreasonRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, ScrapreasonRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ScrapreasonRow]] =
       List[FieldLike[?, ScrapreasonRow]](fields.scrapreasonid, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -22,23 +22,22 @@ trait SalesreasonFields {
 
 object SalesreasonFields {
   lazy val structure: Relation[SalesreasonFields, SalesreasonRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SalesreasonFields, SalesreasonRow] {
-  
+
     override lazy val fields: SalesreasonFields = new SalesreasonFields {
       override def salesreasonid = IdField[SalesreasonId, SalesreasonRow](_path, "salesreasonid", None, Some("int4"), x => x.salesreasonid, (row, value) => row.copy(salesreasonid = value))
       override def name = Field[Name, SalesreasonRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
       override def reasontype = Field[Name, SalesreasonRow](_path, "reasontype", None, Some("varchar"), x => x.reasontype, (row, value) => row.copy(reasontype = value))
       override def modifieddate = Field[TypoLocalDateTime, SalesreasonRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SalesreasonRow]] =
       List[FieldLike[?, SalesreasonRow]](fields.salesreasonid, fields.name, fields.reasontype, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

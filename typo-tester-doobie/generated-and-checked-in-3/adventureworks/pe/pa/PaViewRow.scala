@@ -31,22 +31,26 @@ case class PaViewRow(
 
 object PaViewRow {
   given decoder: Decoder[PaViewRow] = Decoder.forProduct6[PaViewRow, BusinessentityId, BusinessentityId, /* max 128 chars */ String, /* max 10 chars */ String, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")(PaViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PaViewRow] = Encoder.forProduct6[PaViewRow, BusinessentityId, BusinessentityId, /* max 128 chars */ String, /* max 10 chars */ String, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.passwordhash, x.passwordsalt, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PaViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PaViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PaViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          passwordhash = arr(2).asInstanceOf[/* max 128 chars */ String],
-          passwordsalt = arr(3).asInstanceOf[/* max 10 chars */ String],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PaViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            passwordhash = arr(2).asInstanceOf[/* max 128 chars */ String],
+            passwordsalt = arr(3).asInstanceOf[/* max 10 chars */ String],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

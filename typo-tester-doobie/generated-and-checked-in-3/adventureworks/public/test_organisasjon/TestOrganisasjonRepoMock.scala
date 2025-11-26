@@ -19,27 +19,28 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class TestOrganisasjonRepoMock(map: scala.collection.mutable.Map[TestOrganisasjonId, TestOrganisasjonRow] = scala.collection.mutable.Map.empty) extends TestOrganisasjonRepo {
-  override def delete: DeleteBuilder[TestOrganisasjonFields, TestOrganisasjonRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TestOrganisasjonFields.structure, map)
+case class TestOrganisasjonRepoMock(map: scala.collection.mutable.Map[TestOrganisasjonId, TestOrganisasjonRow] = scala.collection.mutable.Map.empty[TestOrganisasjonId, TestOrganisasjonRow]) extends TestOrganisasjonRepo {
+  def delete: DeleteBuilder[TestOrganisasjonFields, TestOrganisasjonRow] = DeleteBuilderMock(DeleteParams.empty, TestOrganisasjonFields.structure, map)
+
+  def deleteById(organisasjonskode: TestOrganisasjonId): ConnectionIO[Boolean] = delay(map.remove(organisasjonskode).isDefined)
+
+  def deleteByIds(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Int] = delay(organisasjonskodes.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: TestOrganisasjonRow): ConnectionIO[TestOrganisasjonRow] = {
+  delay {
+    val _ = if (map.contains(unsaved.organisasjonskode))
+      sys.error(s"id ${unsaved.organisasjonskode} already exists")
+    else
+      map.put(unsaved.organisasjonskode, unsaved)
+
+    unsaved
   }
-  override def deleteById(organisasjonskode: TestOrganisasjonId): ConnectionIO[Boolean] = {
-    delay(map.remove(organisasjonskode).isDefined)
   }
-  override def deleteByIds(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Int] = {
-    delay(organisasjonskodes.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: TestOrganisasjonRow): ConnectionIO[TestOrganisasjonRow] = {
-    delay {
-      val _ = if (map.contains(unsaved.organisasjonskode))
-        sys.error(s"id ${unsaved.organisasjonskode} already exists")
-      else
-        map.put(unsaved.organisasjonskode, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, TestOrganisasjonRow], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, TestOrganisasjonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -49,34 +50,32 @@ class TestOrganisasjonRepoMock(map: scala.collection.mutable.Map[TestOrganisasjo
       num
     }
   }
-  override def select: SelectBuilder[TestOrganisasjonFields, TestOrganisasjonRow] = {
-    SelectBuilderMock(TestOrganisasjonFields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, TestOrganisasjonRow] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(organisasjonskode: TestOrganisasjonId): ConnectionIO[Option[TestOrganisasjonRow]] = {
-    delay(map.get(organisasjonskode))
-  }
-  override def selectByIds(organisasjonskodes: Array[TestOrganisasjonId]): Stream[ConnectionIO, TestOrganisasjonRow] = {
-    Stream.emits(organisasjonskodes.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Map[TestOrganisasjonId, TestOrganisasjonRow]] = {
+
+  def select: SelectBuilder[TestOrganisasjonFields, TestOrganisasjonRow] = SelectBuilderMock(TestOrganisasjonFields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, TestOrganisasjonRow] = Stream.emits(map.values.toList)
+
+  def selectById(organisasjonskode: TestOrganisasjonId): ConnectionIO[Option[TestOrganisasjonRow]] = delay(map.get(organisasjonskode))
+
+  def selectByIds(organisasjonskodes: Array[TestOrganisasjonId]): Stream[ConnectionIO, TestOrganisasjonRow] = Stream.emits(organisasjonskodes.flatMap(map.get).toList)
+
+  def selectByIdsTracked(organisasjonskodes: Array[TestOrganisasjonId]): ConnectionIO[Map[TestOrganisasjonId, TestOrganisasjonRow]] = {
     selectByIds(organisasjonskodes).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.organisasjonskode, x)).toMap
       organisasjonskodes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[TestOrganisasjonFields, TestOrganisasjonRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TestOrganisasjonFields.structure, map)
-  }
-  override def upsert(unsaved: TestOrganisasjonRow): ConnectionIO[TestOrganisasjonRow] = {
+
+  def update: UpdateBuilder[TestOrganisasjonFields, TestOrganisasjonRow] = UpdateBuilderMock(UpdateParams.empty, TestOrganisasjonFields.structure, map)
+
+  def upsert(unsaved: TestOrganisasjonRow): ConnectionIO[TestOrganisasjonRow] = {
     delay {
       map.put(unsaved.organisasjonskode, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[TestOrganisasjonRow]): Stream[ConnectionIO, TestOrganisasjonRow] = {
+
+  def upsertBatch(unsaved: List[TestOrganisasjonRow]): Stream[ConnectionIO, TestOrganisasjonRow] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.organisasjonskode -> row)
@@ -84,8 +83,12 @@ class TestOrganisasjonRepoMock(map: scala.collection.mutable.Map[TestOrganisasjo
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, TestOrganisasjonRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, TestOrganisasjonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

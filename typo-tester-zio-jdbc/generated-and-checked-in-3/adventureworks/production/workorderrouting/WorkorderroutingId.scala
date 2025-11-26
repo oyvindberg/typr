@@ -18,27 +18,33 @@ case class WorkorderroutingId(
   productid: Int,
   operationsequence: TypoShort
 )
+
 object WorkorderroutingId {
-  given jsonDecoder: JsonDecoder[WorkorderroutingId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val workorderid = jsonObj.get("workorderid").toRight("Missing field 'workorderid'").flatMap(_.as(using WorkorderId.jsonDecoder))
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using JsonDecoder.int))
-    val operationsequence = jsonObj.get("operationsequence").toRight("Missing field 'operationsequence'").flatMap(_.as(using TypoShort.jsonDecoder))
-    if (workorderid.isRight && productid.isRight && operationsequence.isRight)
-      Right(WorkorderroutingId(workorderid = workorderid.toOption.get, productid = productid.toOption.get, operationsequence = operationsequence.toOption.get))
-    else Left(List[Either[String, Any]](workorderid, productid, operationsequence).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[WorkorderroutingId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val workorderid = jsonObj.get("workorderid").toRight("Missing field 'workorderid'").flatMap(_.as(using WorkorderId.jsonDecoder))
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using JsonDecoder.int))
+      val operationsequence = jsonObj.get("operationsequence").toRight("Missing field 'operationsequence'").flatMap(_.as(using TypoShort.jsonDecoder))
+      if (workorderid.isRight && productid.isRight && operationsequence.isRight)
+        Right(WorkorderroutingId(workorderid = workorderid.toOption.get, productid = productid.toOption.get, operationsequence = operationsequence.toOption.get))
+      else Left(List[Either[String, Any]](workorderid, productid, operationsequence).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[WorkorderroutingId] = new JsonEncoder[WorkorderroutingId] {
-    override def unsafeEncode(a: WorkorderroutingId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""workorderid":""")
-      WorkorderId.jsonEncoder.unsafeEncode(a.workorderid, indent, out)
-      out.write(",")
-      out.write(""""productid":""")
-      JsonEncoder.int.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""operationsequence":""")
-      TypoShort.jsonEncoder.unsafeEncode(a.operationsequence, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[WorkorderroutingId] = {
+    new JsonEncoder[WorkorderroutingId] {
+      override def unsafeEncode(a: WorkorderroutingId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""workorderid":""")
+        WorkorderId.jsonEncoder.unsafeEncode(a.workorderid, indent, out)
+        out.write(",")
+        out.write(""""productid":""")
+        JsonEncoder.int.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""operationsequence":""")
+        TypoShort.jsonEncoder.unsafeEncode(a.operationsequence, indent, out)
+        out.write("}")
+      }
     }
   }
 }

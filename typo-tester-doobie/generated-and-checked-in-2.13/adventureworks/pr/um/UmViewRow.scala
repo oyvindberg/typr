@@ -26,18 +26,22 @@ case class UmViewRow(
 
 object UmViewRow {
   implicit lazy val decoder: Decoder[UmViewRow] = Decoder.forProduct4[UmViewRow, UnitmeasureId, UnitmeasureId, Name, TypoLocalDateTime]("id", "unitmeasurecode", "name", "modifieddate")(UmViewRow.apply)(UnitmeasureId.decoder, UnitmeasureId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[UmViewRow] = Encoder.forProduct4[UmViewRow, UnitmeasureId, UnitmeasureId, Name, TypoLocalDateTime]("id", "unitmeasurecode", "name", "modifieddate")(x => (x.id, x.unitmeasurecode, x.name, x.modifieddate))(UnitmeasureId.encoder, UnitmeasureId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[UmViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[UmViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    UmViewRow(
-      id = arr(0).asInstanceOf[UnitmeasureId],
-          unitmeasurecode = arr(1).asInstanceOf[UnitmeasureId],
-          name = arr(2).asInstanceOf[Name],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      UmViewRow(
+        id = arr(0).asInstanceOf[UnitmeasureId],
+            unitmeasurecode = arr(1).asInstanceOf[UnitmeasureId],
+            name = arr(2).asInstanceOf[Name],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

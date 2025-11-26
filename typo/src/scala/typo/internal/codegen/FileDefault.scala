@@ -2,22 +2,101 @@ package typo
 package internal
 package codegen
 
-case class FileDefault(default: ComputedDefault, jsonLibs: List[JsonLib], dbLib: Option[DbLib]) {
-  val instances: List[sc.Given] = jsonLibs.flatMap(_.defaultedInstance(default)) ++ dbLib.toList.flatMap(_.defaultedInstance)
+case class FileDefault(default: ComputedDefault, jsonLibs: List[JsonLib], dbLib: Option[DbLib], lang: Lang) {
+  val cls = {
+    val instances: List[jvm.Given] =
+      jsonLibs.flatMap(_.defaultedInstance(default)) ++
+        dbLib.toList.flatMap(_.defaultedInstance)
 
-  val obj: sc.Code = genObject.withBody(default.Defaulted.value, instances)(
-    code"""|case class ${default.Provided}[T](value: T) extends ${default.Defaulted.name}[T]
-           |case object ${default.UseDefault} extends ${default.Defaulted.name}[Nothing]""".stripMargin
-  )
-  val contents =
-    code"""
-/**
- * This signals a value where if you don't provide it, postgres will generate it for you
- */
-sealed trait ${default.Defaulted.name}[+T]
+    val T = jvm.Type.Abstract(jvm.Ident("T"))
+    val U = jvm.Type.Abstract(jvm.Ident("U"))
+    val onDefaultName = jvm.Ident("onDefault")
+    val onProvidedName = jvm.Ident("onProvided")
+    val foldOnDefaultParam = jvm.Param(onDefaultName, jvm.Type.Function0(U))
+    val foldOnProvidedParam = jvm.Param(onProvidedName, jvm.Type.Function1(T, U))
+    val foldAbstract =
+      jvm.Method(
+        comments = jvm.Comments.Empty,
+        name = jvm.Ident("fold"),
+        tparams = List(U),
+        params = List(
+          foldOnDefaultParam,
+          foldOnProvidedParam
+        ),
+        implicitParams = Nil,
+        tpe = U,
+        body = Nil
+      )
 
-$obj
-"""
+    val visitOnDefaultParam = jvm.Param(onDefaultName, jvm.Type.Function0(jvm.Type.Void))
+    val visitOnProvidedParam = jvm.Param(onProvidedName, jvm.Type.Function1(T, jvm.Type.Void))
+    val visitAbstract =
+      jvm.Method(
+        comments = jvm.Comments.Empty,
+        name = jvm.Ident("visit"),
+        tparams = Nil,
+        params = List(visitOnDefaultParam, visitOnProvidedParam),
+        implicitParams = Nil,
+        tpe = jvm.Type.Void,
+        body = Nil
+      )
 
-  val file = sc.File(default.Defaulted, contents, secondaryTypes = Nil, scope = Scope.Main)
+    val getOrElseParam = jvm.Param(onDefaultName, jvm.Type.Function0(T))
+    val getOrElseAbstract =
+      jvm.Method(
+        comments = jvm.Comments.Empty,
+        name = jvm.Ident("getOrElse"),
+        tparams = Nil,
+        params = List(getOrElseParam),
+        implicitParams = Nil,
+        tpe = T,
+        body = Nil
+      )
+    val valueParam = jvm.Param(jvm.Ident("value"), T)
+
+    jvm.Adt.Sum(
+      comments = jvm.Comments(List("This signals a value where if you don't provide it, postgres will generate it for you")),
+      name = default.Defaulted,
+      tparams = List(T),
+      members = List(foldAbstract, getOrElseAbstract, visitAbstract),
+      implements = Nil,
+      subtypes = List(
+        jvm.Adt.Record(
+          isWrapper = false,
+          comments = jvm.Comments.Empty,
+          name = jvm.Type.Qualified(default.Provided),
+          tparams = List(T),
+          params = List(valueParam),
+          implicitParams = Nil,
+          `extends` = None,
+          implements = List(default.Defaulted.of(T)),
+          members = List(
+            foldAbstract.copy(body = List(jvm.Apply1(foldOnProvidedParam, valueParam.name.code))),
+            getOrElseAbstract.copy(body = List(valueParam.name.code)),
+            visitAbstract.copy(body = List(jvm.Apply1(visitOnProvidedParam, valueParam.name.code)))
+          ),
+          staticMembers = Nil
+        ),
+        jvm.Adt.Record(
+          isWrapper = false,
+          comments = jvm.Comments.Empty,
+          name = jvm.Type.Qualified(default.UseDefault),
+          tparams = List(T),
+          params = Nil,
+          implicitParams = Nil,
+          `extends` = None,
+          implements = List(default.Defaulted.of(T)),
+          members = List(
+            foldAbstract.copy(body = List(jvm.Apply0(foldOnDefaultParam))),
+            getOrElseAbstract.copy(body = List(jvm.Apply0(getOrElseParam))),
+            visitAbstract.copy(body = List(jvm.Apply0(visitOnDefaultParam)))
+          ),
+          staticMembers = Nil
+        )
+      ),
+      staticMembers = instances
+    )
+  }
+
+  val file = jvm.File(default.Defaulted, cls, secondaryTypes = Nil, scope = Scope.Main)
 }

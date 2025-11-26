@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait PurchaseorderheaderRepo {
   def delete: DeleteBuilder[PurchaseorderheaderFields, PurchaseorderheaderRow]
+
   def deleteById(purchaseorderid: PurchaseorderheaderId): ConnectionIO[Boolean]
+
   def deleteByIds(purchaseorderids: Array[PurchaseorderheaderId]): ConnectionIO[Int]
+
   def insert(unsaved: PurchaseorderheaderRow): ConnectionIO[PurchaseorderheaderRow]
+
   def insert(unsaved: PurchaseorderheaderRowUnsaved): ConnectionIO[PurchaseorderheaderRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, PurchaseorderheaderRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, PurchaseorderheaderRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, PurchaseorderheaderRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, PurchaseorderheaderRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[PurchaseorderheaderFields, PurchaseorderheaderRow]
+
   def selectAll: Stream[ConnectionIO, PurchaseorderheaderRow]
+
   def selectById(purchaseorderid: PurchaseorderheaderId): ConnectionIO[Option[PurchaseorderheaderRow]]
+
   def selectByIds(purchaseorderids: Array[PurchaseorderheaderId]): Stream[ConnectionIO, PurchaseorderheaderRow]
+
   def selectByIdsTracked(purchaseorderids: Array[PurchaseorderheaderId]): ConnectionIO[Map[PurchaseorderheaderId, PurchaseorderheaderRow]]
+
   def update: UpdateBuilder[PurchaseorderheaderFields, PurchaseorderheaderRow]
+
   def update(row: PurchaseorderheaderRow): ConnectionIO[Option[PurchaseorderheaderRow]]
+
   def upsert(unsaved: PurchaseorderheaderRow): ConnectionIO[PurchaseorderheaderRow]
+
   def upsertBatch(unsaved: List[PurchaseorderheaderRow]): Stream[ConnectionIO, PurchaseorderheaderRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, PurchaseorderheaderRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, PurchaseorderheaderRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

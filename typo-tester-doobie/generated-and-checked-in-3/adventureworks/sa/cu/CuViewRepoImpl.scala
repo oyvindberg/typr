@@ -6,16 +6,12 @@
 package adventureworks.sa.cu
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class CuViewRepoImpl extends CuViewRepo {
-  override def select: SelectBuilder[CuViewFields, CuViewRow] = {
-    SelectBuilderSql(""""sa"."cu"""", CuViewFields.structure, CuViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, CuViewRow] = {
-    sql"""select "id", "currencycode", "name", "modifieddate"::text from "sa"."cu"""".query(using CuViewRow.read).stream
-  }
+  def select: SelectBuilder[CuViewFields, CuViewRow] = SelectBuilder.of(""""sa"."cu"""", CuViewFields.structure, CuViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, CuViewRow] = sql"""select "id", "currencycode", "name", "modifieddate"::text from "sa"."cu"""".query(using CuViewRow.read).stream
 }

@@ -6,6 +6,7 @@
 package adventureworks.sales.salesreason
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -19,35 +20,39 @@ case class SalesreasonRowUnsaved(
   /** Category the sales reason belongs to. */
   reasontype: Name,
   /** Default: nextval('sales.salesreason_salesreasonid_seq'::regclass)
-      Primary key for SalesReason records. */
-  salesreasonid: Defaulted[SalesreasonId] = Defaulted.UseDefault,
+   * Primary key for SalesReason records.
+   */
+  salesreasonid: Defaulted[SalesreasonId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(salesreasonidDefault: => SalesreasonId, modifieddateDefault: => TypoLocalDateTime): SalesreasonRow =
-    SalesreasonRow(
+  def toRow(
+    salesreasonidDefault: => SalesreasonId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SalesreasonRow = {
+    new SalesreasonRow(
+      salesreasonid = salesreasonid.getOrElse(salesreasonidDefault),
       name = name,
       reasontype = reasontype,
-      salesreasonid = salesreasonid match {
-                        case Defaulted.UseDefault => salesreasonidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object SalesreasonRowUnsaved {
   given decoder: Decoder[SalesreasonRowUnsaved] = Decoder.forProduct4[SalesreasonRowUnsaved, Name, Name, Defaulted[SalesreasonId], Defaulted[TypoLocalDateTime]]("name", "reasontype", "salesreasonid", "modifieddate")(SalesreasonRowUnsaved.apply)(using Name.decoder, Name.decoder, Defaulted.decoder(using SalesreasonId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[SalesreasonRowUnsaved] = Encoder.forProduct4[SalesreasonRowUnsaved, Name, Name, Defaulted[SalesreasonId], Defaulted[TypoLocalDateTime]]("name", "reasontype", "salesreasonid", "modifieddate")(x => (x.name, x.reasontype, x.salesreasonid, x.modifieddate))(using Name.encoder, Name.encoder, Defaulted.encoder(using SalesreasonId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[SalesreasonRowUnsaved] = Text.instance[SalesreasonRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.reasontype, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using SalesreasonId.text).unsafeEncode(row.salesreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[SalesreasonRowUnsaved] = {
+    Text.instance[SalesreasonRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.reasontype, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using SalesreasonId.pgText).unsafeEncode(row.salesreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

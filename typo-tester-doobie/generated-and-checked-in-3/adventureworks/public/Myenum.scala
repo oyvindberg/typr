@@ -17,37 +17,49 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Enum `public.myenum`
-  *  - a
-  *  - b
-  *  - c
-  */
-sealed abstract class Myenum(val value: String)
+ *  - a
+ *  - b
+ *  - c
+ */
+
+sealed abstract class Myenum(val value: java.lang.String)
 
 object Myenum {
-  def apply(str: String): Either[String, Myenum] =
+  given put: Put[Myenum] = Put.Advanced.one[Myenum](JdbcType.Other, NonEmptyList.one("public.myenum"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
+
+  given arrayPut: Put[Array[Myenum]] = Put.Advanced.array[AnyRef](NonEmptyList.one("public.myenum[]"), "public.myenum").contramap(_.map(_.value))
+
+  given get: Get[Myenum] = Meta.StringMeta.get.temap(Myenum.apply)
+
+  given arrayGet: Get[Array[Myenum]] = adventureworks.StringArrayMeta.get.map(_.map(force))
+
+  given write: Write[Myenum] = new Write.Single(put)
+
+  given read: Read[Myenum] = new Read.Single(get)
+
+  given pgText: Text[Myenum] = {
+    new Text[Myenum] {
+      override def unsafeEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given decoder: Decoder[Myenum] = Decoder.decodeString.emap(Myenum.apply)
+
+  given encoder: Encoder[Myenum] = Encoder.encodeString.contramap(_.value)
+  def apply(str: java.lang.String): scala.Either[java.lang.String, Myenum] =
     ByName.get(str).toRight(s"'$str' does not match any of the following legal values: $Names")
-  def force(str: String): Myenum =
+  def force(str: java.lang.String): Myenum =
     apply(str) match {
-      case Left(msg) => sys.error(msg)
-      case Right(value) => value
+      case scala.Left(msg) => sys.error(msg)
+      case scala.Right(value) => value
     }
   case object a extends Myenum("a")
+
   case object b extends Myenum("b")
+
   case object c extends Myenum("c")
-  val All: List[Myenum] = List(a, b, c)
-  val Names: String = All.map(_.value).mkString(", ")
-  val ByName: Map[String, Myenum] = All.map(x => (x.value, x)).toMap
-              
-  given arrayGet: Get[Array[Myenum]] = adventureworks.StringArrayMeta.get.map(_.map(force))
-  given arrayPut: Put[Array[Myenum]] = Put.Advanced.array[AnyRef](NonEmptyList.one("public.myenum[]"), "public.myenum").contramap(_.map(_.value))
-  given decoder: Decoder[Myenum] = Decoder.decodeString.emap(Myenum.apply)
-  given encoder: Encoder[Myenum] = Encoder.encodeString.contramap(_.value)
-  given get: Get[Myenum] = Meta.StringMeta.get.temap(Myenum.apply)
-  given put: Put[Myenum] = Put.Advanced.one[Myenum](JdbcType.Other, NonEmptyList.one("public.myenum"), (ps, i, a) => ps.setString(i, a.value), (rs, i, a) => rs.updateString(i, a.value))
-  given read: Read[Myenum] = new Read.Single(get)
-  given text: Text[Myenum] = new Text[Myenum] {
-    override def unsafeEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Myenum, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  given write: Write[Myenum] = new Write.Single(put)
+  val All: scala.List[Myenum] = scala.List(a, b, c)
+  val Names: java.lang.String = All.map(_.value).mkString(", ")
+  val ByName: scala.collection.immutable.Map[java.lang.String, Myenum] = All.map(x => (x.value, x)).toMap
 }

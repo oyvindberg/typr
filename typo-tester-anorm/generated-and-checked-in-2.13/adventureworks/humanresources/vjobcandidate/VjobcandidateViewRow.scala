@@ -44,69 +44,77 @@ case class VjobcandidateViewRow(
 )
 
 object VjobcandidateViewRow {
-  implicit lazy val reads: Reads[VjobcandidateViewRow] = Reads[VjobcandidateViewRow](json => JsResult.fromTry(
-      Try(
-        VjobcandidateViewRow(
-          jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
-          businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
-          namePrefix = json.\("Name.Prefix").toOption.map(_.as(Reads.StringReads)),
-          nameFirst = json.\("Name.First").toOption.map(_.as(Reads.StringReads)),
-          nameMiddle = json.\("Name.Middle").toOption.map(_.as(Reads.StringReads)),
-          nameLast = json.\("Name.Last").toOption.map(_.as(Reads.StringReads)),
-          nameSuffix = json.\("Name.Suffix").toOption.map(_.as(Reads.StringReads)),
-          skills = json.\("Skills").toOption.map(_.as(Reads.StringReads)),
-          addrType = json.\("Addr.Type").toOption.map(_.as(Reads.StringReads)),
-          addrLocCountryRegion = json.\("Addr.Loc.CountryRegion").toOption.map(_.as(Reads.StringReads)),
-          addrLocState = json.\("Addr.Loc.State").toOption.map(_.as(Reads.StringReads)),
-          addrLocCity = json.\("Addr.Loc.City").toOption.map(_.as(Reads.StringReads)),
-          addrPostalCode = json.\("Addr.PostalCode").toOption.map(_.as(Reads.StringReads)),
-          eMail = json.\("EMail").toOption.map(_.as(Reads.StringReads)),
-          webSite = json.\("WebSite").toOption.map(_.as(Reads.StringReads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[VjobcandidateViewRow] = {
+    Reads[VjobcandidateViewRow](json => JsResult.fromTry(
+        Try(
+          VjobcandidateViewRow(
+            jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
+            businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
+            namePrefix = json.\("Name.Prefix").toOption.map(_.as(Reads.StringReads)),
+            nameFirst = json.\("Name.First").toOption.map(_.as(Reads.StringReads)),
+            nameMiddle = json.\("Name.Middle").toOption.map(_.as(Reads.StringReads)),
+            nameLast = json.\("Name.Last").toOption.map(_.as(Reads.StringReads)),
+            nameSuffix = json.\("Name.Suffix").toOption.map(_.as(Reads.StringReads)),
+            skills = json.\("Skills").toOption.map(_.as(Reads.StringReads)),
+            addrType = json.\("Addr.Type").toOption.map(_.as(Reads.StringReads)),
+            addrLocCountryRegion = json.\("Addr.Loc.CountryRegion").toOption.map(_.as(Reads.StringReads)),
+            addrLocState = json.\("Addr.Loc.State").toOption.map(_.as(Reads.StringReads)),
+            addrLocCity = json.\("Addr.Loc.City").toOption.map(_.as(Reads.StringReads)),
+            addrPostalCode = json.\("Addr.PostalCode").toOption.map(_.as(Reads.StringReads)),
+            eMail = json.\("EMail").toOption.map(_.as(Reads.StringReads)),
+            webSite = json.\("WebSite").toOption.map(_.as(Reads.StringReads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VjobcandidateViewRow] = RowParser[VjobcandidateViewRow] { row =>
-    Success(
-      VjobcandidateViewRow(
-        jobcandidateid = row(idx + 0)(JobcandidateId.column),
-        businessentityid = row(idx + 1)(Column.columnToOption(BusinessentityId.column)),
-        namePrefix = row(idx + 2)(Column.columnToOption(Column.columnToString)),
-        nameFirst = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-        nameMiddle = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-        nameLast = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-        nameSuffix = row(idx + 6)(Column.columnToOption(Column.columnToString)),
-        skills = row(idx + 7)(Column.columnToOption(Column.columnToString)),
-        addrType = row(idx + 8)(Column.columnToOption(Column.columnToString)),
-        addrLocCountryRegion = row(idx + 9)(Column.columnToOption(Column.columnToString)),
-        addrLocState = row(idx + 10)(Column.columnToOption(Column.columnToString)),
-        addrLocCity = row(idx + 11)(Column.columnToOption(Column.columnToString)),
-        addrPostalCode = row(idx + 12)(Column.columnToOption(Column.columnToString)),
-        eMail = row(idx + 13)(Column.columnToOption(Column.columnToString)),
-        webSite = row(idx + 14)(Column.columnToOption(Column.columnToString)),
-        modifieddate = row(idx + 15)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[VjobcandidateViewRow] = OWrites[VjobcandidateViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
-      "businessentityid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.businessentityid),
-      "Name.Prefix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.namePrefix),
-      "Name.First" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameFirst),
-      "Name.Middle" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameMiddle),
-      "Name.Last" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameLast),
-      "Name.Suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameSuffix),
-      "Skills" -> Writes.OptionWrites(Writes.StringWrites).writes(o.skills),
-      "Addr.Type" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrType),
-      "Addr.Loc.CountryRegion" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocCountryRegion),
-      "Addr.Loc.State" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocState),
-      "Addr.Loc.City" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocCity),
-      "Addr.PostalCode" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrPostalCode),
-      "EMail" -> Writes.OptionWrites(Writes.StringWrites).writes(o.eMail),
-      "WebSite" -> Writes.OptionWrites(Writes.StringWrites).writes(o.webSite),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VjobcandidateViewRow] = {
+    RowParser[VjobcandidateViewRow] { row =>
+      Success(
+        VjobcandidateViewRow(
+          jobcandidateid = row(idx + 0)(JobcandidateId.column),
+          businessentityid = row(idx + 1)(Column.columnToOption(BusinessentityId.column)),
+          namePrefix = row(idx + 2)(Column.columnToOption(Column.columnToString)),
+          nameFirst = row(idx + 3)(Column.columnToOption(Column.columnToString)),
+          nameMiddle = row(idx + 4)(Column.columnToOption(Column.columnToString)),
+          nameLast = row(idx + 5)(Column.columnToOption(Column.columnToString)),
+          nameSuffix = row(idx + 6)(Column.columnToOption(Column.columnToString)),
+          skills = row(idx + 7)(Column.columnToOption(Column.columnToString)),
+          addrType = row(idx + 8)(Column.columnToOption(Column.columnToString)),
+          addrLocCountryRegion = row(idx + 9)(Column.columnToOption(Column.columnToString)),
+          addrLocState = row(idx + 10)(Column.columnToOption(Column.columnToString)),
+          addrLocCity = row(idx + 11)(Column.columnToOption(Column.columnToString)),
+          addrPostalCode = row(idx + 12)(Column.columnToOption(Column.columnToString)),
+          eMail = row(idx + 13)(Column.columnToOption(Column.columnToString)),
+          webSite = row(idx + 14)(Column.columnToOption(Column.columnToString)),
+          modifieddate = row(idx + 15)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[VjobcandidateViewRow] = {
+    OWrites[VjobcandidateViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
+        "businessentityid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.businessentityid),
+        "Name.Prefix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.namePrefix),
+        "Name.First" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameFirst),
+        "Name.Middle" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameMiddle),
+        "Name.Last" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameLast),
+        "Name.Suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameSuffix),
+        "Skills" -> Writes.OptionWrites(Writes.StringWrites).writes(o.skills),
+        "Addr.Type" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrType),
+        "Addr.Loc.CountryRegion" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocCountryRegion),
+        "Addr.Loc.State" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocState),
+        "Addr.Loc.City" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocCity),
+        "Addr.PostalCode" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrPostalCode),
+        "EMail" -> Writes.OptionWrites(Writes.StringWrites).writes(o.eMail),
+        "WebSite" -> Writes.OptionWrites(Writes.StringWrites).writes(o.webSite),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

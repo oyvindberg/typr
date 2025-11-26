@@ -13,21 +13,45 @@ import typo.dsl.UpdateBuilder
 
 trait TableWithGeneratedColumnsRepo {
   def delete: DeleteBuilder[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow]
+
   def deleteById(name: TableWithGeneratedColumnsId): ConnectionIO[Boolean]
+
   def deleteByIds(names: Array[TableWithGeneratedColumnsId]): ConnectionIO[Int]
+
   def insert(unsaved: TableWithGeneratedColumnsRow): ConnectionIO[TableWithGeneratedColumnsRow]
+
   def insert(unsaved: TableWithGeneratedColumnsRowUnsaved): ConnectionIO[TableWithGeneratedColumnsRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, TableWithGeneratedColumnsRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, TableWithGeneratedColumnsRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, TableWithGeneratedColumnsRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, TableWithGeneratedColumnsRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow]
+
   def selectAll: Stream[ConnectionIO, TableWithGeneratedColumnsRow]
+
   def selectById(name: TableWithGeneratedColumnsId): ConnectionIO[Option[TableWithGeneratedColumnsRow]]
+
   def selectByIds(names: Array[TableWithGeneratedColumnsId]): Stream[ConnectionIO, TableWithGeneratedColumnsRow]
+
   def selectByIdsTracked(names: Array[TableWithGeneratedColumnsId]): ConnectionIO[Map[TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow]]
+
   def update: UpdateBuilder[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow]
+
   def upsert(unsaved: TableWithGeneratedColumnsRow): ConnectionIO[TableWithGeneratedColumnsRow]
+
   def upsertBatch(unsaved: List[TableWithGeneratedColumnsRow]): Stream[ConnectionIO, TableWithGeneratedColumnsRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, TableWithGeneratedColumnsRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, TableWithGeneratedColumnsRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

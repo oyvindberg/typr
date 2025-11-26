@@ -7,6 +7,7 @@ package adventureworks.humanresources.department
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import zio.json.JsonDecoder
@@ -21,59 +22,67 @@ case class DepartmentRowUnsaved(
   /** Name of the group to which the department belongs. */
   groupname: Name,
   /** Default: nextval('humanresources.department_departmentid_seq'::regclass)
-      Primary key for Department records. */
-  departmentid: Defaulted[DepartmentId] = Defaulted.UseDefault,
+   * Primary key for Department records.
+   */
+  departmentid: Defaulted[DepartmentId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(departmentidDefault: => DepartmentId, modifieddateDefault: => TypoLocalDateTime): DepartmentRow =
-    DepartmentRow(
-      departmentid = departmentid match {
-                       case Defaulted.UseDefault => departmentidDefault
-                       case Defaulted.Provided(value) => value
-                     },
+  def toRow(
+    departmentidDefault: => DepartmentId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): DepartmentRow = {
+    new DepartmentRow(
+      departmentid = departmentid.getOrElse(departmentidDefault),
       name = name,
       groupname = groupname,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object DepartmentRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[DepartmentRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val groupname = jsonObj.get("groupname").toRight("Missing field 'groupname'").flatMap(_.as(Name.jsonDecoder))
-    val departmentid = jsonObj.get("departmentid").toRight("Missing field 'departmentid'").flatMap(_.as(Defaulted.jsonDecoder(DepartmentId.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (name.isRight && groupname.isRight && departmentid.isRight && modifieddate.isRight)
-      Right(DepartmentRowUnsaved(name = name.toOption.get, groupname = groupname.toOption.get, departmentid = departmentid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](name, groupname, departmentid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  implicit lazy val jsonEncoder: JsonEncoder[DepartmentRowUnsaved] = new JsonEncoder[DepartmentRowUnsaved] {
-    override def unsafeEncode(a: DepartmentRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""groupname":""")
-      Name.jsonEncoder.unsafeEncode(a.groupname, indent, out)
-      out.write(",")
-      out.write(""""departmentid":""")
-      Defaulted.jsonEncoder(DepartmentId.jsonEncoder).unsafeEncode(a.departmentid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object DepartmentRowUnsaved {
+  implicit lazy val jsonDecoder: JsonDecoder[DepartmentRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val groupname = jsonObj.get("groupname").toRight("Missing field 'groupname'").flatMap(_.as(Name.jsonDecoder))
+      val departmentid = jsonObj.get("departmentid").toRight("Missing field 'departmentid'").flatMap(_.as(Defaulted.jsonDecoder(DepartmentId.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (name.isRight && groupname.isRight && departmentid.isRight && modifieddate.isRight)
+        Right(DepartmentRowUnsaved(name = name.toOption.get, groupname = groupname.toOption.get, departmentid = departmentid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](name, groupname, departmentid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[DepartmentRowUnsaved] = Text.instance[DepartmentRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.groupname, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(DepartmentId.text).unsafeEncode(row.departmentid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[DepartmentRowUnsaved] = {
+    new JsonEncoder[DepartmentRowUnsaved] {
+      override def unsafeEncode(a: DepartmentRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""groupname":""")
+        Name.jsonEncoder.unsafeEncode(a.groupname, indent, out)
+        out.write(",")
+        out.write(""""departmentid":""")
+        Defaulted.jsonEncoder(DepartmentId.jsonEncoder).unsafeEncode(a.departmentid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[DepartmentRowUnsaved] = {
+    Text.instance[DepartmentRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.groupname, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(DepartmentId.pgText).unsafeEncode(row.departmentid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

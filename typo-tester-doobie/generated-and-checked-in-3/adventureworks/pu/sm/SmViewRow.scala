@@ -34,24 +34,28 @@ case class SmViewRow(
 
 object SmViewRow {
   given decoder: Decoder[SmViewRow] = Decoder.forProduct7[SmViewRow, ShipmethodId, ShipmethodId, Name, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate")(SmViewRow.apply)(using ShipmethodId.decoder, ShipmethodId.decoder, Name.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[SmViewRow] = Encoder.forProduct7[SmViewRow, ShipmethodId, ShipmethodId, Name, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "shipmethodid", "name", "shipbase", "shiprate", "rowguid", "modifieddate")(x => (x.id, x.shipmethodid, x.name, x.shipbase, x.shiprate, x.rowguid, x.modifieddate))(using ShipmethodId.encoder, ShipmethodId.encoder, Name.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SmViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ShipmethodId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[SmViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ShipmethodId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SmViewRow(
-      id = arr(0).asInstanceOf[ShipmethodId],
-          shipmethodid = arr(1).asInstanceOf[ShipmethodId],
-          name = arr(2).asInstanceOf[Name],
-          shipbase = arr(3).asInstanceOf[BigDecimal],
-          shiprate = arr(4).asInstanceOf[BigDecimal],
-          rowguid = arr(5).asInstanceOf[TypoUUID],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ShipmethodId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SmViewRow(
+        id = arr(0).asInstanceOf[ShipmethodId],
+            shipmethodid = arr(1).asInstanceOf[ShipmethodId],
+            name = arr(2).asInstanceOf[Name],
+            shipbase = arr(3).asInstanceOf[BigDecimal],
+            shiprate = arr(4).asInstanceOf[BigDecimal],
+            rowguid = arr(5).asInstanceOf[TypoUUID],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

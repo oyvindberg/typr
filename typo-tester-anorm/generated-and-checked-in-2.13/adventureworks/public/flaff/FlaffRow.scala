@@ -20,7 +20,8 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.flaff
-    Composite primary key: code, another_code, some_number, specifier */
+ * Composite primary key: code, another_code, some_number, specifier
+ */
 case class FlaffRow(
   /** Points to [[adventureworks.public.flaff.FlaffRow.code]] */
   code: ShortText,
@@ -31,55 +32,85 @@ case class FlaffRow(
   specifier: ShortText,
   /** Points to [[adventureworks.public.flaff.FlaffRow.specifier]] */
   parentspecifier: Option[ShortText]
-){
-   val compositeId: FlaffId = FlaffId(code, anotherCode, someNumber, specifier)
-   val id = compositeId
- }
-
-object FlaffRow {
-  def apply(compositeId: FlaffId, parentspecifier: Option[ShortText]) =
-    new FlaffRow(compositeId.code, compositeId.anotherCode, compositeId.someNumber, compositeId.specifier, parentspecifier)
-  implicit lazy val reads: Reads[FlaffRow] = Reads[FlaffRow](json => JsResult.fromTry(
-      Try(
-        FlaffRow(
-          code = json.\("code").as(ShortText.reads),
-          anotherCode = json.\("another_code").as(Reads.StringReads),
-          someNumber = json.\("some_number").as(Reads.IntReads),
-          specifier = json.\("specifier").as(ShortText.reads),
-          parentspecifier = json.\("parentspecifier").toOption.map(_.as(ShortText.reads))
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[FlaffRow] = RowParser[FlaffRow] { row =>
-    Success(
-      FlaffRow(
-        code = row(idx + 0)(ShortText.column),
-        anotherCode = row(idx + 1)(Column.columnToString),
-        someNumber = row(idx + 2)(Column.columnToInt),
-        specifier = row(idx + 3)(ShortText.column),
-        parentspecifier = row(idx + 4)(Column.columnToOption(ShortText.column))
-      )
+) {
+  def compositeId: FlaffId = {
+    new FlaffId(
+      code,
+      anotherCode,
+      someNumber,
+      specifier
     )
   }
-  implicit lazy val text: Text[FlaffRow] = Text.instance[FlaffRow]{ (row, sb) =>
-    ShortText.text.unsafeEncode(row.code, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.anotherCode, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.someNumber, sb)
-    sb.append(Text.DELIMETER)
-    ShortText.text.unsafeEncode(row.specifier, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(ShortText.text).unsafeEncode(row.parentspecifier, sb)
+
+  def id: FlaffId = this.compositeId
+}
+
+object FlaffRow {
+  def apply(
+    compositeId: FlaffId,
+    parentspecifier: Option[ShortText]
+  ): FlaffRow = {
+    new FlaffRow(
+      compositeId.code,
+      compositeId.anotherCode,
+      compositeId.someNumber,
+      compositeId.specifier,
+      parentspecifier
+    )
   }
-  implicit lazy val writes: OWrites[FlaffRow] = OWrites[FlaffRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "code" -> ShortText.writes.writes(o.code),
-      "another_code" -> Writes.StringWrites.writes(o.anotherCode),
-      "some_number" -> Writes.IntWrites.writes(o.someNumber),
-      "specifier" -> ShortText.writes.writes(o.specifier),
-      "parentspecifier" -> Writes.OptionWrites(ShortText.writes).writes(o.parentspecifier)
-    ))
-  )
+
+  implicit lazy val pgText: Text[FlaffRow] = {
+    Text.instance[FlaffRow]{ (row, sb) =>
+      ShortText.pgText.unsafeEncode(row.code, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.anotherCode, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.someNumber, sb)
+      sb.append(Text.DELIMETER)
+      ShortText.pgText.unsafeEncode(row.specifier, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(ShortText.pgText).unsafeEncode(row.parentspecifier, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[FlaffRow] = {
+    Reads[FlaffRow](json => JsResult.fromTry(
+        Try(
+          FlaffRow(
+            code = json.\("code").as(ShortText.reads),
+            anotherCode = json.\("another_code").as(Reads.StringReads),
+            someNumber = json.\("some_number").as(Reads.IntReads),
+            specifier = json.\("specifier").as(ShortText.reads),
+            parentspecifier = json.\("parentspecifier").toOption.map(_.as(ShortText.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[FlaffRow] = {
+    RowParser[FlaffRow] { row =>
+      Success(
+        FlaffRow(
+          code = row(idx + 0)(ShortText.column),
+          anotherCode = row(idx + 1)(Column.columnToString),
+          someNumber = row(idx + 2)(Column.columnToInt),
+          specifier = row(idx + 3)(ShortText.column),
+          parentspecifier = row(idx + 4)(Column.columnToOption(ShortText.column))
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[FlaffRow] = {
+    OWrites[FlaffRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "code" -> ShortText.writes.writes(o.code),
+        "another_code" -> Writes.StringWrites.writes(o.anotherCode),
+        "some_number" -> Writes.IntWrites.writes(o.someNumber),
+        "specifier" -> ShortText.writes.writes(o.specifier),
+        "parentspecifier" -> Writes.OptionWrites(ShortText.writes).writes(o.parentspecifier)
+      ))
+    )
+  }
 }

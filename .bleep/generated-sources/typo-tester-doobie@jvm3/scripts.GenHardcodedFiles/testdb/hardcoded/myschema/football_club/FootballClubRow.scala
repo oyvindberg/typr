@@ -13,8 +13,9 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: myschema.football_club
-    football club
-    Primary key: id */
+ * football club
+ * Primary key: id
+ */
 case class FootballClubRow(
   id: FootballClubId,
   name: /* max 100 chars */ String
@@ -22,24 +23,34 @@ case class FootballClubRow(
 
 object FootballClubRow {
   given decoder: Decoder[FootballClubRow] = Decoder.forProduct2[FootballClubRow, FootballClubId, /* max 100 chars */ String]("id", "name")(FootballClubRow.apply)(using FootballClubId.decoder, Decoder.decodeString)
+
   given encoder: Encoder[FootballClubRow] = Encoder.forProduct2[FootballClubRow, FootballClubId, /* max 100 chars */ String]("id", "name")(x => (x.id, x.name))(using FootballClubId.encoder, Encoder.encodeString)
-  given read: Read[FootballClubRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(FootballClubId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    FootballClubRow(
-      id = arr(0).asInstanceOf[FootballClubId],
-          name = arr(1).asInstanceOf[/* max 100 chars */ String]
+
+  given pgText: Text[FootballClubRow] = {
+    Text.instance[FootballClubRow]{ (row, sb) =>
+      FootballClubId.pgText.unsafeEncode(row.id, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+    }
+  }
+
+  given read: Read[FootballClubRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(FootballClubId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      FootballClubRow(
+        id = arr(0).asInstanceOf[FootballClubId],
+            name = arr(1).asInstanceOf[/* max 100 chars */ String]
+      )
+    }
+  }
+
+  given write: Write[FootballClubRow] = {
+    new Write.Composite[FootballClubRow](
+      List(new Write.Single(FootballClubId.put),
+           new Write.Single(Meta.StringMeta.put)),
+      a => List(a.id, a.name)
     )
   }
-  given text: Text[FootballClubRow] = Text.instance[FootballClubRow]{ (row, sb) =>
-    FootballClubId.text.unsafeEncode(row.id, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
-  }
-  given write: Write[FootballClubRow] = new Write.Composite[FootballClubRow](
-    List(new Write.Single(FootballClubId.put),
-         new Write.Single(Meta.StringMeta.put)),
-    a => List(a.id, a.name)
-  )
 }

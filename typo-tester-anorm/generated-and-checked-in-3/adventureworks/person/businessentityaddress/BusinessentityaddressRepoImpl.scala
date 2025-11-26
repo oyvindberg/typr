@@ -18,137 +18,140 @@ import anorm.ParameterValue
 import anorm.RowParser
 import anorm.SQL
 import anorm.SimpleSql
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
-  override def delete: DeleteBuilder[BusinessentityaddressFields, BusinessentityaddressRow] = {
-    DeleteBuilder(""""person"."businessentityaddress"""", BusinessentityaddressFields.structure)
-  }
-  override def deleteById(compositeId: BusinessentityaddressId)(using c: Connection): Boolean = {
-    SQL"""delete from "person"."businessentityaddress" where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "addressid" = ${ParameterValue(compositeId.addressid, null, AddressId.toStatement)} AND "addresstypeid" = ${ParameterValue(compositeId.addresstypeid, null, AddresstypeId.toStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(compositeIds: Array[BusinessentityaddressId])(using c: Connection): Int = {
+  def delete: DeleteBuilder[BusinessentityaddressFields, BusinessentityaddressRow] = DeleteBuilder.of(""""person"."businessentityaddress"""", BusinessentityaddressFields.structure, BusinessentityaddressRow.rowParser(1).*)
+
+  def deleteById(compositeId: BusinessentityaddressId)(using c: Connection): Boolean = SQL"""delete from "person"."businessentityaddress" where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "addressid" = ${ParameterValue(compositeId.addressid, null, AddressId.toStatement)} AND "addresstypeid" = ${ParameterValue(compositeId.addresstypeid, null, AddresstypeId.toStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(compositeIds: Array[BusinessentityaddressId])(using c: Connection): Int = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val addressid = compositeIds.map(_.addressid)
     val addresstypeid = compositeIds.map(_.addresstypeid)
     SQL"""delete
-          from "person"."businessentityaddress"
-          where ("businessentityid", "addressid", "addresstypeid")
-          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(addressid, null, AddressId.arrayToStatement)}), unnest(${ParameterValue(addresstypeid, null, AddresstypeId.arrayToStatement)}))
-       """.executeUpdate()
-    
+    from "person"."businessentityaddress"
+    where ("businessentityid", "addressid", "addresstypeid")
+    in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(addressid, null, AddressId.arrayToStatement)}), unnest(${ParameterValue(addresstypeid, null, AddresstypeId.arrayToStatement)}))
+    """.executeUpdate()
   }
-  override def insert(unsaved: BusinessentityaddressRow)(using c: Connection): BusinessentityaddressRow = {
-    SQL"""insert into "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")
-          values (${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4, ${ParameterValue(unsaved.addressid, null, AddressId.toStatement)}::int4, ${ParameterValue(unsaved.addresstypeid, null, AddresstypeId.toStatement)}::int4, ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid, ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp)
-          returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-       """
-      .executeInsert(BusinessentityaddressRow.rowParser(1).single)
-    
+
+  def insert(unsaved: BusinessentityaddressRow)(using c: Connection): BusinessentityaddressRow = {
+  SQL"""insert into "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")
+    values (${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4, ${ParameterValue(unsaved.addressid, null, AddressId.toStatement)}::int4, ${ParameterValue(unsaved.addresstypeid, null, AddresstypeId.toStatement)}::int4, ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid, ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp)
+    returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
+    """
+    .executeInsert(BusinessentityaddressRow.rowParser(1).single)
   }
-  override def insert(unsaved: BusinessentityaddressRowUnsaved)(using c: Connection): BusinessentityaddressRow = {
+
+  def insert(unsaved: BusinessentityaddressRowUnsaved)(using c: Connection): BusinessentityaddressRow = {
     val namedParameters = List(
       Some((NamedParameter("businessentityid", ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)), "::int4")),
       Some((NamedParameter("addressid", ParameterValue(unsaved.addressid, null, AddressId.toStatement)), "::int4")),
       Some((NamedParameter("addresstypeid", ParameterValue(unsaved.addresstypeid, null, AddresstypeId.toStatement)), "::int4")),
       unsaved.rowguid match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("rowguid", ParameterValue(value, null, TypoUUID.toStatement)), "::uuid"))
       },
       unsaved.modifieddate match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("modifieddate", ParameterValue(value, null, TypoLocalDateTime.toStatement)), "::timestamp"))
       }
     ).flatten
     val quote = '"'.toString
     if (namedParameters.isEmpty) {
       SQL"""insert into "person"."businessentityaddress" default values
-            returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-         """
+      returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
+      """
         .executeInsert(BusinessentityaddressRow.rowParser(1).single)
     } else {
       val q = s"""insert into "person"."businessentityaddress"(${namedParameters.map{case (x, _) => quote + x.name + quote}.mkString(", ")})
-                  values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
-                  returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-               """
+              values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
+              returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
+              """
       SimpleSql(SQL(q), namedParameters.map { case (np, _) => np.tupled }.toMap, RowParser.successful)
         .executeInsert(BusinessentityaddressRow.rowParser(1).single)
     }
-    
   }
-  override def insertStreaming(unsaved: Iterator[BusinessentityaddressRow], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate") FROM STDIN""", batchSize, unsaved)(using BusinessentityaddressRow.text, c)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[BusinessentityaddressRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using BusinessentityaddressRowUnsaved.text, c)
-  }
-  override def select: SelectBuilder[BusinessentityaddressFields, BusinessentityaddressRow] = {
-    SelectBuilderSql(""""person"."businessentityaddress"""", BusinessentityaddressFields.structure, BusinessentityaddressRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[BusinessentityaddressRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[BusinessentityaddressRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate") FROM STDIN""", batchSize, unsaved)(using BusinessentityaddressRow.pgText, c)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[BusinessentityaddressRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using BusinessentityaddressRowUnsaved.pgText, c)
+
+  def select: SelectBuilder[BusinessentityaddressFields, BusinessentityaddressRow] = SelectBuilder.of(""""person"."businessentityaddress"""", BusinessentityaddressFields.structure, BusinessentityaddressRow.rowParser)
+
+  def selectAll(using c: Connection): List[BusinessentityaddressRow] = {
     SQL"""select "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-          from "person"."businessentityaddress"
-       """.as(BusinessentityaddressRow.rowParser(1).*)
+    from "person"."businessentityaddress"
+    """.as(BusinessentityaddressRow.rowParser(1).*)
   }
-  override def selectById(compositeId: BusinessentityaddressId)(using c: Connection): Option[BusinessentityaddressRow] = {
+
+  def selectById(compositeId: BusinessentityaddressId)(using c: Connection): Option[BusinessentityaddressRow] = {
     SQL"""select "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-          from "person"."businessentityaddress"
-          where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "addressid" = ${ParameterValue(compositeId.addressid, null, AddressId.toStatement)} AND "addresstypeid" = ${ParameterValue(compositeId.addresstypeid, null, AddresstypeId.toStatement)}
-       """.as(BusinessentityaddressRow.rowParser(1).singleOpt)
+    from "person"."businessentityaddress"
+    where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "addressid" = ${ParameterValue(compositeId.addressid, null, AddressId.toStatement)} AND "addresstypeid" = ${ParameterValue(compositeId.addresstypeid, null, AddresstypeId.toStatement)}
+    """.as(BusinessentityaddressRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(compositeIds: Array[BusinessentityaddressId])(using c: Connection): List[BusinessentityaddressRow] = {
+
+  def selectByIds(compositeIds: Array[BusinessentityaddressId])(using c: Connection): List[BusinessentityaddressRow] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val addressid = compositeIds.map(_.addressid)
     val addresstypeid = compositeIds.map(_.addresstypeid)
     SQL"""select "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-          from "person"."businessentityaddress"
-          where ("businessentityid", "addressid", "addresstypeid")
-          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(addressid, null, AddressId.arrayToStatement)}), unnest(${ParameterValue(addresstypeid, null, AddresstypeId.arrayToStatement)}))
-       """.as(BusinessentityaddressRow.rowParser(1).*)
-    
+    from "person"."businessentityaddress"
+    where ("businessentityid", "addressid", "addresstypeid")
+    in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(addressid, null, AddressId.arrayToStatement)}), unnest(${ParameterValue(addresstypeid, null, AddresstypeId.arrayToStatement)}))
+    """.as(BusinessentityaddressRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(compositeIds: Array[BusinessentityaddressId])(using c: Connection): Map[BusinessentityaddressId, BusinessentityaddressRow] = {
+
+  def selectByIdsTracked(compositeIds: Array[BusinessentityaddressId])(using c: Connection): Map[BusinessentityaddressId, BusinessentityaddressRow] = {
     val byId = selectByIds(compositeIds).view.map(x => (x.compositeId, x)).toMap
     compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[BusinessentityaddressFields, BusinessentityaddressRow] = {
-    UpdateBuilder(""""person"."businessentityaddress"""", BusinessentityaddressFields.structure, BusinessentityaddressRow.rowParser)
-  }
-  override def update(row: BusinessentityaddressRow)(using c: Connection): Option[BusinessentityaddressRow] = {
+
+  def update: UpdateBuilder[BusinessentityaddressFields, BusinessentityaddressRow] = UpdateBuilder.of(""""person"."businessentityaddress"""", BusinessentityaddressFields.structure, BusinessentityaddressRow.rowParser(1).*)
+
+  def update(row: BusinessentityaddressRow)(using c: Connection): Option[BusinessentityaddressRow] = {
     val compositeId = row.compositeId
     SQL"""update "person"."businessentityaddress"
-          set "rowguid" = ${ParameterValue(row.rowguid, null, TypoUUID.toStatement)}::uuid,
-              "modifieddate" = ${ParameterValue(row.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
-          where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "addressid" = ${ParameterValue(compositeId.addressid, null, AddressId.toStatement)} AND "addresstypeid" = ${ParameterValue(compositeId.addresstypeid, null, AddresstypeId.toStatement)}
-          returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-       """.executeInsert(BusinessentityaddressRow.rowParser(1).singleOpt)
+    set "rowguid" = ${ParameterValue(row.rowguid, null, TypoUUID.toStatement)}::uuid,
+    "modifieddate" = ${ParameterValue(row.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
+    where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "addressid" = ${ParameterValue(compositeId.addressid, null, AddressId.toStatement)} AND "addresstypeid" = ${ParameterValue(compositeId.addresstypeid, null, AddresstypeId.toStatement)}
+    returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
+    """.executeInsert(BusinessentityaddressRow.rowParser(1).singleOpt)
   }
-  override def upsert(unsaved: BusinessentityaddressRow)(using c: Connection): BusinessentityaddressRow = {
-    SQL"""insert into "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")
-          values (
-            ${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4,
-            ${ParameterValue(unsaved.addressid, null, AddressId.toStatement)}::int4,
-            ${ParameterValue(unsaved.addresstypeid, null, AddresstypeId.toStatement)}::int4,
-            ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid,
-            ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
-          )
-          on conflict ("businessentityid", "addressid", "addresstypeid")
-          do update set
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-       """
-      .executeInsert(BusinessentityaddressRow.rowParser(1).single)
-    
+
+  def upsert(unsaved: BusinessentityaddressRow)(using c: Connection): BusinessentityaddressRow = {
+  SQL"""insert into "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")
+    values (
+      ${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4,
+    ${ParameterValue(unsaved.addressid, null, AddressId.toStatement)}::int4,
+    ${ParameterValue(unsaved.addresstypeid, null, AddresstypeId.toStatement)}::int4,
+    ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid,
+    ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
+    )
+    on conflict ("businessentityid", "addressid", "addresstypeid")
+    do update set
+      "rowguid" = EXCLUDED."rowguid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
+    """
+    .executeInsert(BusinessentityaddressRow.rowParser(1).single)
   }
-  override def upsertBatch(unsaved: Iterable[BusinessentityaddressRow])(using c: Connection): List[BusinessentityaddressRow] = {
+
+  def upsertBatch(unsaved: Iterable[BusinessentityaddressRow])(using c: Connection): List[BusinessentityaddressRow] = {
     def toNamedParameter(row: BusinessentityaddressRow): List[NamedParameter] = List(
       NamedParameter("businessentityid", ParameterValue(row.businessentityid, null, BusinessentityId.toStatement)),
       NamedParameter("addressid", ParameterValue(row.addressid, null, AddressId.toStatement)),
@@ -162,30 +165,34 @@ class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
         new anorm.adventureworks.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")
-                values ({businessentityid}::int4, {addressid}::int4, {addresstypeid}::int4, {rowguid}::uuid, {modifieddate}::timestamp)
-                on conflict ("businessentityid", "addressid", "addresstypeid")
-                do update set
-                  "rowguid" = EXCLUDED."rowguid",
-                  "modifieddate" = EXCLUDED."modifieddate"
-                returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-             """,
+            values ({businessentityid}::int4, {addressid}::int4, {addresstypeid}::int4, {rowguid}::uuid, {modifieddate}::timestamp)
+            on conflict ("businessentityid", "addressid", "addresstypeid")
+            do update set
+              "rowguid" = EXCLUDED."rowguid",
+            "modifieddate" = EXCLUDED."modifieddate"
+            returning "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
+            """,
             toNamedParameter(head),
             rest.map(toNamedParameter)*
           )
         ).executeReturning(BusinessentityaddressRow.rowParser(1).*)
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[BusinessentityaddressRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[BusinessentityaddressRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     SQL"""create temporary table businessentityaddress_TEMP (like "person"."businessentityaddress") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy businessentityaddress_TEMP("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate") from stdin""", batchSize, unsaved)(using BusinessentityaddressRow.text, c): @nowarn
+    streamingInsert(s"""copy businessentityaddress_TEMP("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate") from stdin""", batchSize, unsaved)(using BusinessentityaddressRow.pgText, c): @nowarn
     SQL"""insert into "person"."businessentityaddress"("businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate")
-          select * from businessentityaddress_TEMP
-          on conflict ("businessentityid", "addressid", "addresstypeid")
-          do update set
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          ;
-          drop table businessentityaddress_TEMP;""".executeUpdate()
+    select * from businessentityaddress_TEMP
+    on conflict ("businessentityid", "addressid", "addresstypeid")
+    do update set
+      "rowguid" = EXCLUDED."rowguid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    ;
+    drop table businessentityaddress_TEMP;""".executeUpdate()
   }
 }

@@ -29,11 +29,11 @@ trait VjobcandidateemploymentViewFields {
 
 object VjobcandidateemploymentViewFields {
   lazy val structure: Relation[VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow] {
-  
+
     override lazy val fields: VjobcandidateemploymentViewFields = new VjobcandidateemploymentViewFields {
       override def jobcandidateid = Field[JobcandidateId, VjobcandidateemploymentViewRow](_path, "jobcandidateid", None, None, x => x.jobcandidateid, (row, value) => row.copy(jobcandidateid = value))
       override def empStartDate = OptField[TypoLocalDate, VjobcandidateemploymentViewRow](_path, "Emp.StartDate", Some("text"), None, x => x.empStartDate, (row, value) => row.copy(empStartDate = value))
@@ -47,12 +47,11 @@ object VjobcandidateemploymentViewFields {
       override def empLocState = OptField[String, VjobcandidateemploymentViewRow](_path, "Emp.Loc.State", None, None, x => x.empLocState, (row, value) => row.copy(empLocState = value))
       override def empLocCity = OptField[String, VjobcandidateemploymentViewRow](_path, "Emp.Loc.City", None, None, x => x.empLocCity, (row, value) => row.copy(empLocCity = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VjobcandidateemploymentViewRow]] =
       List[FieldLike[?, VjobcandidateemploymentViewRow]](fields.jobcandidateid, fields.empStartDate, fields.empEndDate, fields.empOrgName, fields.empJobTitle, fields.empResponsibility, fields.empFunctionCategory, fields.empIndustryCategory, fields.empLocCountryRegion, fields.empLocState, fields.empLocCity)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

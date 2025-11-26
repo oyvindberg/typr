@@ -7,6 +7,7 @@ package adventureworks.sales.specialoffer
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import play.api.libs.json.JsObject
@@ -27,115 +28,122 @@ case class SpecialofferRowUnsaved(
   /** Group the discount applies to such as Reseller or Customer. */
   category: /* max 50 chars */ String,
   /** Discount start date.
-      Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate)) */
+   * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
+   */
   startdate: TypoLocalDateTime,
   /** Discount end date.
-      Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate)) */
+   * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
+   */
   enddate: TypoLocalDateTime,
   /** Maximum discount percent allowed.
-      Constraint CK_SpecialOffer_MaxQty affecting columns maxqty:  ((maxqty >= 0)) */
-  maxqty: Option[Int],
+   * Constraint CK_SpecialOffer_MaxQty affecting columns maxqty:  ((maxqty >= 0))
+   */
+  maxqty: Option[Int] = None,
   /** Default: nextval('sales.specialoffer_specialofferid_seq'::regclass)
-      Primary key for SpecialOffer records. */
-  specialofferid: Defaulted[SpecialofferId] = Defaulted.UseDefault,
+   * Primary key for SpecialOffer records.
+   */
+  specialofferid: Defaulted[SpecialofferId] = new UseDefault(),
   /** Default: 0.00
-      Discount precentage.
-      Constraint CK_SpecialOffer_DiscountPct affecting columns discountpct:  ((discountpct >= 0.00)) */
-  discountpct: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Discount precentage.
+   * Constraint CK_SpecialOffer_DiscountPct affecting columns discountpct:  ((discountpct >= 0.00))
+   */
+  discountpct: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0
-      Minimum discount percent allowed.
-      Constraint CK_SpecialOffer_MinQty affecting columns minqty:  ((minqty >= 0)) */
-  minqty: Defaulted[Int] = Defaulted.UseDefault,
+   * Minimum discount percent allowed.
+   * Constraint CK_SpecialOffer_MinQty affecting columns minqty:  ((minqty >= 0))
+   */
+  minqty: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(specialofferidDefault: => SpecialofferId, discountpctDefault: => BigDecimal, minqtyDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SpecialofferRow =
-    SpecialofferRow(
+  def toRow(
+    specialofferidDefault: => SpecialofferId,
+    discountpctDefault: => BigDecimal,
+    minqtyDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SpecialofferRow = {
+    new SpecialofferRow(
+      specialofferid = specialofferid.getOrElse(specialofferidDefault),
       description = description,
+      discountpct = discountpct.getOrElse(discountpctDefault),
       `type` = `type`,
       category = category,
       startdate = startdate,
       enddate = enddate,
+      minqty = minqty.getOrElse(minqtyDefault),
       maxqty = maxqty,
-      specialofferid = specialofferid match {
-                         case Defaulted.UseDefault => specialofferidDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      discountpct = discountpct match {
-                      case Defaulted.UseDefault => discountpctDefault
-                      case Defaulted.Provided(value) => value
-                    },
-      minqty = minqty match {
-                 case Defaulted.UseDefault => minqtyDefault
-                 case Defaulted.Provided(value) => value
-               },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object SpecialofferRowUnsaved {
-  given reads: Reads[SpecialofferRowUnsaved] = Reads[SpecialofferRowUnsaved](json => JsResult.fromTry(
-      Try(
-        SpecialofferRowUnsaved(
-          description = json.\("description").as(Reads.StringReads),
-          `type` = json.\("type").as(Reads.StringReads),
-          category = json.\("category").as(Reads.StringReads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-          enddate = json.\("enddate").as(TypoLocalDateTime.reads),
-          maxqty = json.\("maxqty").toOption.map(_.as(Reads.IntReads)),
-          specialofferid = json.\("specialofferid").as(Defaulted.reads(using SpecialofferId.reads)),
-          discountpct = json.\("discountpct").as(Defaulted.reads(using Reads.bigDecReads)),
-          minqty = json.\("minqty").as(Defaulted.reads(using Reads.IntReads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[SpecialofferRowUnsaved] = Text.instance[SpecialofferRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.description, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.`type`, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.category, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.startdate, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.enddate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.intInstance).unsafeEncode(row.maxqty, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using SpecialofferId.text).unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.bigDecimalInstance).unsafeEncode(row.discountpct, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.minqty, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[SpecialofferRowUnsaved] = OWrites[SpecialofferRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "description" -> Writes.StringWrites.writes(o.description),
-      "type" -> Writes.StringWrites.writes(o.`type`),
-      "category" -> Writes.StringWrites.writes(o.category),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-      "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
-      "maxqty" -> Writes.OptionWrites(using Writes.IntWrites).writes(o.maxqty),
-      "specialofferid" -> Defaulted.writes(using SpecialofferId.writes).writes(o.specialofferid),
-      "discountpct" -> Defaulted.writes(using Writes.BigDecimalWrites).writes(o.discountpct),
-      "minqty" -> Defaulted.writes(using Writes.IntWrites).writes(o.minqty),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object SpecialofferRowUnsaved {
+  given pgText: Text[SpecialofferRowUnsaved] = {
+    Text.instance[SpecialofferRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.description, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.`type`, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.category, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.startdate, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.enddate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.intInstance).unsafeEncode(row.maxqty, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using SpecialofferId.pgText).unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.bigDecimalInstance).unsafeEncode(row.discountpct, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.minqty, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[SpecialofferRowUnsaved] = {
+    Reads[SpecialofferRowUnsaved](json => JsResult.fromTry(
+        Try(
+          SpecialofferRowUnsaved(
+            description = json.\("description").as(Reads.StringReads),
+            `type` = json.\("type").as(Reads.StringReads),
+            category = json.\("category").as(Reads.StringReads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads),
+            enddate = json.\("enddate").as(TypoLocalDateTime.reads),
+            maxqty = json.\("maxqty").toOption.map(_.as(Reads.IntReads)),
+            specialofferid = json.\("specialofferid").as(Defaulted.reads(using SpecialofferId.reads)),
+            discountpct = json.\("discountpct").as(Defaulted.reads(using Reads.bigDecReads)),
+            minqty = json.\("minqty").as(Defaulted.reads(using Reads.IntReads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[SpecialofferRowUnsaved] = {
+    OWrites[SpecialofferRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "description" -> Writes.StringWrites.writes(o.description),
+        "type" -> Writes.StringWrites.writes(o.`type`),
+        "category" -> Writes.StringWrites.writes(o.category),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
+        "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
+        "maxqty" -> Writes.OptionWrites(using Writes.IntWrites).writes(o.maxqty),
+        "specialofferid" -> Defaulted.writes(using SpecialofferId.writes).writes(o.specialofferid),
+        "discountpct" -> Defaulted.writes(using Writes.BigDecimalWrites).writes(o.discountpct),
+        "minqty" -> Defaulted.writes(using Writes.IntWrites).writes(o.minqty),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

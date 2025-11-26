@@ -30,37 +30,48 @@ case class TitledpersonRow(
 )
 
 object TitledpersonRow {
-  implicit lazy val reads: Reads[TitledpersonRow] = Reads[TitledpersonRow](json => JsResult.fromTry(
-      Try(
-        TitledpersonRow(
-          titleShort = json.\("title_short").as(TitleDomainId.reads),
-          title = json.\("title").as(TitleId.reads),
-          name = json.\("name").as(Reads.StringReads)
+  implicit lazy val pgText: Text[TitledpersonRow] = {
+    Text.instance[TitledpersonRow]{ (row, sb) =>
+      TitleDomainId.pgText.unsafeEncode(row.titleShort, sb)
+      sb.append(Text.DELIMETER)
+      TitleId.pgText.unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[TitledpersonRow] = {
+    Reads[TitledpersonRow](json => JsResult.fromTry(
+        Try(
+          TitledpersonRow(
+            titleShort = json.\("title_short").as(TitleDomainId.reads),
+            title = json.\("title").as(TitleId.reads),
+            name = json.\("name").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TitledpersonRow] = RowParser[TitledpersonRow] { row =>
-    Success(
-      TitledpersonRow(
-        titleShort = row(idx + 0)(TitleDomainId.column),
-        title = row(idx + 1)(TitleId.column),
-        name = row(idx + 2)(Column.columnToString)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[TitledpersonRow] = Text.instance[TitledpersonRow]{ (row, sb) =>
-    TitleDomainId.text.unsafeEncode(row.titleShort, sb)
-    sb.append(Text.DELIMETER)
-    TitleId.text.unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
+
+  def rowParser(idx: Int): RowParser[TitledpersonRow] = {
+    RowParser[TitledpersonRow] { row =>
+      Success(
+        TitledpersonRow(
+          titleShort = row(idx + 0)(TitleDomainId.column),
+          title = row(idx + 1)(TitleId.column),
+          name = row(idx + 2)(Column.columnToString)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[TitledpersonRow] = OWrites[TitledpersonRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "title_short" -> TitleDomainId.writes.writes(o.titleShort),
-      "title" -> TitleId.writes.writes(o.title),
-      "name" -> Writes.StringWrites.writes(o.name)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[TitledpersonRow] = {
+    OWrites[TitledpersonRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "title_short" -> TitleDomainId.writes.writes(o.titleShort),
+        "title" -> TitleId.writes.writes(o.title),
+        "name" -> Writes.StringWrites.writes(o.name)
+      ))
+    )
+  }
 }

@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `myschema.person` */
-case class PersonId(value: Long) extends AnyVal
+case class PersonId(value: Long) extends scala.AnyVal
+
 object PersonId {
   given arrayGet: Get[Array[PersonId]] = testdb.hardcoded.LongArrayMeta.get.map(_.map(PersonId.apply))
+
   given arrayPut: Put[Array[PersonId]] = testdb.hardcoded.LongArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[PersonId, Long] = Bijection[PersonId, Long](_.value)(PersonId.apply)
+
+  given bijection: Bijection[PersonId, Long] = Bijection.apply[PersonId, Long](_.value)(PersonId.apply)
+
   given decoder: Decoder[PersonId] = Decoder.decodeLong.map(PersonId.apply)
+
   given encoder: Encoder[PersonId] = Encoder.encodeLong.contramap(_.value)
+
   given get: Get[PersonId] = Meta.LongMeta.get.map(PersonId.apply)
-  given put: Put[PersonId] = Meta.LongMeta.put.contramap(_.value)
-  given text: Text[PersonId] = new Text[PersonId] {
-    override def unsafeEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[PersonId] = {
+    new Text[PersonId] {
+      override def unsafeEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[PersonId] = Meta.LongMeta.put.contramap(_.value)
 }

@@ -118,3 +118,12 @@ trait SelectBuilder[Fields, Row] {
       pred: Fields ~ Fields2 => SqlExpr[Boolean]
   ): SelectBuilder[Fields ~ Fields2, Row ~ Option[Row2]]
 }
+
+object SelectBuilder {
+  def of[Fields, Row](
+      name: String,
+      structure: Structure.Relation[Fields, Row],
+      rowParser: JdbcDecoder[Row]
+  ): SelectBuilderSql[Fields, Row] =
+    SelectBuilderSql.Relation(name, structure, rowParser, SelectParams.empty)
+}

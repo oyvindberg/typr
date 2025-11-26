@@ -6,16 +6,12 @@
 package adventureworks.hr.eph
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class EphViewRepoImpl extends EphViewRepo {
-  override def select: SelectBuilder[EphViewFields, EphViewRow] = {
-    SelectBuilderSql(""""hr"."eph"""", EphViewFields.structure, EphViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, EphViewRow] = {
-    sql"""select "id", "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text from "hr"."eph"""".query(using EphViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[EphViewFields, EphViewRow] = SelectBuilder.of(""""hr"."eph"""", EphViewFields.structure, EphViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, EphViewRow] = sql"""select "id", "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text from "hr"."eph"""".query(using EphViewRow.jdbcDecoder).selectStream()
 }

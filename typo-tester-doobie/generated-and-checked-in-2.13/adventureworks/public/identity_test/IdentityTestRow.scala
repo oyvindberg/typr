@@ -14,41 +14,52 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.identity-test
-    Primary key: name */
+ * Primary key: name
+ */
 case class IdentityTestRow(
   /** Identity ALWAYS, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
   alwaysGenerated: Int,
   /** Identity BY DEFAULT, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
   defaultGenerated: Int,
   name: IdentityTestId
-){
-   val id = name
-   def toUnsavedRow(defaultGenerated: Defaulted[Int] = Defaulted.Provided(this.defaultGenerated)): IdentityTestRowUnsaved =
-     IdentityTestRowUnsaved(name, defaultGenerated)
- }
+) {
+  def id: IdentityTestId = name
+
+  def toUnsavedRow(defaultGenerated: Defaulted[Int] = Defaulted.Provided(this.defaultGenerated)): IdentityTestRowUnsaved = new IdentityTestRowUnsaved(name, defaultGenerated)
+}
 
 object IdentityTestRow {
   implicit lazy val decoder: Decoder[IdentityTestRow] = Decoder.forProduct3[IdentityTestRow, Int, Int, IdentityTestId]("always_generated", "default_generated", "name")(IdentityTestRow.apply)(Decoder.decodeInt, Decoder.decodeInt, IdentityTestId.decoder)
+
   implicit lazy val encoder: Encoder[IdentityTestRow] = Encoder.forProduct3[IdentityTestRow, Int, Int, IdentityTestId]("always_generated", "default_generated", "name")(x => (x.alwaysGenerated, x.defaultGenerated, x.name))(Encoder.encodeInt, Encoder.encodeInt, IdentityTestId.encoder)
-  implicit lazy val read: Read[IdentityTestRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val pgText: Text[IdentityTestRow] = {
+    Text.instance[IdentityTestRow]{ (row, sb) =>
+      Text.intInstance.unsafeEncode(row.defaultGenerated, sb)
+      sb.append(Text.DELIMETER)
+      IdentityTestId.pgText.unsafeEncode(row.name, sb)
+    }
+  }
+
+  implicit lazy val read: Read[IdentityTestRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(IdentityTestId.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    IdentityTestRow(
-      alwaysGenerated = arr(0).asInstanceOf[Int],
-          defaultGenerated = arr(1).asInstanceOf[Int],
-          name = arr(2).asInstanceOf[IdentityTestId]
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(IdentityTestId.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      IdentityTestRow(
+        alwaysGenerated = arr(0).asInstanceOf[Int],
+            defaultGenerated = arr(1).asInstanceOf[Int],
+            name = arr(2).asInstanceOf[IdentityTestId]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[IdentityTestRow] = {
+    new Write.Composite[IdentityTestRow](
+      List(new Write.Single(Meta.IntMeta.put),
+           new Write.Single(IdentityTestId.put)),
+      a => List(a.defaultGenerated, a.name)
     )
   }
-  implicit lazy val text: Text[IdentityTestRow] = Text.instance[IdentityTestRow]{ (row, sb) =>
-    Text.intInstance.unsafeEncode(row.defaultGenerated, sb)
-    sb.append(Text.DELIMETER)
-    IdentityTestId.text.unsafeEncode(row.name, sb)
-  }
-  implicit lazy val write: Write[IdentityTestRow] = new Write.Composite[IdentityTestRow](
-    List(new Write.Single(Meta.IntMeta.put),
-         new Write.Single(IdentityTestId.put)),
-    a => List(a.defaultGenerated, a.name)
-  )
 }

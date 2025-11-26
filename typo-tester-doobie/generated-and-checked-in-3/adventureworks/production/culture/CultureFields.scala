@@ -21,22 +21,21 @@ trait CultureFields {
 
 object CultureFields {
   lazy val structure: Relation[CultureFields, CultureRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CultureFields, CultureRow] {
-  
+
     override lazy val fields: CultureFields = new CultureFields {
       override def cultureid = IdField[CultureId, CultureRow](_path, "cultureid", None, Some("bpchar"), x => x.cultureid, (row, value) => row.copy(cultureid = value))
       override def name = Field[Name, CultureRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, CultureRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CultureRow]] =
       List[FieldLike[?, CultureRow]](fields.cultureid, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

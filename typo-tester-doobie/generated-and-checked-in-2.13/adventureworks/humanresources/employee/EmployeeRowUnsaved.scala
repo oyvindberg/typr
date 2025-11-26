@@ -6,6 +6,7 @@
 package adventureworks.humanresources.employee
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -19,7 +20,8 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `humanresources.employee` which has not been persisted yet */
 case class EmployeeRowUnsaved(
   /** Primary key for Employee records.  Foreign key to BusinessEntity.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Unique national identification number such as a social security number. */
   nationalidnumber: /* max 15 chars */ String,
@@ -28,41 +30,58 @@ case class EmployeeRowUnsaved(
   /** Work title such as Buyer or Sales Representative. */
   jobtitle: /* max 50 chars */ String,
   /** Date of birth.
-      Constraint CK_Employee_BirthDate affecting columns birthdate:  (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval)))) */
+   * Constraint CK_Employee_BirthDate affecting columns birthdate:  (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
+   */
   birthdate: TypoLocalDate,
   /** M = Married, S = Single
-      Constraint CK_Employee_MaritalStatus affecting columns maritalstatus:  ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text]))) */
+   * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus:  ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
+   */
   maritalstatus: /* bpchar, max 1 chars */ String,
   /** M = Male, F = Female
-      Constraint CK_Employee_Gender affecting columns gender:  ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text]))) */
+   * Constraint CK_Employee_Gender affecting columns gender:  ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
+   */
   gender: /* bpchar, max 1 chars */ String,
   /** Employee hired on this date.
-      Constraint CK_Employee_HireDate affecting columns hiredate:  (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval)))) */
+   * Constraint CK_Employee_HireDate affecting columns hiredate:  (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
+   */
   hiredate: TypoLocalDate,
   /** Default: true
-      Job classification. 0 = Hourly, not exempt from collective bargaining. 1 = Salaried, exempt from collective bargaining. */
-  salariedflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * Job classification. 0 = Hourly, not exempt from collective bargaining. 1 = Salaried, exempt from collective bargaining.
+   */
+  salariedflag: Defaulted[Flag] = new UseDefault(),
   /** Default: 0
-      Number of available vacation hours.
-      Constraint CK_Employee_VacationHours affecting columns vacationhours:  (((vacationhours >= '-40'::integer) AND (vacationhours <= 240))) */
-  vacationhours: Defaulted[TypoShort] = Defaulted.UseDefault,
+   * Number of available vacation hours.
+   * Constraint CK_Employee_VacationHours affecting columns vacationhours:  (((vacationhours >= '-40'::integer) AND (vacationhours <= 240)))
+   */
+  vacationhours: Defaulted[TypoShort] = new UseDefault(),
   /** Default: 0
-      Number of available sick leave hours.
-      Constraint CK_Employee_SickLeaveHours affecting columns sickleavehours:  (((sickleavehours >= 0) AND (sickleavehours <= 120))) */
-  sickleavehours: Defaulted[TypoShort] = Defaulted.UseDefault,
+   * Number of available sick leave hours.
+   * Constraint CK_Employee_SickLeaveHours affecting columns sickleavehours:  (((sickleavehours >= 0) AND (sickleavehours <= 120)))
+   */
+  sickleavehours: Defaulted[TypoShort] = new UseDefault(),
   /** Default: true
-      0 = Inactive, 1 = Active */
-  currentflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = Inactive, 1 = Active
+   */
+  currentflag: Defaulted[Flag] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Where the employee is located in corporate hierarchy. */
-  organizationnode: Defaulted[Option[String]] = Defaulted.UseDefault
+   * Where the employee is located in corporate hierarchy.
+   */
+  organizationnode: Defaulted[Option[String]] = new UseDefault()
 ) {
-  def toRow(salariedflagDefault: => Flag, vacationhoursDefault: => TypoShort, sickleavehoursDefault: => TypoShort, currentflagDefault: => Flag, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime, organizationnodeDefault: => Option[String]): EmployeeRow =
-    EmployeeRow(
+  def toRow(
+    salariedflagDefault: => Flag,
+    vacationhoursDefault: => TypoShort,
+    sickleavehoursDefault: => TypoShort,
+    currentflagDefault: => Flag,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime,
+    organizationnodeDefault: => Option[String]
+  ): EmployeeRow = {
+    new EmployeeRow(
       businessentityid = businessentityid,
       nationalidnumber = nationalidnumber,
       loginid = loginid,
@@ -71,68 +90,53 @@ case class EmployeeRowUnsaved(
       maritalstatus = maritalstatus,
       gender = gender,
       hiredate = hiredate,
-      salariedflag = salariedflag match {
-                       case Defaulted.UseDefault => salariedflagDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      vacationhours = vacationhours match {
-                        case Defaulted.UseDefault => vacationhoursDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      sickleavehours = sickleavehours match {
-                         case Defaulted.UseDefault => sickleavehoursDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      currentflag = currentflag match {
-                      case Defaulted.UseDefault => currentflagDefault
-                      case Defaulted.Provided(value) => value
-                    },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      organizationnode = organizationnode match {
-                           case Defaulted.UseDefault => organizationnodeDefault
-                           case Defaulted.Provided(value) => value
-                         }
+      salariedflag = salariedflag.getOrElse(salariedflagDefault),
+      vacationhours = vacationhours.getOrElse(vacationhoursDefault),
+      sickleavehours = sickleavehours.getOrElse(sickleavehoursDefault),
+      currentflag = currentflag.getOrElse(currentflagDefault),
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault),
+      organizationnode = organizationnode.getOrElse(organizationnodeDefault)
     )
+  }
 }
+
 object EmployeeRowUnsaved {
   implicit lazy val decoder: Decoder[EmployeeRowUnsaved] = Decoder.forProduct15[EmployeeRowUnsaved, BusinessentityId, /* max 15 chars */ String, /* max 256 chars */ String, /* max 50 chars */ String, TypoLocalDate, /* bpchar, max 1 chars */ String, /* bpchar, max 1 chars */ String, TypoLocalDate, Defaulted[Flag], Defaulted[TypoShort], Defaulted[TypoShort], Defaulted[Flag], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime], Defaulted[Option[String]]]("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(EmployeeRowUnsaved.apply)(BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Defaulted.decoder(Flag.decoder), Defaulted.decoder(TypoShort.decoder), Defaulted.decoder(TypoShort.decoder), Defaulted.decoder(Flag.decoder), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder), Defaulted.decoder(Decoder.decodeOption(Decoder.decodeString)))
+
   implicit lazy val encoder: Encoder[EmployeeRowUnsaved] = Encoder.forProduct15[EmployeeRowUnsaved, BusinessentityId, /* max 15 chars */ String, /* max 256 chars */ String, /* max 50 chars */ String, TypoLocalDate, /* bpchar, max 1 chars */ String, /* bpchar, max 1 chars */ String, TypoLocalDate, Defaulted[Flag], Defaulted[TypoShort], Defaulted[TypoShort], Defaulted[Flag], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime], Defaulted[Option[String]]]("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(x => (x.businessentityid, x.nationalidnumber, x.loginid, x.jobtitle, x.birthdate, x.maritalstatus, x.gender, x.hiredate, x.salariedflag, x.vacationhours, x.sickleavehours, x.currentflag, x.rowguid, x.modifieddate, x.organizationnode))(BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Defaulted.encoder(Flag.encoder), Defaulted.encoder(TypoShort.encoder), Defaulted.encoder(TypoShort.encoder), Defaulted.encoder(Flag.encoder), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder), Defaulted.encoder(Encoder.encodeOption(Encoder.encodeString)))
-  implicit lazy val text: Text[EmployeeRowUnsaved] = Text.instance[EmployeeRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.nationalidnumber, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.loginid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.jobtitle, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDate.text.unsafeEncode(row.birthdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.maritalstatus, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.gender, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDate.text.unsafeEncode(row.hiredate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Flag.text).unsafeEncode(row.salariedflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoShort.text).unsafeEncode(row.vacationhours, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoShort.text).unsafeEncode(row.sickleavehours, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Flag.text).unsafeEncode(row.currentflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.option(Text.stringInstance)).unsafeEncode(row.organizationnode, sb)
+
+  implicit lazy val pgText: Text[EmployeeRowUnsaved] = {
+    Text.instance[EmployeeRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.nationalidnumber, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.loginid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.jobtitle, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDate.pgText.unsafeEncode(row.birthdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.maritalstatus, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.gender, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDate.pgText.unsafeEncode(row.hiredate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Flag.pgText).unsafeEncode(row.salariedflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoShort.pgText).unsafeEncode(row.vacationhours, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoShort.pgText).unsafeEncode(row.sickleavehours, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Flag.pgText).unsafeEncode(row.currentflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.option(Text.stringInstance)).unsafeEncode(row.organizationnode, sb)
+    }
   }
 }

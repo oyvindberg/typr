@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VvendorwithcontactsViewRepo {
   def select: SelectBuilder[VvendorwithcontactsViewFields, VvendorwithcontactsViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VvendorwithcontactsViewRow]
 }

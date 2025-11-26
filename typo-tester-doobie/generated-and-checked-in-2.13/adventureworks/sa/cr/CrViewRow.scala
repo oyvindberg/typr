@@ -33,24 +33,28 @@ case class CrViewRow(
 
 object CrViewRow {
   implicit lazy val decoder: Decoder[CrViewRow] = Decoder.forProduct7[CrViewRow, CurrencyrateId, TypoLocalDateTime, CurrencyId, CurrencyId, BigDecimal, BigDecimal, TypoLocalDateTime]("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")(CrViewRow.apply)(CurrencyrateId.decoder, TypoLocalDateTime.decoder, CurrencyId.decoder, CurrencyId.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[CrViewRow] = Encoder.forProduct7[CrViewRow, CurrencyrateId, TypoLocalDateTime, CurrencyId, CurrencyId, BigDecimal, BigDecimal, TypoLocalDateTime]("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")(x => (x.currencyrateid, x.currencyratedate, x.fromcurrencycode, x.tocurrencycode, x.averagerate, x.endofdayrate, x.modifieddate))(CurrencyrateId.encoder, TypoLocalDateTime.encoder, CurrencyId.encoder, CurrencyId.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[CrViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(CurrencyrateId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
-      new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    CrViewRow(
-      currencyrateid = arr(0).asInstanceOf[CurrencyrateId],
-          currencyratedate = arr(1).asInstanceOf[TypoLocalDateTime],
-          fromcurrencycode = arr(2).asInstanceOf[CurrencyId],
-          tocurrencycode = arr(3).asInstanceOf[CurrencyId],
-          averagerate = arr(4).asInstanceOf[BigDecimal],
-          endofdayrate = arr(5).asInstanceOf[BigDecimal],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
-    )
+
+  implicit lazy val read: Read[CrViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(CurrencyrateId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
+        new Read.Single(CurrencyId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      CrViewRow(
+        currencyrateid = arr(0).asInstanceOf[CurrencyrateId],
+            currencyratedate = arr(1).asInstanceOf[TypoLocalDateTime],
+            fromcurrencycode = arr(2).asInstanceOf[CurrencyId],
+            tocurrencycode = arr(3).asInstanceOf[CurrencyId],
+            averagerate = arr(4).asInstanceOf[BigDecimal],
+            endofdayrate = arr(5).asInstanceOf[BigDecimal],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

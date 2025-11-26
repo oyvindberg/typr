@@ -13,23 +13,49 @@ import typo.dsl.UpdateBuilder
 
 trait UsersRepo {
   def delete: DeleteBuilder[UsersFields, UsersRow]
+
   def deleteById(userId: UsersId)(using c: Connection): Boolean
+
   def deleteByIds(userIds: Array[UsersId])(using c: Connection): Int
+
   def insert(unsaved: UsersRow)(using c: Connection): UsersRow
+
   def insert(unsaved: UsersRowUnsaved)(using c: Connection): UsersRow
-  def insertStreaming(unsaved: Iterator[UsersRow], batchSize: Int = 10000)(using c: Connection): Long
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Iterator[UsersRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[UsersRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[UsersRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[UsersFields, UsersRow]
+
   def selectAll(using c: Connection): List[UsersRow]
+
   def selectById(userId: UsersId)(using c: Connection): Option[UsersRow]
+
   def selectByIds(userIds: Array[UsersId])(using c: Connection): List[UsersRow]
+
   def selectByIdsTracked(userIds: Array[UsersId])(using c: Connection): Map[UsersId, UsersRow]
+
   def selectByUniqueEmail(email: TypoUnknownCitext)(using c: Connection): Option[UsersRow]
+
   def update: UpdateBuilder[UsersFields, UsersRow]
+
   def update(row: UsersRow)(using c: Connection): Option[UsersRow]
+
   def upsert(unsaved: UsersRow)(using c: Connection): UsersRow
+
   def upsertBatch(unsaved: Iterable[UsersRow])(using c: Connection): List[UsersRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[UsersRow], batchSize: Int = 10000)(using c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[UsersRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int
 }

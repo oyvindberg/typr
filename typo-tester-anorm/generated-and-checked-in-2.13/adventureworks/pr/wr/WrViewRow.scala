@@ -52,60 +52,68 @@ case class WrViewRow(
 )
 
 object WrViewRow {
-  implicit lazy val reads: Reads[WrViewRow] = Reads[WrViewRow](json => JsResult.fromTry(
-      Try(
-        WrViewRow(
-          id = json.\("id").as(WorkorderId.reads),
-          workorderid = json.\("workorderid").as(WorkorderId.reads),
-          productid = json.\("productid").as(Reads.IntReads),
-          operationsequence = json.\("operationsequence").as(TypoShort.reads),
-          locationid = json.\("locationid").as(LocationId.reads),
-          scheduledstartdate = json.\("scheduledstartdate").as(TypoLocalDateTime.reads),
-          scheduledenddate = json.\("scheduledenddate").as(TypoLocalDateTime.reads),
-          actualstartdate = json.\("actualstartdate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          actualenddate = json.\("actualenddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          actualresourcehrs = json.\("actualresourcehrs").toOption.map(_.as(Reads.bigDecReads)),
-          plannedcost = json.\("plannedcost").as(Reads.bigDecReads),
-          actualcost = json.\("actualcost").toOption.map(_.as(Reads.bigDecReads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[WrViewRow] = {
+    Reads[WrViewRow](json => JsResult.fromTry(
+        Try(
+          WrViewRow(
+            id = json.\("id").as(WorkorderId.reads),
+            workorderid = json.\("workorderid").as(WorkorderId.reads),
+            productid = json.\("productid").as(Reads.IntReads),
+            operationsequence = json.\("operationsequence").as(TypoShort.reads),
+            locationid = json.\("locationid").as(LocationId.reads),
+            scheduledstartdate = json.\("scheduledstartdate").as(TypoLocalDateTime.reads),
+            scheduledenddate = json.\("scheduledenddate").as(TypoLocalDateTime.reads),
+            actualstartdate = json.\("actualstartdate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            actualenddate = json.\("actualenddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            actualresourcehrs = json.\("actualresourcehrs").toOption.map(_.as(Reads.bigDecReads)),
+            plannedcost = json.\("plannedcost").as(Reads.bigDecReads),
+            actualcost = json.\("actualcost").toOption.map(_.as(Reads.bigDecReads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[WrViewRow] = RowParser[WrViewRow] { row =>
-    Success(
-      WrViewRow(
-        id = row(idx + 0)(WorkorderId.column),
-        workorderid = row(idx + 1)(WorkorderId.column),
-        productid = row(idx + 2)(Column.columnToInt),
-        operationsequence = row(idx + 3)(TypoShort.column),
-        locationid = row(idx + 4)(LocationId.column),
-        scheduledstartdate = row(idx + 5)(TypoLocalDateTime.column),
-        scheduledenddate = row(idx + 6)(TypoLocalDateTime.column),
-        actualstartdate = row(idx + 7)(Column.columnToOption(TypoLocalDateTime.column)),
-        actualenddate = row(idx + 8)(Column.columnToOption(TypoLocalDateTime.column)),
-        actualresourcehrs = row(idx + 9)(Column.columnToOption(Column.columnToScalaBigDecimal)),
-        plannedcost = row(idx + 10)(Column.columnToScalaBigDecimal),
-        actualcost = row(idx + 11)(Column.columnToOption(Column.columnToScalaBigDecimal)),
-        modifieddate = row(idx + 12)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[WrViewRow] = OWrites[WrViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> WorkorderId.writes.writes(o.id),
-      "workorderid" -> WorkorderId.writes.writes(o.workorderid),
-      "productid" -> Writes.IntWrites.writes(o.productid),
-      "operationsequence" -> TypoShort.writes.writes(o.operationsequence),
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "scheduledstartdate" -> TypoLocalDateTime.writes.writes(o.scheduledstartdate),
-      "scheduledenddate" -> TypoLocalDateTime.writes.writes(o.scheduledenddate),
-      "actualstartdate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.actualstartdate),
-      "actualenddate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.actualenddate),
-      "actualresourcehrs" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.actualresourcehrs),
-      "plannedcost" -> Writes.BigDecimalWrites.writes(o.plannedcost),
-      "actualcost" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.actualcost),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[WrViewRow] = {
+    RowParser[WrViewRow] { row =>
+      Success(
+        WrViewRow(
+          id = row(idx + 0)(WorkorderId.column),
+          workorderid = row(idx + 1)(WorkorderId.column),
+          productid = row(idx + 2)(Column.columnToInt),
+          operationsequence = row(idx + 3)(TypoShort.column),
+          locationid = row(idx + 4)(LocationId.column),
+          scheduledstartdate = row(idx + 5)(TypoLocalDateTime.column),
+          scheduledenddate = row(idx + 6)(TypoLocalDateTime.column),
+          actualstartdate = row(idx + 7)(Column.columnToOption(TypoLocalDateTime.column)),
+          actualenddate = row(idx + 8)(Column.columnToOption(TypoLocalDateTime.column)),
+          actualresourcehrs = row(idx + 9)(Column.columnToOption(Column.columnToScalaBigDecimal)),
+          plannedcost = row(idx + 10)(Column.columnToScalaBigDecimal),
+          actualcost = row(idx + 11)(Column.columnToOption(Column.columnToScalaBigDecimal)),
+          modifieddate = row(idx + 12)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[WrViewRow] = {
+    OWrites[WrViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> WorkorderId.writes.writes(o.id),
+        "workorderid" -> WorkorderId.writes.writes(o.workorderid),
+        "productid" -> Writes.IntWrites.writes(o.productid),
+        "operationsequence" -> TypoShort.writes.writes(o.operationsequence),
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "scheduledstartdate" -> TypoLocalDateTime.writes.writes(o.scheduledstartdate),
+        "scheduledenddate" -> TypoLocalDateTime.writes.writes(o.scheduledenddate),
+        "actualstartdate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.actualstartdate),
+        "actualenddate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.actualenddate),
+        "actualresourcehrs" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.actualresourcehrs),
+        "plannedcost" -> Writes.BigDecimalWrites.writes(o.plannedcost),
+        "actualcost" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.actualcost),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

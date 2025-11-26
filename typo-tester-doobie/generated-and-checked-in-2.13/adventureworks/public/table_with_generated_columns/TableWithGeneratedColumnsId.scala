@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `public.table-with-generated-columns` */
-case class TableWithGeneratedColumnsId(value: String) extends AnyVal
+case class TableWithGeneratedColumnsId(value: String) extends scala.AnyVal
+
 object TableWithGeneratedColumnsId {
   implicit lazy val arrayGet: Get[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayMeta.get.map(_.map(TableWithGeneratedColumnsId.apply))
+
   implicit lazy val arrayPut: Put[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
+  implicit lazy val bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection.apply[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
   implicit lazy val decoder: Decoder[TableWithGeneratedColumnsId] = Decoder.decodeString.map(TableWithGeneratedColumnsId.apply)
+
   implicit lazy val encoder: Encoder[TableWithGeneratedColumnsId] = Encoder.encodeString.contramap(_.value)
+
   implicit lazy val get: Get[TableWithGeneratedColumnsId] = Meta.StringMeta.get.map(TableWithGeneratedColumnsId.apply)
-  implicit lazy val put: Put[TableWithGeneratedColumnsId] = Meta.StringMeta.put.contramap(_.value)
-  implicit lazy val text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {
-    override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[TableWithGeneratedColumnsId] = {
+    new Text[TableWithGeneratedColumnsId] {
+      override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val put: Put[TableWithGeneratedColumnsId] = Meta.StringMeta.put.contramap(_.value)
 }

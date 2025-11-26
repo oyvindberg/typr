@@ -7,6 +7,7 @@ package adventureworks.production.productmodelillustration
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
 import adventureworks.production.productmodel.ProductmodelId
@@ -21,47 +22,50 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productmodelillustration` which has not been persisted yet */
 case class ProductmodelillustrationRowUnsaved(
   /** Primary key. Foreign key to ProductModel.ProductModelID.
-      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
+   * Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]]
+   */
   productmodelid: ProductmodelId,
   /** Primary key. Foreign key to Illustration.IllustrationID.
-      Points to [[adventureworks.production.illustration.IllustrationRow.illustrationid]] */
+   * Points to [[adventureworks.production.illustration.IllustrationRow.illustrationid]]
+   */
   illustrationid: IllustrationId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): ProductmodelillustrationRow =
-    ProductmodelillustrationRow(
-      productmodelid = productmodelid,
-      illustrationid = illustrationid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): ProductmodelillustrationRow = new ProductmodelillustrationRow(productmodelid = productmodelid, illustrationid = illustrationid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ProductmodelillustrationRowUnsaved {
-  implicit lazy val reads: Reads[ProductmodelillustrationRowUnsaved] = Reads[ProductmodelillustrationRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ProductmodelillustrationRowUnsaved(
-          productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
-          illustrationid = json.\("illustrationid").as(IllustrationId.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[ProductmodelillustrationRowUnsaved] = Text.instance[ProductmodelillustrationRowUnsaved]{ (row, sb) =>
-    ProductmodelId.text.unsafeEncode(row.productmodelid, sb)
-    sb.append(Text.DELIMETER)
-    IllustrationId.text.unsafeEncode(row.illustrationid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  implicit lazy val pgText: Text[ProductmodelillustrationRowUnsaved] = {
+    Text.instance[ProductmodelillustrationRowUnsaved]{ (row, sb) =>
+      ProductmodelId.pgText.unsafeEncode(row.productmodelid, sb)
+      sb.append(Text.DELIMETER)
+      IllustrationId.pgText.unsafeEncode(row.illustrationid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[ProductmodelillustrationRowUnsaved] = OWrites[ProductmodelillustrationRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
-      "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[ProductmodelillustrationRowUnsaved] = {
+    Reads[ProductmodelillustrationRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ProductmodelillustrationRowUnsaved(
+            productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
+            illustrationid = json.\("illustrationid").as(IllustrationId.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductmodelillustrationRowUnsaved] = {
+    OWrites[ProductmodelillustrationRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
+        "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

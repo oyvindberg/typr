@@ -22,22 +22,28 @@ case class SalesterritoryhistoryId(
   startdate: TypoLocalDateTime,
   territoryid: SalesterritoryId
 )
+
 object SalesterritoryhistoryId {
-  given reads: Reads[SalesterritoryhistoryId] = Reads[SalesterritoryhistoryId](json => JsResult.fromTry(
-      Try(
-        SalesterritoryhistoryId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-          territoryid = json.\("territoryid").as(SalesterritoryId.reads)
+  given reads: Reads[SalesterritoryhistoryId] = {
+    Reads[SalesterritoryhistoryId](json => JsResult.fromTry(
+        Try(
+          SalesterritoryhistoryId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads),
+            territoryid = json.\("territoryid").as(SalesterritoryId.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[SalesterritoryhistoryId] = OWrites[SalesterritoryhistoryId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-      "territoryid" -> SalesterritoryId.writes.writes(o.territoryid)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[SalesterritoryhistoryId] = {
+    OWrites[SalesterritoryhistoryId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
+        "territoryid" -> SalesterritoryId.writes.writes(o.territoryid)
+      ))
+    )
+  }
 }

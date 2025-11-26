@@ -21,59 +21,79 @@ import zio.json.JsonEncoder
 case class TypoInt2Vector(value: String)
 
 object TypoInt2Vector {
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoInt2Vector]] = JdbcDecoder[Array[TypoInt2Vector]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoInt2Vector(x.asInstanceOf[PGobject].getValue))
-    },
-    "Array[org.postgresql.util.PGobject]"
-  )
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoInt2Vector]] = {
+    JdbcDecoder[Array[TypoInt2Vector]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoInt2Vector(x.asInstanceOf[PGobject].getValue))
+      },
+      "Array[org.postgresql.util.PGobject]"
+    )
+  }
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TypoInt2Vector]] = JdbcEncoder.singleParamEncoder(arraySetter)
-  implicit lazy val arraySetter: Setter[Array[TypoInt2Vector]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "int2vector",
-        v.map { vv =>
+
+  implicit lazy val arraySetter: Setter[Array[TypoInt2Vector]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
+        i,
+        ps.getConnection.createArrayOf(
+          "int2vector",
+          v.map { vv =>
+            {
+              val obj = new PGobject()
+              obj.setType("int2vector")
+              obj.setValue(vv.value)
+              obj
+            }
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  implicit lazy val bijection: Bijection[TypoInt2Vector, String] = Bijection.apply[TypoInt2Vector, String](_.value)(TypoInt2Vector.apply)
+
+  implicit lazy val jdbcDecoder: JdbcDecoder[TypoInt2Vector] = {
+    JdbcDecoder[TypoInt2Vector](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoInt2Vector(v.asInstanceOf[PGobject].getValue)
+      },
+      "org.postgresql.util.PGobject"
+    )
+  }
+
+  implicit lazy val jdbcEncoder: JdbcEncoder[TypoInt2Vector] = JdbcEncoder.singleParamEncoder(setter)
+
+  implicit lazy val jsonDecoder: JsonDecoder[TypoInt2Vector] = JsonDecoder.string.map(TypoInt2Vector.apply)
+
+  implicit lazy val jsonEncoder: JsonEncoder[TypoInt2Vector] = JsonEncoder.string.contramap(_.value)
+
+  implicit lazy val pgText: Text[TypoInt2Vector] = {
+    new Text[TypoInt2Vector] {
+      override def unsafeEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val pgType: PGType[TypoInt2Vector] = PGType.instance[TypoInt2Vector]("int2vector", Types.OTHER)
+
+  implicit lazy val setter: Setter[TypoInt2Vector] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
           {
-            val obj = new PGobject
+            val obj = new PGobject()
             obj.setType("int2vector")
-            obj.setValue(vv.value)
+            obj.setValue(v.value)
             obj
           }
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  implicit lazy val bijection: Bijection[TypoInt2Vector, String] = Bijection[TypoInt2Vector, String](_.value)(TypoInt2Vector.apply)
-  implicit lazy val jdbcDecoder: JdbcDecoder[TypoInt2Vector] = JdbcDecoder[TypoInt2Vector](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoInt2Vector(v.asInstanceOf[PGobject].getValue)
-    },
-    "org.postgresql.util.PGobject"
-  )
-  implicit lazy val jdbcEncoder: JdbcEncoder[TypoInt2Vector] = JdbcEncoder.singleParamEncoder(setter)
-  implicit lazy val jsonDecoder: JsonDecoder[TypoInt2Vector] = JsonDecoder.string.map(TypoInt2Vector.apply)
-  implicit lazy val jsonEncoder: JsonEncoder[TypoInt2Vector] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val pgType: PGType[TypoInt2Vector] = PGType.instance[TypoInt2Vector]("int2vector", Types.OTHER)
-  implicit lazy val setter: Setter[TypoInt2Vector] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
-        i,
-        {
-          val obj = new PGobject
-          obj.setType("int2vector")
-          obj.setValue(v.value)
-          obj
-        }
-      )
-    },
-    "int2vector"
-  )
-  implicit lazy val text: Text[TypoInt2Vector] = new Text[TypoInt2Vector] {
-    override def unsafeEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoInt2Vector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+        )
+      },
+      "int2vector"
+    )
   }
 }

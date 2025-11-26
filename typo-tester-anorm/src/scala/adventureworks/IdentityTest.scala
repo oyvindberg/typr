@@ -12,7 +12,7 @@ class IdentityTest extends AnyFunSuite with TypeCheckedTripleEquals {
 
   test("works") {
     withConnection { implicit c =>
-      val unsaved = IdentityTestRowUnsaved(IdentityTestId("a"), Defaulted.UseDefault)
+      val unsaved = IdentityTestRowUnsaved(IdentityTestId("a"), Defaulted.UseDefault())
       val inserted = repo.insert(unsaved)
       val upserted = repo.upsert(inserted)
       assert(inserted === upserted): @nowarn

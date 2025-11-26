@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait VproductanddescriptionMVRepo {
   def select: SelectBuilder[VproductanddescriptionMVFields, VproductanddescriptionMVRow]
+
   def selectAll: Stream[ConnectionIO, VproductanddescriptionMVRow]
 }

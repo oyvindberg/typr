@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.currencyrate` */
-case class CurrencyrateId(value: Int) extends AnyVal
+case class CurrencyrateId(value: Int) extends scala.AnyVal
+
 object CurrencyrateId {
   implicit lazy val arrayColumn: Column[Array[CurrencyrateId]] = Column.columnToArray(column, implicitly)
+
   implicit lazy val arrayToStatement: ToStatement[Array[CurrencyrateId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[CurrencyrateId, Int] = Bijection[CurrencyrateId, Int](_.value)(CurrencyrateId.apply)
+
+  implicit lazy val bijection: Bijection[CurrencyrateId, Int] = Bijection.apply[CurrencyrateId, Int](_.value)(CurrencyrateId.apply)
+
   implicit lazy val column: Column[CurrencyrateId] = Column.columnToInt.map(CurrencyrateId.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[CurrencyrateId] = new ParameterMetaData[CurrencyrateId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  implicit lazy val parameterMetadata: ParameterMetaData[CurrencyrateId] = {
+    new ParameterMetaData[CurrencyrateId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  implicit lazy val pgText: Text[CurrencyrateId] = {
+    new Text[CurrencyrateId] {
+      override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[CurrencyrateId] = Reads.IntReads.map(CurrencyrateId.apply)
-  implicit lazy val text: Text[CurrencyrateId] = new Text[CurrencyrateId] {
-    override def unsafeEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CurrencyrateId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[CurrencyrateId] = ToStatement.intToStatement.contramap(_.value)
+
   implicit lazy val writes: Writes[CurrencyrateId] = Writes.IntWrites.contramap(_.value)
 }

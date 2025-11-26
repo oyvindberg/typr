@@ -17,142 +17,145 @@ import anorm.ParameterValue
 import anorm.RowParser
 import anorm.SQL
 import anorm.SimpleSql
-import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
-  override def delete: DeleteBuilder[SalesterritoryhistoryFields, SalesterritoryhistoryRow] = {
-    DeleteBuilder(""""sales"."salesterritoryhistory"""", SalesterritoryhistoryFields.structure)
-  }
-  override def deleteById(compositeId: SalesterritoryhistoryId)(implicit c: Connection): Boolean = {
-    SQL"""delete from "sales"."salesterritoryhistory" where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "startdate" = ${ParameterValue(compositeId.startdate, null, TypoLocalDateTime.toStatement)} AND "territoryid" = ${ParameterValue(compositeId.territoryid, null, SalesterritoryId.toStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(compositeIds: Array[SalesterritoryhistoryId])(implicit c: Connection): Int = {
+  def delete: DeleteBuilder[SalesterritoryhistoryFields, SalesterritoryhistoryRow] = DeleteBuilder.of(""""sales"."salesterritoryhistory"""", SalesterritoryhistoryFields.structure, SalesterritoryhistoryRow.rowParser(1).*)
+
+  def deleteById(compositeId: SalesterritoryhistoryId)(implicit c: Connection): Boolean = SQL"""delete from "sales"."salesterritoryhistory" where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "startdate" = ${ParameterValue(compositeId.startdate, null, TypoLocalDateTime.toStatement)} AND "territoryid" = ${ParameterValue(compositeId.territoryid, null, SalesterritoryId.toStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(compositeIds: Array[SalesterritoryhistoryId])(implicit c: Connection): Int = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val startdate = compositeIds.map(_.startdate)
     val territoryid = compositeIds.map(_.territoryid)
     SQL"""delete
-          from "sales"."salesterritoryhistory"
-          where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}), unnest(${ParameterValue(territoryid, null, SalesterritoryId.arrayToStatement)}))
-       """.executeUpdate()
-    
+    from "sales"."salesterritoryhistory"
+    where ("businessentityid", "startdate", "territoryid")
+    in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}), unnest(${ParameterValue(territoryid, null, SalesterritoryId.arrayToStatement)}))
+    """.executeUpdate()
   }
-  override def insert(unsaved: SalesterritoryhistoryRow)(implicit c: Connection): SalesterritoryhistoryRow = {
-    SQL"""insert into "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")
-          values (${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4, ${ParameterValue(unsaved.territoryid, null, SalesterritoryId.toStatement)}::int4, ${ParameterValue(unsaved.startdate, null, TypoLocalDateTime.toStatement)}::timestamp, ${ParameterValue(unsaved.enddate, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp, ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid, ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp)
-          returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-       """
-      .executeInsert(SalesterritoryhistoryRow.rowParser(1).single)
-    
+
+  def insert(unsaved: SalesterritoryhistoryRow)(implicit c: Connection): SalesterritoryhistoryRow = {
+  SQL"""insert into "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")
+    values (${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4, ${ParameterValue(unsaved.territoryid, null, SalesterritoryId.toStatement)}::int4, ${ParameterValue(unsaved.startdate, null, TypoLocalDateTime.toStatement)}::timestamp, ${ParameterValue(unsaved.enddate, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp, ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid, ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp)
+    returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
+    """
+    .executeInsert(SalesterritoryhistoryRow.rowParser(1).single)
   }
-  override def insert(unsaved: SalesterritoryhistoryRowUnsaved)(implicit c: Connection): SalesterritoryhistoryRow = {
+
+  def insert(unsaved: SalesterritoryhistoryRowUnsaved)(implicit c: Connection): SalesterritoryhistoryRow = {
     val namedParameters = List(
       Some((NamedParameter("businessentityid", ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)), "::int4")),
       Some((NamedParameter("territoryid", ParameterValue(unsaved.territoryid, null, SalesterritoryId.toStatement)), "::int4")),
       Some((NamedParameter("startdate", ParameterValue(unsaved.startdate, null, TypoLocalDateTime.toStatement)), "::timestamp")),
       Some((NamedParameter("enddate", ParameterValue(unsaved.enddate, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))), "::timestamp")),
       unsaved.rowguid match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("rowguid", ParameterValue(value, null, TypoUUID.toStatement)), "::uuid"))
       },
       unsaved.modifieddate match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("modifieddate", ParameterValue(value, null, TypoLocalDateTime.toStatement)), "::timestamp"))
       }
     ).flatten
     val quote = '"'.toString
     if (namedParameters.isEmpty) {
       SQL"""insert into "sales"."salesterritoryhistory" default values
-            returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-         """
+      returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
+      """
         .executeInsert(SalesterritoryhistoryRow.rowParser(1).single)
     } else {
       val q = s"""insert into "sales"."salesterritoryhistory"(${namedParameters.map{case (x, _) => quote + x.name + quote}.mkString(", ")})
-                  values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
-                  returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-               """
+              values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
+              returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
+              """
       SimpleSql(SQL(q), namedParameters.map { case (np, _) => np.tupled }.toMap, RowParser.successful)
         .executeInsert(SalesterritoryhistoryRow.rowParser(1).single)
     }
-    
   }
-  override def insertStreaming(unsaved: Iterator[SalesterritoryhistoryRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
-    streamingInsert(s"""COPY "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate") FROM STDIN""", batchSize, unsaved)(SalesterritoryhistoryRow.text, c)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[SalesterritoryhistoryRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long = {
-    streamingInsert(s"""COPY "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(SalesterritoryhistoryRowUnsaved.text, c)
-  }
-  override def select: SelectBuilder[SalesterritoryhistoryFields, SalesterritoryhistoryRow] = {
-    SelectBuilderSql(""""sales"."salesterritoryhistory"""", SalesterritoryhistoryFields.structure, SalesterritoryhistoryRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[SalesterritoryhistoryRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[SalesterritoryhistoryRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = streamingInsert(s"""COPY "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate") FROM STDIN""", batchSize, unsaved)(SalesterritoryhistoryRow.pgText, c)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[SalesterritoryhistoryRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = streamingInsert(s"""COPY "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(SalesterritoryhistoryRowUnsaved.pgText, c)
+
+  def select: SelectBuilder[SalesterritoryhistoryFields, SalesterritoryhistoryRow] = SelectBuilder.of(""""sales"."salesterritoryhistory"""", SalesterritoryhistoryFields.structure, SalesterritoryhistoryRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[SalesterritoryhistoryRow] = {
     SQL"""select "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-          from "sales"."salesterritoryhistory"
-       """.as(SalesterritoryhistoryRow.rowParser(1).*)
+    from "sales"."salesterritoryhistory"
+    """.as(SalesterritoryhistoryRow.rowParser(1).*)
   }
-  override def selectById(compositeId: SalesterritoryhistoryId)(implicit c: Connection): Option[SalesterritoryhistoryRow] = {
+
+  def selectById(compositeId: SalesterritoryhistoryId)(implicit c: Connection): Option[SalesterritoryhistoryRow] = {
     SQL"""select "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-          from "sales"."salesterritoryhistory"
-          where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "startdate" = ${ParameterValue(compositeId.startdate, null, TypoLocalDateTime.toStatement)} AND "territoryid" = ${ParameterValue(compositeId.territoryid, null, SalesterritoryId.toStatement)}
-       """.as(SalesterritoryhistoryRow.rowParser(1).singleOpt)
+    from "sales"."salesterritoryhistory"
+    where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "startdate" = ${ParameterValue(compositeId.startdate, null, TypoLocalDateTime.toStatement)} AND "territoryid" = ${ParameterValue(compositeId.territoryid, null, SalesterritoryId.toStatement)}
+    """.as(SalesterritoryhistoryRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(compositeIds: Array[SalesterritoryhistoryId])(implicit c: Connection): List[SalesterritoryhistoryRow] = {
+
+  def selectByIds(compositeIds: Array[SalesterritoryhistoryId])(implicit c: Connection): List[SalesterritoryhistoryRow] = {
     val businessentityid = compositeIds.map(_.businessentityid)
     val startdate = compositeIds.map(_.startdate)
     val territoryid = compositeIds.map(_.territoryid)
     SQL"""select "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-          from "sales"."salesterritoryhistory"
-          where ("businessentityid", "startdate", "territoryid")
-          in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}), unnest(${ParameterValue(territoryid, null, SalesterritoryId.arrayToStatement)}))
-       """.as(SalesterritoryhistoryRow.rowParser(1).*)
-    
+    from "sales"."salesterritoryhistory"
+    where ("businessentityid", "startdate", "territoryid")
+    in (select unnest(${ParameterValue(businessentityid, null, BusinessentityId.arrayToStatement)}), unnest(${ParameterValue(startdate, null, TypoLocalDateTime.arrayToStatement)}), unnest(${ParameterValue(territoryid, null, SalesterritoryId.arrayToStatement)}))
+    """.as(SalesterritoryhistoryRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(compositeIds: Array[SalesterritoryhistoryId])(implicit c: Connection): Map[SalesterritoryhistoryId, SalesterritoryhistoryRow] = {
+
+  def selectByIdsTracked(compositeIds: Array[SalesterritoryhistoryId])(implicit c: Connection): Map[SalesterritoryhistoryId, SalesterritoryhistoryRow] = {
     val byId = selectByIds(compositeIds).view.map(x => (x.compositeId, x)).toMap
     compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[SalesterritoryhistoryFields, SalesterritoryhistoryRow] = {
-    UpdateBuilder(""""sales"."salesterritoryhistory"""", SalesterritoryhistoryFields.structure, SalesterritoryhistoryRow.rowParser)
-  }
-  override def update(row: SalesterritoryhistoryRow)(implicit c: Connection): Option[SalesterritoryhistoryRow] = {
+
+  def update: UpdateBuilder[SalesterritoryhistoryFields, SalesterritoryhistoryRow] = UpdateBuilder.of(""""sales"."salesterritoryhistory"""", SalesterritoryhistoryFields.structure, SalesterritoryhistoryRow.rowParser(1).*)
+
+  def update(row: SalesterritoryhistoryRow)(implicit c: Connection): Option[SalesterritoryhistoryRow] = {
     val compositeId = row.compositeId
     SQL"""update "sales"."salesterritoryhistory"
-          set "enddate" = ${ParameterValue(row.enddate, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp,
-              "rowguid" = ${ParameterValue(row.rowguid, null, TypoUUID.toStatement)}::uuid,
-              "modifieddate" = ${ParameterValue(row.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
-          where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "startdate" = ${ParameterValue(compositeId.startdate, null, TypoLocalDateTime.toStatement)} AND "territoryid" = ${ParameterValue(compositeId.territoryid, null, SalesterritoryId.toStatement)}
-          returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-       """.executeInsert(SalesterritoryhistoryRow.rowParser(1).singleOpt)
+    set "enddate" = ${ParameterValue(row.enddate, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp,
+    "rowguid" = ${ParameterValue(row.rowguid, null, TypoUUID.toStatement)}::uuid,
+    "modifieddate" = ${ParameterValue(row.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
+    where "businessentityid" = ${ParameterValue(compositeId.businessentityid, null, BusinessentityId.toStatement)} AND "startdate" = ${ParameterValue(compositeId.startdate, null, TypoLocalDateTime.toStatement)} AND "territoryid" = ${ParameterValue(compositeId.territoryid, null, SalesterritoryId.toStatement)}
+    returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
+    """.executeInsert(SalesterritoryhistoryRow.rowParser(1).singleOpt)
   }
-  override def upsert(unsaved: SalesterritoryhistoryRow)(implicit c: Connection): SalesterritoryhistoryRow = {
-    SQL"""insert into "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")
-          values (
-            ${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4,
-            ${ParameterValue(unsaved.territoryid, null, SalesterritoryId.toStatement)}::int4,
-            ${ParameterValue(unsaved.startdate, null, TypoLocalDateTime.toStatement)}::timestamp,
-            ${ParameterValue(unsaved.enddate, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp,
-            ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid,
-            ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
-          )
-          on conflict ("businessentityid", "startdate", "territoryid")
-          do update set
-            "enddate" = EXCLUDED."enddate",
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-       """
-      .executeInsert(SalesterritoryhistoryRow.rowParser(1).single)
-    
+
+  def upsert(unsaved: SalesterritoryhistoryRow)(implicit c: Connection): SalesterritoryhistoryRow = {
+  SQL"""insert into "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")
+    values (
+      ${ParameterValue(unsaved.businessentityid, null, BusinessentityId.toStatement)}::int4,
+    ${ParameterValue(unsaved.territoryid, null, SalesterritoryId.toStatement)}::int4,
+    ${ParameterValue(unsaved.startdate, null, TypoLocalDateTime.toStatement)}::timestamp,
+    ${ParameterValue(unsaved.enddate, null, ToStatement.optionToStatement(TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp,
+    ${ParameterValue(unsaved.rowguid, null, TypoUUID.toStatement)}::uuid,
+    ${ParameterValue(unsaved.modifieddate, null, TypoLocalDateTime.toStatement)}::timestamp
+    )
+    on conflict ("businessentityid", "startdate", "territoryid")
+    do update set
+      "enddate" = EXCLUDED."enddate",
+    "rowguid" = EXCLUDED."rowguid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
+    """
+    .executeInsert(SalesterritoryhistoryRow.rowParser(1).single)
   }
-  override def upsertBatch(unsaved: Iterable[SalesterritoryhistoryRow])(implicit c: Connection): List[SalesterritoryhistoryRow] = {
+
+  def upsertBatch(unsaved: Iterable[SalesterritoryhistoryRow])(implicit c: Connection): List[SalesterritoryhistoryRow] = {
     def toNamedParameter(row: SalesterritoryhistoryRow): List[NamedParameter] = List(
       NamedParameter("businessentityid", ParameterValue(row.businessentityid, null, BusinessentityId.toStatement)),
       NamedParameter("territoryid", ParameterValue(row.territoryid, null, SalesterritoryId.toStatement)),
@@ -167,32 +170,36 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
         new anorm.adventureworks.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")
-                values ({businessentityid}::int4, {territoryid}::int4, {startdate}::timestamp, {enddate}::timestamp, {rowguid}::uuid, {modifieddate}::timestamp)
-                on conflict ("businessentityid", "startdate", "territoryid")
-                do update set
-                  "enddate" = EXCLUDED."enddate",
-                  "rowguid" = EXCLUDED."rowguid",
-                  "modifieddate" = EXCLUDED."modifieddate"
-                returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
-             """,
+            values ({businessentityid}::int4, {territoryid}::int4, {startdate}::timestamp, {enddate}::timestamp, {rowguid}::uuid, {modifieddate}::timestamp)
+            on conflict ("businessentityid", "startdate", "territoryid")
+            do update set
+              "enddate" = EXCLUDED."enddate",
+            "rowguid" = EXCLUDED."rowguid",
+            "modifieddate" = EXCLUDED."modifieddate"
+            returning "businessentityid", "territoryid", "startdate"::text, "enddate"::text, "rowguid", "modifieddate"::text
+            """,
             toNamedParameter(head),
             rest.map(toNamedParameter)*
           )
         ).executeReturning(SalesterritoryhistoryRow.rowParser(1).*)
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[SalesterritoryhistoryRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[SalesterritoryhistoryRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     SQL"""create temporary table salesterritoryhistory_TEMP (like "sales"."salesterritoryhistory") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy salesterritoryhistory_TEMP("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate") from stdin""", batchSize, unsaved)(SalesterritoryhistoryRow.text, c): @nowarn
+    streamingInsert(s"""copy salesterritoryhistory_TEMP("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate") from stdin""", batchSize, unsaved)(SalesterritoryhistoryRow.pgText, c): @nowarn
     SQL"""insert into "sales"."salesterritoryhistory"("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")
-          select * from salesterritoryhistory_TEMP
-          on conflict ("businessentityid", "startdate", "territoryid")
-          do update set
-            "enddate" = EXCLUDED."enddate",
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          ;
-          drop table salesterritoryhistory_TEMP;""".executeUpdate()
+    select * from salesterritoryhistory_TEMP
+    on conflict ("businessentityid", "startdate", "territoryid")
+    do update set
+      "enddate" = EXCLUDED."enddate",
+    "rowguid" = EXCLUDED."rowguid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    ;
+    drop table salesterritoryhistory_TEMP;""".executeUpdate()
   }
 }

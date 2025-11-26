@@ -47,16 +47,16 @@ trait BusinessentityaddressFields {
     businessentityid.isEqual(compositeId.businessentityid).and(addressid.isEqual(compositeId.addressid)).and(addresstypeid.isEqual(compositeId.addresstypeid))
   def compositeIdIn(compositeIds: Array[BusinessentityaddressId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[BusinessentityaddressId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](ToParameterValue(null, BusinessentityId.arrayToStatement), adventureworks.arrayParameterMetaData(BusinessentityId.parameterMetadata)), implicitly), TuplePart[BusinessentityaddressId](addressid)(_.addressid)(using as[Array[AddressId]](ToParameterValue(null, AddressId.arrayToStatement), adventureworks.arrayParameterMetaData(AddressId.parameterMetadata)), implicitly), TuplePart[BusinessentityaddressId](addresstypeid)(_.addresstypeid)(using as[Array[AddresstypeId]](ToParameterValue(null, AddresstypeId.arrayToStatement), adventureworks.arrayParameterMetaData(AddresstypeId.parameterMetadata)), implicitly))
-  
+
 }
 
 object BusinessentityaddressFields {
   lazy val structure: Relation[BusinessentityaddressFields, BusinessentityaddressRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[BusinessentityaddressFields, BusinessentityaddressRow] {
-  
+
     override lazy val fields: BusinessentityaddressFields = new BusinessentityaddressFields {
       override def businessentityid = IdField[BusinessentityId, BusinessentityaddressRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def addressid = IdField[AddressId, BusinessentityaddressRow](_path, "addressid", None, Some("int4"), x => x.addressid, (row, value) => row.copy(addressid = value))
@@ -64,12 +64,11 @@ object BusinessentityaddressFields {
       override def rowguid = Field[TypoUUID, BusinessentityaddressRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, BusinessentityaddressRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, BusinessentityaddressRow]] =
       List[FieldLike[?, BusinessentityaddressRow]](fields.businessentityid, fields.addressid, fields.addresstypeid, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

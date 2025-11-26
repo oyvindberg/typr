@@ -21,22 +21,21 @@ trait CurrencyFields {
 
 object CurrencyFields {
   lazy val structure: Relation[CurrencyFields, CurrencyRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CurrencyFields, CurrencyRow] {
-  
+
     override lazy val fields: CurrencyFields = new CurrencyFields {
       override def currencycode = IdField[CurrencyId, CurrencyRow](_path, "currencycode", None, Some("bpchar"), x => x.currencycode, (row, value) => row.copy(currencycode = value))
       override def name = Field[Name, CurrencyRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, CurrencyRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CurrencyRow]] =
       List[FieldLike[?, CurrencyRow]](fields.currencycode, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -18,39 +18,52 @@ import play.api.libs.json.Writes
 import testdb.hardcoded.Text
 
 /** Enum `myschema.sector`
-  *  - PUBLIC
-  *  - PRIVATE
-  *  - OTHER
-  */
-sealed abstract class Sector(val value: String)
+ *  - PUBLIC
+ *  - PRIVATE
+ *  - OTHER
+ */
+
+sealed abstract class Sector(val value: java.lang.String)
 
 object Sector {
-  def apply(str: String): Either[String, Sector] =
+  given arrayColumn: Column[Array[Sector]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(Sector.force))
+
+  given column: Column[Sector] = Column.columnToString.mapResult(str => Sector(str).left.map(SqlMappingError.apply))
+
+  given toStatement: ToStatement[Sector] = ToStatement.stringToStatement.contramap(_.value)
+
+  given arrayToStatement: ToStatement[Array[Sector]] = ToStatement[Array[Sector]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.sector", arr.map[AnyRef](_.value))))
+
+  given parameterMetadata: ParameterMetaData[Sector] = {
+    new ParameterMetaData[Sector] {
+      override def sqlType: String = "myschema.sector"
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  given pgText: Text[Sector] = {
+    new Text[Sector] {
+      override def unsafeEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given reads: Reads[Sector] = Reads[Sector]{(value: JsValue) => value.validate(Reads.StringReads).flatMap(str => Sector(str).fold(JsError.apply, JsSuccess(_)))}
+
+  given writes: Writes[Sector] = Writes[Sector](value => Writes.StringWrites.writes(value.value))
+  def apply(str: java.lang.String): scala.Either[java.lang.String, Sector] =
     ByName.get(str).toRight(s"'$str' does not match any of the following legal values: $Names")
-  def force(str: String): Sector =
+  def force(str: java.lang.String): Sector =
     apply(str) match {
-      case Left(msg) => sys.error(msg)
-      case Right(value) => value
+      case scala.Left(msg) => sys.error(msg)
+      case scala.Right(value) => value
     }
   case object `_public` extends Sector("PUBLIC")
+
   case object `_private` extends Sector("PRIVATE")
+
   case object `_other` extends Sector("OTHER")
-  val All: List[Sector] = List(`_public`, `_private`, `_other`)
-  val Names: String = All.map(_.value).mkString(", ")
-  val ByName: Map[String, Sector] = All.map(x => (x.value, x)).toMap
-              
-  given arrayColumn: Column[Array[Sector]] = Column.columnToArray[String](using Column.columnToString, implicitly).map(_.map(Sector.force))
-  given arrayToStatement: ToStatement[Array[Sector]] = ToStatement[Array[Sector]]((ps, i, arr) => ps.setArray(i, ps.getConnection.createArrayOf("myschema.sector", arr.map[AnyRef](_.value))))
-  given column: Column[Sector] = Column.columnToString.mapResult(str => Sector(str).left.map(SqlMappingError.apply))
-  given parameterMetadata: ParameterMetaData[Sector] = new ParameterMetaData[Sector] {
-    override def sqlType: String = "myschema.sector"
-    override def jdbcType: Int = Types.OTHER
-  }
-  given reads: Reads[Sector] = Reads[Sector]{(value: JsValue) => value.validate(Reads.StringReads).flatMap(str => Sector(str).fold(JsError.apply, JsSuccess(_)))}
-  given text: Text[Sector] = new Text[Sector] {
-    override def unsafeEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Sector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  given toStatement: ToStatement[Sector] = ToStatement.stringToStatement.contramap(_.value)
-  given writes: Writes[Sector] = Writes[Sector](value => Writes.StringWrites.writes(value.value))
+  val All: scala.List[Sector] = scala.List(`_public`, `_private`, `_other`)
+  val Names: java.lang.String = All.map(_.value).mkString(", ")
+  val ByName: scala.collection.immutable.Map[java.lang.String, Sector] = All.map(x => (x.value, x)).toMap
 }

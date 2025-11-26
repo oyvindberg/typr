@@ -7,6 +7,7 @@ package adventureworks.production.workorderrouting
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
@@ -23,41 +24,50 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.workorderrouting` which has not been persisted yet */
 case class WorkorderroutingRowUnsaved(
   /** Primary key. Foreign key to WorkOrder.WorkOrderID.
-      Points to [[adventureworks.production.workorder.WorkorderRow.workorderid]] */
+   * Points to [[adventureworks.production.workorder.WorkorderRow.workorderid]]
+   */
   workorderid: WorkorderId,
   /** Primary key. Foreign key to Product.ProductID. */
   productid: Int,
   /** Primary key. Indicates the manufacturing process sequence. */
   operationsequence: TypoShort,
   /** Manufacturing location where the part is processed. Foreign key to Location.LocationID.
-      Points to [[adventureworks.production.location.LocationRow.locationid]] */
+   * Points to [[adventureworks.production.location.LocationRow.locationid]]
+   */
   locationid: LocationId,
   /** Planned manufacturing start date.
-      Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate:  ((scheduledenddate >= scheduledstartdate)) */
+   * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate:  ((scheduledenddate >= scheduledstartdate))
+   */
   scheduledstartdate: TypoLocalDateTime,
   /** Planned manufacturing end date.
-      Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate:  ((scheduledenddate >= scheduledstartdate)) */
+   * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate:  ((scheduledenddate >= scheduledstartdate))
+   */
   scheduledenddate: TypoLocalDateTime,
   /** Actual start date.
-      Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate:  (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL))) */
-  actualstartdate: Option[TypoLocalDateTime],
+   * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate:  (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
+   */
+  actualstartdate: Option[TypoLocalDateTime] = None,
   /** Actual end date.
-      Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate:  (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL))) */
-  actualenddate: Option[TypoLocalDateTime],
+   * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate:  (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
+   */
+  actualenddate: Option[TypoLocalDateTime] = None,
   /** Number of manufacturing hours used.
-      Constraint CK_WorkOrderRouting_ActualResourceHrs affecting columns actualresourcehrs:  ((actualresourcehrs >= 0.0000)) */
-  actualresourcehrs: Option[BigDecimal],
+   * Constraint CK_WorkOrderRouting_ActualResourceHrs affecting columns actualresourcehrs:  ((actualresourcehrs >= 0.0000))
+   */
+  actualresourcehrs: Option[BigDecimal] = None,
   /** Estimated manufacturing cost.
-      Constraint CK_WorkOrderRouting_PlannedCost affecting columns plannedcost:  ((plannedcost > 0.00)) */
+   * Constraint CK_WorkOrderRouting_PlannedCost affecting columns plannedcost:  ((plannedcost > 0.00))
+   */
   plannedcost: BigDecimal,
   /** Actual manufacturing cost.
-      Constraint CK_WorkOrderRouting_ActualCost affecting columns actualcost:  ((actualcost > 0.00)) */
-  actualcost: Option[BigDecimal],
+   * Constraint CK_WorkOrderRouting_ActualCost affecting columns actualcost:  ((actualcost > 0.00))
+   */
+  actualcost: Option[BigDecimal] = None,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): WorkorderroutingRow =
-    WorkorderroutingRow(
+  def toRow(modifieddateDefault: => TypoLocalDateTime): WorkorderroutingRow = {
+    new WorkorderroutingRow(
       workorderid = workorderid,
       productid = productid,
       operationsequence = operationsequence,
@@ -69,71 +79,78 @@ case class WorkorderroutingRowUnsaved(
       actualresourcehrs = actualresourcehrs,
       plannedcost = plannedcost,
       actualcost = actualcost,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object WorkorderroutingRowUnsaved {
-  given reads: Reads[WorkorderroutingRowUnsaved] = Reads[WorkorderroutingRowUnsaved](json => JsResult.fromTry(
-      Try(
-        WorkorderroutingRowUnsaved(
-          workorderid = json.\("workorderid").as(WorkorderId.reads),
-          productid = json.\("productid").as(Reads.IntReads),
-          operationsequence = json.\("operationsequence").as(TypoShort.reads),
-          locationid = json.\("locationid").as(LocationId.reads),
-          scheduledstartdate = json.\("scheduledstartdate").as(TypoLocalDateTime.reads),
-          scheduledenddate = json.\("scheduledenddate").as(TypoLocalDateTime.reads),
-          actualstartdate = json.\("actualstartdate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          actualenddate = json.\("actualenddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          actualresourcehrs = json.\("actualresourcehrs").toOption.map(_.as(Reads.bigDecReads)),
-          plannedcost = json.\("plannedcost").as(Reads.bigDecReads),
-          actualcost = json.\("actualcost").toOption.map(_.as(Reads.bigDecReads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[WorkorderroutingRowUnsaved] = Text.instance[WorkorderroutingRowUnsaved]{ (row, sb) =>
-    WorkorderId.text.unsafeEncode(row.workorderid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.operationsequence, sb)
-    sb.append(Text.DELIMETER)
-    LocationId.text.unsafeEncode(row.locationid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.scheduledstartdate, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.scheduledenddate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoLocalDateTime.text).unsafeEncode(row.actualstartdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoLocalDateTime.text).unsafeEncode(row.actualenddate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.bigDecimalInstance).unsafeEncode(row.actualresourcehrs, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.plannedcost, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.bigDecimalInstance).unsafeEncode(row.actualcost, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[WorkorderroutingRowUnsaved] = OWrites[WorkorderroutingRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "workorderid" -> WorkorderId.writes.writes(o.workorderid),
-      "productid" -> Writes.IntWrites.writes(o.productid),
-      "operationsequence" -> TypoShort.writes.writes(o.operationsequence),
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "scheduledstartdate" -> TypoLocalDateTime.writes.writes(o.scheduledstartdate),
-      "scheduledenddate" -> TypoLocalDateTime.writes.writes(o.scheduledenddate),
-      "actualstartdate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualstartdate),
-      "actualenddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualenddate),
-      "actualresourcehrs" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualresourcehrs),
-      "plannedcost" -> Writes.BigDecimalWrites.writes(o.plannedcost),
-      "actualcost" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualcost),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object WorkorderroutingRowUnsaved {
+  given pgText: Text[WorkorderroutingRowUnsaved] = {
+    Text.instance[WorkorderroutingRowUnsaved]{ (row, sb) =>
+      WorkorderId.pgText.unsafeEncode(row.workorderid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.operationsequence, sb)
+      sb.append(Text.DELIMETER)
+      LocationId.pgText.unsafeEncode(row.locationid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.scheduledstartdate, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.scheduledenddate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoLocalDateTime.pgText).unsafeEncode(row.actualstartdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoLocalDateTime.pgText).unsafeEncode(row.actualenddate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.bigDecimalInstance).unsafeEncode(row.actualresourcehrs, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.plannedcost, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.bigDecimalInstance).unsafeEncode(row.actualcost, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[WorkorderroutingRowUnsaved] = {
+    Reads[WorkorderroutingRowUnsaved](json => JsResult.fromTry(
+        Try(
+          WorkorderroutingRowUnsaved(
+            workorderid = json.\("workorderid").as(WorkorderId.reads),
+            productid = json.\("productid").as(Reads.IntReads),
+            operationsequence = json.\("operationsequence").as(TypoShort.reads),
+            locationid = json.\("locationid").as(LocationId.reads),
+            scheduledstartdate = json.\("scheduledstartdate").as(TypoLocalDateTime.reads),
+            scheduledenddate = json.\("scheduledenddate").as(TypoLocalDateTime.reads),
+            actualstartdate = json.\("actualstartdate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            actualenddate = json.\("actualenddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            actualresourcehrs = json.\("actualresourcehrs").toOption.map(_.as(Reads.bigDecReads)),
+            plannedcost = json.\("plannedcost").as(Reads.bigDecReads),
+            actualcost = json.\("actualcost").toOption.map(_.as(Reads.bigDecReads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[WorkorderroutingRowUnsaved] = {
+    OWrites[WorkorderroutingRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "workorderid" -> WorkorderId.writes.writes(o.workorderid),
+        "productid" -> Writes.IntWrites.writes(o.productid),
+        "operationsequence" -> TypoShort.writes.writes(o.operationsequence),
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "scheduledstartdate" -> TypoLocalDateTime.writes.writes(o.scheduledstartdate),
+        "scheduledenddate" -> TypoLocalDateTime.writes.writes(o.scheduledenddate),
+        "actualstartdate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualstartdate),
+        "actualenddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.actualenddate),
+        "actualresourcehrs" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualresourcehrs),
+        "plannedcost" -> Writes.BigDecimalWrites.writes(o.plannedcost),
+        "actualcost" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.actualcost),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VpersondemographicsViewRepo {
   def select: SelectBuilder[VpersondemographicsViewFields, VpersondemographicsViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VpersondemographicsViewRow]
 }

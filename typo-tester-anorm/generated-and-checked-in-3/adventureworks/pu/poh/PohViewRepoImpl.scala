@@ -5,18 +5,16 @@
  */
 package adventureworks.pu.poh
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PohViewRepoImpl extends PohViewRepo {
-  override def select: SelectBuilder[PohViewFields, PohViewRow] = {
-    SelectBuilderSql(""""pu"."poh"""", PohViewFields.structure, PohViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[PohViewRow] = {
+  def select: SelectBuilder[PohViewFields, PohViewRow] = SelectBuilder.of(""""pu"."poh"""", PohViewFields.structure, PohViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[PohViewRow] = {
     SQL"""select "id", "purchaseorderid", "revisionnumber", "status", "employeeid", "vendorid", "shipmethodid", "orderdate"::text, "shipdate"::text, "subtotal", "taxamt", "freight", "modifieddate"::text
-          from "pu"."poh"
-       """.as(PohViewRow.rowParser(1).*)
+    from "pu"."poh"
+    """.as(PohViewRow.rowParser(1).*)
   }
 }

@@ -25,11 +25,11 @@ trait ShipmethodFields {
 
 object ShipmethodFields {
   lazy val structure: Relation[ShipmethodFields, ShipmethodRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ShipmethodFields, ShipmethodRow] {
-  
+
     override lazy val fields: ShipmethodFields = new ShipmethodFields {
       override def shipmethodid = IdField[ShipmethodId, ShipmethodRow](_path, "shipmethodid", None, Some("int4"), x => x.shipmethodid, (row, value) => row.copy(shipmethodid = value))
       override def name = Field[Name, ShipmethodRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
@@ -38,12 +38,11 @@ object ShipmethodFields {
       override def rowguid = Field[TypoUUID, ShipmethodRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, ShipmethodRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ShipmethodRow]] =
       List[FieldLike[?, ShipmethodRow]](fields.shipmethodid, fields.name, fields.shipbase, fields.shiprate, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

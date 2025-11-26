@@ -20,20 +20,38 @@ case class TypoLocalTime(value: LocalTime)
 
 object TypoLocalTime {
   def apply(value: LocalTime): TypoLocalTime = new TypoLocalTime(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoLocalTime = apply(LocalTime.parse(str))
-  def now: TypoLocalTime = TypoLocalTime(LocalTime.now)
-  given arrayGet: Get[Array[TypoLocalTime]] = Get.Advanced.array[AnyRef](NonEmptyList.one("time[]"))
-    .map(_.map(v => TypoLocalTime(LocalTime.parse(v.asInstanceOf[String]))))
-  given arrayPut: Put[Array[TypoLocalTime]] = Put.Advanced.array[AnyRef](NonEmptyList.one("time[]"), "time")
-    .contramap(_.map(v => v.value.toString))
-  given bijection: Bijection[TypoLocalTime, LocalTime] = Bijection[TypoLocalTime, LocalTime](_.value)(TypoLocalTime.apply)
-  given decoder: Decoder[TypoLocalTime] = Decoder.decodeLocalTime.map(TypoLocalTime.apply)
-  given encoder: Encoder[TypoLocalTime] = Encoder.encodeLocalTime.contramap(_.value)
-  given get: Get[TypoLocalTime] = Get.Advanced.other[String](NonEmptyList.one("time"))
-    .map(v => TypoLocalTime(LocalTime.parse(v)))
-  given put: Put[TypoLocalTime] = Put.Advanced.other[String](NonEmptyList.one("time")).contramap(v => v.value.toString)
-  given text: Text[TypoLocalTime] = new Text[TypoLocalTime] {
-    override def unsafeEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+
+  def apply(str: String): TypoLocalTime = new TypoLocalTime(LocalTime.parse(str))
+
+  given arrayGet: Get[Array[TypoLocalTime]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("time[]"))
+      .map(_.map(v => new TypoLocalTime(LocalTime.parse(v.asInstanceOf[String]))))
   }
+
+  given arrayPut: Put[Array[TypoLocalTime]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("time[]"), "time")
+      .contramap(_.map(v => v.value.toString))
+  }
+
+  given bijection: Bijection[TypoLocalTime, LocalTime] = Bijection.apply[TypoLocalTime, LocalTime](_.value)(TypoLocalTime.apply)
+
+  given decoder: Decoder[TypoLocalTime] = Decoder.decodeLocalTime.map(TypoLocalTime.apply)
+
+  given encoder: Encoder[TypoLocalTime] = Encoder.encodeLocalTime.contramap(_.value)
+
+  given get: Get[TypoLocalTime] = {
+    Get.Advanced.other[String](NonEmptyList.one("time"))
+      .map(v => new TypoLocalTime(LocalTime.parse(v)))
+  }
+
+  def now: TypoLocalTime = new TypoLocalTime(LocalTime.now())
+
+  given pgText: Text[TypoLocalTime] = {
+    new Text[TypoLocalTime] {
+      override def unsafeEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoLocalTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given put: Put[TypoLocalTime] = Put.Advanced.other[String](NonEmptyList.one("time")).contramap(v => v.value.toString)
 }

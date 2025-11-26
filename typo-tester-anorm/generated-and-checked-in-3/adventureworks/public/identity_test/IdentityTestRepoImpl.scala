@@ -13,119 +13,122 @@ import anorm.ParameterValue
 import anorm.RowParser
 import anorm.SQL
 import anorm.SimpleSql
-import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class IdentityTestRepoImpl extends IdentityTestRepo {
-  override def delete: DeleteBuilder[IdentityTestFields, IdentityTestRow] = {
-    DeleteBuilder(""""public"."identity-test"""", IdentityTestFields.structure)
-  }
-  override def deleteById(name: IdentityTestId)(using c: Connection): Boolean = {
-    SQL"""delete from "public"."identity-test" where "name" = ${ParameterValue(name, null, IdentityTestId.toStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(names: Array[IdentityTestId])(using c: Connection): Int = {
+  def delete: DeleteBuilder[IdentityTestFields, IdentityTestRow] = DeleteBuilder.of(""""public"."identity-test"""", IdentityTestFields.structure, IdentityTestRow.rowParser(1).*)
+
+  def deleteById(name: IdentityTestId)(using c: Connection): Boolean = SQL"""delete from "public"."identity-test" where "name" = ${ParameterValue(name, null, IdentityTestId.toStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(names: Array[IdentityTestId])(using c: Connection): Int = {
     SQL"""delete
-          from "public"."identity-test"
-          where "name" = ANY(${ParameterValue(names, null, IdentityTestId.arrayToStatement)})
-       """.executeUpdate()
-    
+    from "public"."identity-test"
+    where "name" = ANY(${ParameterValue(names, null, IdentityTestId.arrayToStatement)})
+    """.executeUpdate()
   }
-  override def insert(unsaved: IdentityTestRow)(using c: Connection): IdentityTestRow = {
-    SQL"""insert into "public"."identity-test"("default_generated", "name")
-          values (${ParameterValue(unsaved.defaultGenerated, null, ToStatement.intToStatement)}::int4, ${ParameterValue(unsaved.name, null, IdentityTestId.toStatement)})
-          returning "always_generated", "default_generated", "name"
-       """
-      .executeInsert(IdentityTestRow.rowParser(1).single)
-    
+
+  def insert(unsaved: IdentityTestRow)(using c: Connection): IdentityTestRow = {
+  SQL"""insert into "public"."identity-test"("default_generated", "name")
+    values (${ParameterValue(unsaved.defaultGenerated, null, ToStatement.intToStatement)}::int4, ${ParameterValue(unsaved.name, null, IdentityTestId.toStatement)})
+    returning "always_generated", "default_generated", "name"
+    """
+    .executeInsert(IdentityTestRow.rowParser(1).single)
   }
-  override def insert(unsaved: IdentityTestRowUnsaved)(using c: Connection): IdentityTestRow = {
+
+  def insert(unsaved: IdentityTestRowUnsaved)(using c: Connection): IdentityTestRow = {
     val namedParameters = List(
       Some((NamedParameter("name", ParameterValue(unsaved.name, null, IdentityTestId.toStatement)), "")),
       unsaved.defaultGenerated match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((NamedParameter("default_generated", ParameterValue(value, null, ToStatement.intToStatement)), "::int4"))
       }
     ).flatten
     val quote = '"'.toString
     if (namedParameters.isEmpty) {
       SQL"""insert into "public"."identity-test" default values
-            returning "always_generated", "default_generated", "name"
-         """
+      returning "always_generated", "default_generated", "name"
+      """
         .executeInsert(IdentityTestRow.rowParser(1).single)
     } else {
       val q = s"""insert into "public"."identity-test"(${namedParameters.map{case (x, _) => quote + x.name + quote}.mkString(", ")})
-                  values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
-                  returning "always_generated", "default_generated", "name"
-               """
+              values (${namedParameters.map{ case (np, cast) => s"{${np.name}}$cast"}.mkString(", ")})
+              returning "always_generated", "default_generated", "name"
+              """
       SimpleSql(SQL(q), namedParameters.map { case (np, _) => np.tupled }.toMap, RowParser.successful)
         .executeInsert(IdentityTestRow.rowParser(1).single)
     }
-    
   }
-  override def insertStreaming(unsaved: Iterator[IdentityTestRow], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "public"."identity-test"("default_generated", "name") FROM STDIN""", batchSize, unsaved)(using IdentityTestRow.text, c)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[IdentityTestRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
-    streamingInsert(s"""COPY "public"."identity-test"("name", "default_generated") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using IdentityTestRowUnsaved.text, c)
-  }
-  override def select: SelectBuilder[IdentityTestFields, IdentityTestRow] = {
-    SelectBuilderSql(""""public"."identity-test"""", IdentityTestFields.structure, IdentityTestRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[IdentityTestRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[IdentityTestRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "public"."identity-test"("default_generated", "name") FROM STDIN""", batchSize, unsaved)(using IdentityTestRow.pgText, c)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[IdentityTestRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = streamingInsert(s"""COPY "public"."identity-test"("name", "default_generated") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""", batchSize, unsaved)(using IdentityTestRowUnsaved.pgText, c)
+
+  def select: SelectBuilder[IdentityTestFields, IdentityTestRow] = SelectBuilder.of(""""public"."identity-test"""", IdentityTestFields.structure, IdentityTestRow.rowParser)
+
+  def selectAll(using c: Connection): List[IdentityTestRow] = {
     SQL"""select "always_generated", "default_generated", "name"
-          from "public"."identity-test"
-       """.as(IdentityTestRow.rowParser(1).*)
+    from "public"."identity-test"
+    """.as(IdentityTestRow.rowParser(1).*)
   }
-  override def selectById(name: IdentityTestId)(using c: Connection): Option[IdentityTestRow] = {
+
+  def selectById(name: IdentityTestId)(using c: Connection): Option[IdentityTestRow] = {
     SQL"""select "always_generated", "default_generated", "name"
-          from "public"."identity-test"
-          where "name" = ${ParameterValue(name, null, IdentityTestId.toStatement)}
-       """.as(IdentityTestRow.rowParser(1).singleOpt)
+    from "public"."identity-test"
+    where "name" = ${ParameterValue(name, null, IdentityTestId.toStatement)}
+    """.as(IdentityTestRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(names: Array[IdentityTestId])(using c: Connection): List[IdentityTestRow] = {
+
+  def selectByIds(names: Array[IdentityTestId])(using c: Connection): List[IdentityTestRow] = {
     SQL"""select "always_generated", "default_generated", "name"
-          from "public"."identity-test"
-          where "name" = ANY(${ParameterValue(names, null, IdentityTestId.arrayToStatement)})
-       """.as(IdentityTestRow.rowParser(1).*)
-    
+    from "public"."identity-test"
+    where "name" = ANY(${ParameterValue(names, null, IdentityTestId.arrayToStatement)})
+    """.as(IdentityTestRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(names: Array[IdentityTestId])(using c: Connection): Map[IdentityTestId, IdentityTestRow] = {
+
+  def selectByIdsTracked(names: Array[IdentityTestId])(using c: Connection): Map[IdentityTestId, IdentityTestRow] = {
     val byId = selectByIds(names).view.map(x => (x.name, x)).toMap
     names.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[IdentityTestFields, IdentityTestRow] = {
-    UpdateBuilder(""""public"."identity-test"""", IdentityTestFields.structure, IdentityTestRow.rowParser)
-  }
-  override def update(row: IdentityTestRow)(using c: Connection): Option[IdentityTestRow] = {
+
+  def update: UpdateBuilder[IdentityTestFields, IdentityTestRow] = UpdateBuilder.of(""""public"."identity-test"""", IdentityTestFields.structure, IdentityTestRow.rowParser(1).*)
+
+  def update(row: IdentityTestRow)(using c: Connection): Option[IdentityTestRow] = {
     val name = row.name
     SQL"""update "public"."identity-test"
-          set "default_generated" = ${ParameterValue(row.defaultGenerated, null, ToStatement.intToStatement)}::int4
-          where "name" = ${ParameterValue(name, null, IdentityTestId.toStatement)}
-          returning "always_generated", "default_generated", "name"
-       """.executeInsert(IdentityTestRow.rowParser(1).singleOpt)
+    set "default_generated" = ${ParameterValue(row.defaultGenerated, null, ToStatement.intToStatement)}::int4
+    where "name" = ${ParameterValue(name, null, IdentityTestId.toStatement)}
+    returning "always_generated", "default_generated", "name"
+    """.executeInsert(IdentityTestRow.rowParser(1).singleOpt)
   }
-  override def upsert(unsaved: IdentityTestRow)(using c: Connection): IdentityTestRow = {
-    SQL"""insert into "public"."identity-test"("default_generated", "name")
-          values (
-            ${ParameterValue(unsaved.defaultGenerated, null, ToStatement.intToStatement)}::int4,
-            ${ParameterValue(unsaved.name, null, IdentityTestId.toStatement)}
-          )
-          on conflict ("name")
-          do update set
-            "default_generated" = EXCLUDED."default_generated"
-          returning "always_generated", "default_generated", "name"
-       """
-      .executeInsert(IdentityTestRow.rowParser(1).single)
-    
+
+  def upsert(unsaved: IdentityTestRow)(using c: Connection): IdentityTestRow = {
+  SQL"""insert into "public"."identity-test"("default_generated", "name")
+    values (
+      ${ParameterValue(unsaved.defaultGenerated, null, ToStatement.intToStatement)}::int4,
+    ${ParameterValue(unsaved.name, null, IdentityTestId.toStatement)}
+    )
+    on conflict ("name")
+    do update set
+      "default_generated" = EXCLUDED."default_generated"
+    returning "always_generated", "default_generated", "name"
+    """
+    .executeInsert(IdentityTestRow.rowParser(1).single)
   }
-  override def upsertBatch(unsaved: Iterable[IdentityTestRow])(using c: Connection): List[IdentityTestRow] = {
+
+  def upsertBatch(unsaved: Iterable[IdentityTestRow])(using c: Connection): List[IdentityTestRow] = {
     def toNamedParameter(row: IdentityTestRow): List[NamedParameter] = List(
       NamedParameter("default_generated", ParameterValue(row.defaultGenerated, null, ToStatement.intToStatement)),
       NamedParameter("name", ParameterValue(row.name, null, IdentityTestId.toStatement))
@@ -136,28 +139,32 @@ class IdentityTestRepoImpl extends IdentityTestRepo {
         new anorm.adventureworks.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "public"."identity-test"("default_generated", "name")
-                values ({default_generated}::int4, {name})
-                on conflict ("name")
-                do update set
-                  "default_generated" = EXCLUDED."default_generated"
-                returning "always_generated", "default_generated", "name"
-             """,
+            values ({default_generated}::int4, {name})
+            on conflict ("name")
+            do update set
+              "default_generated" = EXCLUDED."default_generated"
+            returning "always_generated", "default_generated", "name"
+            """,
             toNamedParameter(head),
             rest.map(toNamedParameter)*
           )
         ).executeReturning(IdentityTestRow.rowParser(1).*)
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[IdentityTestRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[IdentityTestRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     SQL"""create temporary table identity-test_TEMP (like "public"."identity-test") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy identity-test_TEMP("default_generated", "name") from stdin""", batchSize, unsaved)(using IdentityTestRow.text, c): @nowarn
+    streamingInsert(s"""copy identity-test_TEMP("default_generated", "name") from stdin""", batchSize, unsaved)(using IdentityTestRow.pgText, c): @nowarn
     SQL"""insert into "public"."identity-test"("default_generated", "name")
-          select * from identity-test_TEMP
-          on conflict ("name")
-          do update set
-            "default_generated" = EXCLUDED."default_generated"
-          ;
-          drop table identity-test_TEMP;""".executeUpdate()
+    select * from identity-test_TEMP
+    on conflict ("name")
+    do update set
+      "default_generated" = EXCLUDED."default_generated"
+    ;
+    drop table identity-test_TEMP;""".executeUpdate()
   }
 }

@@ -9,29 +9,32 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import zio.jdbc.SqlFragment.Segment
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PersonDetailSqlRepoImpl extends PersonDetailSqlRepo {
-  override def apply(businessentityid: /* user-picked */ BusinessentityId, modifiedAfter: TypoLocalDateTime): ZStream[ZConnection, Throwable, PersonDetailSqlRow] = {
+  def apply(
+    businessentityid: /* user-picked */ BusinessentityId,
+    modifiedAfter: TypoLocalDateTime
+  ): ZStream[ZConnection, Throwable, PersonDetailSqlRow] = {
     val sql =
       sql"""SELECT s.businessentityid,
-                   p.title,
-                   p.firstname,
-                   p.middlename,
-                   p.lastname,
-                   e.jobtitle,
-                   a.addressline1,
-                   a.city,
-                   a.postalcode,
-                   a.rowguid as "rowguid:java.lang.String!"
-            FROM sales.salesperson s
-                     JOIN humanresources.employee e ON e.businessentityid = s.businessentityid
-                     JOIN person.person p ON p.businessentityid = s.businessentityid
-                     JOIN person.businessentityaddress bea ON bea.businessentityid = s.businessentityid
-                     LEFT JOIN person.address a ON a.addressid = bea.addressid
-            where s.businessentityid = ${Segment.paramSegment(businessentityid)(using /* user-picked */ BusinessentityId.setter)}::int4
-              and p.modifieddate > ${Segment.paramSegment(modifiedAfter)(using TypoLocalDateTime.setter)}::timestamp"""
+             p.title,
+             p.firstname,
+             p.middlename,
+             p.lastname,
+             e.jobtitle,
+             a.addressline1,
+             a.city,
+             a.postalcode,
+             a.rowguid as "rowguid:java.lang.String!"
+      FROM sales.salesperson s
+               JOIN humanresources.employee e ON e.businessentityid = s.businessentityid
+               JOIN person.person p ON p.businessentityid = s.businessentityid
+               JOIN person.businessentityaddress bea ON bea.businessentityid = s.businessentityid
+               LEFT JOIN person.address a ON a.addressid = bea.addressid
+      where s.businessentityid = ${Segment.paramSegment(businessentityid)(using /* user-picked */ BusinessentityId.setter)}::int4
+        and p.modifieddate > ${Segment.paramSegment(modifiedAfter)(using TypoLocalDateTime.setter)}::timestamp"""
     sql.query(using PersonDetailSqlRow.jdbcDecoder).selectStream()
   }
 }

@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `public.identity-test` */
-case class IdentityTestId(value: /* max 250 chars */ String) extends AnyVal
+case class IdentityTestId(value: /* max 250 chars */ String) extends scala.AnyVal
+
 object IdentityTestId {
   given arrayJdbcDecoder: JdbcDecoder[Array[IdentityTestId]] = adventureworks.StringArrayDecoder.map(_.map(IdentityTestId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[IdentityTestId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[IdentityTestId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+
+  given bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection.apply[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+
   given jdbcDecoder: JdbcDecoder[IdentityTestId] = JdbcDecoder.stringDecoder.map(IdentityTestId.apply)
+
   given jdbcEncoder: JdbcEncoder[IdentityTestId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[IdentityTestId] = JsonDecoder.string.map(IdentityTestId.apply)
+
   given jsonEncoder: JsonEncoder[IdentityTestId] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[IdentityTestId] = PGType.PGTypeString.as
-  given setter: Setter[IdentityTestId] = Setter.stringSetter.contramap(_.value)
-  given text: Text[IdentityTestId] = new Text[IdentityTestId] {
-    override def unsafeEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[IdentityTestId] = {
+    new Text[IdentityTestId] {
+      override def unsafeEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[IdentityTestId] = PGType.PGTypeString.as
+
+  given setter: Setter[IdentityTestId] = Setter.stringSetter.contramap(_.value)
 }

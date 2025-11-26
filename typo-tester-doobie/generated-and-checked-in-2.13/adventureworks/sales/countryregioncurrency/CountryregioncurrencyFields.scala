@@ -37,27 +37,26 @@ trait CountryregioncurrencyFields {
     countryregioncode.isEqual(compositeId.countryregioncode).and(currencycode.isEqual(compositeId.currencycode))
   def compositeIdIn(compositeIds: Array[CountryregioncurrencyId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[CountryregioncurrencyId](countryregioncode)(_.countryregioncode)(using as[Array[CountryregionId]](CountryregionId.arrayPut), implicitly), TuplePart[CountryregioncurrencyId](currencycode)(_.currencycode)(using as[Array[CurrencyId]](CurrencyId.arrayPut), implicitly))
-  
+
 }
 
 object CountryregioncurrencyFields {
   lazy val structure: Relation[CountryregioncurrencyFields, CountryregioncurrencyRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[CountryregioncurrencyFields, CountryregioncurrencyRow] {
-  
+
     override lazy val fields: CountryregioncurrencyFields = new CountryregioncurrencyFields {
       override def countryregioncode = IdField[CountryregionId, CountryregioncurrencyRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))
       override def currencycode = IdField[CurrencyId, CountryregioncurrencyRow](_path, "currencycode", None, Some("bpchar"), x => x.currencycode, (row, value) => row.copy(currencycode = value))
       override def modifieddate = Field[TypoLocalDateTime, CountryregioncurrencyRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, CountryregioncurrencyRow]] =
       List[FieldLike[?, CountryregioncurrencyRow]](fields.countryregioncode, fields.currencycode, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

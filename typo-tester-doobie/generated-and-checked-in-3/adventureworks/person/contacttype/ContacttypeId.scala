@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.contacttype` */
-case class ContacttypeId(value: Int) extends AnyVal
+case class ContacttypeId(value: Int) extends scala.AnyVal
+
 object ContacttypeId {
   given arrayGet: Get[Array[ContacttypeId]] = adventureworks.IntegerArrayMeta.get.map(_.map(ContacttypeId.apply))
+
   given arrayPut: Put[Array[ContacttypeId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[ContacttypeId, Int] = Bijection[ContacttypeId, Int](_.value)(ContacttypeId.apply)
+
+  given bijection: Bijection[ContacttypeId, Int] = Bijection.apply[ContacttypeId, Int](_.value)(ContacttypeId.apply)
+
   given decoder: Decoder[ContacttypeId] = Decoder.decodeInt.map(ContacttypeId.apply)
+
   given encoder: Encoder[ContacttypeId] = Encoder.encodeInt.contramap(_.value)
+
   given get: Get[ContacttypeId] = Meta.IntMeta.get.map(ContacttypeId.apply)
-  given put: Put[ContacttypeId] = Meta.IntMeta.put.contramap(_.value)
-  given text: Text[ContacttypeId] = new Text[ContacttypeId] {
-    override def unsafeEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ContacttypeId] = {
+    new Text[ContacttypeId] {
+      override def unsafeEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ContacttypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[ContacttypeId] = Meta.IntMeta.put.contramap(_.value)
 }

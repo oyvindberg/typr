@@ -22,72 +22,100 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: production.location
-    Product inventory and manufacturing locations.
-    Primary key: locationid */
+ * Product inventory and manufacturing locations.
+ * Primary key: locationid
+ */
 case class LocationRow(
   /** Primary key for Location records.
-      Default: nextval('production.location_locationid_seq'::regclass) */
+   * Default: nextval('production.location_locationid_seq'::regclass)
+   */
   locationid: LocationId,
   /** Location description. */
   name: Name,
   /** Standard hourly cost of the manufacturing location.
-      Default: 0.00
-      Constraint CK_Location_CostRate affecting columns costrate: ((costrate >= 0.00)) */
+   * Default: 0.00
+   * Constraint CK_Location_CostRate affecting columns costrate: ((costrate >= 0.00))
+   */
   costrate: BigDecimal,
   /** Work capacity (in hours) of the manufacturing location.
-      Default: 0.00
-      Constraint CK_Location_Availability affecting columns availability: ((availability >= 0.00)) */
+   * Default: 0.00
+   * Constraint CK_Location_Availability affecting columns availability: ((availability >= 0.00))
+   */
   availability: BigDecimal,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = locationid
-   def toUnsavedRow(locationid: Defaulted[LocationId], costrate: Defaulted[BigDecimal] = Defaulted.Provided(this.costrate), availability: Defaulted[BigDecimal] = Defaulted.Provided(this.availability), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): LocationRowUnsaved =
-     LocationRowUnsaved(name, locationid, costrate, availability, modifieddate)
- }
+) {
+  def id: LocationId = locationid
 
-object LocationRow {
-  implicit lazy val reads: Reads[LocationRow] = Reads[LocationRow](json => JsResult.fromTry(
-      Try(
-        LocationRow(
-          locationid = json.\("locationid").as(LocationId.reads),
-          name = json.\("name").as(Name.reads),
-          costrate = json.\("costrate").as(Reads.bigDecReads),
-          availability = json.\("availability").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[LocationRow] = RowParser[LocationRow] { row =>
-    Success(
-      LocationRow(
-        locationid = row(idx + 0)(LocationId.column),
-        name = row(idx + 1)(Name.column),
-        costrate = row(idx + 2)(Column.columnToScalaBigDecimal),
-        availability = row(idx + 3)(Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 4)(TypoLocalDateTime.column)
-      )
+  def toUnsavedRow(
+    locationid: Defaulted[LocationId],
+    costrate: Defaulted[BigDecimal] = Defaulted.Provided(this.costrate),
+    availability: Defaulted[BigDecimal] = Defaulted.Provided(this.availability),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): LocationRowUnsaved = {
+    new LocationRowUnsaved(
+      name,
+      locationid,
+      costrate,
+      availability,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[LocationRow] = Text.instance[LocationRow]{ (row, sb) =>
-    LocationId.text.unsafeEncode(row.locationid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.costrate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.availability, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object LocationRow {
+  implicit lazy val pgText: Text[LocationRow] = {
+    Text.instance[LocationRow]{ (row, sb) =>
+      LocationId.pgText.unsafeEncode(row.locationid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.costrate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.availability, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
-  implicit lazy val writes: OWrites[LocationRow] = OWrites[LocationRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "name" -> Name.writes.writes(o.name),
-      "costrate" -> Writes.BigDecimalWrites.writes(o.costrate),
-      "availability" -> Writes.BigDecimalWrites.writes(o.availability),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val reads: Reads[LocationRow] = {
+    Reads[LocationRow](json => JsResult.fromTry(
+        Try(
+          LocationRow(
+            locationid = json.\("locationid").as(LocationId.reads),
+            name = json.\("name").as(Name.reads),
+            costrate = json.\("costrate").as(Reads.bigDecReads),
+            availability = json.\("availability").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[LocationRow] = {
+    RowParser[LocationRow] { row =>
+      Success(
+        LocationRow(
+          locationid = row(idx + 0)(LocationId.column),
+          name = row(idx + 1)(Name.column),
+          costrate = row(idx + 2)(Column.columnToScalaBigDecimal),
+          availability = row(idx + 3)(Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 4)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[LocationRow] = {
+    OWrites[LocationRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "name" -> Name.writes.writes(o.name),
+        "costrate" -> Writes.BigDecimalWrites.writes(o.costrate),
+        "availability" -> Writes.BigDecimalWrites.writes(o.availability),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

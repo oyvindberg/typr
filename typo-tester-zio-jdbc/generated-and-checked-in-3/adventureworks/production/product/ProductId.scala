@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.product` */
-case class ProductId(value: Int) extends AnyVal
+case class ProductId(value: Int) extends scala.AnyVal
+
 object ProductId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ProductId]] = adventureworks.IntArrayDecoder.map(_.map(ProductId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ProductId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ProductId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ProductId, Int] = Bijection[ProductId, Int](_.value)(ProductId.apply)
+
+  given bijection: Bijection[ProductId, Int] = Bijection.apply[ProductId, Int](_.value)(ProductId.apply)
+
   given jdbcDecoder: JdbcDecoder[ProductId] = JdbcDecoder.intDecoder.map(ProductId.apply)
+
   given jdbcEncoder: JdbcEncoder[ProductId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ProductId] = JsonDecoder.int.map(ProductId.apply)
+
   given jsonEncoder: JsonEncoder[ProductId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ProductId] = PGType.PGTypeInt.as
-  given setter: Setter[ProductId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ProductId] = new Text[ProductId] {
-    override def unsafeEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ProductId] = {
+    new Text[ProductId] {
+      override def unsafeEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ProductId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ProductId] = Setter.intSetter.contramap(_.value)
 }

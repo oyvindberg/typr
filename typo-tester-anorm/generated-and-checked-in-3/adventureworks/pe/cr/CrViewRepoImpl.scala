@@ -5,18 +5,16 @@
  */
 package adventureworks.pe.cr
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class CrViewRepoImpl extends CrViewRepo {
-  override def select: SelectBuilder[CrViewFields, CrViewRow] = {
-    SelectBuilderSql(""""pe"."cr"""", CrViewFields.structure, CrViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[CrViewRow] = {
+  def select: SelectBuilder[CrViewFields, CrViewRow] = SelectBuilder.of(""""pe"."cr"""", CrViewFields.structure, CrViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[CrViewRow] = {
     SQL"""select "countryregioncode", "name", "modifieddate"::text
-          from "pe"."cr"
-       """.as(CrViewRow.rowParser(1).*)
+    from "pe"."cr"
+    """.as(CrViewRow.rowParser(1).*)
   }
 }

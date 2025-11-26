@@ -7,6 +7,7 @@ package adventureworks.person.address
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
@@ -25,93 +26,100 @@ case class AddressRowUnsaved(
   /** First street address line. */
   addressline1: /* max 60 chars */ String,
   /** Second street address line. */
-  addressline2: Option[/* max 60 chars */ String],
+  addressline2: Option[/* max 60 chars */ String] = None,
   /** Name of the city. */
   city: /* max 30 chars */ String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
-      Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
+   * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
+   */
   stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
   postalcode: /* max 15 chars */ String,
   /** Latitude and longitude of this address. */
-  spatiallocation: Option[TypoBytea],
+  spatiallocation: Option[TypoBytea] = None,
   /** Default: nextval('person.address_addressid_seq'::regclass)
-      Primary key for Address records. */
-  addressid: Defaulted[AddressId] = Defaulted.UseDefault,
+   * Primary key for Address records.
+   */
+  addressid: Defaulted[AddressId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(addressidDefault: => AddressId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): AddressRow =
-    AddressRow(
+  def toRow(
+    addressidDefault: => AddressId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): AddressRow = {
+    new AddressRow(
+      addressid = addressid.getOrElse(addressidDefault),
       addressline1 = addressline1,
       addressline2 = addressline2,
       city = city,
       stateprovinceid = stateprovinceid,
       postalcode = postalcode,
       spatiallocation = spatiallocation,
-      addressid = addressid match {
-                    case Defaulted.UseDefault => addressidDefault
-                    case Defaulted.Provided(value) => value
-                  },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object AddressRowUnsaved {
-  given reads: Reads[AddressRowUnsaved] = Reads[AddressRowUnsaved](json => JsResult.fromTry(
-      Try(
-        AddressRowUnsaved(
-          addressline1 = json.\("addressline1").as(Reads.StringReads),
-          addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
-          city = json.\("city").as(Reads.StringReads),
-          stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
-          postalcode = json.\("postalcode").as(Reads.StringReads),
-          spatiallocation = json.\("spatiallocation").toOption.map(_.as(TypoBytea.reads)),
-          addressid = json.\("addressid").as(Defaulted.reads(using AddressId.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[AddressRowUnsaved] = Text.instance[AddressRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.addressline1, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.addressline2, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.city, sb)
-    sb.append(Text.DELIMETER)
-    StateprovinceId.text.unsafeEncode(row.stateprovinceid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.postalcode, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoBytea.text).unsafeEncode(row.spatiallocation, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using AddressId.text).unsafeEncode(row.addressid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[AddressRowUnsaved] = OWrites[AddressRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-      "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
-      "city" -> Writes.StringWrites.writes(o.city),
-      "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
-      "postalcode" -> Writes.StringWrites.writes(o.postalcode),
-      "spatiallocation" -> Writes.OptionWrites(using TypoBytea.writes).writes(o.spatiallocation),
-      "addressid" -> Defaulted.writes(using AddressId.writes).writes(o.addressid),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object AddressRowUnsaved {
+  given pgText: Text[AddressRowUnsaved] = {
+    Text.instance[AddressRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.addressline1, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.addressline2, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.city, sb)
+      sb.append(Text.DELIMETER)
+      StateprovinceId.pgText.unsafeEncode(row.stateprovinceid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.postalcode, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoBytea.pgText).unsafeEncode(row.spatiallocation, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using AddressId.pgText).unsafeEncode(row.addressid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[AddressRowUnsaved] = {
+    Reads[AddressRowUnsaved](json => JsResult.fromTry(
+        Try(
+          AddressRowUnsaved(
+            addressline1 = json.\("addressline1").as(Reads.StringReads),
+            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            city = json.\("city").as(Reads.StringReads),
+            stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
+            postalcode = json.\("postalcode").as(Reads.StringReads),
+            spatiallocation = json.\("spatiallocation").toOption.map(_.as(TypoBytea.reads)),
+            addressid = json.\("addressid").as(Defaulted.reads(using AddressId.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[AddressRowUnsaved] = {
+    OWrites[AddressRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "addressline1" -> Writes.StringWrites.writes(o.addressline1),
+        "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
+        "city" -> Writes.StringWrites.writes(o.city),
+        "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
+        "postalcode" -> Writes.StringWrites.writes(o.postalcode),
+        "spatiallocation" -> Writes.OptionWrites(using TypoBytea.writes).writes(o.spatiallocation),
+        "addressid" -> Defaulted.writes(using AddressId.writes).writes(o.addressid),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

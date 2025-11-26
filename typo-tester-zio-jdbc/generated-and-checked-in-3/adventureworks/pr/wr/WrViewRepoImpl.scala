@@ -6,16 +6,12 @@
 package adventureworks.pr.wr
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class WrViewRepoImpl extends WrViewRepo {
-  override def select: SelectBuilder[WrViewFields, WrViewRow] = {
-    SelectBuilderSql(""""pr"."wr"""", WrViewFields.structure, WrViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, WrViewRow] = {
-    sql"""select "id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text from "pr"."wr"""".query(using WrViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[WrViewFields, WrViewRow] = SelectBuilder.of(""""pr"."wr"""", WrViewFields.structure, WrViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, WrViewRow] = sql"""select "id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text from "pr"."wr"""".query(using WrViewRow.jdbcDecoder).selectStream()
 }

@@ -18,27 +18,33 @@ case class BusinessentitycontactId(
   personid: BusinessentityId,
   contacttypeid: ContacttypeId
 )
+
 object BusinessentitycontactId {
-  implicit lazy val jsonDecoder: JsonDecoder[BusinessentitycontactId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val personid = jsonObj.get("personid").toRight("Missing field 'personid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val contacttypeid = jsonObj.get("contacttypeid").toRight("Missing field 'contacttypeid'").flatMap(_.as(ContacttypeId.jsonDecoder))
-    if (businessentityid.isRight && personid.isRight && contacttypeid.isRight)
-      Right(BusinessentitycontactId(businessentityid = businessentityid.toOption.get, personid = personid.toOption.get, contacttypeid = contacttypeid.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, personid, contacttypeid).flatMap(_.left.toOption).mkString(", "))
+  implicit lazy val jsonDecoder: JsonDecoder[BusinessentitycontactId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val personid = jsonObj.get("personid").toRight("Missing field 'personid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val contacttypeid = jsonObj.get("contacttypeid").toRight("Missing field 'contacttypeid'").flatMap(_.as(ContacttypeId.jsonDecoder))
+      if (businessentityid.isRight && personid.isRight && contacttypeid.isRight)
+        Right(BusinessentitycontactId(businessentityid = businessentityid.toOption.get, personid = personid.toOption.get, contacttypeid = contacttypeid.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, personid, contacttypeid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[BusinessentitycontactId] = new JsonEncoder[BusinessentitycontactId] {
-    override def unsafeEncode(a: BusinessentitycontactId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""personid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.personid, indent, out)
-      out.write(",")
-      out.write(""""contacttypeid":""")
-      ContacttypeId.jsonEncoder.unsafeEncode(a.contacttypeid, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[BusinessentitycontactId] = {
+    new JsonEncoder[BusinessentitycontactId] {
+      override def unsafeEncode(a: BusinessentitycontactId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""personid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.personid, indent, out)
+        out.write(",")
+        out.write(""""contacttypeid":""")
+        ContacttypeId.jsonEncoder.unsafeEncode(a.contacttypeid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

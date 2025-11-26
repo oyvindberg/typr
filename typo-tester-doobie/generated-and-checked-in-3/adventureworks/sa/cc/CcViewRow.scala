@@ -33,24 +33,28 @@ case class CcViewRow(
 
 object CcViewRow {
   given decoder: Decoder[CcViewRow] = Decoder.forProduct7[CcViewRow, /* user-picked */ CustomCreditcardId, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(CcViewRow.apply)(using CustomCreditcardId.decoder, CustomCreditcardId.decoder, Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[CcViewRow] = Encoder.forProduct7[CcViewRow, /* user-picked */ CustomCreditcardId, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(x => (x.id, x.creditcardid, x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.modifieddate))(using CustomCreditcardId.encoder, CustomCreditcardId.encoder, Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoLocalDateTime.encoder)
-  given read: Read[CcViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[CcViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    CcViewRow(
-      id = arr(0).asInstanceOf[/* user-picked */ CustomCreditcardId],
-          creditcardid = arr(1).asInstanceOf[/* user-picked */ CustomCreditcardId],
-          cardtype = arr(2).asInstanceOf[/* max 50 chars */ String],
-          cardnumber = arr(3).asInstanceOf[/* max 25 chars */ String],
-          expmonth = arr(4).asInstanceOf[TypoShort],
-          expyear = arr(5).asInstanceOf[TypoShort],
-          modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      CcViewRow(
+        id = arr(0).asInstanceOf[/* user-picked */ CustomCreditcardId],
+            creditcardid = arr(1).asInstanceOf[/* user-picked */ CustomCreditcardId],
+            cardtype = arr(2).asInstanceOf[/* max 50 chars */ String],
+            cardnumber = arr(3).asInstanceOf[/* max 25 chars */ String],
+            expmonth = arr(4).asInstanceOf[TypoShort],
+            expyear = arr(5).asInstanceOf[TypoShort],
+            modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

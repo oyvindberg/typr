@@ -19,27 +19,28 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class TestSakSoknadsalternativRepoMock(map: scala.collection.mutable.Map[TestSakSoknadsalternativId, TestSakSoknadsalternativRow] = scala.collection.mutable.Map.empty) extends TestSakSoknadsalternativRepo {
-  override def delete: DeleteBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TestSakSoknadsalternativFields.structure, map)
+case class TestSakSoknadsalternativRepoMock(map: scala.collection.mutable.Map[TestSakSoknadsalternativId, TestSakSoknadsalternativRow] = scala.collection.mutable.Map.empty[TestSakSoknadsalternativId, TestSakSoknadsalternativRow]) extends TestSakSoknadsalternativRepo {
+  def delete: DeleteBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = DeleteBuilderMock(DeleteParams.empty, TestSakSoknadsalternativFields.structure, map)
+
+  def deleteById(compositeId: TestSakSoknadsalternativId): ConnectionIO[Boolean] = delay(map.remove(compositeId).isDefined)
+
+  def deleteByIds(compositeIds: Array[TestSakSoknadsalternativId]): ConnectionIO[Int] = delay(compositeIds.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: TestSakSoknadsalternativRow): ConnectionIO[TestSakSoknadsalternativRow] = {
+  delay {
+    val _ = if (map.contains(unsaved.compositeId))
+      sys.error(s"id ${unsaved.compositeId} already exists")
+    else
+      map.put(unsaved.compositeId, unsaved)
+
+    unsaved
   }
-  override def deleteById(compositeId: TestSakSoknadsalternativId): ConnectionIO[Boolean] = {
-    delay(map.remove(compositeId).isDefined)
   }
-  override def deleteByIds(compositeIds: Array[TestSakSoknadsalternativId]): ConnectionIO[Int] = {
-    delay(compositeIds.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: TestSakSoknadsalternativRow): ConnectionIO[TestSakSoknadsalternativRow] = {
-    delay {
-      val _ = if (map.contains(unsaved.compositeId))
-        sys.error(s"id ${unsaved.compositeId} already exists")
-      else
-        map.put(unsaved.compositeId, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, TestSakSoknadsalternativRow], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, TestSakSoknadsalternativRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -49,28 +50,25 @@ class TestSakSoknadsalternativRepoMock(map: scala.collection.mutable.Map[TestSak
       num
     }
   }
-  override def select: SelectBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = {
-    SelectBuilderMock(TestSakSoknadsalternativFields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, TestSakSoknadsalternativRow] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(compositeId: TestSakSoknadsalternativId): ConnectionIO[Option[TestSakSoknadsalternativRow]] = {
-    delay(map.get(compositeId))
-  }
-  override def selectByIds(compositeIds: Array[TestSakSoknadsalternativId]): Stream[ConnectionIO, TestSakSoknadsalternativRow] = {
-    Stream.emits(compositeIds.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(compositeIds: Array[TestSakSoknadsalternativId]): ConnectionIO[Map[TestSakSoknadsalternativId, TestSakSoknadsalternativRow]] = {
+
+  def select: SelectBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = SelectBuilderMock(TestSakSoknadsalternativFields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, TestSakSoknadsalternativRow] = Stream.emits(map.values.toList)
+
+  def selectById(compositeId: TestSakSoknadsalternativId): ConnectionIO[Option[TestSakSoknadsalternativRow]] = delay(map.get(compositeId))
+
+  def selectByIds(compositeIds: Array[TestSakSoknadsalternativId]): Stream[ConnectionIO, TestSakSoknadsalternativRow] = Stream.emits(compositeIds.flatMap(map.get).toList)
+
+  def selectByIdsTracked(compositeIds: Array[TestSakSoknadsalternativId]): ConnectionIO[Map[TestSakSoknadsalternativId, TestSakSoknadsalternativRow]] = {
     selectByIds(compositeIds).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TestSakSoknadsalternativFields.structure, map)
-  }
-  override def update(row: TestSakSoknadsalternativRow): ConnectionIO[Option[TestSakSoknadsalternativRow]] = {
+
+  def update: UpdateBuilder[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] = UpdateBuilderMock(UpdateParams.empty, TestSakSoknadsalternativFields.structure, map)
+
+  def update(row: TestSakSoknadsalternativRow): ConnectionIO[Option[TestSakSoknadsalternativRow]] = {
     delay {
       map.get(row.compositeId).map { _ =>
         map.put(row.compositeId, row): @nowarn
@@ -78,13 +76,15 @@ class TestSakSoknadsalternativRepoMock(map: scala.collection.mutable.Map[TestSak
       }
     }
   }
-  override def upsert(unsaved: TestSakSoknadsalternativRow): ConnectionIO[TestSakSoknadsalternativRow] = {
+
+  def upsert(unsaved: TestSakSoknadsalternativRow): ConnectionIO[TestSakSoknadsalternativRow] = {
     delay {
       map.put(unsaved.compositeId, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[TestSakSoknadsalternativRow]): Stream[ConnectionIO, TestSakSoknadsalternativRow] = {
+
+  def upsertBatch(unsaved: List[TestSakSoknadsalternativRow]): Stream[ConnectionIO, TestSakSoknadsalternativRow] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.compositeId -> row)
@@ -92,8 +92,12 @@ class TestSakSoknadsalternativRepoMock(map: scala.collection.mutable.Map[TestSak
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, TestSakSoknadsalternativRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, TestSakSoknadsalternativRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

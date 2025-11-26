@@ -20,45 +20,58 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.test_utdanningstilbud
-    Composite primary key: organisasjonskode, utdanningsmulighet_kode */
+ * Composite primary key: organisasjonskode, utdanningsmulighet_kode
+ */
 case class TestUtdanningstilbudRow(
   /** Points to [[adventureworks.public.test_organisasjon.TestOrganisasjonRow.organisasjonskode]] */
   organisasjonskode: TestOrganisasjonId,
   utdanningsmulighetKode: String
-){
-   val compositeId: TestUtdanningstilbudId = TestUtdanningstilbudId(organisasjonskode, utdanningsmulighetKode)
-   val id = compositeId
- }
+) {
+  def compositeId: TestUtdanningstilbudId = new TestUtdanningstilbudId(organisasjonskode, utdanningsmulighetKode)
+
+  def id: TestUtdanningstilbudId = this.compositeId
+}
 
 object TestUtdanningstilbudRow {
-  def apply(compositeId: TestUtdanningstilbudId) =
-    new TestUtdanningstilbudRow(compositeId.organisasjonskode, compositeId.utdanningsmulighetKode)
-  given reads: Reads[TestUtdanningstilbudRow] = Reads[TestUtdanningstilbudRow](json => JsResult.fromTry(
-      Try(
-        TestUtdanningstilbudRow(
-          organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads),
-          utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+  def apply(compositeId: TestUtdanningstilbudId): TestUtdanningstilbudRow = new TestUtdanningstilbudRow(compositeId.organisasjonskode, compositeId.utdanningsmulighetKode)
+
+  given pgText: Text[TestUtdanningstilbudRow] = {
+    Text.instance[TestUtdanningstilbudRow]{ (row, sb) =>
+      TestOrganisasjonId.pgText.unsafeEncode(row.organisasjonskode, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.utdanningsmulighetKode, sb)
+    }
+  }
+
+  given reads: Reads[TestUtdanningstilbudRow] = {
+    Reads[TestUtdanningstilbudRow](json => JsResult.fromTry(
+        Try(
+          TestUtdanningstilbudRow(
+            organisasjonskode = json.\("organisasjonskode").as(TestOrganisasjonId.reads),
+            utdanningsmulighetKode = json.\("utdanningsmulighet_kode").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[TestUtdanningstilbudRow] = RowParser[TestUtdanningstilbudRow] { row =>
-    Success(
-      TestUtdanningstilbudRow(
-        organisasjonskode = row(idx + 0)(using TestOrganisasjonId.column),
-        utdanningsmulighetKode = row(idx + 1)(using Column.columnToString)
-      )
+      ),
     )
   }
-  given text: Text[TestUtdanningstilbudRow] = Text.instance[TestUtdanningstilbudRow]{ (row, sb) =>
-    TestOrganisasjonId.text.unsafeEncode(row.organisasjonskode, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.utdanningsmulighetKode, sb)
+
+  def rowParser(idx: Int): RowParser[TestUtdanningstilbudRow] = {
+    RowParser[TestUtdanningstilbudRow] { row =>
+      Success(
+        TestUtdanningstilbudRow(
+          organisasjonskode = row(idx + 0)(using TestOrganisasjonId.column),
+          utdanningsmulighetKode = row(idx + 1)(using Column.columnToString)
+        )
+      )
+    }
   }
-  given writes: OWrites[TestUtdanningstilbudRow] = OWrites[TestUtdanningstilbudRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode),
-      "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
-    ))
-  )
+
+  given writes: OWrites[TestUtdanningstilbudRow] = {
+    OWrites[TestUtdanningstilbudRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "organisasjonskode" -> TestOrganisasjonId.writes.writes(o.organisasjonskode),
+        "utdanningsmulighet_kode" -> Writes.StringWrites.writes(o.utdanningsmulighetKode)
+      ))
+    )
+  }
 }

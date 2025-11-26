@@ -16,51 +16,68 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.personcreditcard
-    Cross-reference table mapping people to their credit card information in the CreditCard table.
-    Composite primary key: businessentityid, creditcardid */
+ * Cross-reference table mapping people to their credit card information in the CreditCard table.
+ * Composite primary key: businessentityid, creditcardid
+ */
 case class PersoncreditcardRow(
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
-      Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
+   * Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]]
+   */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: PersoncreditcardId = PersoncreditcardId(businessentityid, creditcardid)
-   val id = compositeId
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): PersoncreditcardRowUnsaved =
-     PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate)
- }
+) {
+  def compositeId: PersoncreditcardId = new PersoncreditcardId(businessentityid, creditcardid)
+
+  def id: PersoncreditcardId = this.compositeId
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): PersoncreditcardRowUnsaved = new PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate)
+}
 
 object PersoncreditcardRow {
-  def apply(compositeId: PersoncreditcardId, modifieddate: TypoLocalDateTime) =
-    new PersoncreditcardRow(compositeId.businessentityid, compositeId.creditcardid, modifieddate)
+  def apply(
+    compositeId: PersoncreditcardId,
+    modifieddate: TypoLocalDateTime
+  ): PersoncreditcardRow = new PersoncreditcardRow(compositeId.businessentityid, compositeId.creditcardid, modifieddate)
+
   given decoder: Decoder[PersoncreditcardRow] = Decoder.forProduct3[PersoncreditcardRow, BusinessentityId, /* user-picked */ CustomCreditcardId, TypoLocalDateTime]("businessentityid", "creditcardid", "modifieddate")(PersoncreditcardRow.apply)(using BusinessentityId.decoder, CustomCreditcardId.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PersoncreditcardRow] = Encoder.forProduct3[PersoncreditcardRow, BusinessentityId, /* user-picked */ CustomCreditcardId, TypoLocalDateTime]("businessentityid", "creditcardid", "modifieddate")(x => (x.businessentityid, x.creditcardid, x.modifieddate))(using BusinessentityId.encoder, CustomCreditcardId.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PersoncreditcardRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PersoncreditcardRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          creditcardid = arr(1).asInstanceOf[/* user-picked */ CustomCreditcardId],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[PersoncreditcardRow] = {
+    Text.instance[PersoncreditcardRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      /* user-picked */ CustomCreditcardId.pgText.unsafeEncode(row.creditcardid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[PersoncreditcardRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PersoncreditcardRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            creditcardid = arr(1).asInstanceOf[/* user-picked */ CustomCreditcardId],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[PersoncreditcardRow] = {
+    new Write.Composite[PersoncreditcardRow](
+      List(new Write.Single(BusinessentityId.put),
+           new Write.Single(/* user-picked */ CustomCreditcardId.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.businessentityid, a.creditcardid, a.modifieddate)
     )
   }
-  given text: Text[PersoncreditcardRow] = Text.instance[PersoncreditcardRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    /* user-picked */ CustomCreditcardId.text.unsafeEncode(row.creditcardid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[PersoncreditcardRow] = new Write.Composite[PersoncreditcardRow](
-    List(new Write.Single(BusinessentityId.put),
-         new Write.Single(/* user-picked */ CustomCreditcardId.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.businessentityid, a.creditcardid, a.modifieddate)
-  )
 }

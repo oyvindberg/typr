@@ -27,40 +27,48 @@ case class PersonDynamicSqlRow(
 )
 
 object PersonDynamicSqlRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[PersonDynamicSqlRow] = new JdbcDecoder[PersonDynamicSqlRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PersonDynamicSqlRow) =
-      columIndex + 3 ->
-        PersonDynamicSqlRow(
-          title = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 0, rs)._2,
-          firstname = FirstName.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          middlename = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
-          lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[PersonDynamicSqlRow] = {
+    new JdbcDecoder[PersonDynamicSqlRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PersonDynamicSqlRow) =
+        columIndex + 3 ->
+          PersonDynamicSqlRow(
+            title = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 0, rs)._2,
+            firstname = FirstName.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            middlename = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[PersonDynamicSqlRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-    val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
-    val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
-    val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
-    if (title.isRight && firstname.isRight && middlename.isRight && lastname.isRight)
-      Right(PersonDynamicSqlRow(title = title.toOption.get, firstname = firstname.toOption.get, middlename = middlename.toOption.get, lastname = lastname.toOption.get))
-    else Left(List[Either[String, Any]](title, firstname, middlename, lastname).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[PersonDynamicSqlRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
+      val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
+      val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
+      if (title.isRight && firstname.isRight && middlename.isRight && lastname.isRight)
+        Right(PersonDynamicSqlRow(title = title.toOption.get, firstname = firstname.toOption.get, middlename = middlename.toOption.get, lastname = lastname.toOption.get))
+      else Left(List[Either[String, Any]](title, firstname, middlename, lastname).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[PersonDynamicSqlRow] = new JsonEncoder[PersonDynamicSqlRow] {
-    override def unsafeEncode(a: PersonDynamicSqlRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""title":""")
-      JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.title, indent, out)
-      out.write(",")
-      out.write(""""firstname":""")
-      FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
-      out.write(",")
-      out.write(""""middlename":""")
-      JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
-      out.write(",")
-      out.write(""""lastname":""")
-      Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[PersonDynamicSqlRow] = {
+    new JsonEncoder[PersonDynamicSqlRow] {
+      override def unsafeEncode(a: PersonDynamicSqlRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""title":""")
+        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.title, indent, out)
+        out.write(",")
+        out.write(""""firstname":""")
+        FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
+        out.write(",")
+        out.write(""""middlename":""")
+        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
+        out.write(",")
+        out.write(""""lastname":""")
+        Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
+        out.write("}")
+      }
     }
   }
 }

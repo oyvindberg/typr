@@ -6,16 +6,12 @@
 package adventureworks.pe.ct
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class CtViewRepoImpl extends CtViewRepo {
-  override def select: SelectBuilder[CtViewFields, CtViewRow] = {
-    SelectBuilderSql(""""pe"."ct"""", CtViewFields.structure, CtViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, CtViewRow] = {
-    sql"""select "id", "contacttypeid", "name", "modifieddate"::text from "pe"."ct"""".query(CtViewRow.read).stream
-  }
+  def select: SelectBuilder[CtViewFields, CtViewRow] = SelectBuilder.of(""""pe"."ct"""", CtViewFields.structure, CtViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, CtViewRow] = sql"""select "id", "contacttypeid", "name", "modifieddate"::text from "pe"."ct"""".query(CtViewRow.read).stream
 }

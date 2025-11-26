@@ -15,8 +15,9 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: production.unitmeasure
-    Unit of measure lookup table.
-    Primary key: unitmeasurecode */
+ * Unit of measure lookup table.
+ * Primary key: unitmeasurecode
+ */
 case class UnitmeasureRow(
   /** Primary key. */
   unitmeasurecode: UnitmeasureId,
@@ -24,37 +25,47 @@ case class UnitmeasureRow(
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = unitmeasurecode
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): UnitmeasureRowUnsaved =
-     UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
- }
+) {
+  def id: UnitmeasureId = unitmeasurecode
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): UnitmeasureRowUnsaved = new UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
+}
 
 object UnitmeasureRow {
   given decoder: Decoder[UnitmeasureRow] = Decoder.forProduct3[UnitmeasureRow, UnitmeasureId, Name, TypoLocalDateTime]("unitmeasurecode", "name", "modifieddate")(UnitmeasureRow.apply)(using UnitmeasureId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[UnitmeasureRow] = Encoder.forProduct3[UnitmeasureRow, UnitmeasureId, Name, TypoLocalDateTime]("unitmeasurecode", "name", "modifieddate")(x => (x.unitmeasurecode, x.name, x.modifieddate))(using UnitmeasureId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[UnitmeasureRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    UnitmeasureRow(
-      unitmeasurecode = arr(0).asInstanceOf[UnitmeasureId],
-          name = arr(1).asInstanceOf[Name],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[UnitmeasureRow] = {
+    Text.instance[UnitmeasureRow]{ (row, sb) =>
+      UnitmeasureId.pgText.unsafeEncode(row.unitmeasurecode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[UnitmeasureRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(UnitmeasureId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      UnitmeasureRow(
+        unitmeasurecode = arr(0).asInstanceOf[UnitmeasureId],
+            name = arr(1).asInstanceOf[Name],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[UnitmeasureRow] = {
+    new Write.Composite[UnitmeasureRow](
+      List(new Write.Single(UnitmeasureId.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.unitmeasurecode, a.name, a.modifieddate)
     )
   }
-  given text: Text[UnitmeasureRow] = Text.instance[UnitmeasureRow]{ (row, sb) =>
-    UnitmeasureId.text.unsafeEncode(row.unitmeasurecode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[UnitmeasureRow] = new Write.Composite[UnitmeasureRow](
-    List(new Write.Single(UnitmeasureId.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.unitmeasurecode, a.name, a.modifieddate)
-  )
 }

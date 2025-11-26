@@ -24,16 +24,20 @@ case class SohsrViewRow(
 
 object SohsrViewRow {
   implicit lazy val decoder: Decoder[SohsrViewRow] = Decoder.forProduct3[SohsrViewRow, SalesorderheaderId, SalesreasonId, TypoLocalDateTime]("salesorderid", "salesreasonid", "modifieddate")(SohsrViewRow.apply)(SalesorderheaderId.decoder, SalesreasonId.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[SohsrViewRow] = Encoder.forProduct3[SohsrViewRow, SalesorderheaderId, SalesreasonId, TypoLocalDateTime]("salesorderid", "salesreasonid", "modifieddate")(x => (x.salesorderid, x.salesreasonid, x.modifieddate))(SalesorderheaderId.encoder, SalesreasonId.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[SohsrViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(SalesreasonId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    SohsrViewRow(
-      salesorderid = arr(0).asInstanceOf[SalesorderheaderId],
-          salesreasonid = arr(1).asInstanceOf[SalesreasonId],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
-    )
+
+  implicit lazy val read: Read[SohsrViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(SalesreasonId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      SohsrViewRow(
+        salesorderid = arr(0).asInstanceOf[SalesorderheaderId],
+            salesreasonid = arr(1).asInstanceOf[SalesreasonId],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

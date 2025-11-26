@@ -7,14 +7,17 @@ package adventureworks.update_person
 
 import adventureworks.customtypes.TypoLocalDateTime
 import anorm.ParameterValue
-import anorm.SqlStringInterpolation
 import anorm.ToStatement
 import java.sql.Connection
+import anorm.SqlStringInterpolation
 
 class UpdatePersonSqlRepoImpl extends UpdatePersonSqlRepo {
-  override def apply(suffix: String, cutoff: Option[TypoLocalDateTime])(using c: Connection): Int = {
+  def apply(
+    suffix: String,
+    cutoff: Option[TypoLocalDateTime]
+  )(using c: Connection): Int = {
     SQL"""update person.person
-          set firstname = firstname || '-' || ${ParameterValue(suffix, null, ToStatement.stringToStatement)}
-          where modifieddate < ${ParameterValue(cutoff, null, ToStatement.optionToStatement(using TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp""".executeUpdate()
+    set firstname = firstname || '-' || ${ParameterValue(suffix, null, ToStatement.stringToStatement)}
+    where modifieddate < ${ParameterValue(cutoff, null, ToStatement.optionToStatement(using TypoLocalDateTime.toStatement, TypoLocalDateTime.parameterMetadata))}::timestamp""".executeUpdate()
   }
 }

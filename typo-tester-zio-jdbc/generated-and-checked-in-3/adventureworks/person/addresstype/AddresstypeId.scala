@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `person.addresstype` */
-case class AddresstypeId(value: Int) extends AnyVal
+case class AddresstypeId(value: Int) extends scala.AnyVal
+
 object AddresstypeId {
   given arrayJdbcDecoder: JdbcDecoder[Array[AddresstypeId]] = adventureworks.IntArrayDecoder.map(_.map(AddresstypeId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[AddresstypeId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[AddresstypeId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[AddresstypeId, Int] = Bijection[AddresstypeId, Int](_.value)(AddresstypeId.apply)
+
+  given bijection: Bijection[AddresstypeId, Int] = Bijection.apply[AddresstypeId, Int](_.value)(AddresstypeId.apply)
+
   given jdbcDecoder: JdbcDecoder[AddresstypeId] = JdbcDecoder.intDecoder.map(AddresstypeId.apply)
+
   given jdbcEncoder: JdbcEncoder[AddresstypeId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[AddresstypeId] = JsonDecoder.int.map(AddresstypeId.apply)
+
   given jsonEncoder: JsonEncoder[AddresstypeId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[AddresstypeId] = PGType.PGTypeInt.as
-  given setter: Setter[AddresstypeId] = Setter.intSetter.contramap(_.value)
-  given text: Text[AddresstypeId] = new Text[AddresstypeId] {
-    override def unsafeEncode(v: AddresstypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: AddresstypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[AddresstypeId] = {
+    new Text[AddresstypeId] {
+      override def unsafeEncode(v: AddresstypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: AddresstypeId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[AddresstypeId] = PGType.PGTypeInt.as
+
+  given setter: Setter[AddresstypeId] = Setter.intSetter.contramap(_.value)
 }

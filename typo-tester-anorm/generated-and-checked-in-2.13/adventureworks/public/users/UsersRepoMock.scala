@@ -18,82 +18,90 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class UsersRepoMock(toRow: Function1[UsersRowUnsaved, UsersRow],
-                    map: scala.collection.mutable.Map[UsersId, UsersRow] = scala.collection.mutable.Map.empty) extends UsersRepo {
-  override def delete: DeleteBuilder[UsersFields, UsersRow] = {
-    DeleteBuilderMock(DeleteParams.empty, UsersFields.structure, map)
-  }
-  override def deleteById(userId: UsersId)(implicit c: Connection): Boolean = {
-    map.remove(userId).isDefined
-  }
-  override def deleteByIds(userIds: Array[UsersId])(implicit c: Connection): Int = {
-    userIds.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: UsersRow)(implicit c: Connection): UsersRow = {
+case class UsersRepoMock(
+  toRow: UsersRowUnsaved => UsersRow,
+  map: scala.collection.mutable.Map[UsersId, UsersRow] = scala.collection.mutable.Map.empty[UsersId, UsersRow]
+) extends UsersRepo {
+  def delete: DeleteBuilder[UsersFields, UsersRow] = DeleteBuilderMock(DeleteParams.empty, UsersFields.structure, map)
+
+  def deleteById(userId: UsersId)(implicit c: Connection): Boolean = map.remove(userId).isDefined
+
+  def deleteByIds(userIds: Array[UsersId])(implicit c: Connection): Int = userIds.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: UsersRow)(implicit c: Connection): UsersRow = {
     val _ = if (map.contains(unsaved.userId))
       sys.error(s"id ${unsaved.userId} already exists")
     else
       map.put(unsaved.userId, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: UsersRowUnsaved)(implicit c: Connection): UsersRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[UsersRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  def insert(unsaved: UsersRowUnsaved)(implicit c: Connection): UsersRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[UsersRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.userId -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[UsersRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[UsersRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.userId -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[UsersFields, UsersRow] = {
-    SelectBuilderMock(UsersFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(implicit c: Connection): List[UsersRow] = {
-    map.values.toList
-  }
-  override def selectById(userId: UsersId)(implicit c: Connection): Option[UsersRow] = {
-    map.get(userId)
-  }
-  override def selectByIds(userIds: Array[UsersId])(implicit c: Connection): List[UsersRow] = {
-    userIds.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(userIds: Array[UsersId])(implicit c: Connection): Map[UsersId, UsersRow] = {
+
+  def select: SelectBuilder[UsersFields, UsersRow] = SelectBuilderMock(UsersFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(implicit c: Connection): List[UsersRow] = map.values.toList
+
+  def selectById(userId: UsersId)(implicit c: Connection): Option[UsersRow] = map.get(userId)
+
+  def selectByIds(userIds: Array[UsersId])(implicit c: Connection): List[UsersRow] = userIds.flatMap(map.get).toList
+
+  def selectByIdsTracked(userIds: Array[UsersId])(implicit c: Connection): Map[UsersId, UsersRow] = {
     val byId = selectByIds(userIds).view.map(x => (x.userId, x)).toMap
     userIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def selectByUniqueEmail(email: TypoUnknownCitext)(implicit c: Connection): Option[UsersRow] = {
-    map.values.find(v => email == v.email)
-  }
-  override def update: UpdateBuilder[UsersFields, UsersRow] = {
-    UpdateBuilderMock(UpdateParams.empty, UsersFields.structure, map)
-  }
-  override def update(row: UsersRow)(implicit c: Connection): Option[UsersRow] = {
+
+  def selectByUniqueEmail(email: TypoUnknownCitext)(implicit c: Connection): Option[UsersRow] = map.values.find(v => email == v.email)
+
+  def update: UpdateBuilder[UsersFields, UsersRow] = UpdateBuilderMock(UpdateParams.empty, UsersFields.structure, map)
+
+  def update(row: UsersRow)(implicit c: Connection): Option[UsersRow] = {
     map.get(row.userId).map { _ =>
       map.put(row.userId, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: UsersRow)(implicit c: Connection): UsersRow = {
+
+  def upsert(unsaved: UsersRow)(implicit c: Connection): UsersRow = {
     map.put(unsaved.userId, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[UsersRow])(implicit c: Connection): List[UsersRow] = {
+
+  def upsertBatch(unsaved: Iterable[UsersRow])(implicit c: Connection): List[UsersRow] = {
     unsaved.map { row =>
       map += (row.userId -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[UsersRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[UsersRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.userId -> row)
     }

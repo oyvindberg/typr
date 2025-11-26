@@ -6,16 +6,12 @@
 package adventureworks.pr.wr
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class WrViewRepoImpl extends WrViewRepo {
-  override def select: SelectBuilder[WrViewFields, WrViewRow] = {
-    SelectBuilderSql(""""pr"."wr"""", WrViewFields.structure, WrViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, WrViewRow] = {
-    sql"""select "id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text from "pr"."wr"""".query(using WrViewRow.read).stream
-  }
+  def select: SelectBuilder[WrViewFields, WrViewRow] = SelectBuilder.of(""""pr"."wr"""", WrViewFields.structure, WrViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, WrViewRow] = sql"""select "id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text from "pr"."wr"""".query(using WrViewRow.read).stream
 }

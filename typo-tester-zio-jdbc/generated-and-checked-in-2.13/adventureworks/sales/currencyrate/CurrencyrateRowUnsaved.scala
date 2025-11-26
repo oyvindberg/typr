@@ -7,6 +7,7 @@ package adventureworks.sales.currencyrate
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
 import zio.json.JsonDecoder
@@ -19,90 +20,100 @@ case class CurrencyrateRowUnsaved(
   /** Date and time the exchange rate was obtained. */
   currencyratedate: TypoLocalDateTime,
   /** Exchange rate was converted from this currency code.
-      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
+   * Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]]
+   */
   fromcurrencycode: CurrencyId,
   /** Exchange rate was converted to this currency code.
-      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
+   * Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]]
+   */
   tocurrencycode: CurrencyId,
   /** Average exchange rate for the day. */
   averagerate: BigDecimal,
   /** Final exchange rate for the day. */
   endofdayrate: BigDecimal,
   /** Default: nextval('sales.currencyrate_currencyrateid_seq'::regclass)
-      Primary key for CurrencyRate records. */
-  currencyrateid: Defaulted[CurrencyrateId] = Defaulted.UseDefault,
+   * Primary key for CurrencyRate records.
+   */
+  currencyrateid: Defaulted[CurrencyrateId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(currencyrateidDefault: => CurrencyrateId, modifieddateDefault: => TypoLocalDateTime): CurrencyrateRow =
-    CurrencyrateRow(
-      currencyrateid = currencyrateid match {
-                         case Defaulted.UseDefault => currencyrateidDefault
-                         case Defaulted.Provided(value) => value
-                       },
+  def toRow(
+    currencyrateidDefault: => CurrencyrateId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): CurrencyrateRow = {
+    new CurrencyrateRow(
+      currencyrateid = currencyrateid.getOrElse(currencyrateidDefault),
       currencyratedate = currencyratedate,
       fromcurrencycode = fromcurrencycode,
       tocurrencycode = tocurrencycode,
       averagerate = averagerate,
       endofdayrate = endofdayrate,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object CurrencyrateRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[CurrencyrateRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val currencyratedate = jsonObj.get("currencyratedate").toRight("Missing field 'currencyratedate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    val fromcurrencycode = jsonObj.get("fromcurrencycode").toRight("Missing field 'fromcurrencycode'").flatMap(_.as(CurrencyId.jsonDecoder))
-    val tocurrencycode = jsonObj.get("tocurrencycode").toRight("Missing field 'tocurrencycode'").flatMap(_.as(CurrencyId.jsonDecoder))
-    val averagerate = jsonObj.get("averagerate").toRight("Missing field 'averagerate'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
-    val endofdayrate = jsonObj.get("endofdayrate").toRight("Missing field 'endofdayrate'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
-    val currencyrateid = jsonObj.get("currencyrateid").toRight("Missing field 'currencyrateid'").flatMap(_.as(Defaulted.jsonDecoder(CurrencyrateId.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (currencyratedate.isRight && fromcurrencycode.isRight && tocurrencycode.isRight && averagerate.isRight && endofdayrate.isRight && currencyrateid.isRight && modifieddate.isRight)
-      Right(CurrencyrateRowUnsaved(currencyratedate = currencyratedate.toOption.get, fromcurrencycode = fromcurrencycode.toOption.get, tocurrencycode = tocurrencycode.toOption.get, averagerate = averagerate.toOption.get, endofdayrate = endofdayrate.toOption.get, currencyrateid = currencyrateid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, currencyrateid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  implicit lazy val jsonEncoder: JsonEncoder[CurrencyrateRowUnsaved] = new JsonEncoder[CurrencyrateRowUnsaved] {
-    override def unsafeEncode(a: CurrencyrateRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""currencyratedate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.currencyratedate, indent, out)
-      out.write(",")
-      out.write(""""fromcurrencycode":""")
-      CurrencyId.jsonEncoder.unsafeEncode(a.fromcurrencycode, indent, out)
-      out.write(",")
-      out.write(""""tocurrencycode":""")
-      CurrencyId.jsonEncoder.unsafeEncode(a.tocurrencycode, indent, out)
-      out.write(",")
-      out.write(""""averagerate":""")
-      JsonEncoder.scalaBigDecimal.unsafeEncode(a.averagerate, indent, out)
-      out.write(",")
-      out.write(""""endofdayrate":""")
-      JsonEncoder.scalaBigDecimal.unsafeEncode(a.endofdayrate, indent, out)
-      out.write(",")
-      out.write(""""currencyrateid":""")
-      Defaulted.jsonEncoder(CurrencyrateId.jsonEncoder).unsafeEncode(a.currencyrateid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object CurrencyrateRowUnsaved {
+  implicit lazy val jsonDecoder: JsonDecoder[CurrencyrateRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val currencyratedate = jsonObj.get("currencyratedate").toRight("Missing field 'currencyratedate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      val fromcurrencycode = jsonObj.get("fromcurrencycode").toRight("Missing field 'fromcurrencycode'").flatMap(_.as(CurrencyId.jsonDecoder))
+      val tocurrencycode = jsonObj.get("tocurrencycode").toRight("Missing field 'tocurrencycode'").flatMap(_.as(CurrencyId.jsonDecoder))
+      val averagerate = jsonObj.get("averagerate").toRight("Missing field 'averagerate'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
+      val endofdayrate = jsonObj.get("endofdayrate").toRight("Missing field 'endofdayrate'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
+      val currencyrateid = jsonObj.get("currencyrateid").toRight("Missing field 'currencyrateid'").flatMap(_.as(Defaulted.jsonDecoder(CurrencyrateId.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (currencyratedate.isRight && fromcurrencycode.isRight && tocurrencycode.isRight && averagerate.isRight && endofdayrate.isRight && currencyrateid.isRight && modifieddate.isRight)
+        Right(CurrencyrateRowUnsaved(currencyratedate = currencyratedate.toOption.get, fromcurrencycode = fromcurrencycode.toOption.get, tocurrencycode = tocurrencycode.toOption.get, averagerate = averagerate.toOption.get, endofdayrate = endofdayrate.toOption.get, currencyrateid = currencyrateid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, currencyrateid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[CurrencyrateRowUnsaved] = Text.instance[CurrencyrateRowUnsaved]{ (row, sb) =>
-    TypoLocalDateTime.text.unsafeEncode(row.currencyratedate, sb)
-    sb.append(Text.DELIMETER)
-    CurrencyId.text.unsafeEncode(row.fromcurrencycode, sb)
-    sb.append(Text.DELIMETER)
-    CurrencyId.text.unsafeEncode(row.tocurrencycode, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.averagerate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.endofdayrate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(CurrencyrateId.text).unsafeEncode(row.currencyrateid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[CurrencyrateRowUnsaved] = {
+    new JsonEncoder[CurrencyrateRowUnsaved] {
+      override def unsafeEncode(a: CurrencyrateRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""currencyratedate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.currencyratedate, indent, out)
+        out.write(",")
+        out.write(""""fromcurrencycode":""")
+        CurrencyId.jsonEncoder.unsafeEncode(a.fromcurrencycode, indent, out)
+        out.write(",")
+        out.write(""""tocurrencycode":""")
+        CurrencyId.jsonEncoder.unsafeEncode(a.tocurrencycode, indent, out)
+        out.write(",")
+        out.write(""""averagerate":""")
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.averagerate, indent, out)
+        out.write(",")
+        out.write(""""endofdayrate":""")
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.endofdayrate, indent, out)
+        out.write(",")
+        out.write(""""currencyrateid":""")
+        Defaulted.jsonEncoder(CurrencyrateId.jsonEncoder).unsafeEncode(a.currencyrateid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[CurrencyrateRowUnsaved] = {
+    Text.instance[CurrencyrateRowUnsaved]{ (row, sb) =>
+      TypoLocalDateTime.pgText.unsafeEncode(row.currencyratedate, sb)
+      sb.append(Text.DELIMETER)
+      CurrencyId.pgText.unsafeEncode(row.fromcurrencycode, sb)
+      sb.append(Text.DELIMETER)
+      CurrencyId.pgText.unsafeEncode(row.tocurrencycode, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.averagerate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.endofdayrate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(CurrencyrateId.pgText).unsafeEncode(row.currencyrateid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

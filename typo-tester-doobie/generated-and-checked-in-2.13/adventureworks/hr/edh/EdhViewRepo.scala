@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait EdhViewRepo {
   def select: SelectBuilder[EdhViewFields, EdhViewRow]
+
   def selectAll: Stream[ConnectionIO, EdhViewRow]
 }

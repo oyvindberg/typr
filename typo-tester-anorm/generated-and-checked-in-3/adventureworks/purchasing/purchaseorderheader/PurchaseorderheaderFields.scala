@@ -49,11 +49,11 @@ trait PurchaseorderheaderFields {
 
 object PurchaseorderheaderFields {
   lazy val structure: Relation[PurchaseorderheaderFields, PurchaseorderheaderRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PurchaseorderheaderFields, PurchaseorderheaderRow] {
-  
+
     override lazy val fields: PurchaseorderheaderFields = new PurchaseorderheaderFields {
       override def purchaseorderid = IdField[PurchaseorderheaderId, PurchaseorderheaderRow](_path, "purchaseorderid", None, Some("int4"), x => x.purchaseorderid, (row, value) => row.copy(purchaseorderid = value))
       override def revisionnumber = Field[TypoShort, PurchaseorderheaderRow](_path, "revisionnumber", None, Some("int2"), x => x.revisionnumber, (row, value) => row.copy(revisionnumber = value))
@@ -68,12 +68,11 @@ object PurchaseorderheaderFields {
       override def freight = Field[BigDecimal, PurchaseorderheaderRow](_path, "freight", None, Some("numeric"), x => x.freight, (row, value) => row.copy(freight = value))
       override def modifieddate = Field[TypoLocalDateTime, PurchaseorderheaderRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PurchaseorderheaderRow]] =
       List[FieldLike[?, PurchaseorderheaderRow]](fields.purchaseorderid, fields.revisionnumber, fields.status, fields.employeeid, fields.vendorid, fields.shipmethodid, fields.orderdate, fields.shipdate, fields.subtotal, fields.taxamt, fields.freight, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

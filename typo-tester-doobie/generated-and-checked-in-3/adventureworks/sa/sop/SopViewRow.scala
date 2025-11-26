@@ -29,20 +29,24 @@ case class SopViewRow(
 
 object SopViewRow {
   given decoder: Decoder[SopViewRow] = Decoder.forProduct5[SopViewRow, SpecialofferId, SpecialofferId, ProductId, TypoUUID, TypoLocalDateTime]("id", "specialofferid", "productid", "rowguid", "modifieddate")(SopViewRow.apply)(using SpecialofferId.decoder, SpecialofferId.decoder, ProductId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[SopViewRow] = Encoder.forProduct5[SopViewRow, SpecialofferId, SpecialofferId, ProductId, TypoUUID, TypoLocalDateTime]("id", "specialofferid", "productid", "rowguid", "modifieddate")(x => (x.id, x.specialofferid, x.productid, x.rowguid, x.modifieddate))(using SpecialofferId.encoder, SpecialofferId.encoder, ProductId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SopViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[SopViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SopViewRow(
-      id = arr(0).asInstanceOf[SpecialofferId],
-          specialofferid = arr(1).asInstanceOf[SpecialofferId],
-          productid = arr(2).asInstanceOf[ProductId],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SopViewRow(
+        id = arr(0).asInstanceOf[SpecialofferId],
+            specialofferid = arr(1).asInstanceOf[SpecialofferId],
+            productid = arr(2).asInstanceOf[ProductId],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

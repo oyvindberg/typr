@@ -7,6 +7,7 @@ package adventureworks.person.person
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
@@ -26,129 +27,136 @@ import scala.util.Try
 /** This class corresponds to a row in table `person.person` which has not been persisted yet */
 case class PersonRowUnsaved(
   /** Primary key for Person records.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
-      Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text])))) */
+   * Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
+   */
   persontype: /* bpchar, max 2 chars */ String,
   /** A courtesy title. For example, Mr. or Ms. */
-  title: Option[/* max 8 chars */ String],
+  title: Option[/* max 8 chars */ String] = None,
   /** First name of the person. */
   firstname: /* user-picked */ FirstName,
   /** Middle name or middle initial of the person. */
-  middlename: Option[Name],
+  middlename: Option[Name] = None,
   /** Last name of the person. */
   lastname: Name,
   /** Surname suffix. For example, Sr. or Jr. */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: Option[/* max 10 chars */ String] = None,
   /** Additional contact information about the person stored in xml format. */
-  additionalcontactinfo: Option[TypoXml],
+  additionalcontactinfo: Option[TypoXml] = None,
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  demographics: Option[TypoXml],
+  demographics: Option[TypoXml] = None,
   /** Default: false
-      0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order. */
-  namestyle: Defaulted[NameStyle] = Defaulted.UseDefault,
+   * 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
+   */
+  namestyle: Defaulted[NameStyle] = new UseDefault(),
   /** Default: 0
-      0 = Contact does not wish to receive e-mail promotions, 1 = Contact does wish to receive e-mail promotions from AdventureWorks, 2 = Contact does wish to receive e-mail promotions from AdventureWorks and selected partners.
-      Constraint CK_Person_EmailPromotion affecting columns emailpromotion:  (((emailpromotion >= 0) AND (emailpromotion <= 2))) */
-  emailpromotion: Defaulted[Int] = Defaulted.UseDefault,
+   * 0 = Contact does not wish to receive e-mail promotions, 1 = Contact does wish to receive e-mail promotions from AdventureWorks, 2 = Contact does wish to receive e-mail promotions from AdventureWorks and selected partners.
+   * Constraint CK_Person_EmailPromotion affecting columns emailpromotion:  (((emailpromotion >= 0) AND (emailpromotion <= 2)))
+   */
+  emailpromotion: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(namestyleDefault: => NameStyle, emailpromotionDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): PersonRow =
-    PersonRow(
+  def toRow(
+    namestyleDefault: => NameStyle,
+    emailpromotionDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): PersonRow = {
+    new PersonRow(
       businessentityid = businessentityid,
       persontype = persontype,
+      namestyle = namestyle.getOrElse(namestyleDefault),
       title = title,
       firstname = firstname,
       middlename = middlename,
       lastname = lastname,
       suffix = suffix,
+      emailpromotion = emailpromotion.getOrElse(emailpromotionDefault),
       additionalcontactinfo = additionalcontactinfo,
       demographics = demographics,
-      namestyle = namestyle match {
-                    case Defaulted.UseDefault => namestyleDefault
-                    case Defaulted.Provided(value) => value
-                  },
-      emailpromotion = emailpromotion match {
-                         case Defaulted.UseDefault => emailpromotionDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object PersonRowUnsaved {
-  given reads: Reads[PersonRowUnsaved] = Reads[PersonRowUnsaved](json => JsResult.fromTry(
-      Try(
-        PersonRowUnsaved(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          persontype = json.\("persontype").as(Reads.StringReads),
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads),
-          suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-          additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads)),
-          demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
-          namestyle = json.\("namestyle").as(Defaulted.reads(using NameStyle.reads)),
-          emailpromotion = json.\("emailpromotion").as(Defaulted.reads(using Reads.IntReads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[PersonRowUnsaved] = Text.instance[PersonRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.persontype, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    /* user-picked */ FirstName.text.unsafeEncode(row.firstname, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Name.text).unsafeEncode(row.middlename, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.lastname, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.suffix, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.additionalcontactinfo, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.demographics, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using NameStyle.text).unsafeEncode(row.namestyle, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.emailpromotion, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[PersonRowUnsaved] = OWrites[PersonRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "persontype" -> Writes.StringWrites.writes(o.persontype),
-      "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname),
-      "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
-      "additionalcontactinfo" -> Writes.OptionWrites(using TypoXml.writes).writes(o.additionalcontactinfo),
-      "demographics" -> Writes.OptionWrites(using TypoXml.writes).writes(o.demographics),
-      "namestyle" -> Defaulted.writes(using NameStyle.writes).writes(o.namestyle),
-      "emailpromotion" -> Defaulted.writes(using Writes.IntWrites).writes(o.emailpromotion),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object PersonRowUnsaved {
+  given pgText: Text[PersonRowUnsaved] = {
+    Text.instance[PersonRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.persontype, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      /* user-picked */ FirstName.pgText.unsafeEncode(row.firstname, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Name.pgText).unsafeEncode(row.middlename, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.lastname, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.suffix, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.additionalcontactinfo, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.demographics, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using NameStyle.pgText).unsafeEncode(row.namestyle, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.emailpromotion, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[PersonRowUnsaved] = {
+    Reads[PersonRowUnsaved](json => JsResult.fromTry(
+        Try(
+          PersonRowUnsaved(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            persontype = json.\("persontype").as(Reads.StringReads),
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads),
+            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads)),
+            demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
+            namestyle = json.\("namestyle").as(Defaulted.reads(using NameStyle.reads)),
+            emailpromotion = json.\("emailpromotion").as(Defaulted.reads(using Reads.IntReads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[PersonRowUnsaved] = {
+    OWrites[PersonRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "persontype" -> Writes.StringWrites.writes(o.persontype),
+        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname),
+        "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
+        "additionalcontactinfo" -> Writes.OptionWrites(using TypoXml.writes).writes(o.additionalcontactinfo),
+        "demographics" -> Writes.OptionWrites(using TypoXml.writes).writes(o.demographics),
+        "namestyle" -> Defaulted.writes(using NameStyle.writes).writes(o.namestyle),
+        "emailpromotion" -> Defaulted.writes(using Writes.IntWrites).writes(o.emailpromotion),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

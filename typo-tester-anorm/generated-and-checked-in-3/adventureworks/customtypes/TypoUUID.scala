@@ -21,36 +21,54 @@ import typo.dsl.Bijection
 case class TypoUUID(value: UUID)
 
 object TypoUUID {
-  def apply(str: String): TypoUUID = TypoUUID(UUID.fromString(str))
-  def randomUUID: TypoUUID = TypoUUID(UUID.randomUUID())
-  given arrayColumn: Column[Array[TypoUUID]] = Column.nonNull[Array[TypoUUID]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoUUID(v.asInstanceOf[UUID])))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoUUID, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+  def apply(str: String): TypoUUID = new TypoUUID(UUID.fromString(str))
+
+  given arrayColumn: Column[Array[TypoUUID]] = {
+    Column.nonNull[Array[TypoUUID]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoUUID(v.asInstanceOf[UUID])))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoUUID, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   given arrayToStatement: ToStatement[Array[TypoUUID]] = ToStatement[Array[TypoUUID]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("uuid", v.map(v => v.value))))
-  given bijection: Bijection[TypoUUID, UUID] = Bijection[TypoUUID, UUID](_.value)(TypoUUID.apply)
-  given column: Column[TypoUUID] = Column.nonNull[TypoUUID]((v1: Any, _) =>
-    v1 match {
-      case v: UUID => Right(TypoUUID(v))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of java.util.UUID, got ${other.getClass.getName}"))
+
+  given bijection: Bijection[TypoUUID, UUID] = Bijection.apply[TypoUUID, UUID](_.value)(TypoUUID.apply)
+
+  given column: Column[TypoUUID] = {
+    Column.nonNull[TypoUUID]((v1: Any, _) =>
+      v1 match {
+        case v: UUID => Right(new TypoUUID(v))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of java.util.UUID, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  given parameterMetadata: ParameterMetaData[TypoUUID] = {
+    new ParameterMetaData[TypoUUID] {
+      override def sqlType: String = "uuid"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  given parameterMetadata: ParameterMetaData[TypoUUID] = new ParameterMetaData[TypoUUID] {
-    override def sqlType: String = "uuid"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  given pgText: Text[TypoUUID] = {
+    new Text[TypoUUID] {
+      override def unsafeEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  def randomUUID: TypoUUID = new TypoUUID(UUID.randomUUID())
+
   given reads: Reads[TypoUUID] = Reads.uuidReads.map(TypoUUID.apply)
-  given text: Text[TypoUUID] = new Text[TypoUUID] {
-    override def unsafeEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoUUID, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
-  }
+
   given toStatement: ToStatement[TypoUUID] = ToStatement[TypoUUID]((s, index, v) => s.setObject(index, v.value))
+
   given writes: Writes[TypoUUID] = Writes.UuidWrites.contramap(_.value)
 }

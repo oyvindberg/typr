@@ -19,22 +19,34 @@ import typo.dsl.Bijection
 case class TypoBytea(value: Array[Byte])
 
 object TypoBytea {
-  given bijection: Bijection[TypoBytea, Array[Byte]] = Bijection[TypoBytea, Array[Byte]](_.value)(TypoBytea.apply)
-  given column: Column[TypoBytea] = Column.nonNull[TypoBytea]((v1: Any, _) =>
-    v1 match {
-      case v: Array[Byte] => Right(TypoBytea(v))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of Array[scala.Byte], got ${other.getClass.getName}"))
+  given bijection: Bijection[TypoBytea, Array[Byte]] = Bijection.apply[TypoBytea, Array[Byte]](_.value)(TypoBytea.apply)
+
+  given column: Column[TypoBytea] = {
+    Column.nonNull[TypoBytea]((v1: Any, _) =>
+      v1 match {
+        case v: Array[Byte] => Right(new TypoBytea(v))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of Array[scala.Byte], got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  given parameterMetadata: ParameterMetaData[TypoBytea] = {
+    new ParameterMetaData[TypoBytea] {
+      override def sqlType: String = "bytea"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  given parameterMetadata: ParameterMetaData[TypoBytea] = new ParameterMetaData[TypoBytea] {
-    override def sqlType: String = "bytea"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  given pgText: Text[TypoBytea] = {
+    new Text[TypoBytea] {
+      override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[TypoBytea] = Reads.ArrayReads[Byte](using Reads.ByteReads, implicitly).map(TypoBytea.apply)
-  given text: Text[TypoBytea] = new Text[TypoBytea] {
-    override def unsafeEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoBytea, sb: StringBuilder): Unit = Text.byteArrayInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[TypoBytea] = ToStatement[TypoBytea]((s, index, v) => s.setObject(index, v.value))
+
   given writes: Writes[TypoBytea] = Writes.arrayWrites[Byte](using implicitly, Writes.ByteWrites).contramap(_.value)
 }

@@ -12,28 +12,37 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.title_domain
-    Primary key: code */
-case class TitleDomainRow(
-  code: TitleDomainId
-){
-   val id = code
- }
+ * Primary key: code
+ */
+case class TitleDomainRow(code: TitleDomainId) {
+  def id: TitleDomainId = code
+}
 
 object TitleDomainRow {
   given decoder: Decoder[TitleDomainRow] = Decoder.forProduct1[TitleDomainRow, TitleDomainId]("code")(TitleDomainRow.apply)(using TitleDomainId.decoder)
+
   given encoder: Encoder[TitleDomainRow] = Encoder.forProduct1[TitleDomainRow, TitleDomainId]("code")(x => (x.code))(using TitleDomainId.encoder)
-  given read: Read[TitleDomainRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(TitleDomainId.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    TitleDomainRow(
-      code = arr(0).asInstanceOf[TitleDomainId]
+
+  given pgText: Text[TitleDomainRow] = {
+    Text.instance[TitleDomainRow]{ (row, sb) =>
+      TitleDomainId.pgText.unsafeEncode(row.code, sb)
+    }
+  }
+
+  given read: Read[TitleDomainRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(TitleDomainId.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      TitleDomainRow(
+        code = arr(0).asInstanceOf[TitleDomainId]
+      )
+    }
+  }
+
+  given write: Write[TitleDomainRow] = {
+    new Write.Composite[TitleDomainRow](
+      List(new Write.Single(TitleDomainId.put)),
+      a => List(a.code)
     )
   }
-  given text: Text[TitleDomainRow] = Text.instance[TitleDomainRow]{ (row, sb) =>
-    TitleDomainId.text.unsafeEncode(row.code, sb)
-  }
-  given write: Write[TitleDomainRow] = new Write.Composite[TitleDomainRow](
-    List(new Write.Single(TitleDomainId.put)),
-    a => List(a.code)
-  )
 }

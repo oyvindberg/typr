@@ -10,27 +10,70 @@ import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.Json
 
+/** This signals a value where if you don't provide it, postgres will generate it for you */
+sealed trait Defaulted[T] {
+  def fold[U](
+    onDefault: => U,
+    onProvided: T => U
+  ): U
 
-/**
- * This signals a value where if you don't provide it, postgres will generate it for you
- */
-sealed trait Defaulted[+T]
+  def getOrElse(onDefault: => T): T
+
+  def visit(
+    onDefault: => Unit,
+    onProvided: T => Unit
+  ): Unit
+}
 
 object Defaulted {
-  case class Provided[T](value: T) extends Defaulted[T]
-  case object UseDefault extends Defaulted[Nothing]
-  given decoder[T](using T: Decoder[T]): Decoder[Defaulted[T]] = c => c.as[String].flatMap {
-      case "defaulted" => Right(UseDefault)
-      case _           => c.downField("provided").as[T].map(Provided.apply)
-    }
-  given encoder[T](using T: Encoder[T]): Encoder[Defaulted[T]] = Encoder.instance {
-    case Provided(value) => Json.obj("provided" -> Encoder[T].apply(value))
-    case UseDefault      => Json.fromString("defaulted")
+  given decoder[T](using T: Decoder[T]): Decoder[Defaulted[T]] = {
+    c => c.as[String].flatMap {
+        case "defaulted" => Right(UseDefault())
+        case _           => c.downField("provided").as[T].map(Provided.apply)
+      }
   }
-  given text[T](using t: Text[T]): Text[Defaulted[T]] = Text.instance {
-    case (Defaulted.Provided(value), sb) => t.unsafeEncode(value, sb)
-    case (Defaulted.UseDefault, sb) =>
-      sb.append("__DEFAULT_VALUE__")
-      ()
+
+  given encoder[T](using T: Encoder[T]): Encoder[Defaulted[T]] = {
+    Encoder.instance {
+      case Provided(value) => Json.obj("provided" -> Encoder[T].apply(value))
+      case UseDefault()      => Json.fromString("defaulted")
+    }
+  }
+
+  given pgText[T](using t: Text[T]): Text[Defaulted[T]] = {
+    Text.instance {
+      case (Defaulted.Provided(value), sb) => t.unsafeEncode(value, sb)
+      case (Defaulted.UseDefault(), sb) =>
+        sb.append("__DEFAULT_VALUE__")
+        ()
+    }
+  }
+
+  case class Provided[T](value: T) extends Defaulted[T] {
+    def fold[U](
+      onDefault: => U,
+      onProvided: T => U
+    ): U = onProvided(value)
+
+    def getOrElse(onDefault: => T): T = value
+
+    def visit(
+      onDefault: => Unit,
+      onProvided: T => Unit
+    ): Unit = onProvided(value)
+  }
+
+  case class UseDefault[T]() extends Defaulted[T] {
+    def fold[U](
+      onDefault: => U,
+      onProvided: T => U
+    ): U = onDefault
+
+    def getOrElse(onDefault: => T): T = onDefault
+
+    def visit(
+      onDefault: => Unit,
+      onProvided: T => Unit
+    ): Unit = onDefault
   }
 }

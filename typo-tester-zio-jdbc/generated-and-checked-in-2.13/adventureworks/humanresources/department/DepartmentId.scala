@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `humanresources.department` */
-case class DepartmentId(value: Int) extends AnyVal
+case class DepartmentId(value: Int) extends scala.AnyVal
+
 object DepartmentId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[DepartmentId]] = adventureworks.IntArrayDecoder.map(_.map(DepartmentId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[DepartmentId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[DepartmentId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[DepartmentId, Int] = Bijection[DepartmentId, Int](_.value)(DepartmentId.apply)
+
+  implicit lazy val bijection: Bijection[DepartmentId, Int] = Bijection.apply[DepartmentId, Int](_.value)(DepartmentId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[DepartmentId] = JdbcDecoder.intDecoder.map(DepartmentId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[DepartmentId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[DepartmentId] = JsonDecoder.int.map(DepartmentId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[DepartmentId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val pgType: PGType[DepartmentId] = PGType.PGTypeInt.as
-  implicit lazy val setter: Setter[DepartmentId] = Setter.intSetter.contramap(_.value)
-  implicit lazy val text: Text[DepartmentId] = new Text[DepartmentId] {
-    override def unsafeEncode(v: DepartmentId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: DepartmentId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[DepartmentId] = {
+    new Text[DepartmentId] {
+      override def unsafeEncode(v: DepartmentId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: DepartmentId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[DepartmentId] = PGType.PGTypeInt.as
+
+  implicit lazy val setter: Setter[DepartmentId] = Setter.intSetter.contramap(_.value)
 }

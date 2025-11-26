@@ -16,23 +16,29 @@ case class SalesorderdetailId(
   salesorderid: SalesorderheaderId,
   salesorderdetailid: Int
 )
+
 object SalesorderdetailId {
-  given jsonDecoder: JsonDecoder[SalesorderdetailId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val salesorderid = jsonObj.get("salesorderid").toRight("Missing field 'salesorderid'").flatMap(_.as(using SalesorderheaderId.jsonDecoder))
-    val salesorderdetailid = jsonObj.get("salesorderdetailid").toRight("Missing field 'salesorderdetailid'").flatMap(_.as(using JsonDecoder.int))
-    if (salesorderid.isRight && salesorderdetailid.isRight)
-      Right(SalesorderdetailId(salesorderid = salesorderid.toOption.get, salesorderdetailid = salesorderdetailid.toOption.get))
-    else Left(List[Either[String, Any]](salesorderid, salesorderdetailid).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[SalesorderdetailId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val salesorderid = jsonObj.get("salesorderid").toRight("Missing field 'salesorderid'").flatMap(_.as(using SalesorderheaderId.jsonDecoder))
+      val salesorderdetailid = jsonObj.get("salesorderdetailid").toRight("Missing field 'salesorderdetailid'").flatMap(_.as(using JsonDecoder.int))
+      if (salesorderid.isRight && salesorderdetailid.isRight)
+        Right(SalesorderdetailId(salesorderid = salesorderid.toOption.get, salesorderdetailid = salesorderdetailid.toOption.get))
+      else Left(List[Either[String, Any]](salesorderid, salesorderdetailid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[SalesorderdetailId] = new JsonEncoder[SalesorderdetailId] {
-    override def unsafeEncode(a: SalesorderdetailId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""salesorderid":""")
-      SalesorderheaderId.jsonEncoder.unsafeEncode(a.salesorderid, indent, out)
-      out.write(",")
-      out.write(""""salesorderdetailid":""")
-      JsonEncoder.int.unsafeEncode(a.salesorderdetailid, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[SalesorderdetailId] = {
+    new JsonEncoder[SalesorderdetailId] {
+      override def unsafeEncode(a: SalesorderdetailId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""salesorderid":""")
+        SalesorderheaderId.jsonEncoder.unsafeEncode(a.salesorderid, indent, out)
+        out.write(",")
+        out.write(""""salesorderdetailid":""")
+        JsonEncoder.int.unsafeEncode(a.salesorderdetailid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VstorewithaddressesViewRepo {
   def select: SelectBuilder[VstorewithaddressesViewFields, VstorewithaddressesViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VstorewithaddressesViewRow]
 }

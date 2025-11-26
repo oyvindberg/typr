@@ -18,28 +18,45 @@ import typo.dsl.Bijection
 case class TypoRecord(value: String)
 
 object TypoRecord {
-  given arrayGet: Get[Array[TypoRecord]] = Get.Advanced.array[AnyRef](NonEmptyList.one("record[]"))
-    .map(_.map(v => TypoRecord(v.asInstanceOf[PGobject].getValue)))
-  given arrayPut: Put[Array[TypoRecord]] = Put.Advanced.array[AnyRef](NonEmptyList.one("record[]"), "record")
-    .contramap(_.map(v => {
-                            val obj = new PGobject
-                            obj.setType("record")
-                            obj.setValue(v.value)
-                            obj
-                          }))
-  given bijection: Bijection[TypoRecord, String] = Bijection[TypoRecord, String](_.value)(TypoRecord.apply)
+  given arrayGet: Get[Array[TypoRecord]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("record[]"))
+      .map(_.map(v => new TypoRecord(v.asInstanceOf[PGobject].getValue)))
+  }
+
+  given arrayPut: Put[Array[TypoRecord]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("record[]"), "record")
+      .contramap(_.map(v => {
+                              val obj = new PGobject()
+                              obj.setType("record")
+                              obj.setValue(v.value)
+                              obj
+                            }))
+  }
+
+  given bijection: Bijection[TypoRecord, String] = Bijection.apply[TypoRecord, String](_.value)(TypoRecord.apply)
+
   given decoder: Decoder[TypoRecord] = Decoder.decodeString.map(TypoRecord.apply)
+
   given encoder: Encoder[TypoRecord] = Encoder.encodeString.contramap(_.value)
-  given get: Get[TypoRecord] = Get.Advanced.other[PGobject](NonEmptyList.one("record"))
-    .map(v => TypoRecord(v.getValue))
-  given put: Put[TypoRecord] = Put.Advanced.other[PGobject](NonEmptyList.one("record")).contramap(v => {
-                                                                            val obj = new PGobject
-                                                                            obj.setType("record")
-                                                                            obj.setValue(v.value)
-                                                                            obj
-                                                                          })
-  given text: Text[TypoRecord] = new Text[TypoRecord] {
-    override def unsafeEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given get: Get[TypoRecord] = {
+    Get.Advanced.other[PGobject](NonEmptyList.one("record"))
+      .map(v => new TypoRecord(v.getValue))
+  }
+
+  given pgText: Text[TypoRecord] = {
+    new Text[TypoRecord] {
+      override def unsafeEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given put: Put[TypoRecord] = {
+    Put.Advanced.other[PGobject](NonEmptyList.one("record")).contramap(v => {
+      val obj = new PGobject()
+      obj.setType("record")
+      obj.setValue(v.value)
+      obj
+    })
   }
 }

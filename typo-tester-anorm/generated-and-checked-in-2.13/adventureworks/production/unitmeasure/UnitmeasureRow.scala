@@ -20,8 +20,9 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: production.unitmeasure
-    Unit of measure lookup table.
-    Primary key: unitmeasurecode */
+ * Unit of measure lookup table.
+ * Primary key: unitmeasurecode
+ */
 case class UnitmeasureRow(
   /** Primary key. */
   unitmeasurecode: UnitmeasureId,
@@ -29,44 +30,55 @@ case class UnitmeasureRow(
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = unitmeasurecode
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): UnitmeasureRowUnsaved =
-     UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
- }
+) {
+  def id: UnitmeasureId = unitmeasurecode
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): UnitmeasureRowUnsaved = new UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
+}
 
 object UnitmeasureRow {
-  implicit lazy val reads: Reads[UnitmeasureRow] = Reads[UnitmeasureRow](json => JsResult.fromTry(
-      Try(
-        UnitmeasureRow(
-          unitmeasurecode = json.\("unitmeasurecode").as(UnitmeasureId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val pgText: Text[UnitmeasureRow] = {
+    Text.instance[UnitmeasureRow]{ (row, sb) =>
+      UnitmeasureId.pgText.unsafeEncode(row.unitmeasurecode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[UnitmeasureRow] = {
+    Reads[UnitmeasureRow](json => JsResult.fromTry(
+        Try(
+          UnitmeasureRow(
+            unitmeasurecode = json.\("unitmeasurecode").as(UnitmeasureId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[UnitmeasureRow] = RowParser[UnitmeasureRow] { row =>
-    Success(
-      UnitmeasureRow(
-        unitmeasurecode = row(idx + 0)(UnitmeasureId.column),
-        name = row(idx + 1)(Name.column),
-        modifieddate = row(idx + 2)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[UnitmeasureRow] = Text.instance[UnitmeasureRow]{ (row, sb) =>
-    UnitmeasureId.text.unsafeEncode(row.unitmeasurecode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[UnitmeasureRow] = {
+    RowParser[UnitmeasureRow] { row =>
+      Success(
+        UnitmeasureRow(
+          unitmeasurecode = row(idx + 0)(UnitmeasureId.column),
+          name = row(idx + 1)(Name.column),
+          modifieddate = row(idx + 2)(TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[UnitmeasureRow] = OWrites[UnitmeasureRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "unitmeasurecode" -> UnitmeasureId.writes.writes(o.unitmeasurecode),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[UnitmeasureRow] = {
+    OWrites[UnitmeasureRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "unitmeasurecode" -> UnitmeasureId.writes.writes(o.unitmeasurecode),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -1,0 +1,166 @@
+package typo.dsl;
+
+import typo.runtime.Fragment;
+import typo.runtime.PgType;
+import typo.runtime.ResultSetParser;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+
+/**
+ * SQL implementation of UpdateBuilder that generates and executes UPDATE queries.
+ */
+public class UpdateBuilderSql<Fields, Row> implements UpdateBuilder<Fields, Row> {
+    private final String tableName;
+    private final RenderCtx renderCtx;
+    private final Structure<Fields, Row> structure;
+    private final UpdateParams<Fields, Row> params;
+    private final ResultSetParser<List<Row>> parser;
+
+    public UpdateBuilderSql(
+            String tableName,
+            RenderCtx renderCtx,
+            Structure<Fields, Row> structure,
+            UpdateParams<Fields, Row> params,
+            ResultSetParser<List<Row>> parser) {
+        this.tableName = tableName;
+        this.renderCtx = renderCtx;
+        this.structure = structure;
+        this.params = params;
+        this.parser = parser;
+    }
+    
+    @Override
+    public <T> UpdateBuilder<Fields, Row> set(Function<Fields, SqlExpr.FieldLike<T, Row>> field, T value, PgType<T> pgType) {
+        // Wrap the function to extract the field from potentially typed field
+        Function<Fields, SqlExpr.FieldLikeNotId<T, Row>> fieldNotId = fields -> {
+            SqlExpr.FieldLike<T, Row> f = field.apply(fields);
+            if (f instanceof SqlExpr.FieldLikeNotId<T, Row> notId) {
+                return notId;
+            }
+            throw new IllegalArgumentException("Cannot update ID fields");
+        };
+        UpdateParams<Fields, Row> newParams = params.set(fieldNotId, value, pgType);
+        return new UpdateBuilderSql<>(tableName, renderCtx, structure, newParams, parser);
+    }
+    
+    @Override
+    public <T> UpdateBuilder<Fields, Row> setExpr(Function<Fields, SqlExpr.FieldLike<T, Row>> field, SqlExpr<T> expr) {
+        // Wrap the function to extract the field from potentially typed field
+        Function<Fields, SqlExpr.FieldLikeNotId<T, Row>> fieldNotId = fields -> {
+            SqlExpr.FieldLike<T, Row> f = field.apply(fields);
+            if (f instanceof SqlExpr.FieldLikeNotId<T, Row> notId) {
+                return notId;
+            }
+            throw new IllegalArgumentException("Cannot update ID fields");
+        };
+        UpdateParams<Fields, Row> newParams = params.set(fieldNotId, fields -> expr);
+        return new UpdateBuilderSql<>(tableName, renderCtx, structure, newParams, parser);
+    }
+
+    @Override
+    public <T> UpdateBuilder<Fields, Row> setComputedValue(Function<Fields, SqlExpr.FieldLike<T, Row>> field, Function<SqlExpr.FieldLike<T, Row>, SqlExpr<T>> compute) {
+        // Wrap the function to extract the field from potentially typed field
+        Function<Fields, SqlExpr.FieldLikeNotId<T, Row>> fieldNotId = fields -> {
+            SqlExpr.FieldLike<T, Row> f = field.apply(fields);
+            if (f instanceof SqlExpr.FieldLikeNotId<T, Row> notId) {
+                return notId;
+            }
+            throw new IllegalArgumentException("Cannot update ID fields");
+        };
+        // The compute function receives the field and returns the expression
+        UpdateParams<Fields, Row> newParams = params.set(fieldNotId, fields -> {
+            SqlExpr.FieldLike<T, Row> fieldExpr = field.apply(fields);
+            return compute.apply(fieldExpr);
+        });
+        return new UpdateBuilderSql<>(tableName, renderCtx, structure, newParams, parser);
+    }
+    
+    @Override
+    public UpdateBuilder<Fields, Row> where(Function<Fields, SqlExpr<Boolean>> predicate) {
+        UpdateParams<Fields, Row> newParams = params.where(predicate);
+        return new UpdateBuilderSql<>(tableName, renderCtx, structure, newParams, parser);
+    }
+    
+    @Override
+    public int execute(Connection connection) {
+        Fragment query = sql();
+        try (PreparedStatement ps = connection.prepareStatement(query.render())) {
+            query.set(ps);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to execute update: " + query.render(), e);
+        }
+    }
+    
+    @Override
+    public List<Row> executeReturning(Connection connection) {
+        Fragment query = sql().append(Fragment.lit(" RETURNING *"));
+        try (PreparedStatement ps = connection.prepareStatement(query.render())) {
+            query.set(ps);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Row> results = parser.apply(rs);
+                return results;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to execute update returning: " + query.render(), e);
+        }
+    }
+    
+    @Override
+    public Fragment sql() {
+        if (params.setters().isEmpty()) {
+            throw new IllegalStateException("Cannot update without any SET clauses");
+        }
+        
+        AtomicInteger counter = new AtomicInteger(0);
+        Fields fields = structure.fields();
+        
+        // Build UPDATE clause
+        Fragment update = Fragment.lit("UPDATE " + tableName + " SET ");
+        
+        // Build SET clauses
+        List<Fragment> setFragments = new ArrayList<>();
+        for (UpdateParams.Setter<Fields, ?, Row> setter : params.setters()) {
+            SqlExpr.FieldLikeNotId<?, Row> column = setter.column().apply(fields);
+            SqlExpr<?> value = setter.value().apply(fields);
+
+            // Apply sqlWriteCast if present (like Scala DSL does)
+            Fragment castFragment = column.sqlWriteCast()
+                .<Fragment>map(cast -> Fragment.lit("::" + cast))
+                .orElse(Fragment.empty());
+
+            Fragment setFragment = column.render(renderCtx, counter)
+                .append(Fragment.lit(" = "))
+                .append(value.render(renderCtx, counter))
+                .append(castFragment);
+            setFragments.add(setFragment);
+        }
+        
+        update = update.append(Fragment.comma(setFragments));
+        
+        // Build WHERE clause
+        if (!params.where().isEmpty()) {
+            List<SqlExpr<Boolean>> filters = new ArrayList<>();
+            for (Function<Fields, SqlExpr<Boolean>> whereFunc : params.where()) {
+                filters.add(whereFunc.apply(fields));
+            }
+            
+            SqlExpr<Boolean> combined = filters.get(0);
+            for (int i = 1; i < filters.size(); i++) {
+                combined = combined.and(filters.get(i), Bijection.asBool());
+            }
+            
+            update = update.append(Fragment.lit(" WHERE "))
+                .append(combined.render(renderCtx, counter));
+        }
+        
+        return update;
+    }
+}

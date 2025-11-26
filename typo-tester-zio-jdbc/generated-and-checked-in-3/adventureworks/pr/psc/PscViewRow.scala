@@ -34,50 +34,58 @@ case class PscViewRow(
 )
 
 object PscViewRow {
-  given jdbcDecoder: JdbcDecoder[PscViewRow] = new JdbcDecoder[PscViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PscViewRow) =
-      columIndex + 5 ->
-        PscViewRow(
-          id = ProductsubcategoryId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          productsubcategoryid = ProductsubcategoryId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          productcategoryid = ProductcategoryId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-          rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[PscViewRow] = {
+    new JdbcDecoder[PscViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PscViewRow) =
+        columIndex + 5 ->
+          PscViewRow(
+            id = ProductsubcategoryId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            productsubcategoryid = ProductsubcategoryId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            productcategoryid = ProductcategoryId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[PscViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ProductsubcategoryId.jsonDecoder))
-    val productsubcategoryid = jsonObj.get("productsubcategoryid").toRight("Missing field 'productsubcategoryid'").flatMap(_.as(using ProductsubcategoryId.jsonDecoder))
-    val productcategoryid = jsonObj.get("productcategoryid").toRight("Missing field 'productcategoryid'").flatMap(_.as(using ProductcategoryId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && productsubcategoryid.isRight && productcategoryid.isRight && name.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(PscViewRow(id = id.toOption.get, productsubcategoryid = productsubcategoryid.toOption.get, productcategoryid = productcategoryid.toOption.get, name = name.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, productsubcategoryid, productcategoryid, name, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[PscViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ProductsubcategoryId.jsonDecoder))
+      val productsubcategoryid = jsonObj.get("productsubcategoryid").toRight("Missing field 'productsubcategoryid'").flatMap(_.as(using ProductsubcategoryId.jsonDecoder))
+      val productcategoryid = jsonObj.get("productcategoryid").toRight("Missing field 'productcategoryid'").flatMap(_.as(using ProductcategoryId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && productsubcategoryid.isRight && productcategoryid.isRight && name.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(PscViewRow(id = id.toOption.get, productsubcategoryid = productsubcategoryid.toOption.get, productcategoryid = productcategoryid.toOption.get, name = name.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, productsubcategoryid, productcategoryid, name, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[PscViewRow] = new JsonEncoder[PscViewRow] {
-    override def unsafeEncode(a: PscViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      ProductsubcategoryId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""productsubcategoryid":""")
-      ProductsubcategoryId.jsonEncoder.unsafeEncode(a.productsubcategoryid, indent, out)
-      out.write(",")
-      out.write(""""productcategoryid":""")
-      ProductcategoryId.jsonEncoder.unsafeEncode(a.productcategoryid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[PscViewRow] = {
+    new JsonEncoder[PscViewRow] {
+      override def unsafeEncode(a: PscViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        ProductsubcategoryId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""productsubcategoryid":""")
+        ProductsubcategoryId.jsonEncoder.unsafeEncode(a.productsubcategoryid, indent, out)
+        out.write(",")
+        out.write(""""productcategoryid":""")
+        ProductcategoryId.jsonEncoder.unsafeEncode(a.productcategoryid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

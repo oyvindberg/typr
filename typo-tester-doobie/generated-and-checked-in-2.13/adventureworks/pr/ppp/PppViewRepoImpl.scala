@@ -6,16 +6,12 @@
 package adventureworks.pr.ppp
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PppViewRepoImpl extends PppViewRepo {
-  override def select: SelectBuilder[PppViewFields, PppViewRow] = {
-    SelectBuilderSql(""""pr"."ppp"""", PppViewFields.structure, PppViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PppViewRow] = {
-    sql"""select "productid", "productphotoid", "primary", "modifieddate"::text from "pr"."ppp"""".query(PppViewRow.read).stream
-  }
+  def select: SelectBuilder[PppViewFields, PppViewRow] = SelectBuilder.of(""""pr"."ppp"""", PppViewFields.structure, PppViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PppViewRow] = sql"""select "productid", "productphotoid", "primary", "modifieddate"::text from "pr"."ppp"""".query(PppViewRow.read).stream
 }

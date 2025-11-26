@@ -14,50 +14,62 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: public.table-with-generated-columns
-    Primary key: name */
+ * Primary key: name
+ */
 case class TableWithGeneratedColumnsRow(
   name: TableWithGeneratedColumnsId,
   /** Generated ALWAYS, expression: 
-      CASE
-          WHEN (name IS NOT NULL) THEN 'no-name'::text
-          WHEN (name = 'a'::text) THEN 'a-name'::text
-          ELSE 'some-name'::text
-      END */
+  CASE
+      WHEN (name IS NOT NULL) THEN 'no-name'::text
+      WHEN (name = 'a'::text) THEN 'a-name'::text
+      ELSE 'some-name'::text
+  END */
   nameTypeAlways: String
-){
-   val id = name
-   def toUnsavedRow(): TableWithGeneratedColumnsRowUnsaved =
-     TableWithGeneratedColumnsRowUnsaved(name)
- }
+) {
+  def id: TableWithGeneratedColumnsId = name
+
+  def toUnsavedRow: TableWithGeneratedColumnsRowUnsaved = new TableWithGeneratedColumnsRowUnsaved(name)
+}
 
 object TableWithGeneratedColumnsRow {
-  given jdbcDecoder: JdbcDecoder[TableWithGeneratedColumnsRow] = new JdbcDecoder[TableWithGeneratedColumnsRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, TableWithGeneratedColumnsRow) =
-      columIndex + 1 ->
-        TableWithGeneratedColumnsRow(
-          name = TableWithGeneratedColumnsId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          nameTypeAlways = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2
-        )
-  }
-  given jsonDecoder: JsonDecoder[TableWithGeneratedColumnsRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using TableWithGeneratedColumnsId.jsonDecoder))
-    val nameTypeAlways = jsonObj.get("name-type-always").toRight("Missing field 'name-type-always'").flatMap(_.as(using JsonDecoder.string))
-    if (name.isRight && nameTypeAlways.isRight)
-      Right(TableWithGeneratedColumnsRow(name = name.toOption.get, nameTypeAlways = nameTypeAlways.toOption.get))
-    else Left(List[Either[String, Any]](name, nameTypeAlways).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[TableWithGeneratedColumnsRow] = new JsonEncoder[TableWithGeneratedColumnsRow] {
-    override def unsafeEncode(a: TableWithGeneratedColumnsRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""name":""")
-      TableWithGeneratedColumnsId.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""name-type-always":""")
-      JsonEncoder.string.unsafeEncode(a.nameTypeAlways, indent, out)
-      out.write("}")
+  given jdbcDecoder: JdbcDecoder[TableWithGeneratedColumnsRow] = {
+    new JdbcDecoder[TableWithGeneratedColumnsRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, TableWithGeneratedColumnsRow) =
+        columIndex + 1 ->
+          TableWithGeneratedColumnsRow(
+            name = TableWithGeneratedColumnsId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            nameTypeAlways = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2
+          )
     }
   }
-  given text: Text[TableWithGeneratedColumnsRow] = Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
-    TableWithGeneratedColumnsId.text.unsafeEncode(row.name, sb)
+
+  given jsonDecoder: JsonDecoder[TableWithGeneratedColumnsRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using TableWithGeneratedColumnsId.jsonDecoder))
+      val nameTypeAlways = jsonObj.get("name-type-always").toRight("Missing field 'name-type-always'").flatMap(_.as(using JsonDecoder.string))
+      if (name.isRight && nameTypeAlways.isRight)
+        Right(TableWithGeneratedColumnsRow(name = name.toOption.get, nameTypeAlways = nameTypeAlways.toOption.get))
+      else Left(List[Either[String, Any]](name, nameTypeAlways).flatMap(_.left.toOption).mkString(", "))
+    }
+  }
+
+  given jsonEncoder: JsonEncoder[TableWithGeneratedColumnsRow] = {
+    new JsonEncoder[TableWithGeneratedColumnsRow] {
+      override def unsafeEncode(a: TableWithGeneratedColumnsRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""name":""")
+        TableWithGeneratedColumnsId.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""name-type-always":""")
+        JsonEncoder.string.unsafeEncode(a.nameTypeAlways, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[TableWithGeneratedColumnsRow] = {
+    Text.instance[TableWithGeneratedColumnsRow]{ (row, sb) =>
+      TableWithGeneratedColumnsId.pgText.unsafeEncode(row.name, sb)
+    }
   }
 }

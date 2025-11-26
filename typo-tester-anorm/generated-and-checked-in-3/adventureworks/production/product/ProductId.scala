@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.product` */
-case class ProductId(value: Int) extends AnyVal
+case class ProductId(value: Int) extends scala.AnyVal
+
 object ProductId {
   given arrayColumn: Column[Array[ProductId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[ProductId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[ProductId, Int] = Bijection[ProductId, Int](_.value)(ProductId.apply)
+
+  given bijection: Bijection[ProductId, Int] = Bijection.apply[ProductId, Int](_.value)(ProductId.apply)
+
   given column: Column[ProductId] = Column.columnToInt.map(ProductId.apply)
-  given parameterMetadata: ParameterMetaData[ProductId] = new ParameterMetaData[ProductId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[ProductId] = {
+    new ParameterMetaData[ProductId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[ProductId] = {
+    new Text[ProductId] {
+      override def unsafeEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[ProductId] = Reads.IntReads.map(ProductId.apply)
-  given text: Text[ProductId] = new Text[ProductId] {
-    override def unsafeEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ProductId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[ProductId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[ProductId] = Writes.IntWrites.contramap(_.value)
 }

@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait VstorewithdemographicsViewRepo {
   def select: SelectBuilder[VstorewithdemographicsViewFields, VstorewithdemographicsViewRow]
+
   def selectAll: Stream[ConnectionIO, VstorewithdemographicsViewRow]
 }

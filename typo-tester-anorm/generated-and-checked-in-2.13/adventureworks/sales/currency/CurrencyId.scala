@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.currency` */
-case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends AnyVal
+case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+
 object CurrencyId {
   implicit lazy val arrayColumn: Column[Array[CurrencyId]] = Column.columnToArray(column, implicitly)
+
   implicit lazy val arrayToStatement: ToStatement[Array[CurrencyId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+
+  implicit lazy val bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection.apply[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+
   implicit lazy val column: Column[CurrencyId] = Column.columnToString.map(CurrencyId.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[CurrencyId] = new ParameterMetaData[CurrencyId] {
-    override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+
+  implicit lazy val parameterMetadata: ParameterMetaData[CurrencyId] = {
+    new ParameterMetaData[CurrencyId] {
+      override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+    }
   }
+
+  implicit lazy val pgText: Text[CurrencyId] = {
+    new Text[CurrencyId] {
+      override def unsafeEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[CurrencyId] = Reads.StringReads.map(CurrencyId.apply)
-  implicit lazy val text: Text[CurrencyId] = new Text[CurrencyId] {
-    override def unsafeEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[CurrencyId] = ToStatement.stringToStatement.contramap(_.value)
+
   implicit lazy val writes: Writes[CurrencyId] = Writes.StringWrites.contramap(_.value)
 }

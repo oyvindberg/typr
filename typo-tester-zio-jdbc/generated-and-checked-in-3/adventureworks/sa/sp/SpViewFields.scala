@@ -30,11 +30,11 @@ trait SpViewFields {
 
 object SpViewFields {
   lazy val structure: Relation[SpViewFields, SpViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SpViewFields, SpViewRow] {
-  
+
     override lazy val fields: SpViewFields = new SpViewFields {
       override def id = Field[BusinessentityId, SpViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, SpViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -47,12 +47,11 @@ object SpViewFields {
       override def rowguid = Field[TypoUUID, SpViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SpViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SpViewRow]] =
       List[FieldLike[?, SpViewRow]](fields.id, fields.businessentityid, fields.territoryid, fields.salesquota, fields.bonus, fields.commissionpct, fields.salesytd, fields.saleslastyear, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

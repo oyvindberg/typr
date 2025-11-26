@@ -51,21 +51,21 @@ trait SalesorderdetailFields {
     salesorderid.isEqual(compositeId.salesorderid).and(salesorderdetailid.isEqual(compositeId.salesorderdetailid))
   def compositeIdIn(compositeIds: Array[SalesorderdetailId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[SalesorderdetailId](salesorderid)(_.salesorderid)(using as[Array[SalesorderheaderId]](SalesorderheaderId.arrayJdbcEncoder, PGType.forArray(SalesorderheaderId.pgType)), implicitly), TuplePart[SalesorderdetailId](salesorderdetailid)(_.salesorderdetailid)(using as[Array[Int]](adventureworks.IntArrayEncoder, PGType.forArray(PGType.PGTypeInt)), implicitly))
-  
+
   def extractSpecialofferproductIdIs(id: SpecialofferproductId): SqlExpr[Boolean] =
     specialofferid.isEqual(id.specialofferid).and(productid.isEqual(id.productid))
   def extractSpecialofferproductIdIn(ids: Array[SpecialofferproductId]): SqlExpr[Boolean] =
     new CompositeIn(ids)(TuplePart[SpecialofferproductId](specialofferid)(_.specialofferid)(using as[Array[SpecialofferId]](SpecialofferId.arrayJdbcEncoder, PGType.forArray(SpecialofferId.pgType)), implicitly), TuplePart[SpecialofferproductId](productid)(_.productid)(using as[Array[ProductId]](ProductId.arrayJdbcEncoder, PGType.forArray(ProductId.pgType)), implicitly))
-  
+
 }
 
 object SalesorderdetailFields {
   lazy val structure: Relation[SalesorderdetailFields, SalesorderdetailRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SalesorderdetailFields, SalesorderdetailRow] {
-  
+
     override lazy val fields: SalesorderdetailFields = new SalesorderdetailFields {
       override def salesorderid = IdField[SalesorderheaderId, SalesorderdetailRow](_path, "salesorderid", None, Some("int4"), x => x.salesorderid, (row, value) => row.copy(salesorderid = value))
       override def salesorderdetailid = IdField[Int, SalesorderdetailRow](_path, "salesorderdetailid", None, Some("int4"), x => x.salesorderdetailid, (row, value) => row.copy(salesorderdetailid = value))
@@ -78,12 +78,11 @@ object SalesorderdetailFields {
       override def rowguid = Field[TypoUUID, SalesorderdetailRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SalesorderdetailRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SalesorderdetailRow]] =
       List[FieldLike[?, SalesorderdetailRow]](fields.salesorderid, fields.salesorderdetailid, fields.carriertrackingnumber, fields.orderqty, fields.productid, fields.specialofferid, fields.unitprice, fields.unitpricediscount, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

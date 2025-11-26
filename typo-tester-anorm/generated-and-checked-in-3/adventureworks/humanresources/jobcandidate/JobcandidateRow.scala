@@ -23,62 +23,86 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: humanresources.jobcandidate
-    RÃ©sumÃ©s submitted to Human Resources by job applicants.
-    Primary key: jobcandidateid */
+ * RÃ©sumÃ©s submitted to Human Resources by job applicants.
+ * Primary key: jobcandidateid
+ */
 case class JobcandidateRow(
   /** Primary key for JobCandidate records.
-      Default: nextval('humanresources.jobcandidate_jobcandidateid_seq'::regclass) */
+   * Default: nextval('humanresources.jobcandidate_jobcandidateid_seq'::regclass)
+   */
   jobcandidateid: JobcandidateId,
   /** Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID.
-      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
+   * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
+   */
   businessentityid: Option[BusinessentityId],
   /** RÃ©sumÃ© in XML format. */
   resume: Option[TypoXml],
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = jobcandidateid
-   def toUnsavedRow(jobcandidateid: Defaulted[JobcandidateId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): JobcandidateRowUnsaved =
-     JobcandidateRowUnsaved(businessentityid, resume, jobcandidateid, modifieddate)
- }
+) {
+  def id: JobcandidateId = jobcandidateid
 
-object JobcandidateRow {
-  given reads: Reads[JobcandidateRow] = Reads[JobcandidateRow](json => JsResult.fromTry(
-      Try(
-        JobcandidateRow(
-          jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
-          businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
-          resume = json.\("resume").toOption.map(_.as(TypoXml.reads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[JobcandidateRow] = RowParser[JobcandidateRow] { row =>
-    Success(
-      JobcandidateRow(
-        jobcandidateid = row(idx + 0)(using JobcandidateId.column),
-        businessentityid = row(idx + 1)(using Column.columnToOption(using BusinessentityId.column)),
-        resume = row(idx + 2)(using Column.columnToOption(using TypoXml.column)),
-        modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
-      )
+  def toUnsavedRow(
+    jobcandidateid: Defaulted[JobcandidateId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): JobcandidateRowUnsaved = {
+    new JobcandidateRowUnsaved(
+      businessentityid,
+      resume,
+      jobcandidateid,
+      modifieddate
     )
   }
-  given text: Text[JobcandidateRow] = Text.instance[JobcandidateRow]{ (row, sb) =>
-    JobcandidateId.text.unsafeEncode(row.jobcandidateid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using BusinessentityId.text).unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.resume, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object JobcandidateRow {
+  given pgText: Text[JobcandidateRow] = {
+    Text.instance[JobcandidateRow]{ (row, sb) =>
+      JobcandidateId.pgText.unsafeEncode(row.jobcandidateid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using BusinessentityId.pgText).unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.resume, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
-  given writes: OWrites[JobcandidateRow] = OWrites[JobcandidateRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
-      "businessentityid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.businessentityid),
-      "resume" -> Writes.OptionWrites(using TypoXml.writes).writes(o.resume),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given reads: Reads[JobcandidateRow] = {
+    Reads[JobcandidateRow](json => JsResult.fromTry(
+        Try(
+          JobcandidateRow(
+            jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
+            businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
+            resume = json.\("resume").toOption.map(_.as(TypoXml.reads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[JobcandidateRow] = {
+    RowParser[JobcandidateRow] { row =>
+      Success(
+        JobcandidateRow(
+          jobcandidateid = row(idx + 0)(using JobcandidateId.column),
+          businessentityid = row(idx + 1)(using Column.columnToOption(using BusinessentityId.column)),
+          resume = row(idx + 2)(using Column.columnToOption(using TypoXml.column)),
+          modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[JobcandidateRow] = {
+    OWrites[JobcandidateRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
+        "businessentityid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.businessentityid),
+        "resume" -> Writes.OptionWrites(using TypoXml.writes).writes(o.resume),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `humanresources.shift` */
-case class ShiftId(value: Int) extends AnyVal
+case class ShiftId(value: Int) extends scala.AnyVal
+
 object ShiftId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ShiftId]] = adventureworks.IntArrayDecoder.map(_.map(ShiftId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ShiftId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ShiftId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ShiftId, Int] = Bijection[ShiftId, Int](_.value)(ShiftId.apply)
+
+  given bijection: Bijection[ShiftId, Int] = Bijection.apply[ShiftId, Int](_.value)(ShiftId.apply)
+
   given jdbcDecoder: JdbcDecoder[ShiftId] = JdbcDecoder.intDecoder.map(ShiftId.apply)
+
   given jdbcEncoder: JdbcEncoder[ShiftId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ShiftId] = JsonDecoder.int.map(ShiftId.apply)
+
   given jsonEncoder: JsonEncoder[ShiftId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ShiftId] = PGType.PGTypeInt.as
-  given setter: Setter[ShiftId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ShiftId] = new Text[ShiftId] {
-    override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ShiftId] = {
+    new Text[ShiftId] {
+      override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ShiftId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ShiftId] = Setter.intSetter.contramap(_.value)
 }

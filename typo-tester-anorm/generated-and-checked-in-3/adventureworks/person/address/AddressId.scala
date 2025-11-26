@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.address` */
-case class AddressId(value: Int) extends AnyVal
+case class AddressId(value: Int) extends scala.AnyVal
+
 object AddressId {
   given arrayColumn: Column[Array[AddressId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[AddressId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[AddressId, Int] = Bijection[AddressId, Int](_.value)(AddressId.apply)
+
+  given bijection: Bijection[AddressId, Int] = Bijection.apply[AddressId, Int](_.value)(AddressId.apply)
+
   given column: Column[AddressId] = Column.columnToInt.map(AddressId.apply)
-  given parameterMetadata: ParameterMetaData[AddressId] = new ParameterMetaData[AddressId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[AddressId] = {
+    new ParameterMetaData[AddressId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[AddressId] = {
+    new Text[AddressId] {
+      override def unsafeEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[AddressId] = Reads.IntReads.map(AddressId.apply)
-  given text: Text[AddressId] = new Text[AddressId] {
-    override def unsafeEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[AddressId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[AddressId] = Writes.IntWrites.contramap(_.value)
 }

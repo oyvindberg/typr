@@ -6,6 +6,7 @@
 package adventureworks.sales.store
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
@@ -18,50 +19,55 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.store` which has not been persisted yet */
 case class StoreRowUnsaved(
   /** Primary key. Foreign key to Customer.BusinessEntityID.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Name of the store. */
   name: Name,
   /** ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
-  salespersonid: Option[BusinessentityId],
+   * Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]]
+   */
+  salespersonid: Option[BusinessentityId] = None,
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  demographics: Option[TypoXml],
+  demographics: Option[TypoXml] = None,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): StoreRow =
-    StoreRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): StoreRow = {
+    new StoreRow(
       businessentityid = businessentityid,
       name = name,
       salespersonid = salespersonid,
       demographics = demographics,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object StoreRowUnsaved {
   given decoder: Decoder[StoreRowUnsaved] = Decoder.forProduct6[StoreRowUnsaved, BusinessentityId, Name, Option[BusinessentityId], Option[TypoXml], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate")(StoreRowUnsaved.apply)(using BusinessentityId.decoder, Name.decoder, Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using TypoXml.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[StoreRowUnsaved] = Encoder.forProduct6[StoreRowUnsaved, BusinessentityId, Name, Option[BusinessentityId], Option[TypoXml], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate")(x => (x.businessentityid, x.name, x.salespersonid, x.demographics, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, Name.encoder, Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using TypoXml.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[StoreRowUnsaved] = Text.instance[StoreRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using BusinessentityId.text).unsafeEncode(row.salespersonid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.demographics, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[StoreRowUnsaved] = {
+    Text.instance[StoreRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using BusinessentityId.pgText).unsafeEncode(row.salespersonid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.demographics, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

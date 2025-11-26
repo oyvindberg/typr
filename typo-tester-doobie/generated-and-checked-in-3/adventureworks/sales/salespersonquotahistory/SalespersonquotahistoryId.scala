@@ -15,7 +15,9 @@ case class SalespersonquotahistoryId(
   businessentityid: BusinessentityId,
   quotadate: TypoLocalDateTime
 )
+
 object SalespersonquotahistoryId {
   given decoder: Decoder[SalespersonquotahistoryId] = Decoder.forProduct2[SalespersonquotahistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "quotadate")(SalespersonquotahistoryId.apply)(using BusinessentityId.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[SalespersonquotahistoryId] = Encoder.forProduct2[SalespersonquotahistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "quotadate")(x => (x.businessentityid, x.quotadate))(using BusinessentityId.encoder, TypoLocalDateTime.encoder)
 }

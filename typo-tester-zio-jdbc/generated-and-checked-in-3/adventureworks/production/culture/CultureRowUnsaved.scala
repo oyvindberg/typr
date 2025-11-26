@@ -7,6 +7,7 @@ package adventureworks.production.culture
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import zio.json.JsonDecoder
@@ -21,46 +22,47 @@ case class CultureRowUnsaved(
   /** Culture description. */
   name: Name,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): CultureRow =
-    CultureRow(
-      cultureid = cultureid,
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): CultureRow = new CultureRow(cultureid = cultureid, name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object CultureRowUnsaved {
-  given jsonDecoder: JsonDecoder[CultureRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val cultureid = jsonObj.get("cultureid").toRight("Missing field 'cultureid'").flatMap(_.as(using CultureId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (cultureid.isRight && name.isRight && modifieddate.isRight)
-      Right(CultureRowUnsaved(cultureid = cultureid.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](cultureid, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[CultureRowUnsaved] = new JsonEncoder[CultureRowUnsaved] {
-    override def unsafeEncode(a: CultureRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""cultureid":""")
-      CultureId.jsonEncoder.unsafeEncode(a.cultureid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+  given jsonDecoder: JsonDecoder[CultureRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val cultureid = jsonObj.get("cultureid").toRight("Missing field 'cultureid'").flatMap(_.as(using CultureId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (cultureid.isRight && name.isRight && modifieddate.isRight)
+        Right(CultureRowUnsaved(cultureid = cultureid.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](cultureid, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[CultureRowUnsaved] = Text.instance[CultureRowUnsaved]{ (row, sb) =>
-    CultureId.text.unsafeEncode(row.cultureid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[CultureRowUnsaved] = {
+    new JsonEncoder[CultureRowUnsaved] {
+      override def unsafeEncode(a: CultureRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""cultureid":""")
+        CultureId.jsonEncoder.unsafeEncode(a.cultureid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[CultureRowUnsaved] = {
+    Text.instance[CultureRowUnsaved]{ (row, sb) =>
+      CultureId.pgText.unsafeEncode(row.cultureid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

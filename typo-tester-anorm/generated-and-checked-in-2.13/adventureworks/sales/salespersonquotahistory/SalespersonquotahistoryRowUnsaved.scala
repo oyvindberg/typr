@@ -7,6 +7,7 @@ package adventureworks.sales.salespersonquotahistory
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
@@ -22,64 +23,73 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.salespersonquotahistory` which has not been persisted yet */
 case class SalespersonquotahistoryRowUnsaved(
   /** Sales person identification number. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
+   * Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Sales quota date. */
   quotadate: TypoLocalDateTime,
   /** Sales quota amount.
-      Constraint CK_SalesPersonQuotaHistory_SalesQuota affecting columns salesquota:  ((salesquota > 0.00)) */
+   * Constraint CK_SalesPersonQuotaHistory_SalesQuota affecting columns salesquota:  ((salesquota > 0.00))
+   */
   salesquota: BigDecimal,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SalespersonquotahistoryRow =
-    SalespersonquotahistoryRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SalespersonquotahistoryRow = {
+    new SalespersonquotahistoryRow(
       businessentityid = businessentityid,
       quotadate = quotadate,
       salesquota = salesquota,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object SalespersonquotahistoryRowUnsaved {
-  implicit lazy val reads: Reads[SalespersonquotahistoryRowUnsaved] = Reads[SalespersonquotahistoryRowUnsaved](json => JsResult.fromTry(
-      Try(
-        SalespersonquotahistoryRowUnsaved(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          quotadate = json.\("quotadate").as(TypoLocalDateTime.reads),
-          salesquota = json.\("salesquota").as(Reads.bigDecReads),
-          rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[SalespersonquotahistoryRowUnsaved] = Text.instance[SalespersonquotahistoryRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.quotadate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.salesquota, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[SalespersonquotahistoryRowUnsaved] = OWrites[SalespersonquotahistoryRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "quotadate" -> TypoLocalDateTime.writes.writes(o.quotadate),
-      "salesquota" -> Writes.BigDecimalWrites.writes(o.salesquota),
-      "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object SalespersonquotahistoryRowUnsaved {
+  implicit lazy val pgText: Text[SalespersonquotahistoryRowUnsaved] = {
+    Text.instance[SalespersonquotahistoryRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.quotadate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.salesquota, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[SalespersonquotahistoryRowUnsaved] = {
+    Reads[SalespersonquotahistoryRowUnsaved](json => JsResult.fromTry(
+        Try(
+          SalespersonquotahistoryRowUnsaved(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            quotadate = json.\("quotadate").as(TypoLocalDateTime.reads),
+            salesquota = json.\("salesquota").as(Reads.bigDecReads),
+            rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[SalespersonquotahistoryRowUnsaved] = {
+    OWrites[SalespersonquotahistoryRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "quotadate" -> TypoLocalDateTime.writes.writes(o.quotadate),
+        "salesquota" -> Writes.BigDecimalWrites.writes(o.salesquota),
+        "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

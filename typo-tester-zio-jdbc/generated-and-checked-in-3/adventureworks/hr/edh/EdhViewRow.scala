@@ -36,55 +36,63 @@ case class EdhViewRow(
 )
 
 object EdhViewRow {
-  given jdbcDecoder: JdbcDecoder[EdhViewRow] = new JdbcDecoder[EdhViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, EdhViewRow) =
-      columIndex + 6 ->
-        EdhViewRow(
-          id = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          departmentid = DepartmentId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          shiftid = ShiftId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-          startdate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-          enddate = JdbcDecoder.optionDecoder(using TypoLocalDate.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[EdhViewRow] = {
+    new JdbcDecoder[EdhViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, EdhViewRow) =
+        columIndex + 6 ->
+          EdhViewRow(
+            id = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            departmentid = DepartmentId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            shiftid = ShiftId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            startdate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            enddate = JdbcDecoder.optionDecoder(using TypoLocalDate.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[EdhViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val departmentid = jsonObj.get("departmentid").toRight("Missing field 'departmentid'").flatMap(_.as(using DepartmentId.jsonDecoder))
-    val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(using ShiftId.jsonDecoder))
-    val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDate.jsonDecoder))
-    val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDate]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDate.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && businessentityid.isRight && departmentid.isRight && shiftid.isRight && startdate.isRight && enddate.isRight && modifieddate.isRight)
-      Right(EdhViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, departmentid = departmentid.toOption.get, shiftid = shiftid.toOption.get, startdate = startdate.toOption.get, enddate = enddate.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, businessentityid, departmentid, shiftid, startdate, enddate, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[EdhViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val departmentid = jsonObj.get("departmentid").toRight("Missing field 'departmentid'").flatMap(_.as(using DepartmentId.jsonDecoder))
+      val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(using ShiftId.jsonDecoder))
+      val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDate.jsonDecoder))
+      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDate]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDate.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && businessentityid.isRight && departmentid.isRight && shiftid.isRight && startdate.isRight && enddate.isRight && modifieddate.isRight)
+        Right(EdhViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, departmentid = departmentid.toOption.get, shiftid = shiftid.toOption.get, startdate = startdate.toOption.get, enddate = enddate.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, businessentityid, departmentid, shiftid, startdate, enddate, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[EdhViewRow] = new JsonEncoder[EdhViewRow] {
-    override def unsafeEncode(a: EdhViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""departmentid":""")
-      DepartmentId.jsonEncoder.unsafeEncode(a.departmentid, indent, out)
-      out.write(",")
-      out.write(""""shiftid":""")
-      ShiftId.jsonEncoder.unsafeEncode(a.shiftid, indent, out)
-      out.write(",")
-      out.write(""""startdate":""")
-      TypoLocalDate.jsonEncoder.unsafeEncode(a.startdate, indent, out)
-      out.write(",")
-      out.write(""""enddate":""")
-      JsonEncoder.option(using TypoLocalDate.jsonEncoder).unsafeEncode(a.enddate, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[EdhViewRow] = {
+    new JsonEncoder[EdhViewRow] {
+      override def unsafeEncode(a: EdhViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""departmentid":""")
+        DepartmentId.jsonEncoder.unsafeEncode(a.departmentid, indent, out)
+        out.write(",")
+        out.write(""""shiftid":""")
+        ShiftId.jsonEncoder.unsafeEncode(a.shiftid, indent, out)
+        out.write(",")
+        out.write(""""startdate":""")
+        TypoLocalDate.jsonEncoder.unsafeEncode(a.startdate, indent, out)
+        out.write(",")
+        out.write(""""enddate":""")
+        JsonEncoder.option(using TypoLocalDate.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

@@ -18,28 +18,45 @@ import typo.dsl.Bijection
 case class TypoJsonb(value: String)
 
 object TypoJsonb {
-  given arrayGet: Get[Array[TypoJsonb]] = Get.Advanced.array[AnyRef](NonEmptyList.one("jsonb[]"))
-    .map(_.map(v => TypoJsonb(v.asInstanceOf[String])))
-  given arrayPut: Put[Array[TypoJsonb]] = Put.Advanced.array[AnyRef](NonEmptyList.one("jsonb[]"), "jsonb")
-    .contramap(_.map(v => {
-                            val obj = new PGobject
-                            obj.setType("jsonb")
-                            obj.setValue(v.value)
-                            obj
-                          }))
-  given bijection: Bijection[TypoJsonb, String] = Bijection[TypoJsonb, String](_.value)(TypoJsonb.apply)
+  given arrayGet: Get[Array[TypoJsonb]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("jsonb[]"))
+      .map(_.map(v => new TypoJsonb(v.asInstanceOf[String])))
+  }
+
+  given arrayPut: Put[Array[TypoJsonb]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("jsonb[]"), "jsonb")
+      .contramap(_.map(v => {
+                              val obj = new PGobject()
+                              obj.setType("jsonb")
+                              obj.setValue(v.value)
+                              obj
+                            }))
+  }
+
+  given bijection: Bijection[TypoJsonb, String] = Bijection.apply[TypoJsonb, String](_.value)(TypoJsonb.apply)
+
   given decoder: Decoder[TypoJsonb] = Decoder.decodeString.map(TypoJsonb.apply)
+
   given encoder: Encoder[TypoJsonb] = Encoder.encodeString.contramap(_.value)
-  given get: Get[TypoJsonb] = Get.Advanced.other[PGobject](NonEmptyList.one("jsonb"))
-    .map(v => TypoJsonb(v.getValue))
-  given put: Put[TypoJsonb] = Put.Advanced.other[PGobject](NonEmptyList.one("jsonb")).contramap(v => {
-                                                                           val obj = new PGobject
-                                                                           obj.setType("jsonb")
-                                                                           obj.setValue(v.value)
-                                                                           obj
-                                                                         })
-  given text: Text[TypoJsonb] = new Text[TypoJsonb] {
-    override def unsafeEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given get: Get[TypoJsonb] = {
+    Get.Advanced.other[PGobject](NonEmptyList.one("jsonb"))
+      .map(v => new TypoJsonb(v.getValue))
+  }
+
+  given pgText: Text[TypoJsonb] = {
+    new Text[TypoJsonb] {
+      override def unsafeEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoJsonb, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given put: Put[TypoJsonb] = {
+    Put.Advanced.other[PGobject](NonEmptyList.one("jsonb")).contramap(v => {
+      val obj = new PGobject()
+      obj.setType("jsonb")
+      obj.setValue(v.value)
+      obj
+    })
   }
 }

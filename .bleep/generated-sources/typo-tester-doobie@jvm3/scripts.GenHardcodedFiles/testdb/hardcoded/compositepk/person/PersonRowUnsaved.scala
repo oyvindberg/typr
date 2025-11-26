@@ -9,36 +9,34 @@ import doobie.postgres.Text
 import io.circe.Decoder
 import io.circe.Encoder
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.customtypes.Defaulted.UseDefault
 
 /** This class corresponds to a row in table `compositepk.person` which has not been persisted yet */
 case class PersonRowUnsaved(
-  name: Option[String],
+  name: Option[String] = None,
   /** Default: auto-increment */
-  one: Defaulted[Long] = Defaulted.UseDefault,
+  one: Defaulted[Long] = new UseDefault(),
   /** Default: auto-increment */
-  two: Defaulted[Option[String]] = Defaulted.UseDefault
+  two: Defaulted[Option[String]] = new UseDefault()
 ) {
-  def toRow(oneDefault: => Long, twoDefault: => Option[String]): PersonRow =
-    PersonRow(
-      one = one match {
-              case Defaulted.UseDefault => oneDefault
-              case Defaulted.Provided(value) => value
-            },
-      two = two match {
-              case Defaulted.UseDefault => twoDefault
-              case Defaulted.Provided(value) => value
-            },
-      name = name
-    )
+  def toRow(
+    oneDefault: => Long,
+    twoDefault: => Option[String]
+  ): PersonRow = new PersonRow(one = one.getOrElse(oneDefault), two = two.getOrElse(twoDefault), name = name)
 }
+
 object PersonRowUnsaved {
   given decoder: Decoder[PersonRowUnsaved] = Decoder.forProduct3[PersonRowUnsaved, Option[String], Defaulted[Long], Defaulted[Option[String]]]("name", "one", "two")(PersonRowUnsaved.apply)(using Decoder.decodeOption(using Decoder.decodeString), Defaulted.decoder(using Decoder.decodeLong), Defaulted.decoder(using Decoder.decodeOption(using Decoder.decodeString)))
+
   given encoder: Encoder[PersonRowUnsaved] = Encoder.forProduct3[PersonRowUnsaved, Option[String], Defaulted[Long], Defaulted[Option[String]]]("name", "one", "two")(x => (x.name, x.one, x.two))(using Encoder.encodeOption(using Encoder.encodeString), Defaulted.encoder(using Encoder.encodeLong), Defaulted.encoder(using Encoder.encodeOption(using Encoder.encodeString)))
-  given text: Text[PersonRowUnsaved] = Text.instance[PersonRowUnsaved]{ (row, sb) =>
-    Text.option(using Text.stringInstance).unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.longInstance).unsafeEncode(row.one, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.option(using Text.stringInstance)).unsafeEncode(row.two, sb)
+
+  given pgText: Text[PersonRowUnsaved] = {
+    Text.instance[PersonRowUnsaved]{ (row, sb) =>
+      Text.option(using Text.stringInstance).unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.longInstance).unsafeEncode(row.one, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.option(using Text.stringInstance)).unsafeEncode(row.two, sb)
+    }
   }
 }

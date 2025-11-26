@@ -32,36 +32,40 @@ case class VjobcandidateeducationViewRow(
 
 object VjobcandidateeducationViewRow {
   given decoder: Decoder[VjobcandidateeducationViewRow] = Decoder.forProduct13[VjobcandidateeducationViewRow, JobcandidateId, /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String]]("jobcandidateid", "Edu.Level", "Edu.StartDate", "Edu.EndDate", "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City")(VjobcandidateeducationViewRow.apply)(using JobcandidateId.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoLocalDate.decoder), Decoder.decodeOption(using TypoLocalDate.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString))
+
   given encoder: Encoder[VjobcandidateeducationViewRow] = Encoder.forProduct13[VjobcandidateeducationViewRow, JobcandidateId, /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String]]("jobcandidateid", "Edu.Level", "Edu.StartDate", "Edu.EndDate", "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City")(x => (x.jobcandidateid, x.eduLevel, x.eduStartDate, x.eduEndDate, x.eduDegree, x.eduMajor, x.eduMinor, x.eduGPA, x.eduGPAScale, x.eduSchool, x.eduLocCountryRegion, x.eduLocState, x.eduLocCity))(using JobcandidateId.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoLocalDate.encoder), Encoder.encodeOption(using TypoLocalDate.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString))
-  given read: Read[VjobcandidateeducationViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(JobcandidateId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VjobcandidateeducationViewRow(
-      jobcandidateid = arr(0).asInstanceOf[JobcandidateId],
-          eduLevel = arr(1).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-          eduStartDate = arr(2).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-          eduEndDate = arr(3).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-          eduDegree = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-          eduMajor = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-          eduMinor = arr(6).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-          eduGPA = arr(7).asInstanceOf[/* nullability unknown */ Option[/* max 5 chars */ String]],
-          eduGPAScale = arr(8).asInstanceOf[/* nullability unknown */ Option[/* max 5 chars */ String]],
-          eduSchool = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-          eduLocCountryRegion = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-          eduLocState = arr(11).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-          eduLocCity = arr(12).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]]
-    )
+
+  given read: Read[VjobcandidateeducationViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(JobcandidateId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VjobcandidateeducationViewRow(
+        jobcandidateid = arr(0).asInstanceOf[JobcandidateId],
+            eduLevel = arr(1).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
+            eduStartDate = arr(2).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
+            eduEndDate = arr(3).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
+            eduDegree = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
+            eduMajor = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
+            eduMinor = arr(6).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
+            eduGPA = arr(7).asInstanceOf[/* nullability unknown */ Option[/* max 5 chars */ String]],
+            eduGPAScale = arr(8).asInstanceOf[/* nullability unknown */ Option[/* max 5 chars */ String]],
+            eduSchool = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
+            eduLocCountryRegion = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
+            eduLocState = arr(11).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
+            eduLocCity = arr(12).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]]
+      )
+    }
   }
 }

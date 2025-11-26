@@ -7,6 +7,7 @@ package adventureworks.humanresources.jobcandidate
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
@@ -22,57 +23,66 @@ import scala.util.Try
 /** This class corresponds to a row in table `humanresources.jobcandidate` which has not been persisted yet */
 case class JobcandidateRowUnsaved(
   /** Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID.
-      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
-  businessentityid: Option[BusinessentityId],
+   * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
+   */
+  businessentityid: Option[BusinessentityId] = None,
   /** RÃ©sumÃ© in XML format. */
-  resume: Option[TypoXml],
+  resume: Option[TypoXml] = None,
   /** Default: nextval('humanresources.jobcandidate_jobcandidateid_seq'::regclass)
-      Primary key for JobCandidate records. */
-  jobcandidateid: Defaulted[JobcandidateId] = Defaulted.UseDefault,
+   * Primary key for JobCandidate records.
+   */
+  jobcandidateid: Defaulted[JobcandidateId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(jobcandidateidDefault: => JobcandidateId, modifieddateDefault: => TypoLocalDateTime): JobcandidateRow =
-    JobcandidateRow(
-      jobcandidateid = jobcandidateid match {
-                         case Defaulted.UseDefault => jobcandidateidDefault
-                         case Defaulted.Provided(value) => value
-                       },
+  def toRow(
+    jobcandidateidDefault: => JobcandidateId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): JobcandidateRow = {
+    new JobcandidateRow(
+      jobcandidateid = jobcandidateid.getOrElse(jobcandidateidDefault),
       businessentityid = businessentityid,
       resume = resume,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object JobcandidateRowUnsaved {
-  implicit lazy val reads: Reads[JobcandidateRowUnsaved] = Reads[JobcandidateRowUnsaved](json => JsResult.fromTry(
-      Try(
-        JobcandidateRowUnsaved(
-          businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
-          resume = json.\("resume").toOption.map(_.as(TypoXml.reads)),
-          jobcandidateid = json.\("jobcandidateid").as(Defaulted.reads(JobcandidateId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[JobcandidateRowUnsaved] = Text.instance[JobcandidateRowUnsaved]{ (row, sb) =>
-    Text.option(BusinessentityId.text).unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoXml.text).unsafeEncode(row.resume, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(JobcandidateId.text).unsafeEncode(row.jobcandidateid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[JobcandidateRowUnsaved] = OWrites[JobcandidateRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.businessentityid),
-      "resume" -> Writes.OptionWrites(TypoXml.writes).writes(o.resume),
-      "jobcandidateid" -> Defaulted.writes(JobcandidateId.writes).writes(o.jobcandidateid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object JobcandidateRowUnsaved {
+  implicit lazy val pgText: Text[JobcandidateRowUnsaved] = {
+    Text.instance[JobcandidateRowUnsaved]{ (row, sb) =>
+      Text.option(BusinessentityId.pgText).unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoXml.pgText).unsafeEncode(row.resume, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(JobcandidateId.pgText).unsafeEncode(row.jobcandidateid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[JobcandidateRowUnsaved] = {
+    Reads[JobcandidateRowUnsaved](json => JsResult.fromTry(
+        Try(
+          JobcandidateRowUnsaved(
+            businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
+            resume = json.\("resume").toOption.map(_.as(TypoXml.reads)),
+            jobcandidateid = json.\("jobcandidateid").as(Defaulted.reads(JobcandidateId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[JobcandidateRowUnsaved] = {
+    OWrites[JobcandidateRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.businessentityid),
+        "resume" -> Writes.OptionWrites(TypoXml.writes).writes(o.resume),
+        "jobcandidateid" -> Defaulted.writes(JobcandidateId.writes).writes(o.jobcandidateid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

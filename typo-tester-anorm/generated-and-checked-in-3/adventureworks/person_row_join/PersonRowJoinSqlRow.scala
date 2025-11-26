@@ -28,30 +28,38 @@ case class PersonRowJoinSqlRow(
 )
 
 object PersonRowJoinSqlRow {
-  given reads: Reads[PersonRowJoinSqlRow] = Reads[PersonRowJoinSqlRow](json => JsResult.fromTry(
-      Try(
-        PersonRowJoinSqlRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          email = json.\("email").toOption.map(_.as(Reads.ArrayReads[TypoRecord](using TypoRecord.reads, implicitly))),
-          emails = json.\("emails").toOption.map(_.as(Reads.ArrayReads[TypoRecord](using TypoRecord.reads, implicitly)))
+  given reads: Reads[PersonRowJoinSqlRow] = {
+    Reads[PersonRowJoinSqlRow](json => JsResult.fromTry(
+        Try(
+          PersonRowJoinSqlRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            email = json.\("email").toOption.map(_.as(Reads.ArrayReads[TypoRecord](using TypoRecord.reads, implicitly))),
+            emails = json.\("emails").toOption.map(_.as(Reads.ArrayReads[TypoRecord](using TypoRecord.reads, implicitly)))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersonRowJoinSqlRow] = RowParser[PersonRowJoinSqlRow] { row =>
-    Success(
-      PersonRowJoinSqlRow(
-        businessentityid = row(idx + 0)(using BusinessentityId.column),
-        email = row(idx + 1)(using Column.columnToOption(using TypoRecord.arrayColumn)),
-        emails = row(idx + 2)(using Column.columnToOption(using TypoRecord.arrayColumn))
-      )
+      ),
     )
   }
-  given writes: OWrites[PersonRowJoinSqlRow] = OWrites[PersonRowJoinSqlRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "email" -> Writes.OptionWrites(using Writes.arrayWrites[TypoRecord](using implicitly, TypoRecord.writes)).writes(o.email),
-      "emails" -> Writes.OptionWrites(using Writes.arrayWrites[TypoRecord](using implicitly, TypoRecord.writes)).writes(o.emails)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PersonRowJoinSqlRow] = {
+    RowParser[PersonRowJoinSqlRow] { row =>
+      Success(
+        PersonRowJoinSqlRow(
+          businessentityid = row(idx + 0)(using BusinessentityId.column),
+          email = row(idx + 1)(using Column.columnToOption(using TypoRecord.arrayColumn)),
+          emails = row(idx + 2)(using Column.columnToOption(using TypoRecord.arrayColumn))
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PersonRowJoinSqlRow] = {
+    OWrites[PersonRowJoinSqlRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "email" -> Writes.OptionWrites(using Writes.arrayWrites[TypoRecord](using implicitly, TypoRecord.writes)).writes(o.email),
+        "emails" -> Writes.OptionWrites(using Writes.arrayWrites[TypoRecord](using implicitly, TypoRecord.writes)).writes(o.emails)
+      ))
+    )
+  }
 }

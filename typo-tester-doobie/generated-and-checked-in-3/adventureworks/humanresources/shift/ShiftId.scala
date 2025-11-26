@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `humanresources.shift` */
-case class ShiftId(value: Int) extends AnyVal
+case class ShiftId(value: Int) extends scala.AnyVal
+
 object ShiftId {
   given arrayGet: Get[Array[ShiftId]] = adventureworks.IntegerArrayMeta.get.map(_.map(ShiftId.apply))
+
   given arrayPut: Put[Array[ShiftId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[ShiftId, Int] = Bijection[ShiftId, Int](_.value)(ShiftId.apply)
+
+  given bijection: Bijection[ShiftId, Int] = Bijection.apply[ShiftId, Int](_.value)(ShiftId.apply)
+
   given decoder: Decoder[ShiftId] = Decoder.decodeInt.map(ShiftId.apply)
+
   given encoder: Encoder[ShiftId] = Encoder.encodeInt.contramap(_.value)
+
   given get: Get[ShiftId] = Meta.IntMeta.get.map(ShiftId.apply)
-  given put: Put[ShiftId] = Meta.IntMeta.put.contramap(_.value)
-  given text: Text[ShiftId] = new Text[ShiftId] {
-    override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ShiftId] = {
+    new Text[ShiftId] {
+      override def unsafeEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShiftId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[ShiftId] = Meta.IntMeta.put.contramap(_.value)
 }

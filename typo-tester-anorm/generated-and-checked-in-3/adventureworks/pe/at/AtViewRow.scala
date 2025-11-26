@@ -34,36 +34,44 @@ case class AtViewRow(
 )
 
 object AtViewRow {
-  given reads: Reads[AtViewRow] = Reads[AtViewRow](json => JsResult.fromTry(
-      Try(
-        AtViewRow(
-          id = json.\("id").as(AddresstypeId.reads),
-          addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads),
-          name = json.\("name").as(Name.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[AtViewRow] = {
+    Reads[AtViewRow](json => JsResult.fromTry(
+        Try(
+          AtViewRow(
+            id = json.\("id").as(AddresstypeId.reads),
+            addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads),
+            name = json.\("name").as(Name.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[AtViewRow] = RowParser[AtViewRow] { row =>
-    Success(
-      AtViewRow(
-        id = row(idx + 0)(using AddresstypeId.column),
-        addresstypeid = row(idx + 1)(using AddresstypeId.column),
-        name = row(idx + 2)(using Name.column),
-        rowguid = row(idx + 3)(using TypoUUID.column),
-        modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[AtViewRow] = OWrites[AtViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> AddresstypeId.writes.writes(o.id),
-      "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid),
-      "name" -> Name.writes.writes(o.name),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[AtViewRow] = {
+    RowParser[AtViewRow] { row =>
+      Success(
+        AtViewRow(
+          id = row(idx + 0)(using AddresstypeId.column),
+          addresstypeid = row(idx + 1)(using AddresstypeId.column),
+          name = row(idx + 2)(using Name.column),
+          rowguid = row(idx + 3)(using TypoUUID.column),
+          modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[AtViewRow] = {
+    OWrites[AtViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> AddresstypeId.writes.writes(o.id),
+        "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid),
+        "name" -> Name.writes.writes(o.name),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

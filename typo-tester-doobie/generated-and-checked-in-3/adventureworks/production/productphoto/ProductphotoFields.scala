@@ -25,11 +25,11 @@ trait ProductphotoFields {
 
 object ProductphotoFields {
   lazy val structure: Relation[ProductphotoFields, ProductphotoRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductphotoFields, ProductphotoRow] {
-  
+
     override lazy val fields: ProductphotoFields = new ProductphotoFields {
       override def productphotoid = IdField[ProductphotoId, ProductphotoRow](_path, "productphotoid", None, Some("int4"), x => x.productphotoid, (row, value) => row.copy(productphotoid = value))
       override def thumbnailphoto = OptField[TypoBytea, ProductphotoRow](_path, "thumbnailphoto", None, Some("bytea"), x => x.thumbnailphoto, (row, value) => row.copy(thumbnailphoto = value))
@@ -38,12 +38,11 @@ object ProductphotoFields {
       override def largephotofilename = OptField[/* max 50 chars */ String, ProductphotoRow](_path, "largephotofilename", None, None, x => x.largephotofilename, (row, value) => row.copy(largephotofilename = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductphotoRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductphotoRow]] =
       List[FieldLike[?, ProductphotoRow]](fields.productphotoid, fields.thumbnailphoto, fields.thumbnailphotofilename, fields.largephoto, fields.largephotofilename, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

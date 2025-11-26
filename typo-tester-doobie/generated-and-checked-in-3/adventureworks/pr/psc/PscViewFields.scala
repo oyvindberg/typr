@@ -26,11 +26,11 @@ trait PscViewFields {
 
 object PscViewFields {
   lazy val structure: Relation[PscViewFields, PscViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PscViewFields, PscViewRow] {
-  
+
     override lazy val fields: PscViewFields = new PscViewFields {
       override def id = Field[ProductsubcategoryId, PscViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productsubcategoryid = Field[ProductsubcategoryId, PscViewRow](_path, "productsubcategoryid", None, None, x => x.productsubcategoryid, (row, value) => row.copy(productsubcategoryid = value))
@@ -39,12 +39,11 @@ object PscViewFields {
       override def rowguid = Field[TypoUUID, PscViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PscViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PscViewRow]] =
       List[FieldLike[?, PscViewRow]](fields.id, fields.productsubcategoryid, fields.productcategoryid, fields.name, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

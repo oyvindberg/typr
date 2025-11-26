@@ -7,6 +7,7 @@ package adventureworks.production.transactionhistory
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import play.api.libs.json.JsObject
@@ -21,101 +22,109 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.transactionhistory` which has not been persisted yet */
 case class TransactionhistoryRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Purchase order, sales order, or work order identification number. */
   referenceorderid: Int,
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
-      Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text]))) */
+   * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
+   */
   transactiontype: /* bpchar, max 1 chars */ String,
   /** Product quantity. */
   quantity: Int,
   /** Product cost. */
   actualcost: BigDecimal,
   /** Default: nextval('production.transactionhistory_transactionid_seq'::regclass)
-      Primary key for TransactionHistory records. */
-  transactionid: Defaulted[TransactionhistoryId] = Defaulted.UseDefault,
+   * Primary key for TransactionHistory records.
+   */
+  transactionid: Defaulted[TransactionhistoryId] = new UseDefault(),
   /** Default: 0
-      Line number associated with the purchase order, sales order, or work order. */
-  referenceorderlineid: Defaulted[Int] = Defaulted.UseDefault,
+   * Line number associated with the purchase order, sales order, or work order.
+   */
+  referenceorderlineid: Defaulted[Int] = new UseDefault(),
   /** Default: now()
-      Date and time of the transaction. */
-  transactiondate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+   * Date and time of the transaction.
+   */
+  transactiondate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(transactionidDefault: => TransactionhistoryId, referenceorderlineidDefault: => Int, transactiondateDefault: => TypoLocalDateTime, modifieddateDefault: => TypoLocalDateTime): TransactionhistoryRow =
-    TransactionhistoryRow(
+  def toRow(
+    transactionidDefault: => TransactionhistoryId,
+    referenceorderlineidDefault: => Int,
+    transactiondateDefault: => TypoLocalDateTime,
+    modifieddateDefault: => TypoLocalDateTime
+  ): TransactionhistoryRow = {
+    new TransactionhistoryRow(
+      transactionid = transactionid.getOrElse(transactionidDefault),
       productid = productid,
       referenceorderid = referenceorderid,
+      referenceorderlineid = referenceorderlineid.getOrElse(referenceorderlineidDefault),
+      transactiondate = transactiondate.getOrElse(transactiondateDefault),
       transactiontype = transactiontype,
       quantity = quantity,
       actualcost = actualcost,
-      transactionid = transactionid match {
-                        case Defaulted.UseDefault => transactionidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      referenceorderlineid = referenceorderlineid match {
-                               case Defaulted.UseDefault => referenceorderlineidDefault
-                               case Defaulted.Provided(value) => value
-                             },
-      transactiondate = transactiondate match {
-                          case Defaulted.UseDefault => transactiondateDefault
-                          case Defaulted.Provided(value) => value
-                        },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object TransactionhistoryRowUnsaved {
-  given reads: Reads[TransactionhistoryRowUnsaved] = Reads[TransactionhistoryRowUnsaved](json => JsResult.fromTry(
-      Try(
-        TransactionhistoryRowUnsaved(
-          productid = json.\("productid").as(ProductId.reads),
-          referenceorderid = json.\("referenceorderid").as(Reads.IntReads),
-          transactiontype = json.\("transactiontype").as(Reads.StringReads),
-          quantity = json.\("quantity").as(Reads.IntReads),
-          actualcost = json.\("actualcost").as(Reads.bigDecReads),
-          transactionid = json.\("transactionid").as(Defaulted.reads(using TransactionhistoryId.reads)),
-          referenceorderlineid = json.\("referenceorderlineid").as(Defaulted.reads(using Reads.IntReads)),
-          transactiondate = json.\("transactiondate").as(Defaulted.reads(using TypoLocalDateTime.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[TransactionhistoryRowUnsaved] = Text.instance[TransactionhistoryRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.referenceorderid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.transactiontype, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.quantity, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.actualcost, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TransactionhistoryId.text).unsafeEncode(row.transactionid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.referenceorderlineid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.transactiondate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[TransactionhistoryRowUnsaved] = OWrites[TransactionhistoryRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "referenceorderid" -> Writes.IntWrites.writes(o.referenceorderid),
-      "transactiontype" -> Writes.StringWrites.writes(o.transactiontype),
-      "quantity" -> Writes.IntWrites.writes(o.quantity),
-      "actualcost" -> Writes.BigDecimalWrites.writes(o.actualcost),
-      "transactionid" -> Defaulted.writes(using TransactionhistoryId.writes).writes(o.transactionid),
-      "referenceorderlineid" -> Defaulted.writes(using Writes.IntWrites).writes(o.referenceorderlineid),
-      "transactiondate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.transactiondate),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object TransactionhistoryRowUnsaved {
+  given pgText: Text[TransactionhistoryRowUnsaved] = {
+    Text.instance[TransactionhistoryRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.referenceorderid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.transactiontype, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.quantity, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.actualcost, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TransactionhistoryId.pgText).unsafeEncode(row.transactionid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.referenceorderlineid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.transactiondate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[TransactionhistoryRowUnsaved] = {
+    Reads[TransactionhistoryRowUnsaved](json => JsResult.fromTry(
+        Try(
+          TransactionhistoryRowUnsaved(
+            productid = json.\("productid").as(ProductId.reads),
+            referenceorderid = json.\("referenceorderid").as(Reads.IntReads),
+            transactiontype = json.\("transactiontype").as(Reads.StringReads),
+            quantity = json.\("quantity").as(Reads.IntReads),
+            actualcost = json.\("actualcost").as(Reads.bigDecReads),
+            transactionid = json.\("transactionid").as(Defaulted.reads(using TransactionhistoryId.reads)),
+            referenceorderlineid = json.\("referenceorderlineid").as(Defaulted.reads(using Reads.IntReads)),
+            transactiondate = json.\("transactiondate").as(Defaulted.reads(using TypoLocalDateTime.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[TransactionhistoryRowUnsaved] = {
+    OWrites[TransactionhistoryRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "referenceorderid" -> Writes.IntWrites.writes(o.referenceorderid),
+        "transactiontype" -> Writes.StringWrites.writes(o.transactiontype),
+        "quantity" -> Writes.IntWrites.writes(o.quantity),
+        "actualcost" -> Writes.BigDecimalWrites.writes(o.actualcost),
+        "transactionid" -> Defaulted.writes(using TransactionhistoryId.writes).writes(o.transactionid),
+        "referenceorderlineid" -> Defaulted.writes(using Writes.IntWrites).writes(o.referenceorderlineid),
+        "transactiondate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.transactiondate),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

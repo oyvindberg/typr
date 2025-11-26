@@ -18,11 +18,13 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: person.address
-    Street address information for customers, employees, and vendors.
-    Primary key: addressid */
+ * Street address information for customers, employees, and vendors.
+ * Primary key: addressid
+ */
 case class AddressRow(
   /** Primary key for Address records.
-      Default: nextval('person.address_addressid_seq'::regclass) */
+   * Default: nextval('person.address_addressid_seq'::regclass)
+   */
   addressid: AddressId,
   /** First street address line. */
   addressline1: /* max 60 chars */ String,
@@ -31,7 +33,8 @@ case class AddressRow(
   /** Name of the city. */
   city: /* max 30 chars */ String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
-      Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
+   * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
+   */
   stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
   postalcode: /* max 15 chars */ String,
@@ -41,67 +44,93 @@ case class AddressRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = addressid
-   def toUnsavedRow(addressid: Defaulted[AddressId], rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): AddressRowUnsaved =
-     AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate)
- }
+) {
+  def id: AddressId = addressid
+
+  def toUnsavedRow(
+    addressid: Defaulted[AddressId],
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): AddressRowUnsaved = {
+    new AddressRowUnsaved(
+      addressline1,
+      addressline2,
+      city,
+      stateprovinceid,
+      postalcode,
+      spatiallocation,
+      addressid,
+      rowguid,
+      modifieddate
+    )
+  }
+}
 
 object AddressRow {
   implicit lazy val decoder: Decoder[AddressRow] = Decoder.forProduct9[AddressRow, AddressId, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(AddressRow.apply)(AddressId.decoder, Decoder.decodeString, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeString, StateprovinceId.decoder, Decoder.decodeString, Decoder.decodeOption(TypoBytea.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[AddressRow] = Encoder.forProduct9[AddressRow, AddressId, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(x => (x.addressid, x.addressline1, x.addressline2, x.city, x.stateprovinceid, x.postalcode, x.spatiallocation, x.rowguid, x.modifieddate))(AddressId.encoder, Encoder.encodeString, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeString, StateprovinceId.encoder, Encoder.encodeString, Encoder.encodeOption(TypoBytea.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[AddressRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    AddressRow(
-      addressid = arr(0).asInstanceOf[AddressId],
-          addressline1 = arr(1).asInstanceOf[/* max 60 chars */ String],
-          addressline2 = arr(2).asInstanceOf[Option[/* max 60 chars */ String]],
-          city = arr(3).asInstanceOf[/* max 30 chars */ String],
-          stateprovinceid = arr(4).asInstanceOf[StateprovinceId],
-          postalcode = arr(5).asInstanceOf[/* max 15 chars */ String],
-          spatiallocation = arr(6).asInstanceOf[Option[TypoBytea]],
-          rowguid = arr(7).asInstanceOf[TypoUUID],
-          modifieddate = arr(8).asInstanceOf[TypoLocalDateTime]
+
+  implicit lazy val pgText: Text[AddressRow] = {
+    Text.instance[AddressRow]{ (row, sb) =>
+      AddressId.pgText.unsafeEncode(row.addressid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.addressline1, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.addressline2, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.city, sb)
+      sb.append(Text.DELIMETER)
+      StateprovinceId.pgText.unsafeEncode(row.stateprovinceid, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.postalcode, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoBytea.pgText).unsafeEncode(row.spatiallocation, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[AddressRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      AddressRow(
+        addressid = arr(0).asInstanceOf[AddressId],
+            addressline1 = arr(1).asInstanceOf[/* max 60 chars */ String],
+            addressline2 = arr(2).asInstanceOf[Option[/* max 60 chars */ String]],
+            city = arr(3).asInstanceOf[/* max 30 chars */ String],
+            stateprovinceid = arr(4).asInstanceOf[StateprovinceId],
+            postalcode = arr(5).asInstanceOf[/* max 15 chars */ String],
+            spatiallocation = arr(6).asInstanceOf[Option[TypoBytea]],
+            rowguid = arr(7).asInstanceOf[TypoUUID],
+            modifieddate = arr(8).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[AddressRow] = {
+    new Write.Composite[AddressRow](
+      List(new Write.Single(AddressId.put),
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(Meta.StringMeta.put).toOpt,
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(StateprovinceId.put),
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(TypoBytea.put).toOpt,
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.addressid, a.addressline1, a.addressline2, a.city, a.stateprovinceid, a.postalcode, a.spatiallocation, a.rowguid, a.modifieddate)
     )
   }
-  implicit lazy val text: Text[AddressRow] = Text.instance[AddressRow]{ (row, sb) =>
-    AddressId.text.unsafeEncode(row.addressid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.addressline1, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.addressline2, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.city, sb)
-    sb.append(Text.DELIMETER)
-    StateprovinceId.text.unsafeEncode(row.stateprovinceid, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.postalcode, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoBytea.text).unsafeEncode(row.spatiallocation, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  implicit lazy val write: Write[AddressRow] = new Write.Composite[AddressRow](
-    List(new Write.Single(AddressId.put),
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(Meta.StringMeta.put).toOpt,
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(StateprovinceId.put),
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(TypoBytea.put).toOpt,
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.addressid, a.addressline1, a.addressline2, a.city, a.stateprovinceid, a.postalcode, a.spatiallocation, a.rowguid, a.modifieddate)
-  )
 }

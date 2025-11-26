@@ -38,27 +38,26 @@ trait PersoncreditcardFields {
     businessentityid.isEqual(compositeId.businessentityid).and(creditcardid.isEqual(compositeId.creditcardid))
   def compositeIdIn(compositeIds: Array[PersoncreditcardId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[PersoncreditcardId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](BusinessentityId.arrayJdbcEncoder, PGType.forArray(BusinessentityId.pgType)), implicitly), TuplePart[PersoncreditcardId](creditcardid)(_.creditcardid)(using as[Array[/* user-picked */ CustomCreditcardId]](CustomCreditcardId.arrayJdbcEncoder, PGType.forArray(CustomCreditcardId.pgType)), implicitly))
-  
+
 }
 
 object PersoncreditcardFields {
   lazy val structure: Relation[PersoncreditcardFields, PersoncreditcardRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PersoncreditcardFields, PersoncreditcardRow] {
-  
+
     override lazy val fields: PersoncreditcardFields = new PersoncreditcardFields {
       override def businessentityid = IdField[BusinessentityId, PersoncreditcardRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def creditcardid = IdField[/* user-picked */ CustomCreditcardId, PersoncreditcardRow](_path, "creditcardid", None, Some("int4"), x => x.creditcardid, (row, value) => row.copy(creditcardid = value))
       override def modifieddate = Field[TypoLocalDateTime, PersoncreditcardRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PersoncreditcardRow]] =
       List[FieldLike[?, PersoncreditcardRow]](fields.businessentityid, fields.creditcardid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

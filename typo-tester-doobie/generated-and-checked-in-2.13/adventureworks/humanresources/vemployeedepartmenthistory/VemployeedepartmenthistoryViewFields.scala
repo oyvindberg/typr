@@ -31,11 +31,11 @@ trait VemployeedepartmenthistoryViewFields {
 
 object VemployeedepartmenthistoryViewFields {
   lazy val structure: Relation[VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow] {
-  
+
     override lazy val fields: VemployeedepartmenthistoryViewFields = new VemployeedepartmenthistoryViewFields {
       override def businessentityid = Field[BusinessentityId, VemployeedepartmenthistoryViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def title = OptField[/* max 8 chars */ String, VemployeedepartmenthistoryViewRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
@@ -49,12 +49,11 @@ object VemployeedepartmenthistoryViewFields {
       override def startdate = Field[TypoLocalDate, VemployeedepartmenthistoryViewRow](_path, "startdate", Some("text"), None, x => x.startdate, (row, value) => row.copy(startdate = value))
       override def enddate = OptField[TypoLocalDate, VemployeedepartmenthistoryViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VemployeedepartmenthistoryViewRow]] =
       List[FieldLike[?, VemployeedepartmenthistoryViewRow]](fields.businessentityid, fields.title, fields.firstname, fields.middlename, fields.lastname, fields.suffix, fields.shift, fields.department, fields.groupname, fields.startdate, fields.enddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -15,30 +15,33 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** This class corresponds to a row in table `public.table-with-generated-columns` which has not been persisted yet */
-case class TableWithGeneratedColumnsRowUnsaved(
-  name: TableWithGeneratedColumnsId
-) {
-  def toRow(nameTypeAlwaysDefault: => String): TableWithGeneratedColumnsRow =
-    TableWithGeneratedColumnsRow(
-      name = name,
-      nameTypeAlways = nameTypeAlwaysDefault
-    )
+case class TableWithGeneratedColumnsRowUnsaved(name: TableWithGeneratedColumnsId) {
+  def toRow(nameTypeAlwaysDefault: => String): TableWithGeneratedColumnsRow = new TableWithGeneratedColumnsRow(name = name, nameTypeAlways = nameTypeAlwaysDefault)
 }
+
 object TableWithGeneratedColumnsRowUnsaved {
-  given reads: Reads[TableWithGeneratedColumnsRowUnsaved] = Reads[TableWithGeneratedColumnsRowUnsaved](json => JsResult.fromTry(
-      Try(
-        TableWithGeneratedColumnsRowUnsaved(
-          name = json.\("name").as(TableWithGeneratedColumnsId.reads)
-        )
-      )
-    ),
-  )
-  given text: Text[TableWithGeneratedColumnsRowUnsaved] = Text.instance[TableWithGeneratedColumnsRowUnsaved]{ (row, sb) =>
-    TableWithGeneratedColumnsId.text.unsafeEncode(row.name, sb)
+  given pgText: Text[TableWithGeneratedColumnsRowUnsaved] = {
+    Text.instance[TableWithGeneratedColumnsRowUnsaved]{ (row, sb) =>
+      TableWithGeneratedColumnsId.pgText.unsafeEncode(row.name, sb)
+    }
   }
-  given writes: OWrites[TableWithGeneratedColumnsRowUnsaved] = OWrites[TableWithGeneratedColumnsRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> TableWithGeneratedColumnsId.writes.writes(o.name)
-    ))
-  )
+
+  given reads: Reads[TableWithGeneratedColumnsRowUnsaved] = {
+    Reads[TableWithGeneratedColumnsRowUnsaved](json => JsResult.fromTry(
+        Try(
+          TableWithGeneratedColumnsRowUnsaved(
+            name = json.\("name").as(TableWithGeneratedColumnsId.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[TableWithGeneratedColumnsRowUnsaved] = {
+    OWrites[TableWithGeneratedColumnsRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> TableWithGeneratedColumnsId.writes.writes(o.name)
+      ))
+    )
+  }
 }

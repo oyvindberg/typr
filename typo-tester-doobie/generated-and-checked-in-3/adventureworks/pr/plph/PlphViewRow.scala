@@ -30,22 +30,26 @@ case class PlphViewRow(
 
 object PlphViewRow {
   given decoder: Decoder[PlphViewRow] = Decoder.forProduct6[PlphViewRow, ProductId, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "listprice", "modifieddate")(PlphViewRow.apply)(using ProductId.decoder, ProductId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PlphViewRow] = Encoder.forProduct6[PlphViewRow, ProductId, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "listprice", "modifieddate")(x => (x.id, x.productid, x.startdate, x.enddate, x.listprice, x.modifieddate))(using ProductId.encoder, ProductId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  given read: Read[PlphViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PlphViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PlphViewRow(
-      id = arr(0).asInstanceOf[ProductId],
-          productid = arr(1).asInstanceOf[ProductId],
-          startdate = arr(2).asInstanceOf[TypoLocalDateTime],
-          enddate = arr(3).asInstanceOf[Option[TypoLocalDateTime]],
-          listprice = arr(4).asInstanceOf[BigDecimal],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PlphViewRow(
+        id = arr(0).asInstanceOf[ProductId],
+            productid = arr(1).asInstanceOf[ProductId],
+            startdate = arr(2).asInstanceOf[TypoLocalDateTime],
+            enddate = arr(3).asInstanceOf[Option[TypoLocalDateTime]],
+            listprice = arr(4).asInstanceOf[BigDecimal],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

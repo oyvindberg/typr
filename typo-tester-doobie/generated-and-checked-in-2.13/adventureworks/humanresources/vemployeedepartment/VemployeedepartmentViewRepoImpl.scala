@@ -6,16 +6,12 @@
 package adventureworks.humanresources.vemployeedepartment
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VemployeedepartmentViewRepoImpl extends VemployeedepartmentViewRepo {
-  override def select: SelectBuilder[VemployeedepartmentViewFields, VemployeedepartmentViewRow] = {
-    SelectBuilderSql(""""humanresources"."vemployeedepartment"""", VemployeedepartmentViewFields.structure, VemployeedepartmentViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VemployeedepartmentViewRow] = {
-    sql"""select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "department", "groupname", "startdate"::text from "humanresources"."vemployeedepartment"""".query(VemployeedepartmentViewRow.read).stream
-  }
+  def select: SelectBuilder[VemployeedepartmentViewFields, VemployeedepartmentViewRow] = SelectBuilder.of(""""humanresources"."vemployeedepartment"""", VemployeedepartmentViewFields.structure, VemployeedepartmentViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, VemployeedepartmentViewRow] = sql"""select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "department", "groupname", "startdate"::text from "humanresources"."vemployeedepartment"""".query(VemployeedepartmentViewRow.read).stream
 }

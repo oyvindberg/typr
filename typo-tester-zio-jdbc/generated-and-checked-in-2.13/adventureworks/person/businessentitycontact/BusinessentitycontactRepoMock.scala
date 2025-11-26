@@ -21,32 +21,34 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class BusinessentitycontactRepoMock(toRow: Function1[BusinessentitycontactRowUnsaved, BusinessentitycontactRow],
-                                    map: scala.collection.mutable.Map[BusinessentitycontactId, BusinessentitycontactRow] = scala.collection.mutable.Map.empty) extends BusinessentitycontactRepo {
-  override def delete: DeleteBuilder[BusinessentitycontactFields, BusinessentitycontactRow] = {
-    DeleteBuilderMock(DeleteParams.empty, BusinessentitycontactFields.structure, map)
+case class BusinessentitycontactRepoMock(
+  toRow: BusinessentitycontactRowUnsaved => BusinessentitycontactRow,
+  map: scala.collection.mutable.Map[BusinessentitycontactId, BusinessentitycontactRow] = scala.collection.mutable.Map.empty[BusinessentitycontactId, BusinessentitycontactRow]
+) extends BusinessentitycontactRepo {
+  def delete: DeleteBuilder[BusinessentitycontactFields, BusinessentitycontactRow] = DeleteBuilderMock(DeleteParams.empty, BusinessentitycontactFields.structure, map)
+
+  def deleteById(compositeId: BusinessentitycontactId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(compositeId).isDefined)
+
+  def deleteByIds(compositeIds: Array[BusinessentitycontactId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(compositeIds.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: BusinessentitycontactRow): ZIO[ZConnection, Throwable, BusinessentitycontactRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.compositeId))
+        sys.error(s"id ${unsaved.compositeId} already exists")
+      else
+        map.put(unsaved.compositeId, unsaved)
+
+    unsaved
   }
-  override def deleteById(compositeId: BusinessentitycontactId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(compositeId).isDefined)
   }
-  override def deleteByIds(compositeIds: Array[BusinessentitycontactId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(compositeIds.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: BusinessentitycontactRow): ZIO[ZConnection, Throwable, BusinessentitycontactRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.compositeId))
-          sys.error(s"id ${unsaved.compositeId} already exists")
-        else
-          map.put(unsaved.compositeId, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insert(unsaved: BusinessentitycontactRowUnsaved): ZIO[ZConnection, Throwable, BusinessentitycontactRow] = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, BusinessentitycontactRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insert(unsaved: BusinessentitycontactRowUnsaved): ZIO[ZConnection, Throwable, BusinessentitycontactRow] = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, BusinessentitycontactRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.compositeId -> row)
@@ -54,8 +56,12 @@ class BusinessentitycontactRepoMock(toRow: Function1[BusinessentitycontactRowUns
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, BusinessentitycontactRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, BusinessentitycontactRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, unsavedRow) =>
       ZIO.succeed {
         val row = toRow(unsavedRow)
@@ -64,28 +70,25 @@ class BusinessentitycontactRepoMock(toRow: Function1[BusinessentitycontactRowUns
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[BusinessentitycontactFields, BusinessentitycontactRow] = {
-    SelectBuilderMock(BusinessentitycontactFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, BusinessentitycontactRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(compositeId: BusinessentitycontactId): ZIO[ZConnection, Throwable, Option[BusinessentitycontactRow]] = {
-    ZIO.succeed(map.get(compositeId))
-  }
-  override def selectByIds(compositeIds: Array[BusinessentitycontactId]): ZStream[ZConnection, Throwable, BusinessentitycontactRow] = {
-    ZStream.fromIterable(compositeIds.flatMap(map.get))
-  }
-  override def selectByIdsTracked(compositeIds: Array[BusinessentitycontactId]): ZIO[ZConnection, Throwable, Map[BusinessentitycontactId, BusinessentitycontactRow]] = {
+
+  def select: SelectBuilder[BusinessentitycontactFields, BusinessentitycontactRow] = SelectBuilderMock(BusinessentitycontactFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, BusinessentitycontactRow] = ZStream.fromIterable(map.values)
+
+  def selectById(compositeId: BusinessentitycontactId): ZIO[ZConnection, Throwable, Option[BusinessentitycontactRow]] = ZIO.succeed(map.get(compositeId))
+
+  def selectByIds(compositeIds: Array[BusinessentitycontactId]): ZStream[ZConnection, Throwable, BusinessentitycontactRow] = ZStream.fromIterable(compositeIds.flatMap(map.get))
+
+  def selectByIdsTracked(compositeIds: Array[BusinessentitycontactId]): ZIO[ZConnection, Throwable, Map[BusinessentitycontactId, BusinessentitycontactRow]] = {
     selectByIds(compositeIds).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[BusinessentitycontactFields, BusinessentitycontactRow] = {
-    UpdateBuilderMock(UpdateParams.empty, BusinessentitycontactFields.structure, map)
-  }
-  override def update(row: BusinessentitycontactRow): ZIO[ZConnection, Throwable, Option[BusinessentitycontactRow]] = {
+
+  def update: UpdateBuilder[BusinessentitycontactFields, BusinessentitycontactRow] = UpdateBuilderMock(UpdateParams.empty, BusinessentitycontactFields.structure, map)
+
+  def update(row: BusinessentitycontactRow): ZIO[ZConnection, Throwable, Option[BusinessentitycontactRow]] = {
     ZIO.succeed {
       map.get(row.compositeId).map { _ =>
         map.put(row.compositeId, row): @nowarn
@@ -93,14 +96,19 @@ class BusinessentitycontactRepoMock(toRow: Function1[BusinessentitycontactRowUns
       }
     }
   }
-  override def upsert(unsaved: BusinessentitycontactRow): ZIO[ZConnection, Throwable, UpdateResult[BusinessentitycontactRow]] = {
+
+  def upsert(unsaved: BusinessentitycontactRow): ZIO[ZConnection, Throwable, UpdateResult[BusinessentitycontactRow]] = {
     ZIO.succeed {
       map.put(unsaved.compositeId, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, BusinessentitycontactRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, BusinessentitycontactRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.compositeId -> row)

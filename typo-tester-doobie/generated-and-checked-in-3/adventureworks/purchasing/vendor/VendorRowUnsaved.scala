@@ -6,6 +6,7 @@
 package adventureworks.purchasing.vendor
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
@@ -19,65 +20,70 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `purchasing.vendor` which has not been persisted yet */
 case class VendorRowUnsaved(
   /** Primary key for Vendor records.  Foreign key to BusinessEntity.BusinessEntityID
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Vendor account (identification) number. */
   accountnumber: AccountNumber,
   /** Company name. */
   name: Name,
   /** 1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average
-      Constraint CK_Vendor_CreditRating affecting columns creditrating:  (((creditrating >= 1) AND (creditrating <= 5))) */
+   * Constraint CK_Vendor_CreditRating affecting columns creditrating:  (((creditrating >= 1) AND (creditrating <= 5)))
+   */
   creditrating: TypoShort,
   /** Vendor URL. */
-  purchasingwebserviceurl: Option[/* max 1024 chars */ String],
+  purchasingwebserviceurl: Option[/* max 1024 chars */ String] = None,
   /** Default: true
-      0 = Do not use if another vendor is available. 1 = Preferred over other vendors supplying the same product. */
-  preferredvendorstatus: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = Do not use if another vendor is available. 1 = Preferred over other vendors supplying the same product.
+   */
+  preferredvendorstatus: Defaulted[Flag] = new UseDefault(),
   /** Default: true
-      0 = Vendor no longer used. 1 = Vendor is actively used. */
-  activeflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = Vendor no longer used. 1 = Vendor is actively used.
+   */
+  activeflag: Defaulted[Flag] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(preferredvendorstatusDefault: => Flag, activeflagDefault: => Flag, modifieddateDefault: => TypoLocalDateTime): VendorRow =
-    VendorRow(
+  def toRow(
+    preferredvendorstatusDefault: => Flag,
+    activeflagDefault: => Flag,
+    modifieddateDefault: => TypoLocalDateTime
+  ): VendorRow = {
+    new VendorRow(
       businessentityid = businessentityid,
       accountnumber = accountnumber,
       name = name,
       creditrating = creditrating,
+      preferredvendorstatus = preferredvendorstatus.getOrElse(preferredvendorstatusDefault),
+      activeflag = activeflag.getOrElse(activeflagDefault),
       purchasingwebserviceurl = purchasingwebserviceurl,
-      preferredvendorstatus = preferredvendorstatus match {
-                                case Defaulted.UseDefault => preferredvendorstatusDefault
-                                case Defaulted.Provided(value) => value
-                              },
-      activeflag = activeflag match {
-                     case Defaulted.UseDefault => activeflagDefault
-                     case Defaulted.Provided(value) => value
-                   },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object VendorRowUnsaved {
   given decoder: Decoder[VendorRowUnsaved] = Decoder.forProduct8[VendorRowUnsaved, BusinessentityId, AccountNumber, Name, TypoShort, Option[/* max 1024 chars */ String], Defaulted[Flag], Defaulted[Flag], Defaulted[TypoLocalDateTime]]("businessentityid", "accountnumber", "name", "creditrating", "purchasingwebserviceurl", "preferredvendorstatus", "activeflag", "modifieddate")(VendorRowUnsaved.apply)(using BusinessentityId.decoder, AccountNumber.decoder, Name.decoder, TypoShort.decoder, Decoder.decodeOption(using Decoder.decodeString), Defaulted.decoder(using Flag.decoder), Defaulted.decoder(using Flag.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[VendorRowUnsaved] = Encoder.forProduct8[VendorRowUnsaved, BusinessentityId, AccountNumber, Name, TypoShort, Option[/* max 1024 chars */ String], Defaulted[Flag], Defaulted[Flag], Defaulted[TypoLocalDateTime]]("businessentityid", "accountnumber", "name", "creditrating", "purchasingwebserviceurl", "preferredvendorstatus", "activeflag", "modifieddate")(x => (x.businessentityid, x.accountnumber, x.name, x.creditrating, x.purchasingwebserviceurl, x.preferredvendorstatus, x.activeflag, x.modifieddate))(using BusinessentityId.encoder, AccountNumber.encoder, Name.encoder, TypoShort.encoder, Encoder.encodeOption(using Encoder.encodeString), Defaulted.encoder(using Flag.encoder), Defaulted.encoder(using Flag.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[VendorRowUnsaved] = Text.instance[VendorRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    AccountNumber.text.unsafeEncode(row.accountnumber, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.creditrating, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.purchasingwebserviceurl, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Flag.text).unsafeEncode(row.preferredvendorstatus, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Flag.text).unsafeEncode(row.activeflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[VendorRowUnsaved] = {
+    Text.instance[VendorRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      AccountNumber.pgText.unsafeEncode(row.accountnumber, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.creditrating, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.purchasingwebserviceurl, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Flag.pgText).unsafeEncode(row.preferredvendorstatus, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Flag.pgText).unsafeEncode(row.activeflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

@@ -21,29 +21,42 @@ import zio.json.JsonEncoder
 case class TypoVector(value: Array[Float])
 
 object TypoVector {
-  given bijection: Bijection[TypoVector, Array[Float]] = Bijection[TypoVector, Array[Float]](_.value)(TypoVector.apply)
-  given jdbcDecoder: JdbcDecoder[TypoVector] = JdbcDecoder[TypoVector](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoVector(v.asInstanceOf[PgArray].getArray.asInstanceOf[Array[java.lang.Float]].map(Float2float))
-    },
-    "Array[java.lang.Float]"
-  )
+  given bijection: Bijection[TypoVector, Array[Float]] = Bijection.apply[TypoVector, Array[Float]](_.value)(TypoVector.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoVector] = {
+    JdbcDecoder[TypoVector](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else TypoVector(v.asInstanceOf[PgArray].getArray.asInstanceOf[Array[java.lang.Float]].map(Float2float))
+      },
+      "Array[java.lang.Float]"
+    )
+  }
+
   given jdbcEncoder: JdbcEncoder[TypoVector] = JdbcEncoder.singleParamEncoder(using setter)
+
   given jsonDecoder: JsonDecoder[TypoVector] = JsonDecoder.array[Float](using JsonDecoder.float, implicitly).map(TypoVector.apply)
+
   given jsonEncoder: JsonEncoder[TypoVector] = JsonEncoder.array[Float](using JsonEncoder.float, implicitly).contramap(_.value)
+
+  given pgText: Text[TypoVector] = {
+    new Text[TypoVector] {
+      override def unsafeEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.mkString("[", ",", "]"), sb)
+      override def unsafeArrayEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.mkString("[", ",", "]"), sb)
+    }
+  }
+
   given pgType: PGType[TypoVector] = PGType.instance[TypoVector]("vector", Types.OTHER)
-  given setter: Setter[TypoVector] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
-        i,
-        v.value.map(x => x: java.lang.Float)
-      )
-    },
-    "vector"
-  )
-  given text: Text[TypoVector] = new Text[TypoVector] {
-    override def unsafeEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.mkString("[", ",", "]"), sb)
-    override def unsafeArrayEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.mkString("[", ",", "]"), sb)
+
+  given setter: Setter[TypoVector] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value.map(x => x: java.lang.Float)
+        )
+      },
+      "vector"
+    )
   }
 }

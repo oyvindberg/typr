@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `myschema.person` */
-case class PersonId(value: Long) extends AnyVal
+case class PersonId(value: Long) extends scala.AnyVal
+
 object PersonId {
   implicit lazy val arrayGet: Get[Array[PersonId]] = testdb.hardcoded.LongArrayMeta.get.map(_.map(PersonId.apply))
+
   implicit lazy val arrayPut: Put[Array[PersonId]] = testdb.hardcoded.LongArrayMeta.put.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[PersonId, Long] = Bijection[PersonId, Long](_.value)(PersonId.apply)
+
+  implicit lazy val bijection: Bijection[PersonId, Long] = Bijection.apply[PersonId, Long](_.value)(PersonId.apply)
+
   implicit lazy val decoder: Decoder[PersonId] = Decoder.decodeLong.map(PersonId.apply)
+
   implicit lazy val encoder: Encoder[PersonId] = Encoder.encodeLong.contramap(_.value)
+
   implicit lazy val get: Get[PersonId] = Meta.LongMeta.get.map(PersonId.apply)
-  implicit lazy val put: Put[PersonId] = Meta.LongMeta.put.contramap(_.value)
-  implicit lazy val text: Text[PersonId] = new Text[PersonId] {
-    override def unsafeEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[PersonId] = {
+    new Text[PersonId] {
+      override def unsafeEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: PersonId, sb: StringBuilder): Unit = Text.longInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val put: Put[PersonId] = Meta.LongMeta.put.contramap(_.value)
 }

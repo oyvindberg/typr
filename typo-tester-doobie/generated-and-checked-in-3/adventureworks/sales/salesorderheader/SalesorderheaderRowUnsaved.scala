@@ -6,6 +6,7 @@
 package adventureworks.sales.salesorderheader
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
@@ -30,84 +31,118 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.salesorderheader` which has not been persisted yet */
 case class SalesorderheaderRowUnsaved(
   /** Date the order is due to the customer.
-      Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate)) */
+   * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
+   */
   duedate: TypoLocalDateTime,
   /** Date the order was shipped to the customer.
-      Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL))) */
-  shipdate: Option[TypoLocalDateTime],
+   * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
+   */
+  shipdate: Option[TypoLocalDateTime] = None,
   /** Customer purchase order number reference. */
-  purchaseordernumber: Option[OrderNumber],
+  purchaseordernumber: Option[OrderNumber] = None,
   /** Financial accounting number reference. */
-  accountnumber: Option[AccountNumber],
+  accountnumber: Option[AccountNumber] = None,
   /** Customer identification number. Foreign key to Customer.BusinessEntityID.
-      Points to [[adventureworks.sales.customer.CustomerRow.customerid]] */
+   * Points to [[adventureworks.sales.customer.CustomerRow.customerid]]
+   */
   customerid: CustomerId,
   /** Sales person who created the sales order. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
-  salespersonid: Option[BusinessentityId],
+   * Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]]
+   */
+  salespersonid: Option[BusinessentityId] = None,
   /** Territory in which the sale was made. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+   * Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]]
+   */
+  territoryid: Option[SalesterritoryId] = None,
   /** Customer billing address. Foreign key to Address.AddressID.
-      Points to [[adventureworks.person.address.AddressRow.addressid]] */
+   * Points to [[adventureworks.person.address.AddressRow.addressid]]
+   */
   billtoaddressid: AddressId,
   /** Customer shipping address. Foreign key to Address.AddressID.
-      Points to [[adventureworks.person.address.AddressRow.addressid]] */
+   * Points to [[adventureworks.person.address.AddressRow.addressid]]
+   */
   shiptoaddressid: AddressId,
   /** Shipping method. Foreign key to ShipMethod.ShipMethodID.
-      Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipmethodid]] */
+   * Points to [[adventureworks.purchasing.shipmethod.ShipmethodRow.shipmethodid]]
+   */
   shipmethodid: ShipmethodId,
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
-      Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
-  creditcardid: Option[/* user-picked */ CustomCreditcardId],
+   * Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]]
+   */
+  creditcardid: Option[/* user-picked */ CustomCreditcardId] = None,
   /** Approval code provided by the credit card company. */
-  creditcardapprovalcode: Option[/* max 15 chars */ String],
+  creditcardapprovalcode: Option[/* max 15 chars */ String] = None,
   /** Currency exchange rate used. Foreign key to CurrencyRate.CurrencyRateID.
-      Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.currencyrateid]] */
-  currencyrateid: Option[CurrencyrateId],
+   * Points to [[adventureworks.sales.currencyrate.CurrencyrateRow.currencyrateid]]
+   */
+  currencyrateid: Option[CurrencyrateId] = None,
   /** Total due from customer. Computed as Subtotal + TaxAmt + Freight. */
-  totaldue: Option[BigDecimal],
+  totaldue: Option[BigDecimal] = None,
   /** Sales representative comments. */
-  comment: Option[/* max 128 chars */ String],
+  comment: Option[/* max 128 chars */ String] = None,
   /** Default: nextval('sales.salesorderheader_salesorderid_seq'::regclass)
-      Primary key. */
-  salesorderid: Defaulted[SalesorderheaderId] = Defaulted.UseDefault,
+   * Primary key.
+   */
+  salesorderid: Defaulted[SalesorderheaderId] = new UseDefault(),
   /** Default: 0
-      Incremental number to track changes to the sales order over time. */
-  revisionnumber: Defaulted[TypoShort] = Defaulted.UseDefault,
+   * Incremental number to track changes to the sales order over time.
+   */
+  revisionnumber: Defaulted[TypoShort] = new UseDefault(),
   /** Default: now()
-      Dates the sales order was created.
-      Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
-      Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL))) */
-  orderdate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+   * Dates the sales order was created.
+   * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
+   * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
+   */
+  orderdate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: 1
-      Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled
-      Constraint CK_SalesOrderHeader_Status affecting columns status:  (((status >= 0) AND (status <= 8))) */
-  status: Defaulted[TypoShort] = Defaulted.UseDefault,
+   * Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled
+   * Constraint CK_SalesOrderHeader_Status affecting columns status:  (((status >= 0) AND (status <= 8)))
+   */
+  status: Defaulted[TypoShort] = new UseDefault(),
   /** Default: true
-      0 = Order placed by sales person. 1 = Order placed online by customer. */
-  onlineorderflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = Order placed by sales person. 1 = Order placed online by customer.
+   */
+  onlineorderflag: Defaulted[Flag] = new UseDefault(),
   /** Default: 0.00
-      Sales subtotal. Computed as SUM(SalesOrderDetail.LineTotal)for the appropriate SalesOrderID.
-      Constraint CK_SalesOrderHeader_SubTotal affecting columns subtotal:  ((subtotal >= 0.00)) */
-  subtotal: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Sales subtotal. Computed as SUM(SalesOrderDetail.LineTotal)for the appropriate SalesOrderID.
+   * Constraint CK_SalesOrderHeader_SubTotal affecting columns subtotal:  ((subtotal >= 0.00))
+   */
+  subtotal: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.00
-      Tax amount.
-      Constraint CK_SalesOrderHeader_TaxAmt affecting columns taxamt:  ((taxamt >= 0.00)) */
-  taxamt: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Tax amount.
+   * Constraint CK_SalesOrderHeader_TaxAmt affecting columns taxamt:  ((taxamt >= 0.00))
+   */
+  taxamt: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.00
-      Shipping cost.
-      Constraint CK_SalesOrderHeader_Freight affecting columns freight:  ((freight >= 0.00)) */
-  freight: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Shipping cost.
+   * Constraint CK_SalesOrderHeader_Freight affecting columns freight:  ((freight >= 0.00))
+   */
+  freight: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(salesorderidDefault: => SalesorderheaderId, revisionnumberDefault: => TypoShort, orderdateDefault: => TypoLocalDateTime, statusDefault: => TypoShort, onlineorderflagDefault: => Flag, subtotalDefault: => BigDecimal, taxamtDefault: => BigDecimal, freightDefault: => BigDecimal, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SalesorderheaderRow =
-    SalesorderheaderRow(
+  def toRow(
+    salesorderidDefault: => SalesorderheaderId,
+    revisionnumberDefault: => TypoShort,
+    orderdateDefault: => TypoLocalDateTime,
+    statusDefault: => TypoShort,
+    onlineorderflagDefault: => Flag,
+    subtotalDefault: => BigDecimal,
+    taxamtDefault: => BigDecimal,
+    freightDefault: => BigDecimal,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SalesorderheaderRow = {
+    new SalesorderheaderRow(
+      salesorderid = salesorderid.getOrElse(salesorderidDefault),
+      revisionnumber = revisionnumber.getOrElse(revisionnumberDefault),
+      orderdate = orderdate.getOrElse(orderdateDefault),
       duedate = duedate,
       shipdate = shipdate,
+      status = status.getOrElse(statusDefault),
+      onlineorderflag = onlineorderflag.getOrElse(onlineorderflagDefault),
       purchaseordernumber = purchaseordernumber,
       accountnumber = accountnumber,
       customerid = customerid,
@@ -119,164 +154,139 @@ case class SalesorderheaderRowUnsaved(
       creditcardid = creditcardid,
       creditcardapprovalcode = creditcardapprovalcode,
       currencyrateid = currencyrateid,
+      subtotal = subtotal.getOrElse(subtotalDefault),
+      taxamt = taxamt.getOrElse(taxamtDefault),
+      freight = freight.getOrElse(freightDefault),
       totaldue = totaldue,
       comment = comment,
-      salesorderid = salesorderid match {
-                       case Defaulted.UseDefault => salesorderidDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      revisionnumber = revisionnumber match {
-                         case Defaulted.UseDefault => revisionnumberDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      orderdate = orderdate match {
-                    case Defaulted.UseDefault => orderdateDefault
-                    case Defaulted.Provided(value) => value
-                  },
-      status = status match {
-                 case Defaulted.UseDefault => statusDefault
-                 case Defaulted.Provided(value) => value
-               },
-      onlineorderflag = onlineorderflag match {
-                          case Defaulted.UseDefault => onlineorderflagDefault
-                          case Defaulted.Provided(value) => value
-                        },
-      subtotal = subtotal match {
-                   case Defaulted.UseDefault => subtotalDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      taxamt = taxamt match {
-                 case Defaulted.UseDefault => taxamtDefault
-                 case Defaulted.Provided(value) => value
-               },
-      freight = freight match {
-                  case Defaulted.UseDefault => freightDefault
-                  case Defaulted.Provided(value) => value
-                },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object SalesorderheaderRowUnsaved {
-  given decoder: Decoder[SalesorderheaderRowUnsaved] = Decoder.instanceTry[SalesorderheaderRowUnsaved]((c: HCursor) =>
-    Try {
-      def orThrow[R](either: Either[DecodingFailure, R]): R = either match {
-        case Left(err) => throw err
-        case Right(r)  => r
+  given decoder: Decoder[SalesorderheaderRowUnsaved] = {
+    Decoder.instanceTry[SalesorderheaderRowUnsaved]((c: HCursor) =>
+      Try {
+        def orThrow[R](either: Either[DecodingFailure, R]): R = either match {
+          case Left(err) => throw err
+          case Right(r)  => r
+        }
+        SalesorderheaderRowUnsaved(
+          duedate = orThrow(c.get("duedate")(using TypoLocalDateTime.decoder)),
+          shipdate = orThrow(c.get("shipdate")(using Decoder.decodeOption(using TypoLocalDateTime.decoder))),
+          purchaseordernumber = orThrow(c.get("purchaseordernumber")(using Decoder.decodeOption(using OrderNumber.decoder))),
+          accountnumber = orThrow(c.get("accountnumber")(using Decoder.decodeOption(using AccountNumber.decoder))),
+          customerid = orThrow(c.get("customerid")(using CustomerId.decoder)),
+          salespersonid = orThrow(c.get("salespersonid")(using Decoder.decodeOption(using BusinessentityId.decoder))),
+          territoryid = orThrow(c.get("territoryid")(using Decoder.decodeOption(using SalesterritoryId.decoder))),
+          billtoaddressid = orThrow(c.get("billtoaddressid")(using AddressId.decoder)),
+          shiptoaddressid = orThrow(c.get("shiptoaddressid")(using AddressId.decoder)),
+          shipmethodid = orThrow(c.get("shipmethodid")(using ShipmethodId.decoder)),
+          creditcardid = orThrow(c.get("creditcardid")(using Decoder.decodeOption(using CustomCreditcardId.decoder))),
+          creditcardapprovalcode = orThrow(c.get("creditcardapprovalcode")(using Decoder.decodeOption(using Decoder.decodeString))),
+          currencyrateid = orThrow(c.get("currencyrateid")(using Decoder.decodeOption(using CurrencyrateId.decoder))),
+          totaldue = orThrow(c.get("totaldue")(using Decoder.decodeOption(using Decoder.decodeBigDecimal))),
+          comment = orThrow(c.get("comment")(using Decoder.decodeOption(using Decoder.decodeString))),
+          salesorderid = orThrow(c.get("salesorderid")(using Defaulted.decoder(using SalesorderheaderId.decoder))),
+          revisionnumber = orThrow(c.get("revisionnumber")(using Defaulted.decoder(using TypoShort.decoder))),
+          orderdate = orThrow(c.get("orderdate")(using Defaulted.decoder(using TypoLocalDateTime.decoder))),
+          status = orThrow(c.get("status")(using Defaulted.decoder(using TypoShort.decoder))),
+          onlineorderflag = orThrow(c.get("onlineorderflag")(using Defaulted.decoder(using Flag.decoder))),
+          subtotal = orThrow(c.get("subtotal")(using Defaulted.decoder(using Decoder.decodeBigDecimal))),
+          taxamt = orThrow(c.get("taxamt")(using Defaulted.decoder(using Decoder.decodeBigDecimal))),
+          freight = orThrow(c.get("freight")(using Defaulted.decoder(using Decoder.decodeBigDecimal))),
+          rowguid = orThrow(c.get("rowguid")(using Defaulted.decoder(using TypoUUID.decoder))),
+          modifieddate = orThrow(c.get("modifieddate")(using Defaulted.decoder(using TypoLocalDateTime.decoder)))
+        )
       }
-      SalesorderheaderRowUnsaved(
-        duedate = orThrow(c.get("duedate")(using TypoLocalDateTime.decoder)),
-        shipdate = orThrow(c.get("shipdate")(using Decoder.decodeOption(using TypoLocalDateTime.decoder))),
-        purchaseordernumber = orThrow(c.get("purchaseordernumber")(using Decoder.decodeOption(using OrderNumber.decoder))),
-        accountnumber = orThrow(c.get("accountnumber")(using Decoder.decodeOption(using AccountNumber.decoder))),
-        customerid = orThrow(c.get("customerid")(using CustomerId.decoder)),
-        salespersonid = orThrow(c.get("salespersonid")(using Decoder.decodeOption(using BusinessentityId.decoder))),
-        territoryid = orThrow(c.get("territoryid")(using Decoder.decodeOption(using SalesterritoryId.decoder))),
-        billtoaddressid = orThrow(c.get("billtoaddressid")(using AddressId.decoder)),
-        shiptoaddressid = orThrow(c.get("shiptoaddressid")(using AddressId.decoder)),
-        shipmethodid = orThrow(c.get("shipmethodid")(using ShipmethodId.decoder)),
-        creditcardid = orThrow(c.get("creditcardid")(using Decoder.decodeOption(using CustomCreditcardId.decoder))),
-        creditcardapprovalcode = orThrow(c.get("creditcardapprovalcode")(using Decoder.decodeOption(using Decoder.decodeString))),
-        currencyrateid = orThrow(c.get("currencyrateid")(using Decoder.decodeOption(using CurrencyrateId.decoder))),
-        totaldue = orThrow(c.get("totaldue")(using Decoder.decodeOption(using Decoder.decodeBigDecimal))),
-        comment = orThrow(c.get("comment")(using Decoder.decodeOption(using Decoder.decodeString))),
-        salesorderid = orThrow(c.get("salesorderid")(using Defaulted.decoder(using SalesorderheaderId.decoder))),
-        revisionnumber = orThrow(c.get("revisionnumber")(using Defaulted.decoder(using TypoShort.decoder))),
-        orderdate = orThrow(c.get("orderdate")(using Defaulted.decoder(using TypoLocalDateTime.decoder))),
-        status = orThrow(c.get("status")(using Defaulted.decoder(using TypoShort.decoder))),
-        onlineorderflag = orThrow(c.get("onlineorderflag")(using Defaulted.decoder(using Flag.decoder))),
-        subtotal = orThrow(c.get("subtotal")(using Defaulted.decoder(using Decoder.decodeBigDecimal))),
-        taxamt = orThrow(c.get("taxamt")(using Defaulted.decoder(using Decoder.decodeBigDecimal))),
-        freight = orThrow(c.get("freight")(using Defaulted.decoder(using Decoder.decodeBigDecimal))),
-        rowguid = orThrow(c.get("rowguid")(using Defaulted.decoder(using TypoUUID.decoder))),
-        modifieddate = orThrow(c.get("modifieddate")(using Defaulted.decoder(using TypoLocalDateTime.decoder)))
-      )
-    }
-  )
-  given encoder: Encoder[SalesorderheaderRowUnsaved] = Encoder.instance[SalesorderheaderRowUnsaved](row =>
-    Json.obj(
-      "duedate" -> TypoLocalDateTime.encoder.apply(row.duedate),
-      "shipdate" -> Encoder.encodeOption(using TypoLocalDateTime.encoder).apply(row.shipdate),
-      "purchaseordernumber" -> Encoder.encodeOption(using OrderNumber.encoder).apply(row.purchaseordernumber),
-      "accountnumber" -> Encoder.encodeOption(using AccountNumber.encoder).apply(row.accountnumber),
-      "customerid" -> CustomerId.encoder.apply(row.customerid),
-      "salespersonid" -> Encoder.encodeOption(using BusinessentityId.encoder).apply(row.salespersonid),
-      "territoryid" -> Encoder.encodeOption(using SalesterritoryId.encoder).apply(row.territoryid),
-      "billtoaddressid" -> AddressId.encoder.apply(row.billtoaddressid),
-      "shiptoaddressid" -> AddressId.encoder.apply(row.shiptoaddressid),
-      "shipmethodid" -> ShipmethodId.encoder.apply(row.shipmethodid),
-      "creditcardid" -> Encoder.encodeOption(using CustomCreditcardId.encoder).apply(row.creditcardid),
-      "creditcardapprovalcode" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.creditcardapprovalcode),
-      "currencyrateid" -> Encoder.encodeOption(using CurrencyrateId.encoder).apply(row.currencyrateid),
-      "totaldue" -> Encoder.encodeOption(using Encoder.encodeBigDecimal).apply(row.totaldue),
-      "comment" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.comment),
-      "salesorderid" -> Defaulted.encoder(using SalesorderheaderId.encoder).apply(row.salesorderid),
-      "revisionnumber" -> Defaulted.encoder(using TypoShort.encoder).apply(row.revisionnumber),
-      "orderdate" -> Defaulted.encoder(using TypoLocalDateTime.encoder).apply(row.orderdate),
-      "status" -> Defaulted.encoder(using TypoShort.encoder).apply(row.status),
-      "onlineorderflag" -> Defaulted.encoder(using Flag.encoder).apply(row.onlineorderflag),
-      "subtotal" -> Defaulted.encoder(using Encoder.encodeBigDecimal).apply(row.subtotal),
-      "taxamt" -> Defaulted.encoder(using Encoder.encodeBigDecimal).apply(row.taxamt),
-      "freight" -> Defaulted.encoder(using Encoder.encodeBigDecimal).apply(row.freight),
-      "rowguid" -> Defaulted.encoder(using TypoUUID.encoder).apply(row.rowguid),
-      "modifieddate" -> Defaulted.encoder(using TypoLocalDateTime.encoder).apply(row.modifieddate)
     )
-  )
-  given text: Text[SalesorderheaderRowUnsaved] = Text.instance[SalesorderheaderRowUnsaved]{ (row, sb) =>
-    TypoLocalDateTime.text.unsafeEncode(row.duedate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoLocalDateTime.text).unsafeEncode(row.shipdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using OrderNumber.text).unsafeEncode(row.purchaseordernumber, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using AccountNumber.text).unsafeEncode(row.accountnumber, sb)
-    sb.append(Text.DELIMETER)
-    CustomerId.text.unsafeEncode(row.customerid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using BusinessentityId.text).unsafeEncode(row.salespersonid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using SalesterritoryId.text).unsafeEncode(row.territoryid, sb)
-    sb.append(Text.DELIMETER)
-    AddressId.text.unsafeEncode(row.billtoaddressid, sb)
-    sb.append(Text.DELIMETER)
-    AddressId.text.unsafeEncode(row.shiptoaddressid, sb)
-    sb.append(Text.DELIMETER)
-    ShipmethodId.text.unsafeEncode(row.shipmethodid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using CustomCreditcardId.text).unsafeEncode(row.creditcardid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.creditcardapprovalcode, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using CurrencyrateId.text).unsafeEncode(row.currencyrateid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.bigDecimalInstance).unsafeEncode(row.totaldue, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.comment, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using SalesorderheaderId.text).unsafeEncode(row.salesorderid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoShort.text).unsafeEncode(row.revisionnumber, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.orderdate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoShort.text).unsafeEncode(row.status, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Flag.text).unsafeEncode(row.onlineorderflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.bigDecimalInstance).unsafeEncode(row.subtotal, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.bigDecimalInstance).unsafeEncode(row.taxamt, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.bigDecimalInstance).unsafeEncode(row.freight, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  }
+
+  given encoder: Encoder[SalesorderheaderRowUnsaved] = {
+    Encoder.instance[SalesorderheaderRowUnsaved](row =>
+      Json.obj(
+        "duedate" -> TypoLocalDateTime.encoder.apply(row.duedate),
+        "shipdate" -> Encoder.encodeOption(using TypoLocalDateTime.encoder).apply(row.shipdate),
+        "purchaseordernumber" -> Encoder.encodeOption(using OrderNumber.encoder).apply(row.purchaseordernumber),
+        "accountnumber" -> Encoder.encodeOption(using AccountNumber.encoder).apply(row.accountnumber),
+        "customerid" -> CustomerId.encoder.apply(row.customerid),
+        "salespersonid" -> Encoder.encodeOption(using BusinessentityId.encoder).apply(row.salespersonid),
+        "territoryid" -> Encoder.encodeOption(using SalesterritoryId.encoder).apply(row.territoryid),
+        "billtoaddressid" -> AddressId.encoder.apply(row.billtoaddressid),
+        "shiptoaddressid" -> AddressId.encoder.apply(row.shiptoaddressid),
+        "shipmethodid" -> ShipmethodId.encoder.apply(row.shipmethodid),
+        "creditcardid" -> Encoder.encodeOption(using CustomCreditcardId.encoder).apply(row.creditcardid),
+        "creditcardapprovalcode" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.creditcardapprovalcode),
+        "currencyrateid" -> Encoder.encodeOption(using CurrencyrateId.encoder).apply(row.currencyrateid),
+        "totaldue" -> Encoder.encodeOption(using Encoder.encodeBigDecimal).apply(row.totaldue),
+        "comment" -> Encoder.encodeOption(using Encoder.encodeString).apply(row.comment),
+        "salesorderid" -> Defaulted.encoder(using SalesorderheaderId.encoder).apply(row.salesorderid),
+        "revisionnumber" -> Defaulted.encoder(using TypoShort.encoder).apply(row.revisionnumber),
+        "orderdate" -> Defaulted.encoder(using TypoLocalDateTime.encoder).apply(row.orderdate),
+        "status" -> Defaulted.encoder(using TypoShort.encoder).apply(row.status),
+        "onlineorderflag" -> Defaulted.encoder(using Flag.encoder).apply(row.onlineorderflag),
+        "subtotal" -> Defaulted.encoder(using Encoder.encodeBigDecimal).apply(row.subtotal),
+        "taxamt" -> Defaulted.encoder(using Encoder.encodeBigDecimal).apply(row.taxamt),
+        "freight" -> Defaulted.encoder(using Encoder.encodeBigDecimal).apply(row.freight),
+        "rowguid" -> Defaulted.encoder(using TypoUUID.encoder).apply(row.rowguid),
+        "modifieddate" -> Defaulted.encoder(using TypoLocalDateTime.encoder).apply(row.modifieddate)
+      )
+    )
+  }
+
+  given pgText: Text[SalesorderheaderRowUnsaved] = {
+    Text.instance[SalesorderheaderRowUnsaved]{ (row, sb) =>
+      TypoLocalDateTime.pgText.unsafeEncode(row.duedate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoLocalDateTime.pgText).unsafeEncode(row.shipdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using OrderNumber.pgText).unsafeEncode(row.purchaseordernumber, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using AccountNumber.pgText).unsafeEncode(row.accountnumber, sb)
+      sb.append(Text.DELIMETER)
+      CustomerId.pgText.unsafeEncode(row.customerid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using BusinessentityId.pgText).unsafeEncode(row.salespersonid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using SalesterritoryId.pgText).unsafeEncode(row.territoryid, sb)
+      sb.append(Text.DELIMETER)
+      AddressId.pgText.unsafeEncode(row.billtoaddressid, sb)
+      sb.append(Text.DELIMETER)
+      AddressId.pgText.unsafeEncode(row.shiptoaddressid, sb)
+      sb.append(Text.DELIMETER)
+      ShipmethodId.pgText.unsafeEncode(row.shipmethodid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using CustomCreditcardId.pgText).unsafeEncode(row.creditcardid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.creditcardapprovalcode, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using CurrencyrateId.pgText).unsafeEncode(row.currencyrateid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.bigDecimalInstance).unsafeEncode(row.totaldue, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.comment, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using SalesorderheaderId.pgText).unsafeEncode(row.salesorderid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoShort.pgText).unsafeEncode(row.revisionnumber, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.orderdate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoShort.pgText).unsafeEncode(row.status, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Flag.pgText).unsafeEncode(row.onlineorderflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.bigDecimalInstance).unsafeEncode(row.subtotal, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.bigDecimalInstance).unsafeEncode(row.taxamt, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.bigDecimalInstance).unsafeEncode(row.freight, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

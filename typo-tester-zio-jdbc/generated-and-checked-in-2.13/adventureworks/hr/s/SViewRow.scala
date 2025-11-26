@@ -33,50 +33,58 @@ case class SViewRow(
 )
 
 object SViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[SViewRow] = new JdbcDecoder[SViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SViewRow) =
-      columIndex + 5 ->
-        SViewRow(
-          id = ShiftId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          shiftid = ShiftId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          starttime = TypoLocalTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-          endtime = TypoLocalTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[SViewRow] = {
+    new JdbcDecoder[SViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SViewRow) =
+        columIndex + 5 ->
+          SViewRow(
+            id = ShiftId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            shiftid = ShiftId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            starttime = TypoLocalTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            endtime = TypoLocalTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[SViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(ShiftId.jsonDecoder))
-    val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(ShiftId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val starttime = jsonObj.get("starttime").toRight("Missing field 'starttime'").flatMap(_.as(TypoLocalTime.jsonDecoder))
-    val endtime = jsonObj.get("endtime").toRight("Missing field 'endtime'").flatMap(_.as(TypoLocalTime.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && shiftid.isRight && name.isRight && starttime.isRight && endtime.isRight && modifieddate.isRight)
-      Right(SViewRow(id = id.toOption.get, shiftid = shiftid.toOption.get, name = name.toOption.get, starttime = starttime.toOption.get, endtime = endtime.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, shiftid, name, starttime, endtime, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[SViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(ShiftId.jsonDecoder))
+      val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(ShiftId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val starttime = jsonObj.get("starttime").toRight("Missing field 'starttime'").flatMap(_.as(TypoLocalTime.jsonDecoder))
+      val endtime = jsonObj.get("endtime").toRight("Missing field 'endtime'").flatMap(_.as(TypoLocalTime.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && shiftid.isRight && name.isRight && starttime.isRight && endtime.isRight && modifieddate.isRight)
+        Right(SViewRow(id = id.toOption.get, shiftid = shiftid.toOption.get, name = name.toOption.get, starttime = starttime.toOption.get, endtime = endtime.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, shiftid, name, starttime, endtime, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[SViewRow] = new JsonEncoder[SViewRow] {
-    override def unsafeEncode(a: SViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      ShiftId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""shiftid":""")
-      ShiftId.jsonEncoder.unsafeEncode(a.shiftid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""starttime":""")
-      TypoLocalTime.jsonEncoder.unsafeEncode(a.starttime, indent, out)
-      out.write(",")
-      out.write(""""endtime":""")
-      TypoLocalTime.jsonEncoder.unsafeEncode(a.endtime, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[SViewRow] = {
+    new JsonEncoder[SViewRow] {
+      override def unsafeEncode(a: SViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        ShiftId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""shiftid":""")
+        ShiftId.jsonEncoder.unsafeEncode(a.shiftid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""starttime":""")
+        TypoLocalTime.jsonEncoder.unsafeEncode(a.starttime, indent, out)
+        out.write(",")
+        out.write(""""endtime":""")
+        TypoLocalTime.jsonEncoder.unsafeEncode(a.endtime, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

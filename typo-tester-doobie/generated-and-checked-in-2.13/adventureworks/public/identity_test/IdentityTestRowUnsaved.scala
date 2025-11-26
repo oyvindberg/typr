@@ -6,6 +6,7 @@
 package adventureworks.public.identity_test
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import doobie.postgres.Text
 import io.circe.Decoder
 import io.circe.Encoder
@@ -14,24 +15,24 @@ import io.circe.Encoder
 case class IdentityTestRowUnsaved(
   name: IdentityTestId,
   /** Identity BY DEFAULT, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
-  defaultGenerated: Defaulted[Int]
+  defaultGenerated: Defaulted[Int] = new UseDefault()
 ) {
-  def toRow(defaultGeneratedDefault: => Int, alwaysGeneratedDefault: => Int): IdentityTestRow =
-    IdentityTestRow(
-      alwaysGenerated = alwaysGeneratedDefault,
-      defaultGenerated = defaultGenerated match {
-                           case Defaulted.UseDefault => defaultGeneratedDefault
-                           case Defaulted.Provided(value) => value
-                         },
-      name = name
-    )
+  def toRow(
+    defaultGeneratedDefault: => Int,
+    alwaysGeneratedDefault: => Int
+  ): IdentityTestRow = new IdentityTestRow(alwaysGenerated = alwaysGeneratedDefault, defaultGenerated = defaultGenerated.getOrElse(defaultGeneratedDefault), name = name)
 }
+
 object IdentityTestRowUnsaved {
   implicit lazy val decoder: Decoder[IdentityTestRowUnsaved] = Decoder.forProduct2[IdentityTestRowUnsaved, IdentityTestId, Defaulted[Int]]("name", "default_generated")(IdentityTestRowUnsaved.apply)(IdentityTestId.decoder, Defaulted.decoder(Decoder.decodeInt))
+
   implicit lazy val encoder: Encoder[IdentityTestRowUnsaved] = Encoder.forProduct2[IdentityTestRowUnsaved, IdentityTestId, Defaulted[Int]]("name", "default_generated")(x => (x.name, x.defaultGenerated))(IdentityTestId.encoder, Defaulted.encoder(Encoder.encodeInt))
-  implicit lazy val text: Text[IdentityTestRowUnsaved] = Text.instance[IdentityTestRowUnsaved]{ (row, sb) =>
-    IdentityTestId.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Text.intInstance).unsafeEncode(row.defaultGenerated, sb)
+
+  implicit lazy val pgText: Text[IdentityTestRowUnsaved] = {
+    Text.instance[IdentityTestRowUnsaved]{ (row, sb) =>
+      IdentityTestId.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Text.intInstance).unsafeEncode(row.defaultGenerated, sb)
+    }
   }
 }

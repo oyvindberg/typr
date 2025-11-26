@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `public.table-with-generated-columns` */
-case class TableWithGeneratedColumnsId(value: String) extends AnyVal
+case class TableWithGeneratedColumnsId(value: String) extends scala.AnyVal
+
 object TableWithGeneratedColumnsId {
   given arrayGet: Get[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayMeta.get.map(_.map(TableWithGeneratedColumnsId.apply))
+
   given arrayPut: Put[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
+  given bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection.apply[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
   given decoder: Decoder[TableWithGeneratedColumnsId] = Decoder.decodeString.map(TableWithGeneratedColumnsId.apply)
+
   given encoder: Encoder[TableWithGeneratedColumnsId] = Encoder.encodeString.contramap(_.value)
+
   given get: Get[TableWithGeneratedColumnsId] = Meta.StringMeta.get.map(TableWithGeneratedColumnsId.apply)
-  given put: Put[TableWithGeneratedColumnsId] = Meta.StringMeta.put.contramap(_.value)
-  given text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {
-    override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[TableWithGeneratedColumnsId] = {
+    new Text[TableWithGeneratedColumnsId] {
+      override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[TableWithGeneratedColumnsId] = Meta.StringMeta.put.contramap(_.value)
 }

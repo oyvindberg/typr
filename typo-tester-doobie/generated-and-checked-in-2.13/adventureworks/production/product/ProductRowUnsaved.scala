@@ -6,6 +6,7 @@
 package adventureworks.production.product
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
@@ -29,86 +30,101 @@ case class ProductRowUnsaved(
   /** Unique product identification number. */
   productnumber: /* max 25 chars */ String,
   /** Product color. */
-  color: Option[/* max 15 chars */ String],
+  color: Option[/* max 15 chars */ String] = None,
   /** Minimum inventory quantity.
-      Constraint CK_Product_SafetyStockLevel affecting columns safetystocklevel:  ((safetystocklevel > 0)) */
+   * Constraint CK_Product_SafetyStockLevel affecting columns safetystocklevel:  ((safetystocklevel > 0))
+   */
   safetystocklevel: TypoShort,
   /** Inventory level that triggers a purchase order or work order.
-      Constraint CK_Product_ReorderPoint affecting columns reorderpoint:  ((reorderpoint > 0)) */
+   * Constraint CK_Product_ReorderPoint affecting columns reorderpoint:  ((reorderpoint > 0))
+   */
   reorderpoint: TypoShort,
   /** Standard cost of the product.
-      Constraint CK_Product_StandardCost affecting columns standardcost:  ((standardcost >= 0.00)) */
+   * Constraint CK_Product_StandardCost affecting columns standardcost:  ((standardcost >= 0.00))
+   */
   standardcost: BigDecimal,
   /** Selling price.
-      Constraint CK_Product_ListPrice affecting columns listprice:  ((listprice >= 0.00)) */
+   * Constraint CK_Product_ListPrice affecting columns listprice:  ((listprice >= 0.00))
+   */
   listprice: BigDecimal,
   /** Product size. */
-  size: Option[/* max 5 chars */ String],
+  size: Option[/* max 5 chars */ String] = None,
   /** Unit of measure for Size column.
-      Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
-  sizeunitmeasurecode: Option[UnitmeasureId],
+   * Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]]
+   */
+  sizeunitmeasurecode: Option[UnitmeasureId] = None,
   /** Unit of measure for Weight column.
-      Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]] */
-  weightunitmeasurecode: Option[UnitmeasureId],
+   * Points to [[adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]]
+   */
+  weightunitmeasurecode: Option[UnitmeasureId] = None,
   /** Product weight.
-      Constraint CK_Product_Weight affecting columns weight:  ((weight > 0.00)) */
-  weight: Option[BigDecimal],
+   * Constraint CK_Product_Weight affecting columns weight:  ((weight > 0.00))
+   */
+  weight: Option[BigDecimal] = None,
   /** Number of days required to manufacture the product.
-      Constraint CK_Product_DaysToManufacture affecting columns daystomanufacture:  ((daystomanufacture >= 0)) */
+   * Constraint CK_Product_DaysToManufacture affecting columns daystomanufacture:  ((daystomanufacture >= 0))
+   */
   daystomanufacture: Int,
   /** R = Road, M = Mountain, T = Touring, S = Standard
-      Constraint CK_Product_ProductLine affecting columns productline:  (((upper((productline)::text) = ANY (ARRAY['S'::text, 'T'::text, 'M'::text, 'R'::text])) OR (productline IS NULL))) */
-  productline: Option[/* bpchar, max 2 chars */ String],
+   * Constraint CK_Product_ProductLine affecting columns productline:  (((upper((productline)::text) = ANY (ARRAY['S'::text, 'T'::text, 'M'::text, 'R'::text])) OR (productline IS NULL)))
+   */
+  productline: Option[/* bpchar, max 2 chars */ String] = None,
   /** H = High, M = Medium, L = Low
-      Constraint CK_Product_Class affecting columns class:  (((upper((class)::text) = ANY (ARRAY['L'::text, 'M'::text, 'H'::text])) OR (class IS NULL))) */
-  `class`: Option[/* bpchar, max 2 chars */ String],
+   * Constraint CK_Product_Class affecting columns class:  (((upper((class)::text) = ANY (ARRAY['L'::text, 'M'::text, 'H'::text])) OR (class IS NULL)))
+   */
+  `class`: Option[/* bpchar, max 2 chars */ String] = None,
   /** W = Womens, M = Mens, U = Universal
-      Constraint CK_Product_Style affecting columns style:  (((upper((style)::text) = ANY (ARRAY['W'::text, 'M'::text, 'U'::text])) OR (style IS NULL))) */
-  style: Option[/* bpchar, max 2 chars */ String],
+   * Constraint CK_Product_Style affecting columns style:  (((upper((style)::text) = ANY (ARRAY['W'::text, 'M'::text, 'U'::text])) OR (style IS NULL)))
+   */
+  style: Option[/* bpchar, max 2 chars */ String] = None,
   /** Product is a member of this product subcategory. Foreign key to ProductSubCategory.ProductSubCategoryID.
-      Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]] */
-  productsubcategoryid: Option[ProductsubcategoryId],
+   * Points to [[adventureworks.production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]]
+   */
+  productsubcategoryid: Option[ProductsubcategoryId] = None,
   /** Product is a member of this product model. Foreign key to ProductModel.ProductModelID.
-      Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]] */
-  productmodelid: Option[ProductmodelId],
+   * Points to [[adventureworks.production.productmodel.ProductmodelRow.productmodelid]]
+   */
+  productmodelid: Option[ProductmodelId] = None,
   /** Date the product was available for sale.
-      Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate:  (((sellenddate >= sellstartdate) OR (sellenddate IS NULL))) */
+   * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate:  (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
+   */
   sellstartdate: TypoLocalDateTime,
   /** Date the product was no longer available for sale.
-      Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate:  (((sellenddate >= sellstartdate) OR (sellenddate IS NULL))) */
-  sellenddate: Option[TypoLocalDateTime],
+   * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate:  (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
+   */
+  sellenddate: Option[TypoLocalDateTime] = None,
   /** Date the product was discontinued. */
-  discontinueddate: Option[TypoLocalDateTime],
+  discontinueddate: Option[TypoLocalDateTime] = None,
   /** Default: nextval('production.product_productid_seq'::regclass)
-      Primary key for Product records. */
-  productid: Defaulted[ProductId] = Defaulted.UseDefault,
+   * Primary key for Product records.
+   */
+  productid: Defaulted[ProductId] = new UseDefault(),
   /** Default: true
-      0 = Product is purchased, 1 = Product is manufactured in-house. */
-  makeflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = Product is purchased, 1 = Product is manufactured in-house.
+   */
+  makeflag: Defaulted[Flag] = new UseDefault(),
   /** Default: true
-      0 = Product is not a salable item. 1 = Product is salable. */
-  finishedgoodsflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = Product is not a salable item. 1 = Product is salable.
+   */
+  finishedgoodsflag: Defaulted[Flag] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productidDefault: => ProductId, makeflagDefault: => Flag, finishedgoodsflagDefault: => Flag, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): ProductRow =
-    ProductRow(
-      productid = productid match {
-                    case Defaulted.UseDefault => productidDefault
-                    case Defaulted.Provided(value) => value
-                  },
+  def toRow(
+    productidDefault: => ProductId,
+    makeflagDefault: => Flag,
+    finishedgoodsflagDefault: => Flag,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductRow = {
+    new ProductRow(
+      productid = productid.getOrElse(productidDefault),
       name = name,
       productnumber = productnumber,
-      makeflag = makeflag match {
-                   case Defaulted.UseDefault => makeflagDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      finishedgoodsflag = finishedgoodsflag match {
-                            case Defaulted.UseDefault => finishedgoodsflagDefault
-                            case Defaulted.Provided(value) => value
-                          },
+      makeflag = makeflag.getOrElse(makeflagDefault),
+      finishedgoodsflag = finishedgoodsflag.getOrElse(finishedgoodsflagDefault),
       color = color,
       safetystocklevel = safetystocklevel,
       reorderpoint = reorderpoint,
@@ -127,130 +143,134 @@ case class ProductRowUnsaved(
       sellstartdate = sellstartdate,
       sellenddate = sellenddate,
       discontinueddate = discontinueddate,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ProductRowUnsaved {
-  implicit lazy val decoder: Decoder[ProductRowUnsaved] = Decoder.instanceTry[ProductRowUnsaved]((c: HCursor) =>
-    Try {
-      def orThrow[R](either: Either[DecodingFailure, R]): R = either match {
-        case Left(err) => throw err
-        case Right(r)  => r
+  implicit lazy val decoder: Decoder[ProductRowUnsaved] = {
+    Decoder.instanceTry[ProductRowUnsaved]((c: HCursor) =>
+      Try {
+        def orThrow[R](either: Either[DecodingFailure, R]): R = either match {
+          case Left(err) => throw err
+          case Right(r)  => r
+        }
+        ProductRowUnsaved(
+          name = orThrow(c.get("name")(Name.decoder)),
+          productnumber = orThrow(c.get("productnumber")(Decoder.decodeString)),
+          color = orThrow(c.get("color")(Decoder.decodeOption(Decoder.decodeString))),
+          safetystocklevel = orThrow(c.get("safetystocklevel")(TypoShort.decoder)),
+          reorderpoint = orThrow(c.get("reorderpoint")(TypoShort.decoder)),
+          standardcost = orThrow(c.get("standardcost")(Decoder.decodeBigDecimal)),
+          listprice = orThrow(c.get("listprice")(Decoder.decodeBigDecimal)),
+          size = orThrow(c.get("size")(Decoder.decodeOption(Decoder.decodeString))),
+          sizeunitmeasurecode = orThrow(c.get("sizeunitmeasurecode")(Decoder.decodeOption(UnitmeasureId.decoder))),
+          weightunitmeasurecode = orThrow(c.get("weightunitmeasurecode")(Decoder.decodeOption(UnitmeasureId.decoder))),
+          weight = orThrow(c.get("weight")(Decoder.decodeOption(Decoder.decodeBigDecimal))),
+          daystomanufacture = orThrow(c.get("daystomanufacture")(Decoder.decodeInt)),
+          productline = orThrow(c.get("productline")(Decoder.decodeOption(Decoder.decodeString))),
+          `class` = orThrow(c.get("class")(Decoder.decodeOption(Decoder.decodeString))),
+          style = orThrow(c.get("style")(Decoder.decodeOption(Decoder.decodeString))),
+          productsubcategoryid = orThrow(c.get("productsubcategoryid")(Decoder.decodeOption(ProductsubcategoryId.decoder))),
+          productmodelid = orThrow(c.get("productmodelid")(Decoder.decodeOption(ProductmodelId.decoder))),
+          sellstartdate = orThrow(c.get("sellstartdate")(TypoLocalDateTime.decoder)),
+          sellenddate = orThrow(c.get("sellenddate")(Decoder.decodeOption(TypoLocalDateTime.decoder))),
+          discontinueddate = orThrow(c.get("discontinueddate")(Decoder.decodeOption(TypoLocalDateTime.decoder))),
+          productid = orThrow(c.get("productid")(Defaulted.decoder(ProductId.decoder))),
+          makeflag = orThrow(c.get("makeflag")(Defaulted.decoder(Flag.decoder))),
+          finishedgoodsflag = orThrow(c.get("finishedgoodsflag")(Defaulted.decoder(Flag.decoder))),
+          rowguid = orThrow(c.get("rowguid")(Defaulted.decoder(TypoUUID.decoder))),
+          modifieddate = orThrow(c.get("modifieddate")(Defaulted.decoder(TypoLocalDateTime.decoder)))
+        )
       }
-      ProductRowUnsaved(
-        name = orThrow(c.get("name")(Name.decoder)),
-        productnumber = orThrow(c.get("productnumber")(Decoder.decodeString)),
-        color = orThrow(c.get("color")(Decoder.decodeOption(Decoder.decodeString))),
-        safetystocklevel = orThrow(c.get("safetystocklevel")(TypoShort.decoder)),
-        reorderpoint = orThrow(c.get("reorderpoint")(TypoShort.decoder)),
-        standardcost = orThrow(c.get("standardcost")(Decoder.decodeBigDecimal)),
-        listprice = orThrow(c.get("listprice")(Decoder.decodeBigDecimal)),
-        size = orThrow(c.get("size")(Decoder.decodeOption(Decoder.decodeString))),
-        sizeunitmeasurecode = orThrow(c.get("sizeunitmeasurecode")(Decoder.decodeOption(UnitmeasureId.decoder))),
-        weightunitmeasurecode = orThrow(c.get("weightunitmeasurecode")(Decoder.decodeOption(UnitmeasureId.decoder))),
-        weight = orThrow(c.get("weight")(Decoder.decodeOption(Decoder.decodeBigDecimal))),
-        daystomanufacture = orThrow(c.get("daystomanufacture")(Decoder.decodeInt)),
-        productline = orThrow(c.get("productline")(Decoder.decodeOption(Decoder.decodeString))),
-        `class` = orThrow(c.get("class")(Decoder.decodeOption(Decoder.decodeString))),
-        style = orThrow(c.get("style")(Decoder.decodeOption(Decoder.decodeString))),
-        productsubcategoryid = orThrow(c.get("productsubcategoryid")(Decoder.decodeOption(ProductsubcategoryId.decoder))),
-        productmodelid = orThrow(c.get("productmodelid")(Decoder.decodeOption(ProductmodelId.decoder))),
-        sellstartdate = orThrow(c.get("sellstartdate")(TypoLocalDateTime.decoder)),
-        sellenddate = orThrow(c.get("sellenddate")(Decoder.decodeOption(TypoLocalDateTime.decoder))),
-        discontinueddate = orThrow(c.get("discontinueddate")(Decoder.decodeOption(TypoLocalDateTime.decoder))),
-        productid = orThrow(c.get("productid")(Defaulted.decoder(ProductId.decoder))),
-        makeflag = orThrow(c.get("makeflag")(Defaulted.decoder(Flag.decoder))),
-        finishedgoodsflag = orThrow(c.get("finishedgoodsflag")(Defaulted.decoder(Flag.decoder))),
-        rowguid = orThrow(c.get("rowguid")(Defaulted.decoder(TypoUUID.decoder))),
-        modifieddate = orThrow(c.get("modifieddate")(Defaulted.decoder(TypoLocalDateTime.decoder)))
-      )
-    }
-  )
-  implicit lazy val encoder: Encoder[ProductRowUnsaved] = Encoder.instance[ProductRowUnsaved](row =>
-    Json.obj(
-      "name" -> Name.encoder.apply(row.name),
-      "productnumber" -> Encoder.encodeString.apply(row.productnumber),
-      "color" -> Encoder.encodeOption(Encoder.encodeString).apply(row.color),
-      "safetystocklevel" -> TypoShort.encoder.apply(row.safetystocklevel),
-      "reorderpoint" -> TypoShort.encoder.apply(row.reorderpoint),
-      "standardcost" -> Encoder.encodeBigDecimal.apply(row.standardcost),
-      "listprice" -> Encoder.encodeBigDecimal.apply(row.listprice),
-      "size" -> Encoder.encodeOption(Encoder.encodeString).apply(row.size),
-      "sizeunitmeasurecode" -> Encoder.encodeOption(UnitmeasureId.encoder).apply(row.sizeunitmeasurecode),
-      "weightunitmeasurecode" -> Encoder.encodeOption(UnitmeasureId.encoder).apply(row.weightunitmeasurecode),
-      "weight" -> Encoder.encodeOption(Encoder.encodeBigDecimal).apply(row.weight),
-      "daystomanufacture" -> Encoder.encodeInt.apply(row.daystomanufacture),
-      "productline" -> Encoder.encodeOption(Encoder.encodeString).apply(row.productline),
-      "class" -> Encoder.encodeOption(Encoder.encodeString).apply(row.`class`),
-      "style" -> Encoder.encodeOption(Encoder.encodeString).apply(row.style),
-      "productsubcategoryid" -> Encoder.encodeOption(ProductsubcategoryId.encoder).apply(row.productsubcategoryid),
-      "productmodelid" -> Encoder.encodeOption(ProductmodelId.encoder).apply(row.productmodelid),
-      "sellstartdate" -> TypoLocalDateTime.encoder.apply(row.sellstartdate),
-      "sellenddate" -> Encoder.encodeOption(TypoLocalDateTime.encoder).apply(row.sellenddate),
-      "discontinueddate" -> Encoder.encodeOption(TypoLocalDateTime.encoder).apply(row.discontinueddate),
-      "productid" -> Defaulted.encoder(ProductId.encoder).apply(row.productid),
-      "makeflag" -> Defaulted.encoder(Flag.encoder).apply(row.makeflag),
-      "finishedgoodsflag" -> Defaulted.encoder(Flag.encoder).apply(row.finishedgoodsflag),
-      "rowguid" -> Defaulted.encoder(TypoUUID.encoder).apply(row.rowguid),
-      "modifieddate" -> Defaulted.encoder(TypoLocalDateTime.encoder).apply(row.modifieddate)
     )
-  )
-  implicit lazy val text: Text[ProductRowUnsaved] = Text.instance[ProductRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.productnumber, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.color, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.safetystocklevel, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.reorderpoint, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.standardcost, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.listprice, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.size, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(UnitmeasureId.text).unsafeEncode(row.sizeunitmeasurecode, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(UnitmeasureId.text).unsafeEncode(row.weightunitmeasurecode, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.bigDecimalInstance).unsafeEncode(row.weight, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.daystomanufacture, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.productline, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.`class`, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.style, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(ProductsubcategoryId.text).unsafeEncode(row.productsubcategoryid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(ProductmodelId.text).unsafeEncode(row.productmodelid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.sellstartdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoLocalDateTime.text).unsafeEncode(row.sellenddate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoLocalDateTime.text).unsafeEncode(row.discontinueddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(ProductId.text).unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Flag.text).unsafeEncode(row.makeflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Flag.text).unsafeEncode(row.finishedgoodsflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  }
+
+  implicit lazy val encoder: Encoder[ProductRowUnsaved] = {
+    Encoder.instance[ProductRowUnsaved](row =>
+      Json.obj(
+        "name" -> Name.encoder.apply(row.name),
+        "productnumber" -> Encoder.encodeString.apply(row.productnumber),
+        "color" -> Encoder.encodeOption(Encoder.encodeString).apply(row.color),
+        "safetystocklevel" -> TypoShort.encoder.apply(row.safetystocklevel),
+        "reorderpoint" -> TypoShort.encoder.apply(row.reorderpoint),
+        "standardcost" -> Encoder.encodeBigDecimal.apply(row.standardcost),
+        "listprice" -> Encoder.encodeBigDecimal.apply(row.listprice),
+        "size" -> Encoder.encodeOption(Encoder.encodeString).apply(row.size),
+        "sizeunitmeasurecode" -> Encoder.encodeOption(UnitmeasureId.encoder).apply(row.sizeunitmeasurecode),
+        "weightunitmeasurecode" -> Encoder.encodeOption(UnitmeasureId.encoder).apply(row.weightunitmeasurecode),
+        "weight" -> Encoder.encodeOption(Encoder.encodeBigDecimal).apply(row.weight),
+        "daystomanufacture" -> Encoder.encodeInt.apply(row.daystomanufacture),
+        "productline" -> Encoder.encodeOption(Encoder.encodeString).apply(row.productline),
+        "class" -> Encoder.encodeOption(Encoder.encodeString).apply(row.`class`),
+        "style" -> Encoder.encodeOption(Encoder.encodeString).apply(row.style),
+        "productsubcategoryid" -> Encoder.encodeOption(ProductsubcategoryId.encoder).apply(row.productsubcategoryid),
+        "productmodelid" -> Encoder.encodeOption(ProductmodelId.encoder).apply(row.productmodelid),
+        "sellstartdate" -> TypoLocalDateTime.encoder.apply(row.sellstartdate),
+        "sellenddate" -> Encoder.encodeOption(TypoLocalDateTime.encoder).apply(row.sellenddate),
+        "discontinueddate" -> Encoder.encodeOption(TypoLocalDateTime.encoder).apply(row.discontinueddate),
+        "productid" -> Defaulted.encoder(ProductId.encoder).apply(row.productid),
+        "makeflag" -> Defaulted.encoder(Flag.encoder).apply(row.makeflag),
+        "finishedgoodsflag" -> Defaulted.encoder(Flag.encoder).apply(row.finishedgoodsflag),
+        "rowguid" -> Defaulted.encoder(TypoUUID.encoder).apply(row.rowguid),
+        "modifieddate" -> Defaulted.encoder(TypoLocalDateTime.encoder).apply(row.modifieddate)
+      )
+    )
+  }
+
+  implicit lazy val pgText: Text[ProductRowUnsaved] = {
+    Text.instance[ProductRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.productnumber, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.color, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.safetystocklevel, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.reorderpoint, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.standardcost, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.listprice, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.size, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(UnitmeasureId.pgText).unsafeEncode(row.sizeunitmeasurecode, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(UnitmeasureId.pgText).unsafeEncode(row.weightunitmeasurecode, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.bigDecimalInstance).unsafeEncode(row.weight, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.daystomanufacture, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.productline, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.`class`, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.style, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(ProductsubcategoryId.pgText).unsafeEncode(row.productsubcategoryid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(ProductmodelId.pgText).unsafeEncode(row.productmodelid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.sellstartdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoLocalDateTime.pgText).unsafeEncode(row.sellenddate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoLocalDateTime.pgText).unsafeEncode(row.discontinueddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(ProductId.pgText).unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Flag.pgText).unsafeEncode(row.makeflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Flag.pgText).unsafeEncode(row.finishedgoodsflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

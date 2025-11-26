@@ -25,29 +25,39 @@ case class TitledpersonRow(
 
 object TitledpersonRow {
   given decoder: Decoder[TitledpersonRow] = Decoder.forProduct3[TitledpersonRow, TitleDomainId, TitleId, String]("title_short", "title", "name")(TitledpersonRow.apply)(using TitleDomainId.decoder, TitleId.decoder, Decoder.decodeString)
+
   given encoder: Encoder[TitledpersonRow] = Encoder.forProduct3[TitledpersonRow, TitleDomainId, TitleId, String]("title_short", "title", "name")(x => (x.titleShort, x.title, x.name))(using TitleDomainId.encoder, TitleId.encoder, Encoder.encodeString)
-  given read: Read[TitledpersonRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(TitleDomainId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TitleId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    TitledpersonRow(
-      titleShort = arr(0).asInstanceOf[TitleDomainId],
-          title = arr(1).asInstanceOf[TitleId],
-          name = arr(2).asInstanceOf[String]
+
+  given pgText: Text[TitledpersonRow] = {
+    Text.instance[TitledpersonRow]{ (row, sb) =>
+      TitleDomainId.pgText.unsafeEncode(row.titleShort, sb)
+      sb.append(Text.DELIMETER)
+      TitleId.pgText.unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+    }
+  }
+
+  given read: Read[TitledpersonRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(TitleDomainId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TitleId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      TitledpersonRow(
+        titleShort = arr(0).asInstanceOf[TitleDomainId],
+            title = arr(1).asInstanceOf[TitleId],
+            name = arr(2).asInstanceOf[String]
+      )
+    }
+  }
+
+  given write: Write[TitledpersonRow] = {
+    new Write.Composite[TitledpersonRow](
+      List(new Write.Single(TitleDomainId.put),
+           new Write.Single(TitleId.put),
+           new Write.Single(Meta.StringMeta.put)),
+      a => List(a.titleShort, a.title, a.name)
     )
   }
-  given text: Text[TitledpersonRow] = Text.instance[TitledpersonRow]{ (row, sb) =>
-    TitleDomainId.text.unsafeEncode(row.titleShort, sb)
-    sb.append(Text.DELIMETER)
-    TitleId.text.unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
-  }
-  given write: Write[TitledpersonRow] = new Write.Composite[TitledpersonRow](
-    List(new Write.Single(TitleDomainId.put),
-         new Write.Single(TitleId.put),
-         new Write.Single(Meta.StringMeta.put)),
-    a => List(a.titleShort, a.title, a.name)
-  )
 }

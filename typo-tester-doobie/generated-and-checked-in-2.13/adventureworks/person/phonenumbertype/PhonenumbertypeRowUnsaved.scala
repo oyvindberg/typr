@@ -6,6 +6,7 @@
 package adventureworks.person.phonenumbertype
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import doobie.postgres.Text
@@ -17,32 +18,30 @@ case class PhonenumbertypeRowUnsaved(
   /** Name of the telephone number type */
   name: Name,
   /** Default: nextval('person.phonenumbertype_phonenumbertypeid_seq'::regclass)
-      Primary key for telephone number type records. */
-  phonenumbertypeid: Defaulted[PhonenumbertypeId] = Defaulted.UseDefault,
+   * Primary key for telephone number type records.
+   */
+  phonenumbertypeid: Defaulted[PhonenumbertypeId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(phonenumbertypeidDefault: => PhonenumbertypeId, modifieddateDefault: => TypoLocalDateTime): PhonenumbertypeRow =
-    PhonenumbertypeRow(
-      phonenumbertypeid = phonenumbertypeid match {
-                            case Defaulted.UseDefault => phonenumbertypeidDefault
-                            case Defaulted.Provided(value) => value
-                          },
-      name = name,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    phonenumbertypeidDefault: => PhonenumbertypeId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): PhonenumbertypeRow = new PhonenumbertypeRow(phonenumbertypeid = phonenumbertypeid.getOrElse(phonenumbertypeidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object PhonenumbertypeRowUnsaved {
   implicit lazy val decoder: Decoder[PhonenumbertypeRowUnsaved] = Decoder.forProduct3[PhonenumbertypeRowUnsaved, Name, Defaulted[PhonenumbertypeId], Defaulted[TypoLocalDateTime]]("name", "phonenumbertypeid", "modifieddate")(PhonenumbertypeRowUnsaved.apply)(Name.decoder, Defaulted.decoder(PhonenumbertypeId.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[PhonenumbertypeRowUnsaved] = Encoder.forProduct3[PhonenumbertypeRowUnsaved, Name, Defaulted[PhonenumbertypeId], Defaulted[TypoLocalDateTime]]("name", "phonenumbertypeid", "modifieddate")(x => (x.name, x.phonenumbertypeid, x.modifieddate))(Name.encoder, Defaulted.encoder(PhonenumbertypeId.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[PhonenumbertypeRowUnsaved] = Text.instance[PhonenumbertypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(PhonenumbertypeId.text).unsafeEncode(row.phonenumbertypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[PhonenumbertypeRowUnsaved] = {
+    Text.instance[PhonenumbertypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(PhonenumbertypeId.pgText).unsafeEncode(row.phonenumbertypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

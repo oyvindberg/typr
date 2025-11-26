@@ -17,61 +17,64 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class TestUtdanningstilbudRepoMock(map: scala.collection.mutable.Map[TestUtdanningstilbudId, TestUtdanningstilbudRow] = scala.collection.mutable.Map.empty) extends TestUtdanningstilbudRepo {
-  override def delete: DeleteBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TestUtdanningstilbudFields.structure, map)
-  }
-  override def deleteById(compositeId: TestUtdanningstilbudId)(implicit c: Connection): Boolean = {
-    map.remove(compositeId).isDefined
-  }
-  override def deleteByIds(compositeIds: Array[TestUtdanningstilbudId])(implicit c: Connection): Int = {
-    compositeIds.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: TestUtdanningstilbudRow)(implicit c: Connection): TestUtdanningstilbudRow = {
+case class TestUtdanningstilbudRepoMock(map: scala.collection.mutable.Map[TestUtdanningstilbudId, TestUtdanningstilbudRow] = scala.collection.mutable.Map.empty[TestUtdanningstilbudId, TestUtdanningstilbudRow]) extends TestUtdanningstilbudRepo {
+  def delete: DeleteBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = DeleteBuilderMock(DeleteParams.empty, TestUtdanningstilbudFields.structure, map)
+
+  def deleteById(compositeId: TestUtdanningstilbudId)(implicit c: Connection): Boolean = map.remove(compositeId).isDefined
+
+  def deleteByIds(compositeIds: Array[TestUtdanningstilbudId])(implicit c: Connection): Int = compositeIds.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: TestUtdanningstilbudRow)(implicit c: Connection): TestUtdanningstilbudRow = {
     val _ = if (map.contains(unsaved.compositeId))
       sys.error(s"id ${unsaved.compositeId} already exists")
     else
       map.put(unsaved.compositeId, unsaved)
-    
+  
     unsaved
   }
-  override def insertStreaming(unsaved: Iterator[TestUtdanningstilbudRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  def insertStreaming(
+    unsaved: Iterator[TestUtdanningstilbudRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.compositeId -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = {
-    SelectBuilderMock(TestUtdanningstilbudFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(implicit c: Connection): List[TestUtdanningstilbudRow] = {
-    map.values.toList
-  }
-  override def selectById(compositeId: TestUtdanningstilbudId)(implicit c: Connection): Option[TestUtdanningstilbudRow] = {
-    map.get(compositeId)
-  }
-  override def selectByIds(compositeIds: Array[TestUtdanningstilbudId])(implicit c: Connection): List[TestUtdanningstilbudRow] = {
-    compositeIds.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(compositeIds: Array[TestUtdanningstilbudId])(implicit c: Connection): Map[TestUtdanningstilbudId, TestUtdanningstilbudRow] = {
+
+  def select: SelectBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = SelectBuilderMock(TestUtdanningstilbudFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(implicit c: Connection): List[TestUtdanningstilbudRow] = map.values.toList
+
+  def selectById(compositeId: TestUtdanningstilbudId)(implicit c: Connection): Option[TestUtdanningstilbudRow] = map.get(compositeId)
+
+  def selectByIds(compositeIds: Array[TestUtdanningstilbudId])(implicit c: Connection): List[TestUtdanningstilbudRow] = compositeIds.flatMap(map.get).toList
+
+  def selectByIdsTracked(compositeIds: Array[TestUtdanningstilbudId])(implicit c: Connection): Map[TestUtdanningstilbudId, TestUtdanningstilbudRow] = {
     val byId = selectByIds(compositeIds).view.map(x => (x.compositeId, x)).toMap
     compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TestUtdanningstilbudFields.structure, map)
-  }
-  override def upsert(unsaved: TestUtdanningstilbudRow)(implicit c: Connection): TestUtdanningstilbudRow = {
+
+  def update: UpdateBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = UpdateBuilderMock(UpdateParams.empty, TestUtdanningstilbudFields.structure, map)
+
+  def upsert(unsaved: TestUtdanningstilbudRow)(implicit c: Connection): TestUtdanningstilbudRow = {
     map.put(unsaved.compositeId, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[TestUtdanningstilbudRow])(implicit c: Connection): List[TestUtdanningstilbudRow] = {
+
+  def upsertBatch(unsaved: Iterable[TestUtdanningstilbudRow])(implicit c: Connection): List[TestUtdanningstilbudRow] = {
     unsaved.map { row =>
       map += (row.compositeId -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[TestUtdanningstilbudRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[TestUtdanningstilbudRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.compositeId -> row)
     }

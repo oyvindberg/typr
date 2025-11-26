@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait VadditionalcontactinfoViewRepo {
   def select: SelectBuilder[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, VadditionalcontactinfoViewRow]
 }

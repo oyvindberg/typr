@@ -16,23 +16,29 @@ case class TestUtdanningstilbudId(
   organisasjonskode: TestOrganisasjonId,
   utdanningsmulighetKode: String
 )
+
 object TestUtdanningstilbudId {
-  given jsonDecoder: JsonDecoder[TestUtdanningstilbudId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val organisasjonskode = jsonObj.get("organisasjonskode").toRight("Missing field 'organisasjonskode'").flatMap(_.as(using TestOrganisasjonId.jsonDecoder))
-    val utdanningsmulighetKode = jsonObj.get("utdanningsmulighet_kode").toRight("Missing field 'utdanningsmulighet_kode'").flatMap(_.as(using JsonDecoder.string))
-    if (organisasjonskode.isRight && utdanningsmulighetKode.isRight)
-      Right(TestUtdanningstilbudId(organisasjonskode = organisasjonskode.toOption.get, utdanningsmulighetKode = utdanningsmulighetKode.toOption.get))
-    else Left(List[Either[String, Any]](organisasjonskode, utdanningsmulighetKode).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[TestUtdanningstilbudId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val organisasjonskode = jsonObj.get("organisasjonskode").toRight("Missing field 'organisasjonskode'").flatMap(_.as(using TestOrganisasjonId.jsonDecoder))
+      val utdanningsmulighetKode = jsonObj.get("utdanningsmulighet_kode").toRight("Missing field 'utdanningsmulighet_kode'").flatMap(_.as(using JsonDecoder.string))
+      if (organisasjonskode.isRight && utdanningsmulighetKode.isRight)
+        Right(TestUtdanningstilbudId(organisasjonskode = organisasjonskode.toOption.get, utdanningsmulighetKode = utdanningsmulighetKode.toOption.get))
+      else Left(List[Either[String, Any]](organisasjonskode, utdanningsmulighetKode).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[TestUtdanningstilbudId] = new JsonEncoder[TestUtdanningstilbudId] {
-    override def unsafeEncode(a: TestUtdanningstilbudId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""organisasjonskode":""")
-      TestOrganisasjonId.jsonEncoder.unsafeEncode(a.organisasjonskode, indent, out)
-      out.write(",")
-      out.write(""""utdanningsmulighet_kode":""")
-      JsonEncoder.string.unsafeEncode(a.utdanningsmulighetKode, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[TestUtdanningstilbudId] = {
+    new JsonEncoder[TestUtdanningstilbudId] {
+      override def unsafeEncode(a: TestUtdanningstilbudId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""organisasjonskode":""")
+        TestOrganisasjonId.jsonEncoder.unsafeEncode(a.organisasjonskode, indent, out)
+        out.write(",")
+        out.write(""""utdanningsmulighet_kode":""")
+        JsonEncoder.string.unsafeEncode(a.utdanningsmulighetKode, indent, out)
+        out.write("}")
+      }
     }
   }
 }

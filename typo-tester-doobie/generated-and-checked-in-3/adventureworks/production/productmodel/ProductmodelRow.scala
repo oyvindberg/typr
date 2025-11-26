@@ -17,11 +17,13 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: production.productmodel
-    Product model classification.
-    Primary key: productmodelid */
+ * Product model classification.
+ * Primary key: productmodelid
+ */
 case class ProductmodelRow(
   /** Primary key for ProductModel records.
-      Default: nextval('production.productmodel_productmodelid_seq'::regclass) */
+   * Default: nextval('production.productmodel_productmodelid_seq'::regclass)
+   */
   productmodelid: ProductmodelId,
   /** Product model description. */
   name: Name,
@@ -33,52 +35,75 @@ case class ProductmodelRow(
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = productmodelid
-   def toUnsavedRow(productmodelid: Defaulted[ProductmodelId], rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductmodelRowUnsaved =
-     ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate)
- }
+) {
+  def id: ProductmodelId = productmodelid
+
+  def toUnsavedRow(
+    productmodelid: Defaulted[ProductmodelId],
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): ProductmodelRowUnsaved = {
+    new ProductmodelRowUnsaved(
+      name,
+      catalogdescription,
+      instructions,
+      productmodelid,
+      rowguid,
+      modifieddate
+    )
+  }
+}
 
 object ProductmodelRow {
   given decoder: Decoder[ProductmodelRow] = Decoder.forProduct6[ProductmodelRow, ProductmodelId, Name, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")(ProductmodelRow.apply)(using ProductmodelId.decoder, Name.decoder, Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[ProductmodelRow] = Encoder.forProduct6[ProductmodelRow, ProductmodelId, Name, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")(x => (x.productmodelid, x.name, x.catalogdescription, x.instructions, x.rowguid, x.modifieddate))(using ProductmodelId.encoder, Name.encoder, Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[ProductmodelRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    ProductmodelRow(
-      productmodelid = arr(0).asInstanceOf[ProductmodelId],
-          name = arr(1).asInstanceOf[Name],
-          catalogdescription = arr(2).asInstanceOf[Option[TypoXml]],
-          instructions = arr(3).asInstanceOf[Option[TypoXml]],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[ProductmodelRow] = {
+    Text.instance[ProductmodelRow]{ (row, sb) =>
+      ProductmodelId.pgText.unsafeEncode(row.productmodelid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.catalogdescription, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoXml.pgText).unsafeEncode(row.instructions, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[ProductmodelRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      ProductmodelRow(
+        productmodelid = arr(0).asInstanceOf[ProductmodelId],
+            name = arr(1).asInstanceOf[Name],
+            catalogdescription = arr(2).asInstanceOf[Option[TypoXml]],
+            instructions = arr(3).asInstanceOf[Option[TypoXml]],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[ProductmodelRow] = {
+    new Write.Composite[ProductmodelRow](
+      List(new Write.Single(ProductmodelId.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoXml.put).toOpt,
+           new Write.Single(TypoXml.put).toOpt,
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.productmodelid, a.name, a.catalogdescription, a.instructions, a.rowguid, a.modifieddate)
     )
   }
-  given text: Text[ProductmodelRow] = Text.instance[ProductmodelRow]{ (row, sb) =>
-    ProductmodelId.text.unsafeEncode(row.productmodelid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.catalogdescription, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoXml.text).unsafeEncode(row.instructions, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[ProductmodelRow] = new Write.Composite[ProductmodelRow](
-    List(new Write.Single(ProductmodelId.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoXml.put).toOpt,
-         new Write.Single(TypoXml.put).toOpt,
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.productmodelid, a.name, a.catalogdescription, a.instructions, a.rowguid, a.modifieddate)
-  )
 }

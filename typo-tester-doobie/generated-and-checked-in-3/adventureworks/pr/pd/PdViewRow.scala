@@ -29,20 +29,24 @@ case class PdViewRow(
 
 object PdViewRow {
   given decoder: Decoder[PdViewRow] = Decoder.forProduct5[PdViewRow, ProductdescriptionId, ProductdescriptionId, /* max 400 chars */ String, TypoUUID, TypoLocalDateTime]("id", "productdescriptionid", "description", "rowguid", "modifieddate")(PdViewRow.apply)(using ProductdescriptionId.decoder, ProductdescriptionId.decoder, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PdViewRow] = Encoder.forProduct5[PdViewRow, ProductdescriptionId, ProductdescriptionId, /* max 400 chars */ String, TypoUUID, TypoLocalDateTime]("id", "productdescriptionid", "description", "rowguid", "modifieddate")(x => (x.id, x.productdescriptionid, x.description, x.rowguid, x.modifieddate))(using ProductdescriptionId.encoder, ProductdescriptionId.encoder, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PdViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductdescriptionId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PdViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ProductdescriptionId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PdViewRow(
-      id = arr(0).asInstanceOf[ProductdescriptionId],
-          productdescriptionid = arr(1).asInstanceOf[ProductdescriptionId],
-          description = arr(2).asInstanceOf[/* max 400 chars */ String],
-          rowguid = arr(3).asInstanceOf[TypoUUID],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ProductdescriptionId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PdViewRow(
+        id = arr(0).asInstanceOf[ProductdescriptionId],
+            productdescriptionid = arr(1).asInstanceOf[ProductdescriptionId],
+            description = arr(2).asInstanceOf[/* max 400 chars */ String],
+            rowguid = arr(3).asInstanceOf[TypoUUID],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

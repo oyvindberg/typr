@@ -21,59 +21,79 @@ import zio.json.JsonEncoder
 case class TypoRecord(value: String)
 
 object TypoRecord {
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoRecord]] = JdbcDecoder[Array[TypoRecord]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoRecord(x.asInstanceOf[PGobject].getValue))
-    },
-    "Array[org.postgresql.util.PGobject]"
-  )
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoRecord]] = {
+    JdbcDecoder[Array[TypoRecord]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoRecord(x.asInstanceOf[PGobject].getValue))
+      },
+      "Array[org.postgresql.util.PGobject]"
+    )
+  }
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TypoRecord]] = JdbcEncoder.singleParamEncoder(arraySetter)
-  implicit lazy val arraySetter: Setter[Array[TypoRecord]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "record",
-        v.map { vv =>
+
+  implicit lazy val arraySetter: Setter[Array[TypoRecord]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
+        i,
+        ps.getConnection.createArrayOf(
+          "record",
+          v.map { vv =>
+            {
+              val obj = new PGobject()
+              obj.setType("record")
+              obj.setValue(vv.value)
+              obj
+            }
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  implicit lazy val bijection: Bijection[TypoRecord, String] = Bijection.apply[TypoRecord, String](_.value)(TypoRecord.apply)
+
+  implicit lazy val jdbcDecoder: JdbcDecoder[TypoRecord] = {
+    JdbcDecoder[TypoRecord](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoRecord(v.asInstanceOf[PGobject].getValue)
+      },
+      "org.postgresql.util.PGobject"
+    )
+  }
+
+  implicit lazy val jdbcEncoder: JdbcEncoder[TypoRecord] = JdbcEncoder.singleParamEncoder(setter)
+
+  implicit lazy val jsonDecoder: JsonDecoder[TypoRecord] = JsonDecoder.string.map(TypoRecord.apply)
+
+  implicit lazy val jsonEncoder: JsonEncoder[TypoRecord] = JsonEncoder.string.contramap(_.value)
+
+  implicit lazy val pgText: Text[TypoRecord] = {
+    new Text[TypoRecord] {
+      override def unsafeEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val pgType: PGType[TypoRecord] = PGType.instance[TypoRecord]("record", Types.OTHER)
+
+  implicit lazy val setter: Setter[TypoRecord] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
           {
-            val obj = new PGobject
+            val obj = new PGobject()
             obj.setType("record")
-            obj.setValue(vv.value)
+            obj.setValue(v.value)
             obj
           }
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  implicit lazy val bijection: Bijection[TypoRecord, String] = Bijection[TypoRecord, String](_.value)(TypoRecord.apply)
-  implicit lazy val jdbcDecoder: JdbcDecoder[TypoRecord] = JdbcDecoder[TypoRecord](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoRecord(v.asInstanceOf[PGobject].getValue)
-    },
-    "org.postgresql.util.PGobject"
-  )
-  implicit lazy val jdbcEncoder: JdbcEncoder[TypoRecord] = JdbcEncoder.singleParamEncoder(setter)
-  implicit lazy val jsonDecoder: JsonDecoder[TypoRecord] = JsonDecoder.string.map(TypoRecord.apply)
-  implicit lazy val jsonEncoder: JsonEncoder[TypoRecord] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val pgType: PGType[TypoRecord] = PGType.instance[TypoRecord]("record", Types.OTHER)
-  implicit lazy val setter: Setter[TypoRecord] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
-        i,
-        {
-          val obj = new PGobject
-          obj.setType("record")
-          obj.setValue(v.value)
-          obj
-        }
-      )
-    },
-    "record"
-  )
-  implicit lazy val text: Text[TypoRecord] = new Text[TypoRecord] {
-    override def unsafeEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoRecord, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+        )
+      },
+      "record"
+    )
   }
 }

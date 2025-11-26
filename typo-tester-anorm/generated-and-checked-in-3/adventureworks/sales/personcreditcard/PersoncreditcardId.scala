@@ -20,20 +20,26 @@ case class PersoncreditcardId(
   businessentityid: BusinessentityId,
   creditcardid: /* user-picked */ CustomCreditcardId
 )
+
 object PersoncreditcardId {
-  given reads: Reads[PersoncreditcardId] = Reads[PersoncreditcardId](json => JsResult.fromTry(
-      Try(
-        PersoncreditcardId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads)
+  given reads: Reads[PersoncreditcardId] = {
+    Reads[PersoncreditcardId](json => JsResult.fromTry(
+        Try(
+          PersoncreditcardId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[PersoncreditcardId] = OWrites[PersoncreditcardId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[PersoncreditcardId] = {
+    OWrites[PersoncreditcardId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid)
+      ))
+    )
+  }
 }

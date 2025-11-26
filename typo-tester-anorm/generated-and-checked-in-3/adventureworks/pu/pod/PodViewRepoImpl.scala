@@ -5,18 +5,16 @@
  */
 package adventureworks.pu.pod
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class PodViewRepoImpl extends PodViewRepo {
-  override def select: SelectBuilder[PodViewFields, PodViewRow] = {
-    SelectBuilderSql(""""pu"."pod"""", PodViewFields.structure, PodViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[PodViewRow] = {
+  def select: SelectBuilder[PodViewFields, PodViewRow] = SelectBuilder.of(""""pu"."pod"""", PodViewFields.structure, PodViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[PodViewRow] = {
     SQL"""select "id", "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text
-          from "pu"."pod"
-       """.as(PodViewRow.rowParser(1).*)
+    from "pu"."pod"
+    """.as(PodViewRow.rowParser(1).*)
   }
 }

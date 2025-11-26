@@ -44,48 +44,56 @@ case class PrViewRow(
 )
 
 object PrViewRow {
-  given reads: Reads[PrViewRow] = Reads[PrViewRow](json => JsResult.fromTry(
-      Try(
-        PrViewRow(
-          id = json.\("id").as(ProductreviewId.reads),
-          productreviewid = json.\("productreviewid").as(ProductreviewId.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          reviewername = json.\("reviewername").as(Name.reads),
-          reviewdate = json.\("reviewdate").as(TypoLocalDateTime.reads),
-          emailaddress = json.\("emailaddress").as(Reads.StringReads),
-          rating = json.\("rating").as(Reads.IntReads),
-          comments = json.\("comments").toOption.map(_.as(Reads.StringReads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PrViewRow] = {
+    Reads[PrViewRow](json => JsResult.fromTry(
+        Try(
+          PrViewRow(
+            id = json.\("id").as(ProductreviewId.reads),
+            productreviewid = json.\("productreviewid").as(ProductreviewId.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            reviewername = json.\("reviewername").as(Name.reads),
+            reviewdate = json.\("reviewdate").as(TypoLocalDateTime.reads),
+            emailaddress = json.\("emailaddress").as(Reads.StringReads),
+            rating = json.\("rating").as(Reads.IntReads),
+            comments = json.\("comments").toOption.map(_.as(Reads.StringReads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PrViewRow] = RowParser[PrViewRow] { row =>
-    Success(
-      PrViewRow(
-        id = row(idx + 0)(using ProductreviewId.column),
-        productreviewid = row(idx + 1)(using ProductreviewId.column),
-        productid = row(idx + 2)(using ProductId.column),
-        reviewername = row(idx + 3)(using Name.column),
-        reviewdate = row(idx + 4)(using TypoLocalDateTime.column),
-        emailaddress = row(idx + 5)(using Column.columnToString),
-        rating = row(idx + 6)(using Column.columnToInt),
-        comments = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
-        modifieddate = row(idx + 8)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PrViewRow] = OWrites[PrViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductreviewId.writes.writes(o.id),
-      "productreviewid" -> ProductreviewId.writes.writes(o.productreviewid),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "reviewername" -> Name.writes.writes(o.reviewername),
-      "reviewdate" -> TypoLocalDateTime.writes.writes(o.reviewdate),
-      "emailaddress" -> Writes.StringWrites.writes(o.emailaddress),
-      "rating" -> Writes.IntWrites.writes(o.rating),
-      "comments" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.comments),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PrViewRow] = {
+    RowParser[PrViewRow] { row =>
+      Success(
+        PrViewRow(
+          id = row(idx + 0)(using ProductreviewId.column),
+          productreviewid = row(idx + 1)(using ProductreviewId.column),
+          productid = row(idx + 2)(using ProductId.column),
+          reviewername = row(idx + 3)(using Name.column),
+          reviewdate = row(idx + 4)(using TypoLocalDateTime.column),
+          emailaddress = row(idx + 5)(using Column.columnToString),
+          rating = row(idx + 6)(using Column.columnToInt),
+          comments = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
+          modifieddate = row(idx + 8)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PrViewRow] = {
+    OWrites[PrViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductreviewId.writes.writes(o.id),
+        "productreviewid" -> ProductreviewId.writes.writes(o.productreviewid),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "reviewername" -> Name.writes.writes(o.reviewername),
+        "reviewdate" -> TypoLocalDateTime.writes.writes(o.reviewdate),
+        "emailaddress" -> Writes.StringWrites.writes(o.emailaddress),
+        "rating" -> Writes.IntWrites.writes(o.rating),
+        "comments" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.comments),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

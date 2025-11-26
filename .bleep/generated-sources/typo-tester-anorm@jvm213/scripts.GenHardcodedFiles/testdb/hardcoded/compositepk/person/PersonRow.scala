@@ -20,54 +20,73 @@ import testdb.hardcoded.Text
 import testdb.hardcoded.customtypes.Defaulted
 
 /** Table: compositepk.person
-    Composite primary key: one, two */
+ * Composite primary key: one, two
+ */
 case class PersonRow(
   /** Default: auto-increment */
   one: Long,
   /** Default: auto-increment */
   two: Option[String],
   name: Option[String]
-){
-   val compositeId: PersonId = PersonId(one, two)
-   val id = compositeId
-   def toUnsavedRow(one: Defaulted[Long], two: Defaulted[Option[String]]): PersonRowUnsaved =
-     PersonRowUnsaved(name, one, two)
- }
+) {
+  def compositeId: PersonId = new PersonId(one, two)
+
+  def id: PersonId = this.compositeId
+
+  def toUnsavedRow(
+    one: Defaulted[Long],
+    two: Defaulted[Option[String]]
+  ): PersonRowUnsaved = new PersonRowUnsaved(name, one, two)
+}
 
 object PersonRow {
-  def apply(compositeId: PersonId, name: Option[String]) =
-    new PersonRow(compositeId.one, compositeId.two, name)
-  implicit lazy val reads: Reads[PersonRow] = Reads[PersonRow](json => JsResult.fromTry(
-      Try(
-        PersonRow(
-          one = json.\("one").as(Reads.LongReads),
-          two = json.\("two").toOption.map(_.as(Reads.StringReads)),
-          name = json.\("name").toOption.map(_.as(Reads.StringReads))
+  def apply(
+    compositeId: PersonId,
+    name: Option[String]
+  ): PersonRow = new PersonRow(compositeId.one, compositeId.two, name)
+
+  implicit lazy val pgText: Text[PersonRow] = {
+    Text.instance[PersonRow]{ (row, sb) =>
+      Text.longInstance.unsafeEncode(row.one, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.two, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.name, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[PersonRow] = {
+    Reads[PersonRow](json => JsResult.fromTry(
+        Try(
+          PersonRow(
+            one = json.\("one").as(Reads.LongReads),
+            two = json.\("two").toOption.map(_.as(Reads.StringReads)),
+            name = json.\("name").toOption.map(_.as(Reads.StringReads))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersonRow] = RowParser[PersonRow] { row =>
-    Success(
-      PersonRow(
-        one = row(idx + 0)(Column.columnToLong),
-        two = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-        name = row(idx + 2)(Column.columnToOption(Column.columnToString))
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[PersonRow] = Text.instance[PersonRow]{ (row, sb) =>
-    Text.longInstance.unsafeEncode(row.one, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.two, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.name, sb)
+
+  def rowParser(idx: Int): RowParser[PersonRow] = {
+    RowParser[PersonRow] { row =>
+      Success(
+        PersonRow(
+          one = row(idx + 0)(Column.columnToLong),
+          two = row(idx + 1)(Column.columnToOption(Column.columnToString)),
+          name = row(idx + 2)(Column.columnToOption(Column.columnToString))
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[PersonRow] = OWrites[PersonRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "one" -> Writes.LongWrites.writes(o.one),
-      "two" -> Writes.OptionWrites(Writes.StringWrites).writes(o.two),
-      "name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.name)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[PersonRow] = {
+    OWrites[PersonRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "one" -> Writes.LongWrites.writes(o.one),
+        "two" -> Writes.OptionWrites(Writes.StringWrites).writes(o.two),
+        "name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.name)
+      ))
+    )
+  }
 }

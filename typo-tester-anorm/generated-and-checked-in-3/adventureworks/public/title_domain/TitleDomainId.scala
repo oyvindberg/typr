@@ -16,37 +16,54 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 /** Type for the primary key of table `public.title_domain`. It has some known values: 
-  *  - dr
-  *  - mr
-  *  - ms
-  *  - phd
-  */
+ *  - dr
+ *  - mr
+ *  - ms
+ *  - phd
+ */
+
 sealed abstract class TitleDomainId(val value: ShortText)
 
 object TitleDomainId {
   def apply(underlying: ShortText): TitleDomainId =
     ByName.getOrElse(underlying, Unknown(underlying))
-  def shortText(value: String): TitleDomainId = TitleDomainId(ShortText(value))
-  case object dr extends TitleDomainId(ShortText("dr"))
-  case object mr extends TitleDomainId(ShortText("mr"))
-  case object ms extends TitleDomainId(ShortText("ms"))
-  case object phd extends TitleDomainId(ShortText("phd"))
-  case class Unknown(override val value: ShortText) extends TitleDomainId(value)
-  val All: List[TitleDomainId] = List(dr, mr, ms, phd)
-  val ByName: Map[ShortText, TitleDomainId] = All.map(x => (x.value, x)).toMap
-              
   given arrayColumn: Column[Array[TitleDomainId]] = ShortText.arrayColumn.map(_.map(TitleDomainId.apply))
-  given arrayToStatement: ToStatement[Array[TitleDomainId]] = ShortText.arrayToStatement.contramap(_.map(_.value))
+
   given column: Column[TitleDomainId] = ShortText.column.map(TitleDomainId.apply)
-  given parameterMetadata: ParameterMetaData[TitleDomainId] = new ParameterMetaData[TitleDomainId] {
-    override def sqlType: String = """"public"."short_text""""
-    override def jdbcType: Int = Types.OTHER
-  }
-  given reads: Reads[TitleDomainId] = Reads[TitleDomainId]{(value: JsValue) => value.validate(ShortText.reads).map(TitleDomainId.apply)}
-  given text: Text[TitleDomainId] = new Text[TitleDomainId] {
-    override def unsafeEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.text.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.text.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[TitleDomainId] = ShortText.toStatement.contramap(_.value)
+
+  given arrayToStatement: ToStatement[Array[TitleDomainId]] = ShortText.arrayToStatement.contramap(_.map(_.value))
+
+  given parameterMetadata: ParameterMetaData[TitleDomainId] = {
+    new ParameterMetaData[TitleDomainId] {
+      override def sqlType: String = """"public"."short_text""""
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  given pgText: Text[TitleDomainId] = {
+    new Text[TitleDomainId] {
+      override def unsafeEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.pgText.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.pgText.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given reads: Reads[TitleDomainId] = Reads[TitleDomainId]{(value: JsValue) => value.validate(ShortText.reads).map(TitleDomainId.apply)}
+
   given writes: Writes[TitleDomainId] = Writes[TitleDomainId](value => ShortText.writes.writes(value.value))
+
+  def shortText(value: String): TitleDomainId = apply(new ShortText(value))
+
+  case object dr extends TitleDomainId(new ShortText("dr"))
+
+  case object mr extends TitleDomainId(new ShortText("mr"))
+
+  case object ms extends TitleDomainId(new ShortText("ms"))
+
+  case object phd extends TitleDomainId(new ShortText("phd"))
+  case class Unknown(override val value: ShortText) extends TitleDomainId(value)
+  val All: scala.List[TitleDomainId] = scala.List(dr, mr, ms, phd)
+  val ByName: scala.collection.immutable.Map[ShortText, TitleDomainId] = All.map(x => (x.value, x)).toMap
+
 }

@@ -6,6 +6,7 @@
 package adventureworks.sales.personcreditcard
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
@@ -16,32 +17,31 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.personcreditcard` which has not been persisted yet */
 case class PersoncreditcardRowUnsaved(
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
-      Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
+   * Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]]
+   */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): PersoncreditcardRow =
-    PersoncreditcardRow(
-      businessentityid = businessentityid,
-      creditcardid = creditcardid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): PersoncreditcardRow = new PersoncreditcardRow(businessentityid = businessentityid, creditcardid = creditcardid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object PersoncreditcardRowUnsaved {
   given decoder: Decoder[PersoncreditcardRowUnsaved] = Decoder.forProduct3[PersoncreditcardRowUnsaved, BusinessentityId, /* user-picked */ CustomCreditcardId, Defaulted[TypoLocalDateTime]]("businessentityid", "creditcardid", "modifieddate")(PersoncreditcardRowUnsaved.apply)(using BusinessentityId.decoder, CustomCreditcardId.decoder, Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[PersoncreditcardRowUnsaved] = Encoder.forProduct3[PersoncreditcardRowUnsaved, BusinessentityId, /* user-picked */ CustomCreditcardId, Defaulted[TypoLocalDateTime]]("businessentityid", "creditcardid", "modifieddate")(x => (x.businessentityid, x.creditcardid, x.modifieddate))(using BusinessentityId.encoder, CustomCreditcardId.encoder, Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[PersoncreditcardRowUnsaved] = Text.instance[PersoncreditcardRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    /* user-picked */ CustomCreditcardId.text.unsafeEncode(row.creditcardid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[PersoncreditcardRowUnsaved] = {
+    Text.instance[PersoncreditcardRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      /* user-picked */ CustomCreditcardId.pgText.unsafeEncode(row.creditcardid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

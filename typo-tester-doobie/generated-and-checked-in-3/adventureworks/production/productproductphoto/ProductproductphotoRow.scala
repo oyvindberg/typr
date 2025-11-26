@@ -17,59 +17,95 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: production.productproductphoto
-    Cross-reference table mapping products and product photos.
-    Composite primary key: productid, productphotoid */
+ * Cross-reference table mapping products and product photos.
+ * Composite primary key: productid, productphotoid
+ */
 case class ProductproductphotoRow(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Product photo identification number. Foreign key to ProductPhoto.ProductPhotoID.
-      Points to [[adventureworks.production.productphoto.ProductphotoRow.productphotoid]] */
+   * Points to [[adventureworks.production.productphoto.ProductphotoRow.productphotoid]]
+   */
   productphotoid: ProductphotoId,
   /** 0 = Photo is not the principal image. 1 = Photo is the principal image.
-      Default: false */
+   * Default: false
+   */
   primary: Flag,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: ProductproductphotoId = ProductproductphotoId(productid, productphotoid)
-   val id = compositeId
-   def toUnsavedRow(primary: Defaulted[Flag] = Defaulted.Provided(this.primary), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductproductphotoRowUnsaved =
-     ProductproductphotoRowUnsaved(productid, productphotoid, primary, modifieddate)
- }
+) {
+  def compositeId: ProductproductphotoId = new ProductproductphotoId(productid, productphotoid)
 
-object ProductproductphotoRow {
-  def apply(compositeId: ProductproductphotoId, primary: Flag, modifieddate: TypoLocalDateTime) =
-    new ProductproductphotoRow(compositeId.productid, compositeId.productphotoid, primary, modifieddate)
-  given decoder: Decoder[ProductproductphotoRow] = Decoder.forProduct4[ProductproductphotoRow, ProductId, ProductphotoId, Flag, TypoLocalDateTime]("productid", "productphotoid", "primary", "modifieddate")(ProductproductphotoRow.apply)(using ProductId.decoder, ProductphotoId.decoder, Flag.decoder, TypoLocalDateTime.decoder)
-  given encoder: Encoder[ProductproductphotoRow] = Encoder.forProduct4[ProductproductphotoRow, ProductId, ProductphotoId, Flag, TypoLocalDateTime]("productid", "productphotoid", "primary", "modifieddate")(x => (x.productid, x.productphotoid, x.primary, x.modifieddate))(using ProductId.encoder, ProductphotoId.encoder, Flag.encoder, TypoLocalDateTime.encoder)
-  given read: Read[ProductproductphotoRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    ProductproductphotoRow(
-      productid = arr(0).asInstanceOf[ProductId],
-          productphotoid = arr(1).asInstanceOf[ProductphotoId],
-          primary = arr(2).asInstanceOf[Flag],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+  def id: ProductproductphotoId = this.compositeId
+
+  def toUnsavedRow(
+    primary: Defaulted[Flag] = Defaulted.Provided(this.primary),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): ProductproductphotoRowUnsaved = {
+    new ProductproductphotoRowUnsaved(
+      productid,
+      productphotoid,
+      primary,
+      modifieddate
     )
   }
-  given text: Text[ProductproductphotoRow] = Text.instance[ProductproductphotoRow]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    ProductphotoId.text.unsafeEncode(row.productphotoid, sb)
-    sb.append(Text.DELIMETER)
-    Flag.text.unsafeEncode(row.primary, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object ProductproductphotoRow {
+  def apply(
+    compositeId: ProductproductphotoId,
+    primary: Flag,
+    modifieddate: TypoLocalDateTime
+  ): ProductproductphotoRow = {
+    new ProductproductphotoRow(
+      compositeId.productid,
+      compositeId.productphotoid,
+      primary,
+      modifieddate
+    )
   }
-  given write: Write[ProductproductphotoRow] = new Write.Composite[ProductproductphotoRow](
-    List(new Write.Single(ProductId.put),
-         new Write.Single(ProductphotoId.put),
-         new Write.Single(Flag.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.productid, a.productphotoid, a.primary, a.modifieddate)
-  )
+
+  given decoder: Decoder[ProductproductphotoRow] = Decoder.forProduct4[ProductproductphotoRow, ProductId, ProductphotoId, Flag, TypoLocalDateTime]("productid", "productphotoid", "primary", "modifieddate")(ProductproductphotoRow.apply)(using ProductId.decoder, ProductphotoId.decoder, Flag.decoder, TypoLocalDateTime.decoder)
+
+  given encoder: Encoder[ProductproductphotoRow] = Encoder.forProduct4[ProductproductphotoRow, ProductId, ProductphotoId, Flag, TypoLocalDateTime]("productid", "productphotoid", "primary", "modifieddate")(x => (x.productid, x.productphotoid, x.primary, x.modifieddate))(using ProductId.encoder, ProductphotoId.encoder, Flag.encoder, TypoLocalDateTime.encoder)
+
+  given pgText: Text[ProductproductphotoRow] = {
+    Text.instance[ProductproductphotoRow]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      ProductphotoId.pgText.unsafeEncode(row.productphotoid, sb)
+      sb.append(Text.DELIMETER)
+      Flag.pgText.unsafeEncode(row.primary, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[ProductproductphotoRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      ProductproductphotoRow(
+        productid = arr(0).asInstanceOf[ProductId],
+            productphotoid = arr(1).asInstanceOf[ProductphotoId],
+            primary = arr(2).asInstanceOf[Flag],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[ProductproductphotoRow] = {
+    new Write.Composite[ProductproductphotoRow](
+      List(new Write.Single(ProductId.put),
+           new Write.Single(ProductphotoId.put),
+           new Write.Single(Flag.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.productid, a.productphotoid, a.primary, a.modifieddate)
+    )
+  }
 }

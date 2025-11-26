@@ -26,18 +26,22 @@ case class PccViewRow(
 
 object PccViewRow {
   given decoder: Decoder[PccViewRow] = Decoder.forProduct4[PccViewRow, BusinessentityId, BusinessentityId, /* user-picked */ CustomCreditcardId, TypoLocalDateTime]("id", "businessentityid", "creditcardid", "modifieddate")(PccViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, CustomCreditcardId.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PccViewRow] = Encoder.forProduct4[PccViewRow, BusinessentityId, BusinessentityId, /* user-picked */ CustomCreditcardId, TypoLocalDateTime]("id", "businessentityid", "creditcardid", "modifieddate")(x => (x.id, x.businessentityid, x.creditcardid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, CustomCreditcardId.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PccViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PccViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PccViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          creditcardid = arr(2).asInstanceOf[/* user-picked */ CustomCreditcardId],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ CustomCreditcardId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PccViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            creditcardid = arr(2).asInstanceOf[/* user-picked */ CustomCreditcardId],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

@@ -41,42 +41,50 @@ case class CViewRow(
 )
 
 object CViewRow {
-  given reads: Reads[CViewRow] = Reads[CViewRow](json => JsResult.fromTry(
-      Try(
-        CViewRow(
-          id = json.\("id").as(CustomerId.reads),
-          customerid = json.\("customerid").as(CustomerId.reads),
-          personid = json.\("personid").toOption.map(_.as(BusinessentityId.reads)),
-          storeid = json.\("storeid").toOption.map(_.as(BusinessentityId.reads)),
-          territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[CViewRow] = {
+    Reads[CViewRow](json => JsResult.fromTry(
+        Try(
+          CViewRow(
+            id = json.\("id").as(CustomerId.reads),
+            customerid = json.\("customerid").as(CustomerId.reads),
+            personid = json.\("personid").toOption.map(_.as(BusinessentityId.reads)),
+            storeid = json.\("storeid").toOption.map(_.as(BusinessentityId.reads)),
+            territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CViewRow] = RowParser[CViewRow] { row =>
-    Success(
-      CViewRow(
-        id = row(idx + 0)(using CustomerId.column),
-        customerid = row(idx + 1)(using CustomerId.column),
-        personid = row(idx + 2)(using Column.columnToOption(using BusinessentityId.column)),
-        storeid = row(idx + 3)(using Column.columnToOption(using BusinessentityId.column)),
-        territoryid = row(idx + 4)(using Column.columnToOption(using SalesterritoryId.column)),
-        rowguid = row(idx + 5)(using TypoUUID.column),
-        modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[CViewRow] = OWrites[CViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> CustomerId.writes.writes(o.id),
-      "customerid" -> CustomerId.writes.writes(o.customerid),
-      "personid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.personid),
-      "storeid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.storeid),
-      "territoryid" -> Writes.OptionWrites(using SalesterritoryId.writes).writes(o.territoryid),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[CViewRow] = {
+    RowParser[CViewRow] { row =>
+      Success(
+        CViewRow(
+          id = row(idx + 0)(using CustomerId.column),
+          customerid = row(idx + 1)(using CustomerId.column),
+          personid = row(idx + 2)(using Column.columnToOption(using BusinessentityId.column)),
+          storeid = row(idx + 3)(using Column.columnToOption(using BusinessentityId.column)),
+          territoryid = row(idx + 4)(using Column.columnToOption(using SalesterritoryId.column)),
+          rowguid = row(idx + 5)(using TypoUUID.column),
+          modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[CViewRow] = {
+    OWrites[CViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> CustomerId.writes.writes(o.id),
+        "customerid" -> CustomerId.writes.writes(o.customerid),
+        "personid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.personid),
+        "storeid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.storeid),
+        "territoryid" -> Writes.OptionWrites(using SalesterritoryId.writes).writes(o.territoryid),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -17,23 +17,29 @@ case class SalespersonquotahistoryId(
   businessentityid: BusinessentityId,
   quotadate: TypoLocalDateTime
 )
+
 object SalespersonquotahistoryId {
-  given jsonDecoder: JsonDecoder[SalespersonquotahistoryId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val quotadate = jsonObj.get("quotadate").toRight("Missing field 'quotadate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (businessentityid.isRight && quotadate.isRight)
-      Right(SalespersonquotahistoryId(businessentityid = businessentityid.toOption.get, quotadate = quotadate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, quotadate).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[SalespersonquotahistoryId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val quotadate = jsonObj.get("quotadate").toRight("Missing field 'quotadate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (businessentityid.isRight && quotadate.isRight)
+        Right(SalespersonquotahistoryId(businessentityid = businessentityid.toOption.get, quotadate = quotadate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, quotadate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[SalespersonquotahistoryId] = new JsonEncoder[SalespersonquotahistoryId] {
-    override def unsafeEncode(a: SalespersonquotahistoryId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""quotadate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.quotadate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[SalespersonquotahistoryId] = {
+    new JsonEncoder[SalespersonquotahistoryId] {
+      override def unsafeEncode(a: SalespersonquotahistoryId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""quotadate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.quotadate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

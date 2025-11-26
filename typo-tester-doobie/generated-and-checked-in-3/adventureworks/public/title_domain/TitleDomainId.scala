@@ -15,35 +15,51 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Type for the primary key of table `public.title_domain`. It has some known values: 
-  *  - dr
-  *  - mr
-  *  - ms
-  *  - phd
-  */
+ *  - dr
+ *  - mr
+ *  - ms
+ *  - phd
+ */
+
 sealed abstract class TitleDomainId(val value: ShortText)
 
 object TitleDomainId {
   def apply(underlying: ShortText): TitleDomainId =
     ByName.getOrElse(underlying, Unknown(underlying))
-  def shortText(value: String): TitleDomainId = TitleDomainId(ShortText(value))
-  case object dr extends TitleDomainId(ShortText("dr"))
-  case object mr extends TitleDomainId(ShortText("mr"))
-  case object ms extends TitleDomainId(ShortText("ms"))
-  case object phd extends TitleDomainId(ShortText("phd"))
-  case class Unknown(override val value: ShortText) extends TitleDomainId(value)
-  val All: List[TitleDomainId] = List(dr, mr, ms, phd)
-  val ByName: Map[ShortText, TitleDomainId] = All.map(x => (x.value, x)).toMap
-              
-  given arrayGet: Get[Array[TitleDomainId]] = ShortText.arrayGet.map(_.map(TitleDomainId.apply))
-  given arrayPut: Put[Array[TitleDomainId]] = ShortText.arrayPut.contramap(_.map(_.value))
-  given decoder: Decoder[TitleDomainId] = ShortText.decoder.map(TitleDomainId.apply)
-  given encoder: Encoder[TitleDomainId] = ShortText.encoder.contramap(_.value)
-  given get: Get[TitleDomainId] = ShortText.get.map(TitleDomainId.apply)
   given put: Put[TitleDomainId] = ShortText.put.contramap(_.value)
-  given read: Read[TitleDomainId] = new Read.Single(get)
-  given text: Text[TitleDomainId] = new Text[TitleDomainId] {
-    override def unsafeEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.text.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.text.unsafeArrayEncode(v.value, sb)
-  }
+
+  given arrayPut: Put[Array[TitleDomainId]] = ShortText.arrayPut.contramap(_.map(_.value))
+
+  given get: Get[TitleDomainId] = ShortText.get.map(TitleDomainId.apply)
+
+  given arrayGet: Get[Array[TitleDomainId]] = ShortText.arrayGet.map(_.map(TitleDomainId.apply))
+
   given write: Write[TitleDomainId] = new Write.Single(put)
+
+  given read: Read[TitleDomainId] = new Read.Single(get)
+
+  given pgText: Text[TitleDomainId] = {
+    new Text[TitleDomainId] {
+      override def unsafeEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.pgText.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TitleDomainId, sb: StringBuilder): Unit = ShortText.pgText.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given decoder: Decoder[TitleDomainId] = ShortText.decoder.map(TitleDomainId.apply)
+
+  given encoder: Encoder[TitleDomainId] = ShortText.encoder.contramap(_.value)
+
+  def shortText(value: String): TitleDomainId = apply(new ShortText(value))
+
+  case object dr extends TitleDomainId(new ShortText("dr"))
+
+  case object mr extends TitleDomainId(new ShortText("mr"))
+
+  case object ms extends TitleDomainId(new ShortText("ms"))
+
+  case object phd extends TitleDomainId(new ShortText("phd"))
+  case class Unknown(override val value: ShortText) extends TitleDomainId(value)
+  val All: scala.List[TitleDomainId] = scala.List(dr, mr, ms, phd)
+  val ByName: scala.collection.immutable.Map[ShortText, TitleDomainId] = All.map(x => (x.value, x)).toMap
+
 }

@@ -53,60 +53,68 @@ case class PohViewRow(
 )
 
 object PohViewRow {
-  implicit lazy val reads: Reads[PohViewRow] = Reads[PohViewRow](json => JsResult.fromTry(
-      Try(
-        PohViewRow(
-          id = json.\("id").as(PurchaseorderheaderId.reads),
-          purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
-          revisionnumber = json.\("revisionnumber").as(TypoShort.reads),
-          status = json.\("status").as(TypoShort.reads),
-          employeeid = json.\("employeeid").as(BusinessentityId.reads),
-          vendorid = json.\("vendorid").as(BusinessentityId.reads),
-          shipmethodid = json.\("shipmethodid").as(ShipmethodId.reads),
-          orderdate = json.\("orderdate").as(TypoLocalDateTime.reads),
-          shipdate = json.\("shipdate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          subtotal = json.\("subtotal").as(Reads.bigDecReads),
-          taxamt = json.\("taxamt").as(Reads.bigDecReads),
-          freight = json.\("freight").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[PohViewRow] = {
+    Reads[PohViewRow](json => JsResult.fromTry(
+        Try(
+          PohViewRow(
+            id = json.\("id").as(PurchaseorderheaderId.reads),
+            purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
+            revisionnumber = json.\("revisionnumber").as(TypoShort.reads),
+            status = json.\("status").as(TypoShort.reads),
+            employeeid = json.\("employeeid").as(BusinessentityId.reads),
+            vendorid = json.\("vendorid").as(BusinessentityId.reads),
+            shipmethodid = json.\("shipmethodid").as(ShipmethodId.reads),
+            orderdate = json.\("orderdate").as(TypoLocalDateTime.reads),
+            shipdate = json.\("shipdate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            subtotal = json.\("subtotal").as(Reads.bigDecReads),
+            taxamt = json.\("taxamt").as(Reads.bigDecReads),
+            freight = json.\("freight").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PohViewRow] = RowParser[PohViewRow] { row =>
-    Success(
-      PohViewRow(
-        id = row(idx + 0)(PurchaseorderheaderId.column),
-        purchaseorderid = row(idx + 1)(PurchaseorderheaderId.column),
-        revisionnumber = row(idx + 2)(TypoShort.column),
-        status = row(idx + 3)(TypoShort.column),
-        employeeid = row(idx + 4)(BusinessentityId.column),
-        vendorid = row(idx + 5)(BusinessentityId.column),
-        shipmethodid = row(idx + 6)(ShipmethodId.column),
-        orderdate = row(idx + 7)(TypoLocalDateTime.column),
-        shipdate = row(idx + 8)(Column.columnToOption(TypoLocalDateTime.column)),
-        subtotal = row(idx + 9)(Column.columnToScalaBigDecimal),
-        taxamt = row(idx + 10)(Column.columnToScalaBigDecimal),
-        freight = row(idx + 11)(Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 12)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PohViewRow] = OWrites[PohViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> PurchaseorderheaderId.writes.writes(o.id),
-      "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
-      "revisionnumber" -> TypoShort.writes.writes(o.revisionnumber),
-      "status" -> TypoShort.writes.writes(o.status),
-      "employeeid" -> BusinessentityId.writes.writes(o.employeeid),
-      "vendorid" -> BusinessentityId.writes.writes(o.vendorid),
-      "shipmethodid" -> ShipmethodId.writes.writes(o.shipmethodid),
-      "orderdate" -> TypoLocalDateTime.writes.writes(o.orderdate),
-      "shipdate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.shipdate),
-      "subtotal" -> Writes.BigDecimalWrites.writes(o.subtotal),
-      "taxamt" -> Writes.BigDecimalWrites.writes(o.taxamt),
-      "freight" -> Writes.BigDecimalWrites.writes(o.freight),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PohViewRow] = {
+    RowParser[PohViewRow] { row =>
+      Success(
+        PohViewRow(
+          id = row(idx + 0)(PurchaseorderheaderId.column),
+          purchaseorderid = row(idx + 1)(PurchaseorderheaderId.column),
+          revisionnumber = row(idx + 2)(TypoShort.column),
+          status = row(idx + 3)(TypoShort.column),
+          employeeid = row(idx + 4)(BusinessentityId.column),
+          vendorid = row(idx + 5)(BusinessentityId.column),
+          shipmethodid = row(idx + 6)(ShipmethodId.column),
+          orderdate = row(idx + 7)(TypoLocalDateTime.column),
+          shipdate = row(idx + 8)(Column.columnToOption(TypoLocalDateTime.column)),
+          subtotal = row(idx + 9)(Column.columnToScalaBigDecimal),
+          taxamt = row(idx + 10)(Column.columnToScalaBigDecimal),
+          freight = row(idx + 11)(Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 12)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PohViewRow] = {
+    OWrites[PohViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> PurchaseorderheaderId.writes.writes(o.id),
+        "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
+        "revisionnumber" -> TypoShort.writes.writes(o.revisionnumber),
+        "status" -> TypoShort.writes.writes(o.status),
+        "employeeid" -> BusinessentityId.writes.writes(o.employeeid),
+        "vendorid" -> BusinessentityId.writes.writes(o.vendorid),
+        "shipmethodid" -> ShipmethodId.writes.writes(o.shipmethodid),
+        "orderdate" -> TypoLocalDateTime.writes.writes(o.orderdate),
+        "shipdate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.shipdate),
+        "subtotal" -> Writes.BigDecimalWrites.writes(o.subtotal),
+        "taxamt" -> Writes.BigDecimalWrites.writes(o.taxamt),
+        "freight" -> Writes.BigDecimalWrites.writes(o.freight),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

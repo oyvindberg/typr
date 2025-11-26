@@ -11,5 +11,6 @@ import zio.stream.ZStream
 
 trait PccViewRepo {
   def select: SelectBuilder[PccViewFields, PccViewRow]
+
   def selectAll: ZStream[ZConnection, Throwable, PccViewRow]
 }

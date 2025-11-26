@@ -2,96 +2,97 @@ package typo
 package internal
 package codegen
 
-final case class JsonLibZioJson(pkg: sc.QIdent, default: ComputedDefault, inlineImplicits: Boolean, dialect: Dialect) extends JsonLib {
-  private val JsonDecoder = sc.Type.Qualified("zio.json.JsonDecoder")
-  private val JsonEncoder = sc.Type.Qualified("zio.json.JsonEncoder")
-  private val Write = sc.Type.Qualified("zio.json.internal.Write")
-  private val JsonError = sc.Type.Qualified("zio.json.JsonError")
-  private val RetractReader = sc.Type.Qualified("zio.json.internal.RetractReader")
-  private val Success = sc.Type.Qualified("scala.util.Success")
-  private val Json = sc.Type.Qualified("zio.json.ast.Json")
+final case class JsonLibZioJson(pkg: jvm.QIdent, default: ComputedDefault, inlineImplicits: Boolean, lang: LangScala) extends JsonLib {
+  val dialect = lang.dialect
+  private val JsonDecoder = jvm.Type.Qualified("zio.json.JsonDecoder")
+  private val JsonEncoder = jvm.Type.Qualified("zio.json.JsonEncoder")
+  private val Write = jvm.Type.Qualified("zio.json.internal.Write")
+  private val JsonError = jvm.Type.Qualified("zio.json.JsonError")
+  private val RetractReader = jvm.Type.Qualified("zio.json.internal.RetractReader")
+  private val Success = jvm.Type.Qualified("scala.util.Success")
+  private val Json = jvm.Type.Qualified("zio.json.ast.Json")
 
-  private val encoderName = sc.Ident("jsonEncoder")
-  private val decoderName = sc.Ident("jsonDecoder")
+  private val encoderName = jvm.Ident("jsonEncoder")
+  private val decoderName = jvm.Ident("jsonDecoder")
 
   /** Resolve known implicits at generation-time instead of at compile-time */
-  private def lookupDecoderFor(tpe: sc.Type): sc.Code = {
-    def go(tpe: sc.Type): sc.Code =
+  private def lookupDecoderFor(tpe: jvm.Type): jvm.Code = {
+    def go(tpe: jvm.Type): jvm.Code =
       tpe match {
-        case TypesScala.BigDecimal                                         => code"$JsonDecoder.scalaBigDecimal"
-        case TypesScala.Boolean                                            => code"$JsonDecoder.boolean"
-        case TypesScala.Byte                                               => code"$JsonDecoder.byte"
-        case TypesScala.Double                                             => code"$JsonDecoder.double"
-        case TypesScala.Float                                              => code"$JsonDecoder.float"
-        case TypesJava.Instant                                             => code"$JsonDecoder.instant"
-        case TypesScala.Int                                                => code"$JsonDecoder.int"
-        case TypesJava.LocalDate                                           => code"$JsonDecoder.localDate"
-        case TypesJava.LocalDateTime                                       => code"$JsonDecoder.localDateTime"
-        case TypesJava.LocalTime                                           => code"$JsonDecoder.localTime"
-        case TypesScala.Long                                               => code"$JsonDecoder.long"
-        case TypesJava.OffsetDateTime                                      => code"$JsonDecoder.offsetDateTime"
-        case TypesJava.OffsetTime                                          => code"$JsonDecoder.offsetTime"
-        case TypesJava.String                                              => code"$JsonDecoder.string"
-        case TypesJava.UUID                                                => code"$JsonDecoder.uuid"
-        case sc.Type.ArrayOf(targ)                                         => code"$JsonDecoder.array[$targ](${dialect.usingCall}${go(targ)}, implicitly)"
-        case sc.Type.TApply(default.Defaulted, List(targ))                 => code"${default.Defaulted}.$decoderName(${dialect.usingCall}${go(targ)})"
-        case TypesScala.Optional(targ)                                     => code"$JsonDecoder.option(${dialect.usingCall}${go(targ)})"
-        case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) => code"$tpe.$decoderName"
-        case other                                                         => code"${JsonDecoder.of(other)}"
+        case TypesScala.BigDecimal                                          => code"$JsonDecoder.scalaBigDecimal"
+        case TypesScala.Boolean                                             => code"$JsonDecoder.boolean"
+        case TypesScala.Byte                                                => code"$JsonDecoder.byte"
+        case TypesScala.Double                                              => code"$JsonDecoder.double"
+        case TypesScala.Float                                               => code"$JsonDecoder.float"
+        case TypesJava.Instant                                              => code"$JsonDecoder.instant"
+        case TypesScala.Int                                                 => code"$JsonDecoder.int"
+        case TypesJava.LocalDate                                            => code"$JsonDecoder.localDate"
+        case TypesJava.LocalDateTime                                        => code"$JsonDecoder.localDateTime"
+        case TypesJava.LocalTime                                            => code"$JsonDecoder.localTime"
+        case TypesScala.Long                                                => code"$JsonDecoder.long"
+        case TypesJava.OffsetDateTime                                       => code"$JsonDecoder.offsetDateTime"
+        case TypesJava.OffsetTime                                           => code"$JsonDecoder.offsetTime"
+        case TypesJava.String                                               => code"$JsonDecoder.string"
+        case TypesJava.UUID                                                 => code"$JsonDecoder.uuid"
+        case jvm.Type.ArrayOf(targ)                                         => code"$JsonDecoder.array[$targ](${dialect.usingCall}${go(targ)}, implicitly)"
+        case jvm.Type.TApply(default.Defaulted, List(targ))                 => code"${default.Defaulted}.$decoderName(${dialect.usingCall}${go(targ)})"
+        case lang.Optional(targ)                                            => code"$JsonDecoder.option(${dialect.usingCall}${go(targ)})"
+        case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) => code"$tpe.$decoderName"
+        case other                                                          => code"${JsonDecoder.of(other)}"
       }
 
-    if (inlineImplicits) go(sc.Type.base(tpe)) else JsonDecoder.of(tpe).code
+    if (inlineImplicits) go(jvm.Type.base(tpe)) else JsonDecoder.of(tpe).code
   }
 
   /** Resolve known implicits at generation-time instead of at compile-time */
-  def lookupEncoderFor(tpe: sc.Type): sc.Code = {
-    def go(tpe: sc.Type): sc.Code =
+  def lookupEncoderFor(tpe: jvm.Type): jvm.Code = {
+    def go(tpe: jvm.Type): jvm.Code =
       tpe match {
-        case TypesScala.BigDecimal                                         => code"$JsonEncoder.scalaBigDecimal"
-        case TypesScala.Boolean                                            => code"$JsonEncoder.boolean"
-        case TypesScala.Byte                                               => code"$JsonEncoder.byte"
-        case TypesScala.Double                                             => code"$JsonEncoder.double"
-        case TypesScala.Float                                              => code"$JsonEncoder.float"
-        case TypesJava.Instant                                             => code"$JsonEncoder.instant"
-        case TypesScala.Int                                                => code"$JsonEncoder.int"
-        case TypesJava.LocalDate                                           => code"$JsonEncoder.localDate"
-        case TypesJava.LocalDateTime                                       => code"$JsonEncoder.localDateTime"
-        case TypesJava.LocalTime                                           => code"$JsonEncoder.localTime"
-        case TypesScala.Long                                               => code"$JsonEncoder.long"
-        case TypesJava.OffsetDateTime                                      => code"$JsonEncoder.offsetDateTime"
-        case TypesJava.OffsetTime                                          => code"$JsonEncoder.offsetTime"
-        case TypesJava.String                                              => code"$JsonEncoder.string"
-        case TypesJava.UUID                                                => code"$JsonEncoder.uuid"
-        case sc.Type.ArrayOf(targ)                                         => code"$JsonEncoder.array[$targ](${dialect.usingCall}${go(targ)}, implicitly)"
-        case sc.Type.TApply(default.Defaulted, List(targ))                 => code"${default.Defaulted}.$encoderName(${dialect.usingCall}${go(targ)})"
-        case TypesScala.Optional(targ)                                     => code"$JsonEncoder.option(${dialect.usingCall}${go(targ)})"
-        case x: sc.Type.Qualified if x.value.idents.startsWith(pkg.idents) => code"$tpe.$encoderName"
-        case other                                                         => code"${JsonEncoder.of(other)}"
+        case TypesScala.BigDecimal                                          => code"$JsonEncoder.scalaBigDecimal"
+        case TypesScala.Boolean                                             => code"$JsonEncoder.boolean"
+        case TypesScala.Byte                                                => code"$JsonEncoder.byte"
+        case TypesScala.Double                                              => code"$JsonEncoder.double"
+        case TypesScala.Float                                               => code"$JsonEncoder.float"
+        case TypesJava.Instant                                              => code"$JsonEncoder.instant"
+        case TypesScala.Int                                                 => code"$JsonEncoder.int"
+        case TypesJava.LocalDate                                            => code"$JsonEncoder.localDate"
+        case TypesJava.LocalDateTime                                        => code"$JsonEncoder.localDateTime"
+        case TypesJava.LocalTime                                            => code"$JsonEncoder.localTime"
+        case TypesScala.Long                                                => code"$JsonEncoder.long"
+        case TypesJava.OffsetDateTime                                       => code"$JsonEncoder.offsetDateTime"
+        case TypesJava.OffsetTime                                           => code"$JsonEncoder.offsetTime"
+        case TypesJava.String                                               => code"$JsonEncoder.string"
+        case TypesJava.UUID                                                 => code"$JsonEncoder.uuid"
+        case jvm.Type.ArrayOf(targ)                                         => code"$JsonEncoder.array[$targ](${dialect.usingCall}${go(targ)}, implicitly)"
+        case jvm.Type.TApply(default.Defaulted, List(targ))                 => code"${default.Defaulted}.$encoderName(${dialect.usingCall}${go(targ)})"
+        case lang.Optional(targ)                                            => code"$JsonEncoder.option(${dialect.usingCall}${go(targ)})"
+        case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) => code"$tpe.$encoderName"
+        case other                                                          => code"${JsonEncoder.of(other)}"
       }
 
-    if (inlineImplicits) go(sc.Type.base(tpe)) else JsonEncoder.of(tpe).code
+    if (inlineImplicits) go(jvm.Type.base(tpe)) else JsonEncoder.of(tpe).code
   }
 
-  override def defaultedInstance(d: ComputedDefault): List[sc.Given] = {
-    val T = sc.Type.Abstract(sc.Ident("T"))
+  override def defaultedInstance(d: ComputedDefault): List[jvm.Given] = {
+    val T = jvm.Type.Abstract(jvm.Ident("T"))
     List(
-      sc.Given(
+      jvm.Given(
         tparams = List(T),
         name = decoderName,
-        implicitParams = List(sc.Param(sc.Ident("T"), JsonDecoder.of(T), None)),
+        implicitParams = List(jvm.Param(jvm.Ident("T"), JsonDecoder.of(T))),
         tpe = JsonDecoder.of(d.Defaulted.of(T)),
         body = code"""|new ${JsonDecoder.of(d.Defaulted.of(T))} {
                       |  override def unsafeDecode(trace: ${TypesScala.List.of(JsonError)}, in: $RetractReader): ${d.Defaulted.of(T)} =
                       |    ${TypesScala.Try}($JsonDecoder.string.unsafeDecode(trace, in)) match {
-                      |      case $Success("defaulted") => UseDefault
-                      |      case _ => Provided(T.unsafeDecode(trace, in))
+                      |      case $Success("defaulted") => ${d.UseDefault}()
+                      |      case _ => ${d.Provided}(T.unsafeDecode(trace, in))
                       |    }
                       |  }""".stripMargin
       ),
-      sc.Given(
+      jvm.Given(
         tparams = List(T),
         name = encoderName,
-        implicitParams = List(sc.Param(sc.Ident("T"), JsonEncoder.of(T), None)),
+        implicitParams = List(jvm.Param(jvm.Ident("T"), JsonEncoder.of(T))),
         tpe = JsonEncoder.of(d.Defaulted.of(T)),
         body = code"""|new ${JsonEncoder.of(d.Defaulted.of(T))} {
                  |  override def unsafeEncode(a: ${d.Defaulted.of(T)}, indent: ${TypesScala.Option.of(TypesScala.Int)}, out: $Write): Unit =
@@ -99,18 +100,18 @@ final case class JsonLibZioJson(pkg: sc.QIdent, default: ComputedDefault, inline
                  |      case ${d.Provided}(value) =>
                  |        out.write("{")
                  |        out.write("\\"provided\\":")
-                 |        ${sc.Ident("T")}.unsafeEncode(value, None, out)
+                 |        ${jvm.Ident("T")}.unsafeEncode(value, None, out)
                  |        out.write("}")
-                 |      case ${d.UseDefault} => out.write("\\"defaulted\\"")
+                 |      case ${d.UseDefault}() => out.write("\\"defaulted\\"")
                  |    }
                  |}""".stripMargin
       )
     )
   }
 
-  override def stringEnumInstances(wrapperType: sc.Type, underlying: sc.Type, openEnum: Boolean): List[sc.Given] =
+  override def stringEnumInstances(wrapperType: jvm.Type, underlying: jvm.Type, openEnum: Boolean): List[jvm.Given] =
     List(
-      sc.Given(
+      jvm.Given(
         tparams = Nil,
         name = decoderName,
         implicitParams = Nil,
@@ -119,18 +120,18 @@ final case class JsonLibZioJson(pkg: sc.QIdent, default: ComputedDefault, inline
           if (openEnum) code"""${lookupDecoderFor(underlying)}.map($wrapperType.apply)"""
           else code"""${lookupDecoderFor(underlying)}.mapOrFail($wrapperType.apply)"""
       ),
-      sc.Given(tparams = Nil, name = encoderName, implicitParams = Nil, tpe = JsonEncoder.of(wrapperType), body = code"${lookupEncoderFor(underlying)}.contramap(_.value)")
+      jvm.Given(tparams = Nil, name = encoderName, implicitParams = Nil, tpe = JsonEncoder.of(wrapperType), body = code"${lookupEncoderFor(underlying)}.contramap(_.value)")
     )
 
-  override def wrapperTypeInstances(wrapperType: sc.Type.Qualified, fieldName: sc.Ident, underlying: sc.Type): List[sc.Given] =
+  override def wrapperTypeInstances(wrapperType: jvm.Type.Qualified, fieldName: jvm.Ident, underlying: jvm.Type): List[jvm.Given] =
     List(
-      sc.Given(tparams = Nil, name = encoderName, implicitParams = Nil, tpe = JsonEncoder.of(wrapperType), body = code"${lookupEncoderFor(underlying)}.contramap(_.$fieldName)"),
-      sc.Given(tparams = Nil, name = decoderName, implicitParams = Nil, tpe = JsonDecoder.of(wrapperType), body = code"${lookupDecoderFor(underlying)}.map($wrapperType.apply)")
+      jvm.Given(tparams = Nil, name = encoderName, implicitParams = Nil, tpe = JsonEncoder.of(wrapperType), body = code"${lookupEncoderFor(underlying)}.contramap(_.$fieldName)"),
+      jvm.Given(tparams = Nil, name = decoderName, implicitParams = Nil, tpe = JsonDecoder.of(wrapperType), body = code"${lookupDecoderFor(underlying)}.map($wrapperType.apply)")
     )
 
-  override def productInstances(tpe: sc.Type, fields: NonEmptyList[JsonLib.Field]): List[sc.Given] = {
+  override def productInstances(tpe: jvm.Type, fields: NonEmptyList[JsonLib.Field]): List[jvm.Given] = {
     val decoder =
-      sc.Given(
+      jvm.Given(
         tparams = Nil,
         name = decoderName,
         implicitParams = Nil,
@@ -139,8 +140,8 @@ final case class JsonLibZioJson(pkg: sc.QIdent, default: ComputedDefault, inline
           val vals =
             fields.map(f =>
               f.tpe match {
-                case TypesScala.Optional(targ) =>
-                  val either = TypesScala.Either.of(TypesJava.String, TypesScala.Option.of(sc.Type.base(targ)))
+                case lang.Optional(targ) =>
+                  val either = TypesScala.Either.of(TypesJava.String, TypesScala.Option.of(jvm.Type.base(targ)))
                   code"""val ${f.scalaName} = jsonObj.get(${f.jsonName}).fold[$either](${TypesScala.Right}(${TypesScala.None}))(_.as(${dialect.usingCall}${lookupDecoderFor(f.tpe)}))"""
                 case _ =>
                   code"""val ${f.scalaName} = jsonObj.get(${f.jsonName}).toRight("Missing field '${f.jsonName.str}'").flatMap(_.as(${dialect.usingCall}${lookupDecoderFor(f.tpe)}))"""
@@ -159,7 +160,7 @@ final case class JsonLibZioJson(pkg: sc.QIdent, default: ComputedDefault, inline
       )
 
     val encoder =
-      sc.Given(
+      jvm.Given(
         tparams = Nil,
         name = encoderName,
         implicitParams = Nil,
@@ -182,5 +183,5 @@ final case class JsonLibZioJson(pkg: sc.QIdent, default: ComputedDefault, inline
     List(decoder, encoder)
   }
 
-  override def missingInstances: List[sc.ClassMember] = List.empty
+  override def missingInstances: List[jvm.ClassMember] = List.empty
 }

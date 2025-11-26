@@ -14,21 +14,38 @@ import io.circe.Encoder
 import org.postgresql.geometric.PGlseg
 import org.postgresql.geometric.PGpoint
 
-/** This implements a line represented by the linear equation Ax + By + C = 0 */
-case class TypoLineSegment(p1: TypoPoint, p2: TypoPoint)
+/** Line segment datatype in PostgreSQL */
+case class TypoLineSegment(
+  p1: TypoPoint,
+  p2: TypoPoint
+)
 
 object TypoLineSegment {
-  implicit lazy val arrayGet: Get[Array[TypoLineSegment]] = Get.Advanced.array[AnyRef](NonEmptyList.one("lseg[]"))
-    .map(_.map(v => TypoLineSegment(TypoPoint(v.asInstanceOf[PGlseg].point(0).x, v.asInstanceOf[PGlseg].point(0).y), TypoPoint(v.asInstanceOf[PGlseg].point(1).x, v.asInstanceOf[PGlseg].point(1).y))))
-  implicit lazy val arrayPut: Put[Array[TypoLineSegment]] = Put.Advanced.array[AnyRef](NonEmptyList.one("lseg[]"), "lseg")
-    .contramap(_.map(v => new PGlseg(new PGpoint(v.p1.x, v.p1.y), new PGpoint(v.p2.x, v.p2.y))))
-  implicit lazy val decoder: Decoder[TypoLineSegment] = Decoder.forProduct2[TypoLineSegment, TypoPoint, TypoPoint]("p1", "p2")(TypoLineSegment.apply)(TypoPoint.decoder, TypoPoint.decoder)
-  implicit lazy val encoder: Encoder[TypoLineSegment] = Encoder.forProduct2[TypoLineSegment, TypoPoint, TypoPoint]("p1", "p2")(x => (x.p1, x.p2))(TypoPoint.encoder, TypoPoint.encoder)
-  implicit lazy val get: Get[TypoLineSegment] = Get.Advanced.other[PGlseg](NonEmptyList.one("lseg"))
-    .map(v => TypoLineSegment(TypoPoint(v.point(0).x, v.point(0).y), TypoPoint(v.point(1).x, v.point(1).y)))
-  implicit lazy val put: Put[TypoLineSegment] = Put.Advanced.other[PGlseg](NonEmptyList.one("lseg")).contramap(v => new PGlseg(new PGpoint(v.p1.x, v.p1.y), new PGpoint(v.p2.x, v.p2.y)))
-  implicit lazy val text: Text[TypoLineSegment] = new Text[TypoLineSegment] {
-    override def unsafeEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
-    override def unsafeArrayEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
+  implicit lazy val arrayGet: Get[Array[TypoLineSegment]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("lseg[]"))
+      .map(_.map(v => new TypoLineSegment(new TypoPoint(v.asInstanceOf[PGlseg].point(0).x, v.asInstanceOf[PGlseg].point(0).y), new TypoPoint(v.asInstanceOf[PGlseg].point(1).x, v.asInstanceOf[PGlseg].point(1).y))))
   }
+
+  implicit lazy val arrayPut: Put[Array[TypoLineSegment]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("lseg[]"), "lseg")
+      .contramap(_.map(v => new PGlseg(new PGpoint(v.p1.x, v.p1.y), new PGpoint(v.p2.x, v.p2.y))))
+  }
+
+  implicit lazy val decoder: Decoder[TypoLineSegment] = Decoder.forProduct2[TypoLineSegment, TypoPoint, TypoPoint]("p1", "p2")(TypoLineSegment.apply)(TypoPoint.decoder, TypoPoint.decoder)
+
+  implicit lazy val encoder: Encoder[TypoLineSegment] = Encoder.forProduct2[TypoLineSegment, TypoPoint, TypoPoint]("p1", "p2")(x => (x.p1, x.p2))(TypoPoint.encoder, TypoPoint.encoder)
+
+  implicit lazy val get: Get[TypoLineSegment] = {
+    Get.Advanced.other[PGlseg](NonEmptyList.one("lseg"))
+      .map(v => new TypoLineSegment(new TypoPoint(v.point(0).x, v.point(0).y), new TypoPoint(v.point(1).x, v.point(1).y)))
+  }
+
+  implicit lazy val pgText: Text[TypoLineSegment] = {
+    new Text[TypoLineSegment] {
+      override def unsafeEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
+      override def unsafeArrayEncode(v: TypoLineSegment, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"((${v.p1.x},${v.p1.y}),(${v.p2.x},${v.p2.y}))", sb)
+    }
+  }
+
+  implicit lazy val put: Put[TypoLineSegment] = Put.Advanced.other[PGlseg](NonEmptyList.one("lseg")).contramap(v => new PGlseg(new PGpoint(v.p1.x, v.p1.y), new PGpoint(v.p2.x, v.p2.y)))
 }

@@ -7,6 +7,7 @@ package adventureworks.person.addresstype
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
@@ -20,64 +21,70 @@ case class AddresstypeRowUnsaved(
   /** Address type description. For example, Billing, Home, or Shipping. */
   name: Name,
   /** Default: nextval('person.addresstype_addresstypeid_seq'::regclass)
-      Primary key for AddressType records. */
-  addresstypeid: Defaulted[AddresstypeId] = Defaulted.UseDefault,
+   * Primary key for AddressType records.
+   */
+  addresstypeid: Defaulted[AddresstypeId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(addresstypeidDefault: => AddresstypeId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): AddresstypeRow =
-    AddresstypeRow(
-      addresstypeid = addresstypeid match {
-                        case Defaulted.UseDefault => addresstypeidDefault
-                        case Defaulted.Provided(value) => value
-                      },
+  def toRow(
+    addresstypeidDefault: => AddresstypeId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): AddresstypeRow = {
+    new AddresstypeRow(
+      addresstypeid = addresstypeid.getOrElse(addresstypeidDefault),
       name = name,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object AddresstypeRowUnsaved {
-  implicit lazy val jsonDecoder: JsonDecoder[AddresstypeRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val addresstypeid = jsonObj.get("addresstypeid").toRight("Missing field 'addresstypeid'").flatMap(_.as(Defaulted.jsonDecoder(AddresstypeId.jsonDecoder)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
-    if (name.isRight && addresstypeid.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(AddresstypeRowUnsaved(name = name.toOption.get, addresstypeid = addresstypeid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](name, addresstypeid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  implicit lazy val jsonEncoder: JsonEncoder[AddresstypeRowUnsaved] = new JsonEncoder[AddresstypeRowUnsaved] {
-    override def unsafeEncode(a: AddresstypeRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""addresstypeid":""")
-      Defaulted.jsonEncoder(AddresstypeId.jsonEncoder).unsafeEncode(a.addresstypeid, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object AddresstypeRowUnsaved {
+  implicit lazy val jsonDecoder: JsonDecoder[AddresstypeRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val addresstypeid = jsonObj.get("addresstypeid").toRight("Missing field 'addresstypeid'").flatMap(_.as(Defaulted.jsonDecoder(AddresstypeId.jsonDecoder)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(Defaulted.jsonDecoder(TypoUUID.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(Defaulted.jsonDecoder(TypoLocalDateTime.jsonDecoder)))
+      if (name.isRight && addresstypeid.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(AddresstypeRowUnsaved(name = name.toOption.get, addresstypeid = addresstypeid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](name, addresstypeid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[AddresstypeRowUnsaved] = Text.instance[AddresstypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(AddresstypeId.text).unsafeEncode(row.addresstypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[AddresstypeRowUnsaved] = {
+    new JsonEncoder[AddresstypeRowUnsaved] {
+      override def unsafeEncode(a: AddresstypeRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""addresstypeid":""")
+        Defaulted.jsonEncoder(AddresstypeId.jsonEncoder).unsafeEncode(a.addresstypeid, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        Defaulted.jsonEncoder(TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[AddresstypeRowUnsaved] = {
+    Text.instance[AddresstypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(AddresstypeId.pgText).unsafeEncode(row.addresstypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `public.identity-test` */
-case class IdentityTestId(value: /* max 250 chars */ String) extends AnyVal
+case class IdentityTestId(value: /* max 250 chars */ String) extends scala.AnyVal
+
 object IdentityTestId {
   given arrayGet: Get[Array[IdentityTestId]] = adventureworks.StringArrayMeta.get.map(_.map(IdentityTestId.apply))
+
   given arrayPut: Put[Array[IdentityTestId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+
+  given bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection.apply[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+
   given decoder: Decoder[IdentityTestId] = Decoder.decodeString.map(IdentityTestId.apply)
+
   given encoder: Encoder[IdentityTestId] = Encoder.encodeString.contramap(_.value)
+
   given get: Get[IdentityTestId] = Meta.StringMeta.get.map(IdentityTestId.apply)
-  given put: Put[IdentityTestId] = Meta.StringMeta.put.contramap(_.value)
-  given text: Text[IdentityTestId] = new Text[IdentityTestId] {
-    override def unsafeEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[IdentityTestId] = {
+    new Text[IdentityTestId] {
+      override def unsafeEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: IdentityTestId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[IdentityTestId] = Meta.StringMeta.put.contramap(_.value)
 }

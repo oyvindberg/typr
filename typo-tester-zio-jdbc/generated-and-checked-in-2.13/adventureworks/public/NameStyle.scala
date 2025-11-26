@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `public.NameStyle`
-  * No constraint
-  */
+ * No constraint
+ */
 case class NameStyle(value: Boolean)
+
 object NameStyle {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[NameStyle]] = adventureworks.BooleanArrayDecoder.map(_.map(NameStyle.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[NameStyle]] = adventureworks.BooleanArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[NameStyle]] = adventureworks.BooleanArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[NameStyle, Boolean] = Bijection[NameStyle, Boolean](_.value)(NameStyle.apply)
+
+  implicit lazy val bijection: Bijection[NameStyle, Boolean] = Bijection.apply[NameStyle, Boolean](_.value)(NameStyle.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[NameStyle] = JdbcDecoder.booleanDecoder.map(NameStyle.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[NameStyle] = JdbcEncoder.booleanEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[NameStyle] = JsonDecoder.boolean.map(NameStyle.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[NameStyle] = JsonEncoder.boolean.contramap(_.value)
-  implicit lazy val pgType: PGType[NameStyle] = PGType.instance(""""public"."NameStyle"""", Types.OTHER)
-  implicit lazy val setter: Setter[NameStyle] = Setter.booleanSetter.contramap(_.value)
-  implicit lazy val text: Text[NameStyle] = new Text[NameStyle] {
-    override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[NameStyle] = {
+    new Text[NameStyle] {
+      override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[NameStyle] = PGType.instance(""""public"."NameStyle"""", Types.OTHER)
+
+  implicit lazy val setter: Setter[NameStyle] = Setter.booleanSetter.contramap(_.value)
 }

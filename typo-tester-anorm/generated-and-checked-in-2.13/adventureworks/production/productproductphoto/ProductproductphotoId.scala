@@ -20,20 +20,26 @@ case class ProductproductphotoId(
   productid: ProductId,
   productphotoid: ProductphotoId
 )
+
 object ProductproductphotoId {
-  implicit lazy val reads: Reads[ProductproductphotoId] = Reads[ProductproductphotoId](json => JsResult.fromTry(
-      Try(
-        ProductproductphotoId(
-          productid = json.\("productid").as(ProductId.reads),
-          productphotoid = json.\("productphotoid").as(ProductphotoId.reads)
+  implicit lazy val reads: Reads[ProductproductphotoId] = {
+    Reads[ProductproductphotoId](json => JsResult.fromTry(
+        Try(
+          ProductproductphotoId(
+            productid = json.\("productid").as(ProductId.reads),
+            productphotoid = json.\("productphotoid").as(ProductphotoId.reads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[ProductproductphotoId] = OWrites[ProductproductphotoId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductproductphotoId] = {
+    OWrites[ProductproductphotoId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid)
+      ))
+    )
+  }
 }

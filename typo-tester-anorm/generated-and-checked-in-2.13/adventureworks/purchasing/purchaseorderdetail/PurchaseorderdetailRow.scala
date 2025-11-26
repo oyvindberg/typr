@@ -24,105 +24,161 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: purchasing.purchaseorderdetail
-    Individual products associated with a specific purchase order. See PurchaseOrderHeader.
-    Composite primary key: purchaseorderid, purchaseorderdetailid */
+ * Individual products associated with a specific purchase order. See PurchaseOrderHeader.
+ * Composite primary key: purchaseorderid, purchaseorderdetailid
+ */
 case class PurchaseorderdetailRow(
   /** Primary key. Foreign key to PurchaseOrderHeader.PurchaseOrderID.
-      Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]] */
+   * Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid]]
+   */
   purchaseorderid: PurchaseorderheaderId,
   /** Primary key. One line number per purchased product.
-      Default: nextval('purchasing.purchaseorderdetail_purchaseorderdetailid_seq'::regclass) */
+   * Default: nextval('purchasing.purchaseorderdetail_purchaseorderdetailid_seq'::regclass)
+   */
   purchaseorderdetailid: Int,
   /** Date the product is expected to be received. */
   duedate: TypoLocalDateTime,
   /** Quantity ordered.
-      Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0)) */
+   * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0))
+   */
   orderqty: TypoShort,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Vendor's selling price of a single product.
-      Constraint CK_PurchaseOrderDetail_UnitPrice affecting columns unitprice: ((unitprice >= 0.00)) */
+   * Constraint CK_PurchaseOrderDetail_UnitPrice affecting columns unitprice: ((unitprice >= 0.00))
+   */
   unitprice: BigDecimal,
   /** Quantity actually received from the vendor.
-      Constraint CK_PurchaseOrderDetail_ReceivedQty affecting columns receivedqty: ((receivedqty >= 0.00)) */
+   * Constraint CK_PurchaseOrderDetail_ReceivedQty affecting columns receivedqty: ((receivedqty >= 0.00))
+   */
   receivedqty: BigDecimal,
   /** Quantity rejected during inspection.
-      Constraint CK_PurchaseOrderDetail_RejectedQty affecting columns rejectedqty: ((rejectedqty >= 0.00)) */
+   * Constraint CK_PurchaseOrderDetail_RejectedQty affecting columns rejectedqty: ((rejectedqty >= 0.00))
+   */
   rejectedqty: BigDecimal,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: PurchaseorderdetailId = PurchaseorderdetailId(purchaseorderid, purchaseorderdetailid)
-   val id = compositeId
-   def toUnsavedRow(purchaseorderdetailid: Defaulted[Int], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): PurchaseorderdetailRowUnsaved =
-     PurchaseorderdetailRowUnsaved(purchaseorderid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, purchaseorderdetailid, modifieddate)
- }
+) {
+  def compositeId: PurchaseorderdetailId = new PurchaseorderdetailId(purchaseorderid, purchaseorderdetailid)
 
-object PurchaseorderdetailRow {
-  def apply(compositeId: PurchaseorderdetailId, duedate: TypoLocalDateTime, orderqty: TypoShort, productid: ProductId, unitprice: BigDecimal, receivedqty: BigDecimal, rejectedqty: BigDecimal, modifieddate: TypoLocalDateTime) =
-    new PurchaseorderdetailRow(compositeId.purchaseorderid, compositeId.purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate)
-  implicit lazy val reads: Reads[PurchaseorderdetailRow] = Reads[PurchaseorderdetailRow](json => JsResult.fromTry(
-      Try(
-        PurchaseorderdetailRow(
-          purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
-          purchaseorderdetailid = json.\("purchaseorderdetailid").as(Reads.IntReads),
-          duedate = json.\("duedate").as(TypoLocalDateTime.reads),
-          orderqty = json.\("orderqty").as(TypoShort.reads),
-          productid = json.\("productid").as(ProductId.reads),
-          unitprice = json.\("unitprice").as(Reads.bigDecReads),
-          receivedqty = json.\("receivedqty").as(Reads.bigDecReads),
-          rejectedqty = json.\("rejectedqty").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PurchaseorderdetailRow] = RowParser[PurchaseorderdetailRow] { row =>
-    Success(
-      PurchaseorderdetailRow(
-        purchaseorderid = row(idx + 0)(PurchaseorderheaderId.column),
-        purchaseorderdetailid = row(idx + 1)(Column.columnToInt),
-        duedate = row(idx + 2)(TypoLocalDateTime.column),
-        orderqty = row(idx + 3)(TypoShort.column),
-        productid = row(idx + 4)(ProductId.column),
-        unitprice = row(idx + 5)(Column.columnToScalaBigDecimal),
-        receivedqty = row(idx + 6)(Column.columnToScalaBigDecimal),
-        rejectedqty = row(idx + 7)(Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 8)(TypoLocalDateTime.column)
-      )
+  def id: PurchaseorderdetailId = this.compositeId
+
+  def toUnsavedRow(
+    purchaseorderdetailid: Defaulted[Int],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): PurchaseorderdetailRowUnsaved = {
+    new PurchaseorderdetailRowUnsaved(
+      purchaseorderid,
+      duedate,
+      orderqty,
+      productid,
+      unitprice,
+      receivedqty,
+      rejectedqty,
+      purchaseorderdetailid,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[PurchaseorderdetailRow] = Text.instance[PurchaseorderdetailRow]{ (row, sb) =>
-    PurchaseorderheaderId.text.unsafeEncode(row.purchaseorderid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.purchaseorderdetailid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.duedate, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.orderqty, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.unitprice, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.receivedqty, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.rejectedqty, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object PurchaseorderdetailRow {
+  def apply(
+    compositeId: PurchaseorderdetailId,
+    duedate: TypoLocalDateTime,
+    orderqty: TypoShort,
+    productid: ProductId,
+    unitprice: BigDecimal,
+    receivedqty: BigDecimal,
+    rejectedqty: BigDecimal,
+    modifieddate: TypoLocalDateTime
+  ): PurchaseorderdetailRow = {
+    new PurchaseorderdetailRow(
+      compositeId.purchaseorderid,
+      compositeId.purchaseorderdetailid,
+      duedate,
+      orderqty,
+      productid,
+      unitprice,
+      receivedqty,
+      rejectedqty,
+      modifieddate
+    )
   }
-  implicit lazy val writes: OWrites[PurchaseorderdetailRow] = OWrites[PurchaseorderdetailRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
-      "purchaseorderdetailid" -> Writes.IntWrites.writes(o.purchaseorderdetailid),
-      "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
-      "orderqty" -> TypoShort.writes.writes(o.orderqty),
-      "productid" -> ProductId.writes.writes(o.productid),
-      "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
-      "receivedqty" -> Writes.BigDecimalWrites.writes(o.receivedqty),
-      "rejectedqty" -> Writes.BigDecimalWrites.writes(o.rejectedqty),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  implicit lazy val pgText: Text[PurchaseorderdetailRow] = {
+    Text.instance[PurchaseorderdetailRow]{ (row, sb) =>
+      PurchaseorderheaderId.pgText.unsafeEncode(row.purchaseorderid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.purchaseorderdetailid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.duedate, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.orderqty, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.unitprice, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.receivedqty, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.rejectedqty, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[PurchaseorderdetailRow] = {
+    Reads[PurchaseorderdetailRow](json => JsResult.fromTry(
+        Try(
+          PurchaseorderdetailRow(
+            purchaseorderid = json.\("purchaseorderid").as(PurchaseorderheaderId.reads),
+            purchaseorderdetailid = json.\("purchaseorderdetailid").as(Reads.IntReads),
+            duedate = json.\("duedate").as(TypoLocalDateTime.reads),
+            orderqty = json.\("orderqty").as(TypoShort.reads),
+            productid = json.\("productid").as(ProductId.reads),
+            unitprice = json.\("unitprice").as(Reads.bigDecReads),
+            receivedqty = json.\("receivedqty").as(Reads.bigDecReads),
+            rejectedqty = json.\("rejectedqty").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[PurchaseorderdetailRow] = {
+    RowParser[PurchaseorderdetailRow] { row =>
+      Success(
+        PurchaseorderdetailRow(
+          purchaseorderid = row(idx + 0)(PurchaseorderheaderId.column),
+          purchaseorderdetailid = row(idx + 1)(Column.columnToInt),
+          duedate = row(idx + 2)(TypoLocalDateTime.column),
+          orderqty = row(idx + 3)(TypoShort.column),
+          productid = row(idx + 4)(ProductId.column),
+          unitprice = row(idx + 5)(Column.columnToScalaBigDecimal),
+          receivedqty = row(idx + 6)(Column.columnToScalaBigDecimal),
+          rejectedqty = row(idx + 7)(Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 8)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PurchaseorderdetailRow] = {
+    OWrites[PurchaseorderdetailRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "purchaseorderid" -> PurchaseorderheaderId.writes.writes(o.purchaseorderid),
+        "purchaseorderdetailid" -> Writes.IntWrites.writes(o.purchaseorderdetailid),
+        "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
+        "orderqty" -> TypoShort.writes.writes(o.orderqty),
+        "productid" -> ProductId.writes.writes(o.productid),
+        "unitprice" -> Writes.BigDecimalWrites.writes(o.unitprice),
+        "receivedqty" -> Writes.BigDecimalWrites.writes(o.receivedqty),
+        "rejectedqty" -> Writes.BigDecimalWrites.writes(o.rejectedqty),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

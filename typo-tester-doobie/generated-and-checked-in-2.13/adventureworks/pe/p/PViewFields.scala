@@ -37,11 +37,11 @@ trait PViewFields {
 
 object PViewFields {
   lazy val structure: Relation[PViewFields, PViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PViewFields, PViewRow] {
-  
+
     override lazy val fields: PViewFields = new PViewFields {
       override def id = Field[BusinessentityId, PViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, PViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -58,12 +58,11 @@ object PViewFields {
       override def rowguid = Field[TypoUUID, PViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PViewRow]] =
       List[FieldLike[?, PViewRow]](fields.id, fields.businessentityid, fields.persontype, fields.namestyle, fields.title, fields.firstname, fields.middlename, fields.lastname, fields.suffix, fields.emailpromotion, fields.additionalcontactinfo, fields.demographics, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

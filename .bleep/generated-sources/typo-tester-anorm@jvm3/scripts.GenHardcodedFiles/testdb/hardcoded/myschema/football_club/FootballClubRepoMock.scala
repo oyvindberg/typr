@@ -17,65 +17,69 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class FootballClubRepoMock(map: scala.collection.mutable.Map[FootballClubId, FootballClubRow] = scala.collection.mutable.Map.empty) extends FootballClubRepo {
-  override def delete: DeleteBuilder[FootballClubFields, FootballClubRow] = {
-    DeleteBuilderMock(DeleteParams.empty, FootballClubFields.structure, map)
-  }
-  override def deleteById(id: FootballClubId)(using c: Connection): Boolean = {
-    map.remove(id).isDefined
-  }
-  override def deleteByIds(ids: Array[FootballClubId])(using c: Connection): Int = {
-    ids.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: FootballClubRow)(using c: Connection): FootballClubRow = {
+case class FootballClubRepoMock(map: scala.collection.mutable.Map[FootballClubId, FootballClubRow] = scala.collection.mutable.Map.empty[FootballClubId, FootballClubRow]) extends FootballClubRepo {
+  def delete: DeleteBuilder[FootballClubFields, FootballClubRow] = DeleteBuilderMock(DeleteParams.empty, FootballClubFields.structure, map)
+
+  def deleteById(id: FootballClubId)(using c: Connection): Boolean = map.remove(id).isDefined
+
+  def deleteByIds(ids: Array[FootballClubId])(using c: Connection): Int = ids.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: FootballClubRow)(using c: Connection): FootballClubRow = {
     val _ = if (map.contains(unsaved.id))
       sys.error(s"id ${unsaved.id} already exists")
     else
       map.put(unsaved.id, unsaved)
-    
+  
     unsaved
   }
-  override def insertStreaming(unsaved: Iterator[FootballClubRow], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  def insertStreaming(
+    unsaved: Iterator[FootballClubRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.id -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[FootballClubFields, FootballClubRow] = {
-    SelectBuilderMock(FootballClubFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(using c: Connection): List[FootballClubRow] = {
-    map.values.toList
-  }
-  override def selectByFieldValues(fieldValues: List[FootballClubFieldOrIdValue[?]])(using c: Connection): List[FootballClubRow] = {
+
+  def select: SelectBuilder[FootballClubFields, FootballClubRow] = SelectBuilderMock(FootballClubFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(using c: Connection): List[FootballClubRow] = map.values.toList
+
+  def selectByFieldValues(fieldValues: List[FootballClubFieldValue[?]])(using c: Connection): List[FootballClubRow] = {
     fieldValues.foldLeft(map.values) {
       case (acc, FootballClubFieldValue.id(value)) => acc.filter(_.id == value)
       case (acc, FootballClubFieldValue.name(value)) => acc.filter(_.name == value)
     }.toList
   }
-  override def selectById(id: FootballClubId)(using c: Connection): Option[FootballClubRow] = {
-    map.get(id)
-  }
-  override def selectByIds(ids: Array[FootballClubId])(using c: Connection): List[FootballClubRow] = {
-    ids.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(ids: Array[FootballClubId])(using c: Connection): Map[FootballClubId, FootballClubRow] = {
+
+  def selectById(id: FootballClubId)(using c: Connection): Option[FootballClubRow] = map.get(id)
+
+  def selectByIds(ids: Array[FootballClubId])(using c: Connection): List[FootballClubRow] = ids.flatMap(map.get).toList
+
+  def selectByIdsTracked(ids: Array[FootballClubId])(using c: Connection): Map[FootballClubId, FootballClubRow] = {
     val byId = selectByIds(ids).view.map(x => (x.id, x)).toMap
     ids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[FootballClubFields, FootballClubRow] = {
-    UpdateBuilderMock(UpdateParams.empty, FootballClubFields.structure, map)
-  }
-  override def update(row: FootballClubRow)(using c: Connection): Option[FootballClubRow] = {
+
+  def update: UpdateBuilder[FootballClubFields, FootballClubRow] = UpdateBuilderMock(UpdateParams.empty, FootballClubFields.structure, map)
+
+  def update(row: FootballClubRow)(using c: Connection): Option[FootballClubRow] = {
     map.get(row.id).map { _ =>
       map.put(row.id, row): @nowarn
       row
     }
   }
-  override def updateFieldValues(id: FootballClubId, fieldValues: List[FootballClubFieldValue[?]])(using c: Connection): Boolean = {
+
+  def updateFieldValues(
+    id: FootballClubId,
+    fieldValues: List[FootballClubFieldValue[?]]
+  )(using c: Connection): Boolean = {
     map.get(id) match {
       case Some(oldRow) =>
         val updatedRow = fieldValues.foldLeft(oldRow) {
+          case (acc, FootballClubFieldValue.id(value)) => acc.copy(id = value)
           case (acc, FootballClubFieldValue.name(value)) => acc.copy(name = value)
         }
         if (updatedRow != oldRow) {
@@ -87,18 +91,24 @@ class FootballClubRepoMock(map: scala.collection.mutable.Map[FootballClubId, Foo
       case None => false
     }
   }
-  override def upsert(unsaved: FootballClubRow)(using c: Connection): FootballClubRow = {
+
+  def upsert(unsaved: FootballClubRow)(using c: Connection): FootballClubRow = {
     map.put(unsaved.id, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[FootballClubRow])(using c: Connection): List[FootballClubRow] = {
+
+  def upsertBatch(unsaved: Iterable[FootballClubRow])(using c: Connection): List[FootballClubRow] = {
     unsaved.map { row =>
       map += (row.id -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[FootballClubRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[FootballClubRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.id -> row)
     }

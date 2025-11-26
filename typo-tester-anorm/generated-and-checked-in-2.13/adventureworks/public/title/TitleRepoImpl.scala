@@ -9,80 +9,80 @@ import adventureworks.streamingInsert
 import anorm.BatchSql
 import anorm.NamedParameter
 import anorm.ParameterValue
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import anorm.SqlStringInterpolation
 
 class TitleRepoImpl extends TitleRepo {
-  override def delete: DeleteBuilder[TitleFields, TitleRow] = {
-    DeleteBuilder(""""public"."title"""", TitleFields.structure)
-  }
-  override def deleteById(code: TitleId)(implicit c: Connection): Boolean = {
-    SQL"""delete from "public"."title" where "code" = ${ParameterValue(code, null, TitleId.toStatement)}""".executeUpdate() > 0
-  }
-  override def deleteByIds(codes: Array[TitleId])(implicit c: Connection): Int = {
+  def delete: DeleteBuilder[TitleFields, TitleRow] = DeleteBuilder.of(""""public"."title"""", TitleFields.structure, TitleRow.rowParser(1).*)
+
+  def deleteById(code: TitleId)(implicit c: Connection): Boolean = SQL"""delete from "public"."title" where "code" = ${ParameterValue(code, null, TitleId.toStatement)}""".executeUpdate() > 0
+
+  def deleteByIds(codes: Array[TitleId])(implicit c: Connection): Int = {
     SQL"""delete
-          from "public"."title"
-          where "code" = ANY(${ParameterValue(codes, null, TitleId.arrayToStatement)})
-       """.executeUpdate()
-    
+    from "public"."title"
+    where "code" = ANY(${ParameterValue(codes, null, TitleId.arrayToStatement)})
+    """.executeUpdate()
   }
-  override def insert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
-    SQL"""insert into "public"."title"("code")
-          values (${ParameterValue(unsaved.code, null, TitleId.toStatement)})
-          returning "code"
-       """
-      .executeInsert(TitleRow.rowParser(1).single)
-    
+
+  def insert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
+  SQL"""insert into "public"."title"("code")
+    values (${ParameterValue(unsaved.code, null, TitleId.toStatement)})
+    returning "code"
+    """
+    .executeInsert(TitleRow.rowParser(1).single)
   }
-  override def insertStreaming(unsaved: Iterator[TitleRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
-    streamingInsert(s"""COPY "public"."title"("code") FROM STDIN""", batchSize, unsaved)(TitleRow.text, c)
-  }
-  override def select: SelectBuilder[TitleFields, TitleRow] = {
-    SelectBuilderSql(""""public"."title"""", TitleFields.structure, TitleRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[TitleRow] = {
+
+  def insertStreaming(
+    unsaved: Iterator[TitleRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = streamingInsert(s"""COPY "public"."title"("code") FROM STDIN""", batchSize, unsaved)(TitleRow.pgText, c)
+
+  def select: SelectBuilder[TitleFields, TitleRow] = SelectBuilder.of(""""public"."title"""", TitleFields.structure, TitleRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[TitleRow] = {
     SQL"""select "code"
-          from "public"."title"
-       """.as(TitleRow.rowParser(1).*)
+    from "public"."title"
+    """.as(TitleRow.rowParser(1).*)
   }
-  override def selectById(code: TitleId)(implicit c: Connection): Option[TitleRow] = {
+
+  def selectById(code: TitleId)(implicit c: Connection): Option[TitleRow] = {
     SQL"""select "code"
-          from "public"."title"
-          where "code" = ${ParameterValue(code, null, TitleId.toStatement)}
-       """.as(TitleRow.rowParser(1).singleOpt)
+    from "public"."title"
+    where "code" = ${ParameterValue(code, null, TitleId.toStatement)}
+    """.as(TitleRow.rowParser(1).singleOpt)
   }
-  override def selectByIds(codes: Array[TitleId])(implicit c: Connection): List[TitleRow] = {
+
+  def selectByIds(codes: Array[TitleId])(implicit c: Connection): List[TitleRow] = {
     SQL"""select "code"
-          from "public"."title"
-          where "code" = ANY(${ParameterValue(codes, null, TitleId.arrayToStatement)})
-       """.as(TitleRow.rowParser(1).*)
-    
+    from "public"."title"
+    where "code" = ANY(${ParameterValue(codes, null, TitleId.arrayToStatement)})
+    """.as(TitleRow.rowParser(1).*)
   }
-  override def selectByIdsTracked(codes: Array[TitleId])(implicit c: Connection): Map[TitleId, TitleRow] = {
+
+  def selectByIdsTracked(codes: Array[TitleId])(implicit c: Connection): Map[TitleId, TitleRow] = {
     val byId = selectByIds(codes).view.map(x => (x.code, x)).toMap
     codes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[TitleFields, TitleRow] = {
-    UpdateBuilder(""""public"."title"""", TitleFields.structure, TitleRow.rowParser)
+
+  def update: UpdateBuilder[TitleFields, TitleRow] = UpdateBuilder.of(""""public"."title"""", TitleFields.structure, TitleRow.rowParser(1).*)
+
+  def upsert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
+  SQL"""insert into "public"."title"("code")
+    values (
+      ${ParameterValue(unsaved.code, null, TitleId.toStatement)}
+    )
+    on conflict ("code")
+    do update set "code" = EXCLUDED."code"
+    returning "code"
+    """
+    .executeInsert(TitleRow.rowParser(1).single)
   }
-  override def upsert(unsaved: TitleRow)(implicit c: Connection): TitleRow = {
-    SQL"""insert into "public"."title"("code")
-          values (
-            ${ParameterValue(unsaved.code, null, TitleId.toStatement)}
-          )
-          on conflict ("code")
-          do update set "code" = EXCLUDED."code"
-          returning "code"
-       """
-      .executeInsert(TitleRow.rowParser(1).single)
-    
-  }
-  override def upsertBatch(unsaved: Iterable[TitleRow])(implicit c: Connection): List[TitleRow] = {
+
+  def upsertBatch(unsaved: Iterable[TitleRow])(implicit c: Connection): List[TitleRow] = {
     def toNamedParameter(row: TitleRow): List[NamedParameter] = List(
       NamedParameter("code", ParameterValue(row.code, null, TitleId.toStatement))
     )
@@ -92,26 +92,30 @@ class TitleRepoImpl extends TitleRepo {
         new anorm.adventureworks.ExecuteReturningSyntax.Ops(
           BatchSql(
             s"""insert into "public"."title"("code")
-                values ({code})
-                on conflict ("code")
-                do nothing
-                returning "code"
-             """,
+            values ({code})
+            on conflict ("code")
+            do nothing
+            returning "code"
+            """,
             toNamedParameter(head),
             rest.map(toNamedParameter)*
           )
         ).executeReturning(TitleRow.rowParser(1).*)
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[TitleRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[TitleRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     SQL"""create temporary table title_TEMP (like "public"."title") on commit drop""".execute(): @nowarn
-    streamingInsert(s"""copy title_TEMP("code") from stdin""", batchSize, unsaved)(TitleRow.text, c): @nowarn
+    streamingInsert(s"""copy title_TEMP("code") from stdin""", batchSize, unsaved)(TitleRow.pgText, c): @nowarn
     SQL"""insert into "public"."title"("code")
-          select * from title_TEMP
-          on conflict ("code")
-          do nothing
-          ;
-          drop table title_TEMP;""".executeUpdate()
+    select * from title_TEMP
+    on conflict ("code")
+    do nothing
+    ;
+    drop table title_TEMP;""".executeUpdate()
   }
 }

@@ -16,51 +16,68 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.salesorderheadersalesreason
-    Cross-reference table mapping sales orders to sales reason codes.
-    Composite primary key: salesorderid, salesreasonid */
+ * Cross-reference table mapping sales orders to sales reason codes.
+ * Composite primary key: salesorderid, salesreasonid
+ */
 case class SalesorderheadersalesreasonRow(
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
-      Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
+   * Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]]
+   */
   salesorderid: SalesorderheaderId,
   /** Primary key. Foreign key to SalesReason.SalesReasonID.
-      Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]] */
+   * Points to [[adventureworks.sales.salesreason.SalesreasonRow.salesreasonid]]
+   */
   salesreasonid: SalesreasonId,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: SalesorderheadersalesreasonId = SalesorderheadersalesreasonId(salesorderid, salesreasonid)
-   val id = compositeId
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SalesorderheadersalesreasonRowUnsaved =
-     SalesorderheadersalesreasonRowUnsaved(salesorderid, salesreasonid, modifieddate)
- }
+) {
+  def compositeId: SalesorderheadersalesreasonId = new SalesorderheadersalesreasonId(salesorderid, salesreasonid)
+
+  def id: SalesorderheadersalesreasonId = this.compositeId
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SalesorderheadersalesreasonRowUnsaved = new SalesorderheadersalesreasonRowUnsaved(salesorderid, salesreasonid, modifieddate)
+}
 
 object SalesorderheadersalesreasonRow {
-  def apply(compositeId: SalesorderheadersalesreasonId, modifieddate: TypoLocalDateTime) =
-    new SalesorderheadersalesreasonRow(compositeId.salesorderid, compositeId.salesreasonid, modifieddate)
+  def apply(
+    compositeId: SalesorderheadersalesreasonId,
+    modifieddate: TypoLocalDateTime
+  ): SalesorderheadersalesreasonRow = new SalesorderheadersalesreasonRow(compositeId.salesorderid, compositeId.salesreasonid, modifieddate)
+
   implicit lazy val decoder: Decoder[SalesorderheadersalesreasonRow] = Decoder.forProduct3[SalesorderheadersalesreasonRow, SalesorderheaderId, SalesreasonId, TypoLocalDateTime]("salesorderid", "salesreasonid", "modifieddate")(SalesorderheadersalesreasonRow.apply)(SalesorderheaderId.decoder, SalesreasonId.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[SalesorderheadersalesreasonRow] = Encoder.forProduct3[SalesorderheadersalesreasonRow, SalesorderheaderId, SalesreasonId, TypoLocalDateTime]("salesorderid", "salesreasonid", "modifieddate")(x => (x.salesorderid, x.salesreasonid, x.modifieddate))(SalesorderheaderId.encoder, SalesreasonId.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[SalesorderheadersalesreasonRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(SalesreasonId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    SalesorderheadersalesreasonRow(
-      salesorderid = arr(0).asInstanceOf[SalesorderheaderId],
-          salesreasonid = arr(1).asInstanceOf[SalesreasonId],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  implicit lazy val pgText: Text[SalesorderheadersalesreasonRow] = {
+    Text.instance[SalesorderheadersalesreasonRow]{ (row, sb) =>
+      SalesorderheaderId.pgText.unsafeEncode(row.salesorderid, sb)
+      sb.append(Text.DELIMETER)
+      SalesreasonId.pgText.unsafeEncode(row.salesreasonid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[SalesorderheadersalesreasonRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(SalesreasonId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      SalesorderheadersalesreasonRow(
+        salesorderid = arr(0).asInstanceOf[SalesorderheaderId],
+            salesreasonid = arr(1).asInstanceOf[SalesreasonId],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[SalesorderheadersalesreasonRow] = {
+    new Write.Composite[SalesorderheadersalesreasonRow](
+      List(new Write.Single(SalesorderheaderId.put),
+           new Write.Single(SalesreasonId.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.salesorderid, a.salesreasonid, a.modifieddate)
     )
   }
-  implicit lazy val text: Text[SalesorderheadersalesreasonRow] = Text.instance[SalesorderheadersalesreasonRow]{ (row, sb) =>
-    SalesorderheaderId.text.unsafeEncode(row.salesorderid, sb)
-    sb.append(Text.DELIMETER)
-    SalesreasonId.text.unsafeEncode(row.salesreasonid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  implicit lazy val write: Write[SalesorderheadersalesreasonRow] = new Write.Composite[SalesorderheadersalesreasonRow](
-    List(new Write.Single(SalesorderheaderId.put),
-         new Write.Single(SalesreasonId.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.salesorderid, a.salesreasonid, a.modifieddate)
-  )
 }

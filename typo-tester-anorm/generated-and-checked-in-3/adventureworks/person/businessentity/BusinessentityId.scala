@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.businessentity` */
-case class BusinessentityId(value: Int) extends AnyVal
+case class BusinessentityId(value: Int) extends scala.AnyVal
+
 object BusinessentityId {
   given arrayColumn: Column[Array[BusinessentityId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[BusinessentityId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[BusinessentityId, Int] = Bijection[BusinessentityId, Int](_.value)(BusinessentityId.apply)
+
+  given bijection: Bijection[BusinessentityId, Int] = Bijection.apply[BusinessentityId, Int](_.value)(BusinessentityId.apply)
+
   given column: Column[BusinessentityId] = Column.columnToInt.map(BusinessentityId.apply)
-  given parameterMetadata: ParameterMetaData[BusinessentityId] = new ParameterMetaData[BusinessentityId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[BusinessentityId] = {
+    new ParameterMetaData[BusinessentityId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[BusinessentityId] = {
+    new Text[BusinessentityId] {
+      override def unsafeEncode(v: BusinessentityId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: BusinessentityId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[BusinessentityId] = Reads.IntReads.map(BusinessentityId.apply)
-  given text: Text[BusinessentityId] = new Text[BusinessentityId] {
-    override def unsafeEncode(v: BusinessentityId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: BusinessentityId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[BusinessentityId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[BusinessentityId] = Writes.IntWrites.contramap(_.value)
 }

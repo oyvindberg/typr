@@ -21,28 +21,29 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
-class TestUtdanningstilbudRepoMock(map: scala.collection.mutable.Map[TestUtdanningstilbudId, TestUtdanningstilbudRow] = scala.collection.mutable.Map.empty) extends TestUtdanningstilbudRepo {
-  override def delete: DeleteBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = {
-    DeleteBuilderMock(DeleteParams.empty, TestUtdanningstilbudFields.structure, map)
+case class TestUtdanningstilbudRepoMock(map: scala.collection.mutable.Map[TestUtdanningstilbudId, TestUtdanningstilbudRow] = scala.collection.mutable.Map.empty[TestUtdanningstilbudId, TestUtdanningstilbudRow]) extends TestUtdanningstilbudRepo {
+  def delete: DeleteBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = DeleteBuilderMock(DeleteParams.empty, TestUtdanningstilbudFields.structure, map)
+
+  def deleteById(compositeId: TestUtdanningstilbudId): ZIO[ZConnection, Throwable, Boolean] = ZIO.succeed(map.remove(compositeId).isDefined)
+
+  def deleteByIds(compositeIds: Array[TestUtdanningstilbudId]): ZIO[ZConnection, Throwable, Long] = ZIO.succeed(compositeIds.map(id => map.remove(id)).count(_.isDefined).toLong)
+
+  def insert(unsaved: TestUtdanningstilbudRow): ZIO[ZConnection, Throwable, TestUtdanningstilbudRow] = {
+  ZIO.succeed {
+    val _ =
+      if (map.contains(unsaved.compositeId))
+        sys.error(s"id ${unsaved.compositeId} already exists")
+      else
+        map.put(unsaved.compositeId, unsaved)
+
+    unsaved
   }
-  override def deleteById(compositeId: TestUtdanningstilbudId): ZIO[ZConnection, Throwable, Boolean] = {
-    ZIO.succeed(map.remove(compositeId).isDefined)
   }
-  override def deleteByIds(compositeIds: Array[TestUtdanningstilbudId]): ZIO[ZConnection, Throwable, Long] = {
-    ZIO.succeed(compositeIds.map(id => map.remove(id)).count(_.isDefined).toLong)
-  }
-  override def insert(unsaved: TestUtdanningstilbudRow): ZIO[ZConnection, Throwable, TestUtdanningstilbudRow] = {
-    ZIO.succeed {
-      val _ =
-        if (map.contains(unsaved.compositeId))
-          sys.error(s"id ${unsaved.compositeId} already exists")
-        else
-          map.put(unsaved.compositeId, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insertStreaming(unsaved: ZStream[ZConnection, Throwable, TestUtdanningstilbudRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TestUtdanningstilbudRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.compositeId -> row)
@@ -50,35 +51,36 @@ class TestUtdanningstilbudRepoMock(map: scala.collection.mutable.Map[TestUtdanni
       }
     }.runLast.map(_.getOrElse(0L))
   }
-  override def select: SelectBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = {
-    SelectBuilderMock(TestUtdanningstilbudFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, TestUtdanningstilbudRow] = {
-    ZStream.fromIterable(map.values)
-  }
-  override def selectById(compositeId: TestUtdanningstilbudId): ZIO[ZConnection, Throwable, Option[TestUtdanningstilbudRow]] = {
-    ZIO.succeed(map.get(compositeId))
-  }
-  override def selectByIds(compositeIds: Array[TestUtdanningstilbudId]): ZStream[ZConnection, Throwable, TestUtdanningstilbudRow] = {
-    ZStream.fromIterable(compositeIds.flatMap(map.get))
-  }
-  override def selectByIdsTracked(compositeIds: Array[TestUtdanningstilbudId]): ZIO[ZConnection, Throwable, Map[TestUtdanningstilbudId, TestUtdanningstilbudRow]] = {
+
+  def select: SelectBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = SelectBuilderMock(TestUtdanningstilbudFields.structure, ZIO.succeed(Chunk.fromIterable(map.values)), SelectParams.empty)
+
+  def selectAll: ZStream[ZConnection, Throwable, TestUtdanningstilbudRow] = ZStream.fromIterable(map.values)
+
+  def selectById(compositeId: TestUtdanningstilbudId): ZIO[ZConnection, Throwable, Option[TestUtdanningstilbudRow]] = ZIO.succeed(map.get(compositeId))
+
+  def selectByIds(compositeIds: Array[TestUtdanningstilbudId]): ZStream[ZConnection, Throwable, TestUtdanningstilbudRow] = ZStream.fromIterable(compositeIds.flatMap(map.get))
+
+  def selectByIdsTracked(compositeIds: Array[TestUtdanningstilbudId]): ZIO[ZConnection, Throwable, Map[TestUtdanningstilbudId, TestUtdanningstilbudRow]] = {
     selectByIds(compositeIds).runCollect.map { rows =>
       val byId = rows.view.map(x => (x.compositeId, x)).toMap
       compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = {
-    UpdateBuilderMock(UpdateParams.empty, TestUtdanningstilbudFields.structure, map)
-  }
-  override def upsert(unsaved: TestUtdanningstilbudRow): ZIO[ZConnection, Throwable, UpdateResult[TestUtdanningstilbudRow]] = {
+
+  def update: UpdateBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow] = UpdateBuilderMock(UpdateParams.empty, TestUtdanningstilbudFields.structure, map)
+
+  def upsert(unsaved: TestUtdanningstilbudRow): ZIO[ZConnection, Throwable, UpdateResult[TestUtdanningstilbudRow]] = {
     ZIO.succeed {
       map.put(unsaved.compositeId, unsaved): @nowarn
       UpdateResult(1, Chunk.single(unsaved))
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, TestUtdanningstilbudRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, TestUtdanningstilbudRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long] = {
     unsaved.scanZIO(0L) { case (acc, row) =>
       ZIO.succeed {
         map += (row.compositeId -> row)

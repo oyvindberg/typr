@@ -33,33 +33,41 @@ case class IViewRow(
 )
 
 object IViewRow {
-  given reads: Reads[IViewRow] = Reads[IViewRow](json => JsResult.fromTry(
-      Try(
-        IViewRow(
-          id = json.\("id").as(IllustrationId.reads),
-          illustrationid = json.\("illustrationid").as(IllustrationId.reads),
-          diagram = json.\("diagram").toOption.map(_.as(TypoXml.reads)),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[IViewRow] = {
+    Reads[IViewRow](json => JsResult.fromTry(
+        Try(
+          IViewRow(
+            id = json.\("id").as(IllustrationId.reads),
+            illustrationid = json.\("illustrationid").as(IllustrationId.reads),
+            diagram = json.\("diagram").toOption.map(_.as(TypoXml.reads)),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[IViewRow] = RowParser[IViewRow] { row =>
-    Success(
-      IViewRow(
-        id = row(idx + 0)(using IllustrationId.column),
-        illustrationid = row(idx + 1)(using IllustrationId.column),
-        diagram = row(idx + 2)(using Column.columnToOption(using TypoXml.column)),
-        modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[IViewRow] = OWrites[IViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> IllustrationId.writes.writes(o.id),
-      "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
-      "diagram" -> Writes.OptionWrites(using TypoXml.writes).writes(o.diagram),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[IViewRow] = {
+    RowParser[IViewRow] { row =>
+      Success(
+        IViewRow(
+          id = row(idx + 0)(using IllustrationId.column),
+          illustrationid = row(idx + 1)(using IllustrationId.column),
+          diagram = row(idx + 2)(using Column.columnToOption(using TypoXml.column)),
+          modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[IViewRow] = {
+    OWrites[IViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> IllustrationId.writes.writes(o.id),
+        "illustrationid" -> IllustrationId.writes.writes(o.illustrationid),
+        "diagram" -> Writes.OptionWrites(using TypoXml.writes).writes(o.diagram),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

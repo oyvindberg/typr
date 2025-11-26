@@ -37,39 +37,47 @@ case class PscViewRow(
 )
 
 object PscViewRow {
-  given reads: Reads[PscViewRow] = Reads[PscViewRow](json => JsResult.fromTry(
-      Try(
-        PscViewRow(
-          id = json.\("id").as(ProductsubcategoryId.reads),
-          productsubcategoryid = json.\("productsubcategoryid").as(ProductsubcategoryId.reads),
-          productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
-          name = json.\("name").as(Name.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PscViewRow] = {
+    Reads[PscViewRow](json => JsResult.fromTry(
+        Try(
+          PscViewRow(
+            id = json.\("id").as(ProductsubcategoryId.reads),
+            productsubcategoryid = json.\("productsubcategoryid").as(ProductsubcategoryId.reads),
+            productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
+            name = json.\("name").as(Name.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PscViewRow] = RowParser[PscViewRow] { row =>
-    Success(
-      PscViewRow(
-        id = row(idx + 0)(using ProductsubcategoryId.column),
-        productsubcategoryid = row(idx + 1)(using ProductsubcategoryId.column),
-        productcategoryid = row(idx + 2)(using ProductcategoryId.column),
-        name = row(idx + 3)(using Name.column),
-        rowguid = row(idx + 4)(using TypoUUID.column),
-        modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PscViewRow] = OWrites[PscViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductsubcategoryId.writes.writes(o.id),
-      "productsubcategoryid" -> ProductsubcategoryId.writes.writes(o.productsubcategoryid),
-      "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
-      "name" -> Name.writes.writes(o.name),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PscViewRow] = {
+    RowParser[PscViewRow] { row =>
+      Success(
+        PscViewRow(
+          id = row(idx + 0)(using ProductsubcategoryId.column),
+          productsubcategoryid = row(idx + 1)(using ProductsubcategoryId.column),
+          productcategoryid = row(idx + 2)(using ProductcategoryId.column),
+          name = row(idx + 3)(using Name.column),
+          rowguid = row(idx + 4)(using TypoUUID.column),
+          modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PscViewRow] = {
+    OWrites[PscViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductsubcategoryId.writes.writes(o.id),
+        "productsubcategoryid" -> ProductsubcategoryId.writes.writes(o.productsubcategoryid),
+        "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
+        "name" -> Name.writes.writes(o.name),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

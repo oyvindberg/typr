@@ -32,22 +32,26 @@ case class PscViewRow(
 
 object PscViewRow {
   given decoder: Decoder[PscViewRow] = Decoder.forProduct6[PscViewRow, ProductsubcategoryId, ProductsubcategoryId, ProductcategoryId, Name, TypoUUID, TypoLocalDateTime]("id", "productsubcategoryid", "productcategoryid", "name", "rowguid", "modifieddate")(PscViewRow.apply)(using ProductsubcategoryId.decoder, ProductsubcategoryId.decoder, ProductcategoryId.decoder, Name.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PscViewRow] = Encoder.forProduct6[PscViewRow, ProductsubcategoryId, ProductsubcategoryId, ProductcategoryId, Name, TypoUUID, TypoLocalDateTime]("id", "productsubcategoryid", "productcategoryid", "name", "rowguid", "modifieddate")(x => (x.id, x.productsubcategoryid, x.productcategoryid, x.name, x.rowguid, x.modifieddate))(using ProductsubcategoryId.encoder, ProductsubcategoryId.encoder, ProductcategoryId.encoder, Name.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PscViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductsubcategoryId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[PscViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ProductsubcategoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductcategoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PscViewRow(
-      id = arr(0).asInstanceOf[ProductsubcategoryId],
-          productsubcategoryid = arr(1).asInstanceOf[ProductsubcategoryId],
-          productcategoryid = arr(2).asInstanceOf[ProductcategoryId],
-          name = arr(3).asInstanceOf[Name],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ProductsubcategoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductcategoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PscViewRow(
+        id = arr(0).asInstanceOf[ProductsubcategoryId],
+            productsubcategoryid = arr(1).asInstanceOf[ProductsubcategoryId],
+            productcategoryid = arr(2).asInstanceOf[ProductcategoryId],
+            name = arr(3).asInstanceOf[Name],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

@@ -34,55 +34,63 @@ case class PpViewRow(
 )
 
 object PpViewRow {
-  given jdbcDecoder: JdbcDecoder[PpViewRow] = new JdbcDecoder[PpViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PpViewRow) =
-      columIndex + 6 ->
-        PpViewRow(
-          id = ProductphotoId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          productphotoid = ProductphotoId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          thumbnailphoto = JdbcDecoder.optionDecoder(using TypoBytea.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
-          thumbnailphotofilename = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
-          largephoto = JdbcDecoder.optionDecoder(using TypoBytea.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
-          largephotofilename = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[PpViewRow] = {
+    new JdbcDecoder[PpViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PpViewRow) =
+        columIndex + 6 ->
+          PpViewRow(
+            id = ProductphotoId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            productphotoid = ProductphotoId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            thumbnailphoto = JdbcDecoder.optionDecoder(using TypoBytea.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            thumbnailphotofilename = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            largephoto = JdbcDecoder.optionDecoder(using TypoBytea.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            largephotofilename = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[PpViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ProductphotoId.jsonDecoder))
-    val productphotoid = jsonObj.get("productphotoid").toRight("Missing field 'productphotoid'").flatMap(_.as(using ProductphotoId.jsonDecoder))
-    val thumbnailphoto = jsonObj.get("thumbnailphoto").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
-    val thumbnailphotofilename = jsonObj.get("thumbnailphotofilename").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val largephoto = jsonObj.get("largephoto").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
-    val largephotofilename = jsonObj.get("largephotofilename").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && productphotoid.isRight && thumbnailphoto.isRight && thumbnailphotofilename.isRight && largephoto.isRight && largephotofilename.isRight && modifieddate.isRight)
-      Right(PpViewRow(id = id.toOption.get, productphotoid = productphotoid.toOption.get, thumbnailphoto = thumbnailphoto.toOption.get, thumbnailphotofilename = thumbnailphotofilename.toOption.get, largephoto = largephoto.toOption.get, largephotofilename = largephotofilename.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[PpViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ProductphotoId.jsonDecoder))
+      val productphotoid = jsonObj.get("productphotoid").toRight("Missing field 'productphotoid'").flatMap(_.as(using ProductphotoId.jsonDecoder))
+      val thumbnailphoto = jsonObj.get("thumbnailphoto").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
+      val thumbnailphotofilename = jsonObj.get("thumbnailphotofilename").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val largephoto = jsonObj.get("largephoto").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
+      val largephotofilename = jsonObj.get("largephotofilename").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && productphotoid.isRight && thumbnailphoto.isRight && thumbnailphotofilename.isRight && largephoto.isRight && largephotofilename.isRight && modifieddate.isRight)
+        Right(PpViewRow(id = id.toOption.get, productphotoid = productphotoid.toOption.get, thumbnailphoto = thumbnailphoto.toOption.get, thumbnailphotofilename = thumbnailphotofilename.toOption.get, largephoto = largephoto.toOption.get, largephotofilename = largephotofilename.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[PpViewRow] = new JsonEncoder[PpViewRow] {
-    override def unsafeEncode(a: PpViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      ProductphotoId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""productphotoid":""")
-      ProductphotoId.jsonEncoder.unsafeEncode(a.productphotoid, indent, out)
-      out.write(",")
-      out.write(""""thumbnailphoto":""")
-      JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.thumbnailphoto, indent, out)
-      out.write(",")
-      out.write(""""thumbnailphotofilename":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.thumbnailphotofilename, indent, out)
-      out.write(",")
-      out.write(""""largephoto":""")
-      JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.largephoto, indent, out)
-      out.write(",")
-      out.write(""""largephotofilename":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.largephotofilename, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[PpViewRow] = {
+    new JsonEncoder[PpViewRow] {
+      override def unsafeEncode(a: PpViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        ProductphotoId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""productphotoid":""")
+        ProductphotoId.jsonEncoder.unsafeEncode(a.productphotoid, indent, out)
+        out.write(",")
+        out.write(""""thumbnailphoto":""")
+        JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.thumbnailphoto, indent, out)
+        out.write(",")
+        out.write(""""thumbnailphotofilename":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.thumbnailphotofilename, indent, out)
+        out.write(",")
+        out.write(""""largephoto":""")
+        JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.largephoto, indent, out)
+        out.write(",")
+        out.write(""""largephotofilename":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.largephotofilename, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

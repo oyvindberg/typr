@@ -20,49 +20,69 @@ import zio.json.JsonEncoder
 case class TypoMoney(value: BigDecimal)
 
 object TypoMoney {
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoMoney]] = JdbcDecoder[Array[TypoMoney]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoMoney(BigDecimal(x.asInstanceOf[java.math.BigDecimal])))
-    },
-    "Array[java.math.BigDecimal]"
-  )
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoMoney]] = {
+    JdbcDecoder[Array[TypoMoney]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoMoney(BigDecimal(x.asInstanceOf[java.math.BigDecimal])))
+      },
+      "Array[java.math.BigDecimal]"
+    )
+  }
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TypoMoney]] = JdbcEncoder.singleParamEncoder(arraySetter)
-  implicit lazy val arraySetter: Setter[Array[TypoMoney]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "money",
-        v.map { vv =>
-          vv.value.bigDecimal
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  implicit lazy val bijection: Bijection[TypoMoney, BigDecimal] = Bijection[TypoMoney, BigDecimal](_.value)(TypoMoney.apply)
-  implicit lazy val jdbcDecoder: JdbcDecoder[TypoMoney] = JdbcDecoder[TypoMoney](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoMoney(BigDecimal(v.asInstanceOf[java.math.BigDecimal]))
-    },
-    "java.math.BigDecimal"
-  )
-  implicit lazy val jdbcEncoder: JdbcEncoder[TypoMoney] = JdbcEncoder.singleParamEncoder(setter)
-  implicit lazy val jsonDecoder: JsonDecoder[TypoMoney] = JsonDecoder.scalaBigDecimal.map(TypoMoney.apply)
-  implicit lazy val jsonEncoder: JsonEncoder[TypoMoney] = JsonEncoder.scalaBigDecimal.contramap(_.value)
-  implicit lazy val pgType: PGType[TypoMoney] = PGType.instance[TypoMoney]("money", Types.OTHER)
-  implicit lazy val setter: Setter[TypoMoney] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  implicit lazy val arraySetter: Setter[Array[TypoMoney]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value.bigDecimal
-      )
-    },
-    "money"
-  )
-  implicit lazy val text: Text[TypoMoney] = new Text[TypoMoney] {
-    override def unsafeEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeArrayEncode(v.value, sb)
+        ps.getConnection.createArrayOf(
+          "money",
+          v.map { vv =>
+            vv.value.bigDecimal
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  implicit lazy val bijection: Bijection[TypoMoney, BigDecimal] = Bijection.apply[TypoMoney, BigDecimal](_.value)(TypoMoney.apply)
+
+  implicit lazy val jdbcDecoder: JdbcDecoder[TypoMoney] = {
+    JdbcDecoder[TypoMoney](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoMoney(BigDecimal(v.asInstanceOf[java.math.BigDecimal]))
+      },
+      "java.math.BigDecimal"
+    )
+  }
+
+  implicit lazy val jdbcEncoder: JdbcEncoder[TypoMoney] = JdbcEncoder.singleParamEncoder(setter)
+
+  implicit lazy val jsonDecoder: JsonDecoder[TypoMoney] = JsonDecoder.scalaBigDecimal.map(TypoMoney.apply)
+
+  implicit lazy val jsonEncoder: JsonEncoder[TypoMoney] = JsonEncoder.scalaBigDecimal.contramap(_.value)
+
+  implicit lazy val pgText: Text[TypoMoney] = {
+    new Text[TypoMoney] {
+      override def unsafeEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TypoMoney, sb: StringBuilder): Unit = Text.bigDecimalInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val pgType: PGType[TypoMoney] = PGType.instance[TypoMoney]("money", Types.OTHER)
+
+  implicit lazy val setter: Setter[TypoMoney] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value.bigDecimal
+        )
+      },
+      "money"
+    )
   }
 }

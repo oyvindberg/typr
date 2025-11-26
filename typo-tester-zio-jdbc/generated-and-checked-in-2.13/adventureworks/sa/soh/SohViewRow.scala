@@ -83,150 +83,158 @@ case class SohViewRow(
 )
 
 object SohViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[SohViewRow] = new JdbcDecoder[SohViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SohViewRow) =
-      columIndex + 25 ->
-        SohViewRow(
-          id = SalesorderheaderId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          salesorderid = SalesorderheaderId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          revisionnumber = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          orderdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-          duedate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-          shipdate = JdbcDecoder.optionDecoder(TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
-          status = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
-          onlineorderflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
-          purchaseordernumber = JdbcDecoder.optionDecoder(OrderNumber.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
-          accountnumber = JdbcDecoder.optionDecoder(AccountNumber.jdbcDecoder).unsafeDecode(columIndex + 9, rs)._2,
-          customerid = CustomerId.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
-          salespersonid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 11, rs)._2,
-          territoryid = JdbcDecoder.optionDecoder(SalesterritoryId.jdbcDecoder).unsafeDecode(columIndex + 12, rs)._2,
-          billtoaddressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 13, rs)._2,
-          shiptoaddressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 14, rs)._2,
-          shipmethodid = ShipmethodId.jdbcDecoder.unsafeDecode(columIndex + 15, rs)._2,
-          creditcardid = JdbcDecoder.optionDecoder(CustomCreditcardId.jdbcDecoder).unsafeDecode(columIndex + 16, rs)._2,
-          creditcardapprovalcode = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 17, rs)._2,
-          currencyrateid = JdbcDecoder.optionDecoder(CurrencyrateId.jdbcDecoder).unsafeDecode(columIndex + 18, rs)._2,
-          subtotal = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 19, rs)._2,
-          taxamt = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 20, rs)._2,
-          freight = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 21, rs)._2,
-          totaldue = JdbcDecoder.optionDecoder(JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 22, rs)._2,
-          comment = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 23, rs)._2,
-          rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 24, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 25, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[SohViewRow] = {
+    new JdbcDecoder[SohViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SohViewRow) =
+        columIndex + 25 ->
+          SohViewRow(
+            id = SalesorderheaderId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            salesorderid = SalesorderheaderId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            revisionnumber = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            orderdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            duedate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            shipdate = JdbcDecoder.optionDecoder(TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            status = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
+            onlineorderflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
+            purchaseordernumber = JdbcDecoder.optionDecoder(OrderNumber.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
+            accountnumber = JdbcDecoder.optionDecoder(AccountNumber.jdbcDecoder).unsafeDecode(columIndex + 9, rs)._2,
+            customerid = CustomerId.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
+            salespersonid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 11, rs)._2,
+            territoryid = JdbcDecoder.optionDecoder(SalesterritoryId.jdbcDecoder).unsafeDecode(columIndex + 12, rs)._2,
+            billtoaddressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 13, rs)._2,
+            shiptoaddressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 14, rs)._2,
+            shipmethodid = ShipmethodId.jdbcDecoder.unsafeDecode(columIndex + 15, rs)._2,
+            creditcardid = JdbcDecoder.optionDecoder(CustomCreditcardId.jdbcDecoder).unsafeDecode(columIndex + 16, rs)._2,
+            creditcardapprovalcode = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 17, rs)._2,
+            currencyrateid = JdbcDecoder.optionDecoder(CurrencyrateId.jdbcDecoder).unsafeDecode(columIndex + 18, rs)._2,
+            subtotal = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 19, rs)._2,
+            taxamt = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 20, rs)._2,
+            freight = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 21, rs)._2,
+            totaldue = JdbcDecoder.optionDecoder(JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 22, rs)._2,
+            comment = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 23, rs)._2,
+            rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 24, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 25, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[SohViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(SalesorderheaderId.jsonDecoder))
-    val salesorderid = jsonObj.get("salesorderid").toRight("Missing field 'salesorderid'").flatMap(_.as(SalesorderheaderId.jsonDecoder))
-    val revisionnumber = jsonObj.get("revisionnumber").toRight("Missing field 'revisionnumber'").flatMap(_.as(TypoShort.jsonDecoder))
-    val orderdate = jsonObj.get("orderdate").toRight("Missing field 'orderdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    val duedate = jsonObj.get("duedate").toRight("Missing field 'duedate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    val shipdate = jsonObj.get("shipdate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDateTime.jsonDecoder)))
-    val status = jsonObj.get("status").toRight("Missing field 'status'").flatMap(_.as(TypoShort.jsonDecoder))
-    val onlineorderflag = jsonObj.get("onlineorderflag").toRight("Missing field 'onlineorderflag'").flatMap(_.as(Flag.jsonDecoder))
-    val purchaseordernumber = jsonObj.get("purchaseordernumber").fold[Either[String, Option[OrderNumber]]](Right(None))(_.as(JsonDecoder.option(OrderNumber.jsonDecoder)))
-    val accountnumber = jsonObj.get("accountnumber").fold[Either[String, Option[AccountNumber]]](Right(None))(_.as(JsonDecoder.option(AccountNumber.jsonDecoder)))
-    val customerid = jsonObj.get("customerid").toRight("Missing field 'customerid'").flatMap(_.as(CustomerId.jsonDecoder))
-    val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-    val territoryid = jsonObj.get("territoryid").fold[Either[String, Option[SalesterritoryId]]](Right(None))(_.as(JsonDecoder.option(SalesterritoryId.jsonDecoder)))
-    val billtoaddressid = jsonObj.get("billtoaddressid").toRight("Missing field 'billtoaddressid'").flatMap(_.as(AddressId.jsonDecoder))
-    val shiptoaddressid = jsonObj.get("shiptoaddressid").toRight("Missing field 'shiptoaddressid'").flatMap(_.as(AddressId.jsonDecoder))
-    val shipmethodid = jsonObj.get("shipmethodid").toRight("Missing field 'shipmethodid'").flatMap(_.as(ShipmethodId.jsonDecoder))
-    val creditcardid = jsonObj.get("creditcardid").fold[Either[String, Option[CustomCreditcardId]]](Right(None))(_.as(JsonDecoder.option(CustomCreditcardId.jsonDecoder)))
-    val creditcardapprovalcode = jsonObj.get("creditcardapprovalcode").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-    val currencyrateid = jsonObj.get("currencyrateid").fold[Either[String, Option[CurrencyrateId]]](Right(None))(_.as(JsonDecoder.option(CurrencyrateId.jsonDecoder)))
-    val subtotal = jsonObj.get("subtotal").toRight("Missing field 'subtotal'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
-    val taxamt = jsonObj.get("taxamt").toRight("Missing field 'taxamt'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
-    val freight = jsonObj.get("freight").toRight("Missing field 'freight'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
-    val totaldue = jsonObj.get("totaldue").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.scalaBigDecimal)))
-    val comment = jsonObj.get("comment").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && salesorderid.isRight && revisionnumber.isRight && orderdate.isRight && duedate.isRight && shipdate.isRight && status.isRight && onlineorderflag.isRight && purchaseordernumber.isRight && accountnumber.isRight && customerid.isRight && salespersonid.isRight && territoryid.isRight && billtoaddressid.isRight && shiptoaddressid.isRight && shipmethodid.isRight && creditcardid.isRight && creditcardapprovalcode.isRight && currencyrateid.isRight && subtotal.isRight && taxamt.isRight && freight.isRight && totaldue.isRight && comment.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(SohViewRow(id = id.toOption.get, salesorderid = salesorderid.toOption.get, revisionnumber = revisionnumber.toOption.get, orderdate = orderdate.toOption.get, duedate = duedate.toOption.get, shipdate = shipdate.toOption.get, status = status.toOption.get, onlineorderflag = onlineorderflag.toOption.get, purchaseordernumber = purchaseordernumber.toOption.get, accountnumber = accountnumber.toOption.get, customerid = customerid.toOption.get, salespersonid = salespersonid.toOption.get, territoryid = territoryid.toOption.get, billtoaddressid = billtoaddressid.toOption.get, shiptoaddressid = shiptoaddressid.toOption.get, shipmethodid = shipmethodid.toOption.get, creditcardid = creditcardid.toOption.get, creditcardapprovalcode = creditcardapprovalcode.toOption.get, currencyrateid = currencyrateid.toOption.get, subtotal = subtotal.toOption.get, taxamt = taxamt.toOption.get, freight = freight.toOption.get, totaldue = totaldue.toOption.get, comment = comment.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[SohViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(SalesorderheaderId.jsonDecoder))
+      val salesorderid = jsonObj.get("salesorderid").toRight("Missing field 'salesorderid'").flatMap(_.as(SalesorderheaderId.jsonDecoder))
+      val revisionnumber = jsonObj.get("revisionnumber").toRight("Missing field 'revisionnumber'").flatMap(_.as(TypoShort.jsonDecoder))
+      val orderdate = jsonObj.get("orderdate").toRight("Missing field 'orderdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      val duedate = jsonObj.get("duedate").toRight("Missing field 'duedate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      val shipdate = jsonObj.get("shipdate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDateTime.jsonDecoder)))
+      val status = jsonObj.get("status").toRight("Missing field 'status'").flatMap(_.as(TypoShort.jsonDecoder))
+      val onlineorderflag = jsonObj.get("onlineorderflag").toRight("Missing field 'onlineorderflag'").flatMap(_.as(Flag.jsonDecoder))
+      val purchaseordernumber = jsonObj.get("purchaseordernumber").fold[Either[String, Option[OrderNumber]]](Right(None))(_.as(JsonDecoder.option(OrderNumber.jsonDecoder)))
+      val accountnumber = jsonObj.get("accountnumber").fold[Either[String, Option[AccountNumber]]](Right(None))(_.as(JsonDecoder.option(AccountNumber.jsonDecoder)))
+      val customerid = jsonObj.get("customerid").toRight("Missing field 'customerid'").flatMap(_.as(CustomerId.jsonDecoder))
+      val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
+      val territoryid = jsonObj.get("territoryid").fold[Either[String, Option[SalesterritoryId]]](Right(None))(_.as(JsonDecoder.option(SalesterritoryId.jsonDecoder)))
+      val billtoaddressid = jsonObj.get("billtoaddressid").toRight("Missing field 'billtoaddressid'").flatMap(_.as(AddressId.jsonDecoder))
+      val shiptoaddressid = jsonObj.get("shiptoaddressid").toRight("Missing field 'shiptoaddressid'").flatMap(_.as(AddressId.jsonDecoder))
+      val shipmethodid = jsonObj.get("shipmethodid").toRight("Missing field 'shipmethodid'").flatMap(_.as(ShipmethodId.jsonDecoder))
+      val creditcardid = jsonObj.get("creditcardid").fold[Either[String, Option[CustomCreditcardId]]](Right(None))(_.as(JsonDecoder.option(CustomCreditcardId.jsonDecoder)))
+      val creditcardapprovalcode = jsonObj.get("creditcardapprovalcode").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val currencyrateid = jsonObj.get("currencyrateid").fold[Either[String, Option[CurrencyrateId]]](Right(None))(_.as(JsonDecoder.option(CurrencyrateId.jsonDecoder)))
+      val subtotal = jsonObj.get("subtotal").toRight("Missing field 'subtotal'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
+      val taxamt = jsonObj.get("taxamt").toRight("Missing field 'taxamt'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
+      val freight = jsonObj.get("freight").toRight("Missing field 'freight'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
+      val totaldue = jsonObj.get("totaldue").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.scalaBigDecimal)))
+      val comment = jsonObj.get("comment").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && salesorderid.isRight && revisionnumber.isRight && orderdate.isRight && duedate.isRight && shipdate.isRight && status.isRight && onlineorderflag.isRight && purchaseordernumber.isRight && accountnumber.isRight && customerid.isRight && salespersonid.isRight && territoryid.isRight && billtoaddressid.isRight && shiptoaddressid.isRight && shipmethodid.isRight && creditcardid.isRight && creditcardapprovalcode.isRight && currencyrateid.isRight && subtotal.isRight && taxamt.isRight && freight.isRight && totaldue.isRight && comment.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(SohViewRow(id = id.toOption.get, salesorderid = salesorderid.toOption.get, revisionnumber = revisionnumber.toOption.get, orderdate = orderdate.toOption.get, duedate = duedate.toOption.get, shipdate = shipdate.toOption.get, status = status.toOption.get, onlineorderflag = onlineorderflag.toOption.get, purchaseordernumber = purchaseordernumber.toOption.get, accountnumber = accountnumber.toOption.get, customerid = customerid.toOption.get, salespersonid = salespersonid.toOption.get, territoryid = territoryid.toOption.get, billtoaddressid = billtoaddressid.toOption.get, shiptoaddressid = shiptoaddressid.toOption.get, shipmethodid = shipmethodid.toOption.get, creditcardid = creditcardid.toOption.get, creditcardapprovalcode = creditcardapprovalcode.toOption.get, currencyrateid = currencyrateid.toOption.get, subtotal = subtotal.toOption.get, taxamt = taxamt.toOption.get, freight = freight.toOption.get, totaldue = totaldue.toOption.get, comment = comment.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[SohViewRow] = new JsonEncoder[SohViewRow] {
-    override def unsafeEncode(a: SohViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      SalesorderheaderId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""salesorderid":""")
-      SalesorderheaderId.jsonEncoder.unsafeEncode(a.salesorderid, indent, out)
-      out.write(",")
-      out.write(""""revisionnumber":""")
-      TypoShort.jsonEncoder.unsafeEncode(a.revisionnumber, indent, out)
-      out.write(",")
-      out.write(""""orderdate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.orderdate, indent, out)
-      out.write(",")
-      out.write(""""duedate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.duedate, indent, out)
-      out.write(",")
-      out.write(""""shipdate":""")
-      JsonEncoder.option(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.shipdate, indent, out)
-      out.write(",")
-      out.write(""""status":""")
-      TypoShort.jsonEncoder.unsafeEncode(a.status, indent, out)
-      out.write(",")
-      out.write(""""onlineorderflag":""")
-      Flag.jsonEncoder.unsafeEncode(a.onlineorderflag, indent, out)
-      out.write(",")
-      out.write(""""purchaseordernumber":""")
-      JsonEncoder.option(OrderNumber.jsonEncoder).unsafeEncode(a.purchaseordernumber, indent, out)
-      out.write(",")
-      out.write(""""accountnumber":""")
-      JsonEncoder.option(AccountNumber.jsonEncoder).unsafeEncode(a.accountnumber, indent, out)
-      out.write(",")
-      out.write(""""customerid":""")
-      CustomerId.jsonEncoder.unsafeEncode(a.customerid, indent, out)
-      out.write(",")
-      out.write(""""salespersonid":""")
-      JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
-      out.write(",")
-      out.write(""""territoryid":""")
-      JsonEncoder.option(SalesterritoryId.jsonEncoder).unsafeEncode(a.territoryid, indent, out)
-      out.write(",")
-      out.write(""""billtoaddressid":""")
-      AddressId.jsonEncoder.unsafeEncode(a.billtoaddressid, indent, out)
-      out.write(",")
-      out.write(""""shiptoaddressid":""")
-      AddressId.jsonEncoder.unsafeEncode(a.shiptoaddressid, indent, out)
-      out.write(",")
-      out.write(""""shipmethodid":""")
-      ShipmethodId.jsonEncoder.unsafeEncode(a.shipmethodid, indent, out)
-      out.write(",")
-      out.write(""""creditcardid":""")
-      JsonEncoder.option(CustomCreditcardId.jsonEncoder).unsafeEncode(a.creditcardid, indent, out)
-      out.write(",")
-      out.write(""""creditcardapprovalcode":""")
-      JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.creditcardapprovalcode, indent, out)
-      out.write(",")
-      out.write(""""currencyrateid":""")
-      JsonEncoder.option(CurrencyrateId.jsonEncoder).unsafeEncode(a.currencyrateid, indent, out)
-      out.write(",")
-      out.write(""""subtotal":""")
-      JsonEncoder.scalaBigDecimal.unsafeEncode(a.subtotal, indent, out)
-      out.write(",")
-      out.write(""""taxamt":""")
-      JsonEncoder.scalaBigDecimal.unsafeEncode(a.taxamt, indent, out)
-      out.write(",")
-      out.write(""""freight":""")
-      JsonEncoder.scalaBigDecimal.unsafeEncode(a.freight, indent, out)
-      out.write(",")
-      out.write(""""totaldue":""")
-      JsonEncoder.option(JsonEncoder.scalaBigDecimal).unsafeEncode(a.totaldue, indent, out)
-      out.write(",")
-      out.write(""""comment":""")
-      JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.comment, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[SohViewRow] = {
+    new JsonEncoder[SohViewRow] {
+      override def unsafeEncode(a: SohViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        SalesorderheaderId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""salesorderid":""")
+        SalesorderheaderId.jsonEncoder.unsafeEncode(a.salesorderid, indent, out)
+        out.write(",")
+        out.write(""""revisionnumber":""")
+        TypoShort.jsonEncoder.unsafeEncode(a.revisionnumber, indent, out)
+        out.write(",")
+        out.write(""""orderdate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.orderdate, indent, out)
+        out.write(",")
+        out.write(""""duedate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.duedate, indent, out)
+        out.write(",")
+        out.write(""""shipdate":""")
+        JsonEncoder.option(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.shipdate, indent, out)
+        out.write(",")
+        out.write(""""status":""")
+        TypoShort.jsonEncoder.unsafeEncode(a.status, indent, out)
+        out.write(",")
+        out.write(""""onlineorderflag":""")
+        Flag.jsonEncoder.unsafeEncode(a.onlineorderflag, indent, out)
+        out.write(",")
+        out.write(""""purchaseordernumber":""")
+        JsonEncoder.option(OrderNumber.jsonEncoder).unsafeEncode(a.purchaseordernumber, indent, out)
+        out.write(",")
+        out.write(""""accountnumber":""")
+        JsonEncoder.option(AccountNumber.jsonEncoder).unsafeEncode(a.accountnumber, indent, out)
+        out.write(",")
+        out.write(""""customerid":""")
+        CustomerId.jsonEncoder.unsafeEncode(a.customerid, indent, out)
+        out.write(",")
+        out.write(""""salespersonid":""")
+        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
+        out.write(",")
+        out.write(""""territoryid":""")
+        JsonEncoder.option(SalesterritoryId.jsonEncoder).unsafeEncode(a.territoryid, indent, out)
+        out.write(",")
+        out.write(""""billtoaddressid":""")
+        AddressId.jsonEncoder.unsafeEncode(a.billtoaddressid, indent, out)
+        out.write(",")
+        out.write(""""shiptoaddressid":""")
+        AddressId.jsonEncoder.unsafeEncode(a.shiptoaddressid, indent, out)
+        out.write(",")
+        out.write(""""shipmethodid":""")
+        ShipmethodId.jsonEncoder.unsafeEncode(a.shipmethodid, indent, out)
+        out.write(",")
+        out.write(""""creditcardid":""")
+        JsonEncoder.option(CustomCreditcardId.jsonEncoder).unsafeEncode(a.creditcardid, indent, out)
+        out.write(",")
+        out.write(""""creditcardapprovalcode":""")
+        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.creditcardapprovalcode, indent, out)
+        out.write(",")
+        out.write(""""currencyrateid":""")
+        JsonEncoder.option(CurrencyrateId.jsonEncoder).unsafeEncode(a.currencyrateid, indent, out)
+        out.write(",")
+        out.write(""""subtotal":""")
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.subtotal, indent, out)
+        out.write(",")
+        out.write(""""taxamt":""")
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.taxamt, indent, out)
+        out.write(",")
+        out.write(""""freight":""")
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.freight, indent, out)
+        out.write(",")
+        out.write(""""totaldue":""")
+        JsonEncoder.option(JsonEncoder.scalaBigDecimal).unsafeEncode(a.totaldue, indent, out)
+        out.write(",")
+        out.write(""""comment":""")
+        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.comment, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

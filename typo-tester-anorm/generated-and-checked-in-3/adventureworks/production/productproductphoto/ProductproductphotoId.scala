@@ -20,20 +20,26 @@ case class ProductproductphotoId(
   productid: ProductId,
   productphotoid: ProductphotoId
 )
+
 object ProductproductphotoId {
-  given reads: Reads[ProductproductphotoId] = Reads[ProductproductphotoId](json => JsResult.fromTry(
-      Try(
-        ProductproductphotoId(
-          productid = json.\("productid").as(ProductId.reads),
-          productphotoid = json.\("productphotoid").as(ProductphotoId.reads)
+  given reads: Reads[ProductproductphotoId] = {
+    Reads[ProductproductphotoId](json => JsResult.fromTry(
+        Try(
+          ProductproductphotoId(
+            productid = json.\("productid").as(ProductId.reads),
+            productphotoid = json.\("productphotoid").as(ProductphotoId.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[ProductproductphotoId] = OWrites[ProductproductphotoId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[ProductproductphotoId] = {
+    OWrites[ProductproductphotoId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid)
+      ))
+    )
+  }
 }

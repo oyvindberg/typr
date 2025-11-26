@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait TransactionhistoryarchiveRepo {
   def delete: DeleteBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow]
+
   def deleteById(transactionid: TransactionhistoryarchiveId): ConnectionIO[Boolean]
+
   def deleteByIds(transactionids: Array[TransactionhistoryarchiveId]): ConnectionIO[Int]
+
   def insert(unsaved: TransactionhistoryarchiveRow): ConnectionIO[TransactionhistoryarchiveRow]
+
   def insert(unsaved: TransactionhistoryarchiveRowUnsaved): ConnectionIO[TransactionhistoryarchiveRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, TransactionhistoryarchiveRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, TransactionhistoryarchiveRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, TransactionhistoryarchiveRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, TransactionhistoryarchiveRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow]
+
   def selectAll: Stream[ConnectionIO, TransactionhistoryarchiveRow]
+
   def selectById(transactionid: TransactionhistoryarchiveId): ConnectionIO[Option[TransactionhistoryarchiveRow]]
+
   def selectByIds(transactionids: Array[TransactionhistoryarchiveId]): Stream[ConnectionIO, TransactionhistoryarchiveRow]
+
   def selectByIdsTracked(transactionids: Array[TransactionhistoryarchiveId]): ConnectionIO[Map[TransactionhistoryarchiveId, TransactionhistoryarchiveRow]]
+
   def update: UpdateBuilder[TransactionhistoryarchiveFields, TransactionhistoryarchiveRow]
+
   def update(row: TransactionhistoryarchiveRow): ConnectionIO[Option[TransactionhistoryarchiveRow]]
+
   def upsert(unsaved: TransactionhistoryarchiveRow): ConnectionIO[TransactionhistoryarchiveRow]
+
   def upsertBatch(unsaved: List[TransactionhistoryarchiveRow]): Stream[ConnectionIO, TransactionhistoryarchiveRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, TransactionhistoryarchiveRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, TransactionhistoryarchiveRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

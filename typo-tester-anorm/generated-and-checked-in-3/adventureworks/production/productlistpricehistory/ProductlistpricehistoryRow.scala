@@ -22,74 +22,112 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: production.productlistpricehistory
-    Changes in the list price of a product over time.
-    Composite primary key: productid, startdate */
+ * Changes in the list price of a product over time.
+ * Composite primary key: productid, startdate
+ */
 case class ProductlistpricehistoryRow(
   /** Product identification number. Foreign key to Product.ProductID
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** List price start date.
-      Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL))) */
+   * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
+   */
   startdate: TypoLocalDateTime,
   /** List price end date
-      Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL))) */
+   * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
+   */
   enddate: Option[TypoLocalDateTime],
   /** Product list price.
-      Constraint CK_ProductListPriceHistory_ListPrice affecting columns listprice: ((listprice > 0.00)) */
+   * Constraint CK_ProductListPriceHistory_ListPrice affecting columns listprice: ((listprice > 0.00))
+   */
   listprice: BigDecimal,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: ProductlistpricehistoryId = ProductlistpricehistoryId(productid, startdate)
-   val id = compositeId
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductlistpricehistoryRowUnsaved =
-     ProductlistpricehistoryRowUnsaved(productid, startdate, enddate, listprice, modifieddate)
- }
+) {
+  def compositeId: ProductlistpricehistoryId = new ProductlistpricehistoryId(productid, startdate)
 
-object ProductlistpricehistoryRow {
-  def apply(compositeId: ProductlistpricehistoryId, enddate: Option[TypoLocalDateTime], listprice: BigDecimal, modifieddate: TypoLocalDateTime) =
-    new ProductlistpricehistoryRow(compositeId.productid, compositeId.startdate, enddate, listprice, modifieddate)
-  given reads: Reads[ProductlistpricehistoryRow] = Reads[ProductlistpricehistoryRow](json => JsResult.fromTry(
-      Try(
-        ProductlistpricehistoryRow(
-          productid = json.\("productid").as(ProductId.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-          enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-          listprice = json.\("listprice").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[ProductlistpricehistoryRow] = RowParser[ProductlistpricehistoryRow] { row =>
-    Success(
-      ProductlistpricehistoryRow(
-        productid = row(idx + 0)(using ProductId.column),
-        startdate = row(idx + 1)(using TypoLocalDateTime.column),
-        enddate = row(idx + 2)(using Column.columnToOption(using TypoLocalDateTime.column)),
-        listprice = row(idx + 3)(using Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
-      )
+  def id: ProductlistpricehistoryId = this.compositeId
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): ProductlistpricehistoryRowUnsaved = {
+    new ProductlistpricehistoryRowUnsaved(
+      productid,
+      startdate,
+      enddate,
+      listprice,
+      modifieddate
     )
   }
-  given text: Text[ProductlistpricehistoryRow] = Text.instance[ProductlistpricehistoryRow]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.startdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoLocalDateTime.text).unsafeEncode(row.enddate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.listprice, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object ProductlistpricehistoryRow {
+  def apply(
+    compositeId: ProductlistpricehistoryId,
+    enddate: Option[TypoLocalDateTime],
+    listprice: BigDecimal,
+    modifieddate: TypoLocalDateTime
+  ): ProductlistpricehistoryRow = {
+    new ProductlistpricehistoryRow(
+      compositeId.productid,
+      compositeId.startdate,
+      enddate,
+      listprice,
+      modifieddate
+    )
   }
-  given writes: OWrites[ProductlistpricehistoryRow] = OWrites[ProductlistpricehistoryRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-      "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
-      "listprice" -> Writes.BigDecimalWrites.writes(o.listprice),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given pgText: Text[ProductlistpricehistoryRow] = {
+    Text.instance[ProductlistpricehistoryRow]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.startdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoLocalDateTime.pgText).unsafeEncode(row.enddate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.listprice, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[ProductlistpricehistoryRow] = {
+    Reads[ProductlistpricehistoryRow](json => JsResult.fromTry(
+        Try(
+          ProductlistpricehistoryRow(
+            productid = json.\("productid").as(ProductId.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads),
+            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            listprice = json.\("listprice").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[ProductlistpricehistoryRow] = {
+    RowParser[ProductlistpricehistoryRow] { row =>
+      Success(
+        ProductlistpricehistoryRow(
+          productid = row(idx + 0)(using ProductId.column),
+          startdate = row(idx + 1)(using TypoLocalDateTime.column),
+          enddate = row(idx + 2)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          listprice = row(idx + 3)(using Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[ProductlistpricehistoryRow] = {
+    OWrites[ProductlistpricehistoryRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
+        "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
+        "listprice" -> Writes.BigDecimalWrites.writes(o.listprice),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

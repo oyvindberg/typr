@@ -26,18 +26,22 @@ case class CtViewRow(
 
 object CtViewRow {
   given decoder: Decoder[CtViewRow] = Decoder.forProduct4[CtViewRow, ContacttypeId, ContacttypeId, Name, TypoLocalDateTime]("id", "contacttypeid", "name", "modifieddate")(CtViewRow.apply)(using ContacttypeId.decoder, ContacttypeId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[CtViewRow] = Encoder.forProduct4[CtViewRow, ContacttypeId, ContacttypeId, Name, TypoLocalDateTime]("id", "contacttypeid", "name", "modifieddate")(x => (x.id, x.contacttypeid, x.name, x.modifieddate))(using ContacttypeId.encoder, ContacttypeId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[CtViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ContacttypeId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[CtViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ContacttypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    CtViewRow(
-      id = arr(0).asInstanceOf[ContacttypeId],
-          contacttypeid = arr(1).asInstanceOf[ContacttypeId],
-          name = arr(2).asInstanceOf[Name],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ContacttypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      CtViewRow(
+        id = arr(0).asInstanceOf[ContacttypeId],
+            contacttypeid = arr(1).asInstanceOf[ContacttypeId],
+            name = arr(2).asInstanceOf[Name],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

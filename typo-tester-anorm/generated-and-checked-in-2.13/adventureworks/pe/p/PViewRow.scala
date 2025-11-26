@@ -57,63 +57,71 @@ case class PViewRow(
 )
 
 object PViewRow {
-  implicit lazy val reads: Reads[PViewRow] = Reads[PViewRow](json => JsResult.fromTry(
-      Try(
-        PViewRow(
-          id = json.\("id").as(BusinessentityId.reads),
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          persontype = json.\("persontype").as(Reads.StringReads),
-          namestyle = json.\("namestyle").as(NameStyle.reads),
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads),
-          suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-          emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
-          additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads)),
-          demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[PViewRow] = {
+    Reads[PViewRow](json => JsResult.fromTry(
+        Try(
+          PViewRow(
+            id = json.\("id").as(BusinessentityId.reads),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            persontype = json.\("persontype").as(Reads.StringReads),
+            namestyle = json.\("namestyle").as(NameStyle.reads),
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads),
+            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
+            additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads)),
+            demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PViewRow] = RowParser[PViewRow] { row =>
-    Success(
-      PViewRow(
-        id = row(idx + 0)(BusinessentityId.column),
-        businessentityid = row(idx + 1)(BusinessentityId.column),
-        persontype = row(idx + 2)(Column.columnToString),
-        namestyle = row(idx + 3)(NameStyle.column),
-        title = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-        firstname = row(idx + 5)(/* user-picked */ FirstName.column),
-        middlename = row(idx + 6)(Column.columnToOption(Name.column)),
-        lastname = row(idx + 7)(Name.column),
-        suffix = row(idx + 8)(Column.columnToOption(Column.columnToString)),
-        emailpromotion = row(idx + 9)(Column.columnToInt),
-        additionalcontactinfo = row(idx + 10)(Column.columnToOption(TypoXml.column)),
-        demographics = row(idx + 11)(Column.columnToOption(TypoXml.column)),
-        rowguid = row(idx + 12)(TypoUUID.column),
-        modifieddate = row(idx + 13)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PViewRow] = OWrites[PViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> BusinessentityId.writes.writes(o.id),
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "persontype" -> Writes.StringWrites.writes(o.persontype),
-      "namestyle" -> NameStyle.writes.writes(o.namestyle),
-      "title" -> Writes.OptionWrites(Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname),
-      "suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.suffix),
-      "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
-      "additionalcontactinfo" -> Writes.OptionWrites(TypoXml.writes).writes(o.additionalcontactinfo),
-      "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PViewRow] = {
+    RowParser[PViewRow] { row =>
+      Success(
+        PViewRow(
+          id = row(idx + 0)(BusinessentityId.column),
+          businessentityid = row(idx + 1)(BusinessentityId.column),
+          persontype = row(idx + 2)(Column.columnToString),
+          namestyle = row(idx + 3)(NameStyle.column),
+          title = row(idx + 4)(Column.columnToOption(Column.columnToString)),
+          firstname = row(idx + 5)(/* user-picked */ FirstName.column),
+          middlename = row(idx + 6)(Column.columnToOption(Name.column)),
+          lastname = row(idx + 7)(Name.column),
+          suffix = row(idx + 8)(Column.columnToOption(Column.columnToString)),
+          emailpromotion = row(idx + 9)(Column.columnToInt),
+          additionalcontactinfo = row(idx + 10)(Column.columnToOption(TypoXml.column)),
+          demographics = row(idx + 11)(Column.columnToOption(TypoXml.column)),
+          rowguid = row(idx + 12)(TypoUUID.column),
+          modifieddate = row(idx + 13)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PViewRow] = {
+    OWrites[PViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> BusinessentityId.writes.writes(o.id),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "persontype" -> Writes.StringWrites.writes(o.persontype),
+        "namestyle" -> NameStyle.writes.writes(o.namestyle),
+        "title" -> Writes.OptionWrites(Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname),
+        "suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.suffix),
+        "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
+        "additionalcontactinfo" -> Writes.OptionWrites(TypoXml.writes).writes(o.additionalcontactinfo),
+        "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

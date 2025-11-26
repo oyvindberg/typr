@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.scrapreason` */
-case class ScrapreasonId(value: Int) extends AnyVal
+case class ScrapreasonId(value: Int) extends scala.AnyVal
+
 object ScrapreasonId {
   given arrayJdbcDecoder: JdbcDecoder[Array[ScrapreasonId]] = adventureworks.IntArrayDecoder.map(_.map(ScrapreasonId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ScrapreasonId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ScrapreasonId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ScrapreasonId, Int] = Bijection[ScrapreasonId, Int](_.value)(ScrapreasonId.apply)
+
+  given bijection: Bijection[ScrapreasonId, Int] = Bijection.apply[ScrapreasonId, Int](_.value)(ScrapreasonId.apply)
+
   given jdbcDecoder: JdbcDecoder[ScrapreasonId] = JdbcDecoder.intDecoder.map(ScrapreasonId.apply)
+
   given jdbcEncoder: JdbcEncoder[ScrapreasonId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ScrapreasonId] = JsonDecoder.int.map(ScrapreasonId.apply)
+
   given jsonEncoder: JsonEncoder[ScrapreasonId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[ScrapreasonId] = PGType.PGTypeInt.as
-  given setter: Setter[ScrapreasonId] = Setter.intSetter.contramap(_.value)
-  given text: Text[ScrapreasonId] = new Text[ScrapreasonId] {
-    override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ScrapreasonId] = {
+    new Text[ScrapreasonId] {
+      override def unsafeEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ScrapreasonId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ScrapreasonId] = PGType.PGTypeInt.as
+
+  given setter: Setter[ScrapreasonId] = Setter.intSetter.contramap(_.value)
 }

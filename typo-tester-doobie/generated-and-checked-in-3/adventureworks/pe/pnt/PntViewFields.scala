@@ -22,23 +22,22 @@ trait PntViewFields {
 
 object PntViewFields {
   lazy val structure: Relation[PntViewFields, PntViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PntViewFields, PntViewRow] {
-  
+
     override lazy val fields: PntViewFields = new PntViewFields {
       override def id = Field[PhonenumbertypeId, PntViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def phonenumbertypeid = Field[PhonenumbertypeId, PntViewRow](_path, "phonenumbertypeid", None, None, x => x.phonenumbertypeid, (row, value) => row.copy(phonenumbertypeid = value))
       override def name = Field[Name, PntViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
       override def modifieddate = Field[TypoLocalDateTime, PntViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PntViewRow]] =
       List[FieldLike[?, PntViewRow]](fields.id, fields.phonenumbertypeid, fields.name, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

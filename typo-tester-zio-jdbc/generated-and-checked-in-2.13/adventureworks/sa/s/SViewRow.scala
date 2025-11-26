@@ -36,55 +36,63 @@ case class SViewRow(
 )
 
 object SViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[SViewRow] = new JdbcDecoder[SViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SViewRow) =
-      columIndex + 6 ->
-        SViewRow(
-          id = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          salespersonid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
-          demographics = JdbcDecoder.optionDecoder(TypoXml.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
-          rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[SViewRow] = {
+    new JdbcDecoder[SViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, SViewRow) =
+        columIndex + 6 ->
+          SViewRow(
+            id = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            salespersonid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            demographics = JdbcDecoder.optionDecoder(TypoXml.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[SViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-    val demographics = jsonObj.get("demographics").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && businessentityid.isRight && name.isRight && salespersonid.isRight && demographics.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(SViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, name = name.toOption.get, salespersonid = salespersonid.toOption.get, demographics = demographics.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, businessentityid, name, salespersonid, demographics, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[SViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
+      val demographics = jsonObj.get("demographics").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && businessentityid.isRight && name.isRight && salespersonid.isRight && demographics.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(SViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, name = name.toOption.get, salespersonid = salespersonid.toOption.get, demographics = demographics.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, businessentityid, name, salespersonid, demographics, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[SViewRow] = new JsonEncoder[SViewRow] {
-    override def unsafeEncode(a: SViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""salespersonid":""")
-      JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
-      out.write(",")
-      out.write(""""demographics":""")
-      JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.demographics, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[SViewRow] = {
+    new JsonEncoder[SViewRow] {
+      override def unsafeEncode(a: SViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""salespersonid":""")
+        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
+        out.write(",")
+        out.write(""""demographics":""")
+        JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.demographics, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

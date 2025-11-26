@@ -5,18 +5,16 @@
  */
 package adventureworks.pr.th
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class ThViewRepoImpl extends ThViewRepo {
-  override def select: SelectBuilder[ThViewFields, ThViewRow] = {
-    SelectBuilderSql(""""pr"."th"""", ThViewFields.structure, ThViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[ThViewRow] = {
+  def select: SelectBuilder[ThViewFields, ThViewRow] = SelectBuilder.of(""""pr"."th"""", ThViewFields.structure, ThViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[ThViewRow] = {
     SQL"""select "id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate"::text, "transactiontype", "quantity", "actualcost", "modifieddate"::text
-          from "pr"."th"
-       """.as(ThViewRow.rowParser(1).*)
+    from "pr"."th"
+    """.as(ThViewRow.rowParser(1).*)
   }
 }

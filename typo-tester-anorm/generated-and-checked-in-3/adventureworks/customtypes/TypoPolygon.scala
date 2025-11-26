@@ -22,34 +22,50 @@ import typo.dsl.Bijection
 case class TypoPolygon(points: List[TypoPoint])
 
 object TypoPolygon {
-  given arrayColumn: Column[Array[TypoPolygon]] = Column.nonNull[Array[TypoPolygon]]((v1: Any, _) =>
-    v1 match {
-        case v: PgArray =>
-         v.getArray match {
-           case v: Array[?] =>
-             Right(v.map(v => TypoPolygon(v.asInstanceOf[PGpolygon].points.map(p => TypoPoint(p.x, p.y)).toList)))
-           case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoPolygon, got ${other.getClass.getName}"))
-         }
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
-    }
-  )
+  given arrayColumn: Column[Array[TypoPolygon]] = {
+    Column.nonNull[Array[TypoPolygon]]((v1: Any, _) =>
+      v1 match {
+          case v: PgArray =>
+           v.getArray match {
+             case v: Array[?] =>
+               Right(v.map(v => new TypoPolygon(v.asInstanceOf[PGpolygon].points.map(p => new TypoPoint(p.x, p.y)).toList)))
+             case other => Left(TypeDoesNotMatch(s"Expected one-dimensional array from JDBC to produce an array of TypoPolygon, got ${other.getClass.getName}"))
+           }
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
   given arrayToStatement: ToStatement[Array[TypoPolygon]] = ToStatement[Array[TypoPolygon]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("polygon", v.map(v => new PGpolygon(v.points.map(p => new PGpoint(p.x, p.y)).toArray)))))
-  given bijection: Bijection[TypoPolygon, List[TypoPoint]] = Bijection[TypoPolygon, List[TypoPoint]](_.points)(TypoPolygon.apply)
-  given column: Column[TypoPolygon] = Column.nonNull[TypoPolygon]((v1: Any, _) =>
-    v1 match {
-      case v: PGpolygon => Right(TypoPolygon(v.points.map(p => TypoPoint(p.x, p.y)).toList))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGpolygon, got ${other.getClass.getName}"))
+
+  given bijection: Bijection[TypoPolygon, List[TypoPoint]] = Bijection.apply[TypoPolygon, List[TypoPoint]](_.points)(TypoPolygon.apply)
+
+  given column: Column[TypoPolygon] = {
+    Column.nonNull[TypoPolygon]((v1: Any, _) =>
+      v1 match {
+        case v: PGpolygon => Right(new TypoPolygon(v.points.map(p => new TypoPoint(p.x, p.y)).toList))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.geometric.PGpolygon, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  given parameterMetadata: ParameterMetaData[TypoPolygon] = {
+    new ParameterMetaData[TypoPolygon] {
+      override def sqlType: String = "polygon"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  given parameterMetadata: ParameterMetaData[TypoPolygon] = new ParameterMetaData[TypoPolygon] {
-    override def sqlType: String = "polygon"
-    override def jdbcType: Int = Types.OTHER
   }
-  given reads: Reads[TypoPolygon] = summon[Reads[List[TypoPoint]]].map(TypoPolygon.apply)
-  given text: Text[TypoPolygon] = new Text[TypoPolygon] {
-    override def unsafeEncode(v: TypoPolygon, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"""(${v.points.map(p => s"${p.x}, ${p.y}").mkString(",")})""", sb)
-    override def unsafeArrayEncode(v: TypoPolygon, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"""(${v.points.map(p => s"${p.x}, ${p.y}").mkString(",")})""", sb)
+
+  given pgText: Text[TypoPolygon] = {
+    new Text[TypoPolygon] {
+      override def unsafeEncode(v: TypoPolygon, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode("(" + v.points.map(p => s"${p.x}, ${p.y}").mkString(",") + ")", sb)
+      override def unsafeArrayEncode(v: TypoPolygon, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode("(" + v.points.map(p => s"${p.x}, ${p.y}").mkString(",") + ")", sb)
+    }
   }
+
+  given reads: Reads[TypoPolygon] = implicitly[Reads[List[TypoPoint]]].map(TypoPolygon.apply)
+
   given toStatement: ToStatement[TypoPolygon] = ToStatement[TypoPolygon]((s, index, v) => s.setObject(index, new PGpolygon(v.points.map(p => new PGpoint(p.x, p.y)).toArray)))
-  given writes: Writes[TypoPolygon] = summon[Writes[List[TypoPoint]]].contramap(_.points)
+
+  given writes: Writes[TypoPolygon] = implicitly[Writes[List[TypoPoint]]].contramap(_.points)
 }

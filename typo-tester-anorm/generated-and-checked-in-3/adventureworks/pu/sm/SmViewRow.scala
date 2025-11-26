@@ -40,42 +40,50 @@ case class SmViewRow(
 )
 
 object SmViewRow {
-  given reads: Reads[SmViewRow] = Reads[SmViewRow](json => JsResult.fromTry(
-      Try(
-        SmViewRow(
-          id = json.\("id").as(ShipmethodId.reads),
-          shipmethodid = json.\("shipmethodid").as(ShipmethodId.reads),
-          name = json.\("name").as(Name.reads),
-          shipbase = json.\("shipbase").as(Reads.bigDecReads),
-          shiprate = json.\("shiprate").as(Reads.bigDecReads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[SmViewRow] = {
+    Reads[SmViewRow](json => JsResult.fromTry(
+        Try(
+          SmViewRow(
+            id = json.\("id").as(ShipmethodId.reads),
+            shipmethodid = json.\("shipmethodid").as(ShipmethodId.reads),
+            name = json.\("name").as(Name.reads),
+            shipbase = json.\("shipbase").as(Reads.bigDecReads),
+            shiprate = json.\("shiprate").as(Reads.bigDecReads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SmViewRow] = RowParser[SmViewRow] { row =>
-    Success(
-      SmViewRow(
-        id = row(idx + 0)(using ShipmethodId.column),
-        shipmethodid = row(idx + 1)(using ShipmethodId.column),
-        name = row(idx + 2)(using Name.column),
-        shipbase = row(idx + 3)(using Column.columnToScalaBigDecimal),
-        shiprate = row(idx + 4)(using Column.columnToScalaBigDecimal),
-        rowguid = row(idx + 5)(using TypoUUID.column),
-        modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[SmViewRow] = OWrites[SmViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ShipmethodId.writes.writes(o.id),
-      "shipmethodid" -> ShipmethodId.writes.writes(o.shipmethodid),
-      "name" -> Name.writes.writes(o.name),
-      "shipbase" -> Writes.BigDecimalWrites.writes(o.shipbase),
-      "shiprate" -> Writes.BigDecimalWrites.writes(o.shiprate),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[SmViewRow] = {
+    RowParser[SmViewRow] { row =>
+      Success(
+        SmViewRow(
+          id = row(idx + 0)(using ShipmethodId.column),
+          shipmethodid = row(idx + 1)(using ShipmethodId.column),
+          name = row(idx + 2)(using Name.column),
+          shipbase = row(idx + 3)(using Column.columnToScalaBigDecimal),
+          shiprate = row(idx + 4)(using Column.columnToScalaBigDecimal),
+          rowguid = row(idx + 5)(using TypoUUID.column),
+          modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SmViewRow] = {
+    OWrites[SmViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ShipmethodId.writes.writes(o.id),
+        "shipmethodid" -> ShipmethodId.writes.writes(o.shipmethodid),
+        "name" -> Name.writes.writes(o.name),
+        "shipbase" -> Writes.BigDecimalWrites.writes(o.shipbase),
+        "shiprate" -> Writes.BigDecimalWrites.writes(o.shiprate),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -17,7 +17,6 @@ import cats.instances.list.catsStdInstancesForList
 import doobie.free.connection.ConnectionIO
 import doobie.postgres.syntax.FragmentOps
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
-import doobie.syntax.string.toSqlInterpolator
 import doobie.util.Write
 import doobie.util.fragment.Fragment
 import doobie.util.meta.Meta
@@ -25,26 +24,24 @@ import doobie.util.update.Update
 import fs2.Stream
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import typo.dsl.UpdateBuilder
+import doobie.syntax.string.toSqlInterpolator
 
 class PersonRepoImpl extends PersonRepo {
-  override def delete: DeleteBuilder[PersonFields, PersonRow] = {
-    DeleteBuilder(""""person"."person"""", PersonFields.structure)
-  }
-  override def deleteById(businessentityid: BusinessentityId): ConnectionIO[Boolean] = {
-    sql"""delete from "person"."person" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".update.run.map(_ > 0)
-  }
-  override def deleteByIds(businessentityids: Array[BusinessentityId]): ConnectionIO[Int] = {
-    sql"""delete from "person"."person" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".update.run
-  }
-  override def insert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
+  def delete: DeleteBuilder[PersonFields, PersonRow] = DeleteBuilder.of(""""person"."person"""", PersonFields.structure, PersonRow.read)
+
+  def deleteById(businessentityid: BusinessentityId): ConnectionIO[Boolean] = sql"""delete from "person"."person" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".update.run.map(_ > 0)
+
+  def deleteByIds(businessentityids: Array[BusinessentityId]): ConnectionIO[Int] = sql"""delete from "person"."person" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".update.run
+
+  def insert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
     sql"""insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-          values (${fromWrite(unsaved.businessentityid)(using new Write.Single(BusinessentityId.put))}::int4, ${fromWrite(unsaved.persontype)(using new Write.Single(Meta.StringMeta.put))}::bpchar, ${fromWrite(unsaved.namestyle)(using new Write.Single(NameStyle.put))}::bool, ${fromWrite(unsaved.title)(using new Write.SingleOpt(Meta.StringMeta.put))}, ${fromWrite(unsaved.firstname)(using new Write.Single(/* user-picked */ FirstName.put))}::varchar, ${fromWrite(unsaved.middlename)(using new Write.SingleOpt(Name.put))}::varchar, ${fromWrite(unsaved.lastname)(using new Write.Single(Name.put))}::varchar, ${fromWrite(unsaved.suffix)(using new Write.SingleOpt(Meta.StringMeta.put))}, ${fromWrite(unsaved.emailpromotion)(using new Write.Single(Meta.IntMeta.put))}::int4, ${fromWrite(unsaved.additionalcontactinfo)(using new Write.SingleOpt(TypoXml.put))}::xml, ${fromWrite(unsaved.demographics)(using new Write.SingleOpt(TypoXml.put))}::xml, ${fromWrite(unsaved.rowguid)(using new Write.Single(TypoUUID.put))}::uuid, ${fromWrite(unsaved.modifieddate)(using new Write.Single(TypoLocalDateTime.put))}::timestamp)
-          returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-       """.query(using PersonRow.read).unique
+    values (${fromWrite(unsaved.businessentityid)(using new Write.Single(BusinessentityId.put))}::int4, ${fromWrite(unsaved.persontype)(using new Write.Single(Meta.StringMeta.put))}::bpchar, ${fromWrite(unsaved.namestyle)(using new Write.Single(NameStyle.put))}::bool, ${fromWrite(unsaved.title)(using new Write.SingleOpt(Meta.StringMeta.put))}, ${fromWrite(unsaved.firstname)(using new Write.Single(/* user-picked */ FirstName.put))}::varchar, ${fromWrite(unsaved.middlename)(using new Write.SingleOpt(Name.put))}::varchar, ${fromWrite(unsaved.lastname)(using new Write.Single(Name.put))}::varchar, ${fromWrite(unsaved.suffix)(using new Write.SingleOpt(Meta.StringMeta.put))}, ${fromWrite(unsaved.emailpromotion)(using new Write.Single(Meta.IntMeta.put))}::int4, ${fromWrite(unsaved.additionalcontactinfo)(using new Write.SingleOpt(TypoXml.put))}::xml, ${fromWrite(unsaved.demographics)(using new Write.SingleOpt(TypoXml.put))}::xml, ${fromWrite(unsaved.rowguid)(using new Write.Single(TypoUUID.put))}::uuid, ${fromWrite(unsaved.modifieddate)(using new Write.Single(TypoLocalDateTime.put))}::timestamp)
+    returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
+    """.query(using PersonRow.read).unique
   }
-  override def insert(unsaved: PersonRowUnsaved): ConnectionIO[PersonRow] = {
+
+  def insert(unsaved: PersonRowUnsaved): ConnectionIO[PersonRow] = {
     val fs = List(
       Some((Fragment.const0(s""""businessentityid""""), fr"${fromWrite(unsaved.businessentityid)(using new Write.Single(BusinessentityId.put))}::int4")),
       Some((Fragment.const0(s""""persontype""""), fr"${fromWrite(unsaved.persontype)(using new Write.Single(Meta.StringMeta.put))}::bpchar")),
@@ -56,162 +53,167 @@ class PersonRepoImpl extends PersonRepo {
       Some((Fragment.const0(s""""additionalcontactinfo""""), fr"${fromWrite(unsaved.additionalcontactinfo)(using new Write.SingleOpt(TypoXml.put))}::xml")),
       Some((Fragment.const0(s""""demographics""""), fr"${fromWrite(unsaved.demographics)(using new Write.SingleOpt(TypoXml.put))}::xml")),
       unsaved.namestyle match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""namestyle""""), fr"${fromWrite(value: NameStyle)(using new Write.Single(NameStyle.put))}::bool"))
       },
       unsaved.emailpromotion match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""emailpromotion""""), fr"${fromWrite(value: Int)(using new Write.Single(Meta.IntMeta.put))}::int4"))
       },
       unsaved.rowguid match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""rowguid""""), fr"${fromWrite(value: TypoUUID)(using new Write.Single(TypoUUID.put))}::uuid"))
       },
       unsaved.modifieddate match {
-        case Defaulted.UseDefault => None
+        case Defaulted.UseDefault() => None
         case Defaulted.Provided(value) => Some((Fragment.const0(s""""modifieddate""""), fr"${fromWrite(value: TypoLocalDateTime)(using new Write.Single(TypoLocalDateTime.put))}::timestamp"))
       }
     ).flatten
-    
     val q = if (fs.isEmpty) {
       sql"""insert into "person"."person" default values
-            returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-         """
+      returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
+      """
     } else {
       val CommaSeparate = Fragment.FragmentMonoid.intercalate(fr", ")
       sql"""insert into "person"."person"(${CommaSeparate.combineAllOption(fs.map { case (n, _) => n }).get})
-            values (${CommaSeparate.combineAllOption(fs.map { case (_, f) => f }).get})
-            returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-         """
+      values (${CommaSeparate.combineAllOption(fs.map { case (_, f) => f }).get})
+      returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
+      """
     }
     q.query(using PersonRow.read).unique
-    
   }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, PersonRow], batchSize: Int = 10000): ConnectionIO[Long] = {
-    new FragmentOps(sql"""COPY "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate") FROM STDIN""").copyIn(unsaved, batchSize)(using PersonRow.text)
-  }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, PersonRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long] = {
-    new FragmentOps(sql"""COPY "person"."person"("businessentityid", "persontype", "title", "firstname", "middlename", "lastname", "suffix", "additionalcontactinfo", "demographics", "namestyle", "emailpromotion", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""").copyIn(unsaved, batchSize)(using PersonRowUnsaved.text)
-  }
-  override def select: SelectBuilder[PersonFields, PersonRow] = {
-    SelectBuilderSql(""""person"."person"""", PersonFields.structure, PersonRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PersonRow] = {
-    sql"""select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "person"."person"""".query(using PersonRow.read).stream
-  }
-  override def selectById(businessentityid: BusinessentityId): ConnectionIO[Option[PersonRow]] = {
-    sql"""select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "person"."person" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".query(using PersonRow.read).option
-  }
-  override def selectByIds(businessentityids: Array[BusinessentityId]): Stream[ConnectionIO, PersonRow] = {
-    sql"""select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "person"."person" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".query(using PersonRow.read).stream
-  }
-  override def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ConnectionIO[Map[BusinessentityId, PersonRow]] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, PersonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = new FragmentOps(sql"""COPY "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate") FROM STDIN""").copyIn(unsaved, batchSize)(using PersonRow.pgText)
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, PersonRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = new FragmentOps(sql"""COPY "person"."person"("businessentityid", "persontype", "title", "firstname", "middlename", "lastname", "suffix", "additionalcontactinfo", "demographics", "namestyle", "emailpromotion", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')""").copyIn(unsaved, batchSize)(using PersonRowUnsaved.pgText)
+
+  def select: SelectBuilder[PersonFields, PersonRow] = SelectBuilder.of(""""person"."person"""", PersonFields.structure, PersonRow.read)
+
+  def selectAll: Stream[ConnectionIO, PersonRow] = sql"""select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "person"."person"""".query(using PersonRow.read).stream
+
+  def selectById(businessentityid: BusinessentityId): ConnectionIO[Option[PersonRow]] = sql"""select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "person"."person" where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}""".query(using PersonRow.read).option
+
+  def selectByIds(businessentityids: Array[BusinessentityId]): Stream[ConnectionIO, PersonRow] = sql"""select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text from "person"."person" where "businessentityid" = ANY(${fromWrite(businessentityids)(using new Write.Single(BusinessentityId.arrayPut))})""".query(using PersonRow.read).stream
+
+  def selectByIdsTracked(businessentityids: Array[BusinessentityId]): ConnectionIO[Map[BusinessentityId, PersonRow]] = {
     selectByIds(businessentityids).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.businessentityid, x)).toMap
       businessentityids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[PersonFields, PersonRow] = {
-    UpdateBuilder(""""person"."person"""", PersonFields.structure, PersonRow.read)
-  }
-  override def update(row: PersonRow): ConnectionIO[Option[PersonRow]] = {
+
+  def update: UpdateBuilder[PersonFields, PersonRow] = UpdateBuilder.of(""""person"."person"""", PersonFields.structure, PersonRow.read)
+
+  def update(row: PersonRow): ConnectionIO[Option[PersonRow]] = {
     val businessentityid = row.businessentityid
     sql"""update "person"."person"
-          set "persontype" = ${fromWrite(row.persontype)(using new Write.Single(Meta.StringMeta.put))}::bpchar,
-              "namestyle" = ${fromWrite(row.namestyle)(using new Write.Single(NameStyle.put))}::bool,
-              "title" = ${fromWrite(row.title)(using new Write.SingleOpt(Meta.StringMeta.put))},
-              "firstname" = ${fromWrite(row.firstname)(using new Write.Single(/* user-picked */ FirstName.put))}::varchar,
-              "middlename" = ${fromWrite(row.middlename)(using new Write.SingleOpt(Name.put))}::varchar,
-              "lastname" = ${fromWrite(row.lastname)(using new Write.Single(Name.put))}::varchar,
-              "suffix" = ${fromWrite(row.suffix)(using new Write.SingleOpt(Meta.StringMeta.put))},
-              "emailpromotion" = ${fromWrite(row.emailpromotion)(using new Write.Single(Meta.IntMeta.put))}::int4,
-              "additionalcontactinfo" = ${fromWrite(row.additionalcontactinfo)(using new Write.SingleOpt(TypoXml.put))}::xml,
-              "demographics" = ${fromWrite(row.demographics)(using new Write.SingleOpt(TypoXml.put))}::xml,
-              "rowguid" = ${fromWrite(row.rowguid)(using new Write.Single(TypoUUID.put))}::uuid,
-              "modifieddate" = ${fromWrite(row.modifieddate)(using new Write.Single(TypoLocalDateTime.put))}::timestamp
-          where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}
-          returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text""".query(using PersonRow.read).option
+    set "persontype" = ${fromWrite(row.persontype)(using new Write.Single(Meta.StringMeta.put))}::bpchar,
+    "namestyle" = ${fromWrite(row.namestyle)(using new Write.Single(NameStyle.put))}::bool,
+    "title" = ${fromWrite(row.title)(using new Write.SingleOpt(Meta.StringMeta.put))},
+    "firstname" = ${fromWrite(row.firstname)(using new Write.Single(/* user-picked */ FirstName.put))}::varchar,
+    "middlename" = ${fromWrite(row.middlename)(using new Write.SingleOpt(Name.put))}::varchar,
+    "lastname" = ${fromWrite(row.lastname)(using new Write.Single(Name.put))}::varchar,
+    "suffix" = ${fromWrite(row.suffix)(using new Write.SingleOpt(Meta.StringMeta.put))},
+    "emailpromotion" = ${fromWrite(row.emailpromotion)(using new Write.Single(Meta.IntMeta.put))}::int4,
+    "additionalcontactinfo" = ${fromWrite(row.additionalcontactinfo)(using new Write.SingleOpt(TypoXml.put))}::xml,
+    "demographics" = ${fromWrite(row.demographics)(using new Write.SingleOpt(TypoXml.put))}::xml,
+    "rowguid" = ${fromWrite(row.rowguid)(using new Write.Single(TypoUUID.put))}::uuid,
+    "modifieddate" = ${fromWrite(row.modifieddate)(using new Write.Single(TypoLocalDateTime.put))}::timestamp
+    where "businessentityid" = ${fromWrite(businessentityid)(using new Write.Single(BusinessentityId.put))}
+    returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text""".query(using PersonRow.read).option
   }
-  override def upsert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
+
+  def upsert(unsaved: PersonRow): ConnectionIO[PersonRow] = {
     sql"""insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-          values (
-            ${fromWrite(unsaved.businessentityid)(using new Write.Single(BusinessentityId.put))}::int4,
-            ${fromWrite(unsaved.persontype)(using new Write.Single(Meta.StringMeta.put))}::bpchar,
-            ${fromWrite(unsaved.namestyle)(using new Write.Single(NameStyle.put))}::bool,
-            ${fromWrite(unsaved.title)(using new Write.SingleOpt(Meta.StringMeta.put))},
-            ${fromWrite(unsaved.firstname)(using new Write.Single(/* user-picked */ FirstName.put))}::varchar,
-            ${fromWrite(unsaved.middlename)(using new Write.SingleOpt(Name.put))}::varchar,
-            ${fromWrite(unsaved.lastname)(using new Write.Single(Name.put))}::varchar,
-            ${fromWrite(unsaved.suffix)(using new Write.SingleOpt(Meta.StringMeta.put))},
-            ${fromWrite(unsaved.emailpromotion)(using new Write.Single(Meta.IntMeta.put))}::int4,
-            ${fromWrite(unsaved.additionalcontactinfo)(using new Write.SingleOpt(TypoXml.put))}::xml,
-            ${fromWrite(unsaved.demographics)(using new Write.SingleOpt(TypoXml.put))}::xml,
-            ${fromWrite(unsaved.rowguid)(using new Write.Single(TypoUUID.put))}::uuid,
-            ${fromWrite(unsaved.modifieddate)(using new Write.Single(TypoLocalDateTime.put))}::timestamp
-          )
-          on conflict ("businessentityid")
-          do update set
-            "persontype" = EXCLUDED."persontype",
-            "namestyle" = EXCLUDED."namestyle",
-            "title" = EXCLUDED."title",
-            "firstname" = EXCLUDED."firstname",
-            "middlename" = EXCLUDED."middlename",
-            "lastname" = EXCLUDED."lastname",
-            "suffix" = EXCLUDED."suffix",
-            "emailpromotion" = EXCLUDED."emailpromotion",
-            "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
-            "demographics" = EXCLUDED."demographics",
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-       """.query(using PersonRow.read).unique
+    values (
+      ${fromWrite(unsaved.businessentityid)(using new Write.Single(BusinessentityId.put))}::int4,
+    ${fromWrite(unsaved.persontype)(using new Write.Single(Meta.StringMeta.put))}::bpchar,
+    ${fromWrite(unsaved.namestyle)(using new Write.Single(NameStyle.put))}::bool,
+    ${fromWrite(unsaved.title)(using new Write.SingleOpt(Meta.StringMeta.put))},
+    ${fromWrite(unsaved.firstname)(using new Write.Single(/* user-picked */ FirstName.put))}::varchar,
+    ${fromWrite(unsaved.middlename)(using new Write.SingleOpt(Name.put))}::varchar,
+    ${fromWrite(unsaved.lastname)(using new Write.Single(Name.put))}::varchar,
+    ${fromWrite(unsaved.suffix)(using new Write.SingleOpt(Meta.StringMeta.put))},
+    ${fromWrite(unsaved.emailpromotion)(using new Write.Single(Meta.IntMeta.put))}::int4,
+    ${fromWrite(unsaved.additionalcontactinfo)(using new Write.SingleOpt(TypoXml.put))}::xml,
+    ${fromWrite(unsaved.demographics)(using new Write.SingleOpt(TypoXml.put))}::xml,
+    ${fromWrite(unsaved.rowguid)(using new Write.Single(TypoUUID.put))}::uuid,
+    ${fromWrite(unsaved.modifieddate)(using new Write.Single(TypoLocalDateTime.put))}::timestamp
+    )
+    on conflict ("businessentityid")
+    do update set
+      "persontype" = EXCLUDED."persontype",
+    "namestyle" = EXCLUDED."namestyle",
+    "title" = EXCLUDED."title",
+    "firstname" = EXCLUDED."firstname",
+    "middlename" = EXCLUDED."middlename",
+    "lastname" = EXCLUDED."lastname",
+    "suffix" = EXCLUDED."suffix",
+    "emailpromotion" = EXCLUDED."emailpromotion",
+    "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
+    "demographics" = EXCLUDED."demographics",
+    "rowguid" = EXCLUDED."rowguid",
+    "modifieddate" = EXCLUDED."modifieddate"
+    returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
+    """.query(using PersonRow.read).unique
   }
-  override def upsertBatch(unsaved: List[PersonRow]): Stream[ConnectionIO, PersonRow] = {
+
+  def upsertBatch(unsaved: List[PersonRow]): Stream[ConnectionIO, PersonRow] = {
     Update[PersonRow](
       s"""insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-          values (?::int4,?::bpchar,?::bool,?,?::varchar,?::varchar,?::varchar,?,?::int4,?::xml,?::xml,?::uuid,?::timestamp)
-          on conflict ("businessentityid")
-          do update set
-            "persontype" = EXCLUDED."persontype",
-            "namestyle" = EXCLUDED."namestyle",
-            "title" = EXCLUDED."title",
-            "firstname" = EXCLUDED."firstname",
-            "middlename" = EXCLUDED."middlename",
-            "lastname" = EXCLUDED."lastname",
-            "suffix" = EXCLUDED."suffix",
-            "emailpromotion" = EXCLUDED."emailpromotion",
-            "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
-            "demographics" = EXCLUDED."demographics",
-            "rowguid" = EXCLUDED."rowguid",
-            "modifieddate" = EXCLUDED."modifieddate"
-          returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text"""
+      values (?::int4,?::bpchar,?::bool,?,?::varchar,?::varchar,?::varchar,?,?::int4,?::xml,?::xml,?::uuid,?::timestamp)
+      on conflict ("businessentityid")
+      do update set
+        "persontype" = EXCLUDED."persontype",
+      "namestyle" = EXCLUDED."namestyle",
+      "title" = EXCLUDED."title",
+      "firstname" = EXCLUDED."firstname",
+      "middlename" = EXCLUDED."middlename",
+      "lastname" = EXCLUDED."lastname",
+      "suffix" = EXCLUDED."suffix",
+      "emailpromotion" = EXCLUDED."emailpromotion",
+      "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
+      "demographics" = EXCLUDED."demographics",
+      "rowguid" = EXCLUDED."rowguid",
+      "modifieddate" = EXCLUDED."modifieddate"
+      returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text"""
     )(using PersonRow.write)
     .updateManyWithGeneratedKeys[PersonRow]("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")(unsaved)(using catsStdInstancesForList, PersonRow.read)
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, PersonRow], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, PersonRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     for {
       _ <- sql"""create temporary table person_TEMP (like "person"."person") on commit drop""".update.run
-      _ <- new FragmentOps(sql"""copy person_TEMP("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate") from stdin""").copyIn(unsaved, batchSize)(using PersonRow.text)
+      _ <- new FragmentOps(sql"""copy person_TEMP("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate") from stdin""").copyIn(unsaved, batchSize)(using PersonRow.pgText)
       res <- sql"""insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-                   select * from person_TEMP
-                   on conflict ("businessentityid")
-                   do update set
-                     "persontype" = EXCLUDED."persontype",
-                     "namestyle" = EXCLUDED."namestyle",
-                     "title" = EXCLUDED."title",
-                     "firstname" = EXCLUDED."firstname",
-                     "middlename" = EXCLUDED."middlename",
-                     "lastname" = EXCLUDED."lastname",
-                     "suffix" = EXCLUDED."suffix",
-                     "emailpromotion" = EXCLUDED."emailpromotion",
-                     "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
-                     "demographics" = EXCLUDED."demographics",
-                     "rowguid" = EXCLUDED."rowguid",
-                     "modifieddate" = EXCLUDED."modifieddate"
-                   ;
-                   drop table person_TEMP;""".update.run
+             select * from person_TEMP
+             on conflict ("businessentityid")
+             do update set
+               "persontype" = EXCLUDED."persontype",
+             "namestyle" = EXCLUDED."namestyle",
+             "title" = EXCLUDED."title",
+             "firstname" = EXCLUDED."firstname",
+             "middlename" = EXCLUDED."middlename",
+             "lastname" = EXCLUDED."lastname",
+             "suffix" = EXCLUDED."suffix",
+             "emailpromotion" = EXCLUDED."emailpromotion",
+             "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
+             "demographics" = EXCLUDED."demographics",
+             "rowguid" = EXCLUDED."rowguid",
+             "modifieddate" = EXCLUDED."modifieddate"
+             ;
+             drop table person_TEMP;""".update.run
     } yield res
   }
 }

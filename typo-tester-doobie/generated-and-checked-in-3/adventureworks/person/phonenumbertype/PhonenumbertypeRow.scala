@@ -15,47 +15,62 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: person.phonenumbertype
-    Type of phone number of a person.
-    Primary key: phonenumbertypeid */
+ * Type of phone number of a person.
+ * Primary key: phonenumbertypeid
+ */
 case class PhonenumbertypeRow(
   /** Primary key for telephone number type records.
-      Default: nextval('person.phonenumbertype_phonenumbertypeid_seq'::regclass) */
+   * Default: nextval('person.phonenumbertype_phonenumbertypeid_seq'::regclass)
+   */
   phonenumbertypeid: PhonenumbertypeId,
   /** Name of the telephone number type */
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = phonenumbertypeid
-   def toUnsavedRow(phonenumbertypeid: Defaulted[PhonenumbertypeId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): PhonenumbertypeRowUnsaved =
-     PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate)
- }
+) {
+  def id: PhonenumbertypeId = phonenumbertypeid
+
+  def toUnsavedRow(
+    phonenumbertypeid: Defaulted[PhonenumbertypeId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): PhonenumbertypeRowUnsaved = new PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate)
+}
 
 object PhonenumbertypeRow {
   given decoder: Decoder[PhonenumbertypeRow] = Decoder.forProduct3[PhonenumbertypeRow, PhonenumbertypeId, Name, TypoLocalDateTime]("phonenumbertypeid", "name", "modifieddate")(PhonenumbertypeRow.apply)(using PhonenumbertypeId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[PhonenumbertypeRow] = Encoder.forProduct3[PhonenumbertypeRow, PhonenumbertypeId, Name, TypoLocalDateTime]("phonenumbertypeid", "name", "modifieddate")(x => (x.phonenumbertypeid, x.name, x.modifieddate))(using PhonenumbertypeId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  given read: Read[PhonenumbertypeRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(PhonenumbertypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    PhonenumbertypeRow(
-      phonenumbertypeid = arr(0).asInstanceOf[PhonenumbertypeId],
-          name = arr(1).asInstanceOf[Name],
-          modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+
+  given pgText: Text[PhonenumbertypeRow] = {
+    Text.instance[PhonenumbertypeRow]{ (row, sb) =>
+      PhonenumbertypeId.pgText.unsafeEncode(row.phonenumbertypeid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[PhonenumbertypeRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(PhonenumbertypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      PhonenumbertypeRow(
+        phonenumbertypeid = arr(0).asInstanceOf[PhonenumbertypeId],
+            name = arr(1).asInstanceOf[Name],
+            modifieddate = arr(2).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[PhonenumbertypeRow] = {
+    new Write.Composite[PhonenumbertypeRow](
+      List(new Write.Single(PhonenumbertypeId.put),
+           new Write.Single(Name.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.phonenumbertypeid, a.name, a.modifieddate)
     )
   }
-  given text: Text[PhonenumbertypeRow] = Text.instance[PhonenumbertypeRow]{ (row, sb) =>
-    PhonenumbertypeId.text.unsafeEncode(row.phonenumbertypeid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
-  }
-  given write: Write[PhonenumbertypeRow] = new Write.Composite[PhonenumbertypeRow](
-    List(new Write.Single(PhonenumbertypeId.put),
-         new Write.Single(Name.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.phonenumbertypeid, a.name, a.modifieddate)
-  )
 }

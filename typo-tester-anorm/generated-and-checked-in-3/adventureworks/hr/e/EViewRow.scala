@@ -60,69 +60,77 @@ case class EViewRow(
 )
 
 object EViewRow {
-  given reads: Reads[EViewRow] = Reads[EViewRow](json => JsResult.fromTry(
-      Try(
-        EViewRow(
-          id = json.\("id").as(BusinessentityId.reads),
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          nationalidnumber = json.\("nationalidnumber").as(Reads.StringReads),
-          loginid = json.\("loginid").as(Reads.StringReads),
-          jobtitle = json.\("jobtitle").as(Reads.StringReads),
-          birthdate = json.\("birthdate").as(TypoLocalDate.reads),
-          maritalstatus = json.\("maritalstatus").as(Reads.StringReads),
-          gender = json.\("gender").as(Reads.StringReads),
-          hiredate = json.\("hiredate").as(TypoLocalDate.reads),
-          salariedflag = json.\("salariedflag").as(Flag.reads),
-          vacationhours = json.\("vacationhours").as(TypoShort.reads),
-          sickleavehours = json.\("sickleavehours").as(TypoShort.reads),
-          currentflag = json.\("currentflag").as(Flag.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads),
-          organizationnode = json.\("organizationnode").toOption.map(_.as(Reads.StringReads))
+  given reads: Reads[EViewRow] = {
+    Reads[EViewRow](json => JsResult.fromTry(
+        Try(
+          EViewRow(
+            id = json.\("id").as(BusinessentityId.reads),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            nationalidnumber = json.\("nationalidnumber").as(Reads.StringReads),
+            loginid = json.\("loginid").as(Reads.StringReads),
+            jobtitle = json.\("jobtitle").as(Reads.StringReads),
+            birthdate = json.\("birthdate").as(TypoLocalDate.reads),
+            maritalstatus = json.\("maritalstatus").as(Reads.StringReads),
+            gender = json.\("gender").as(Reads.StringReads),
+            hiredate = json.\("hiredate").as(TypoLocalDate.reads),
+            salariedflag = json.\("salariedflag").as(Flag.reads),
+            vacationhours = json.\("vacationhours").as(TypoShort.reads),
+            sickleavehours = json.\("sickleavehours").as(TypoShort.reads),
+            currentflag = json.\("currentflag").as(Flag.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads),
+            organizationnode = json.\("organizationnode").toOption.map(_.as(Reads.StringReads))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[EViewRow] = RowParser[EViewRow] { row =>
-    Success(
-      EViewRow(
-        id = row(idx + 0)(using BusinessentityId.column),
-        businessentityid = row(idx + 1)(using BusinessentityId.column),
-        nationalidnumber = row(idx + 2)(using Column.columnToString),
-        loginid = row(idx + 3)(using Column.columnToString),
-        jobtitle = row(idx + 4)(using Column.columnToString),
-        birthdate = row(idx + 5)(using TypoLocalDate.column),
-        maritalstatus = row(idx + 6)(using Column.columnToString),
-        gender = row(idx + 7)(using Column.columnToString),
-        hiredate = row(idx + 8)(using TypoLocalDate.column),
-        salariedflag = row(idx + 9)(using Flag.column),
-        vacationhours = row(idx + 10)(using TypoShort.column),
-        sickleavehours = row(idx + 11)(using TypoShort.column),
-        currentflag = row(idx + 12)(using Flag.column),
-        rowguid = row(idx + 13)(using TypoUUID.column),
-        modifieddate = row(idx + 14)(using TypoLocalDateTime.column),
-        organizationnode = row(idx + 15)(using Column.columnToOption(using Column.columnToString))
-      )
+      ),
     )
   }
-  given writes: OWrites[EViewRow] = OWrites[EViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> BusinessentityId.writes.writes(o.id),
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "nationalidnumber" -> Writes.StringWrites.writes(o.nationalidnumber),
-      "loginid" -> Writes.StringWrites.writes(o.loginid),
-      "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
-      "birthdate" -> TypoLocalDate.writes.writes(o.birthdate),
-      "maritalstatus" -> Writes.StringWrites.writes(o.maritalstatus),
-      "gender" -> Writes.StringWrites.writes(o.gender),
-      "hiredate" -> TypoLocalDate.writes.writes(o.hiredate),
-      "salariedflag" -> Flag.writes.writes(o.salariedflag),
-      "vacationhours" -> TypoShort.writes.writes(o.vacationhours),
-      "sickleavehours" -> TypoShort.writes.writes(o.sickleavehours),
-      "currentflag" -> Flag.writes.writes(o.currentflag),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate),
-      "organizationnode" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.organizationnode)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[EViewRow] = {
+    RowParser[EViewRow] { row =>
+      Success(
+        EViewRow(
+          id = row(idx + 0)(using BusinessentityId.column),
+          businessentityid = row(idx + 1)(using BusinessentityId.column),
+          nationalidnumber = row(idx + 2)(using Column.columnToString),
+          loginid = row(idx + 3)(using Column.columnToString),
+          jobtitle = row(idx + 4)(using Column.columnToString),
+          birthdate = row(idx + 5)(using TypoLocalDate.column),
+          maritalstatus = row(idx + 6)(using Column.columnToString),
+          gender = row(idx + 7)(using Column.columnToString),
+          hiredate = row(idx + 8)(using TypoLocalDate.column),
+          salariedflag = row(idx + 9)(using Flag.column),
+          vacationhours = row(idx + 10)(using TypoShort.column),
+          sickleavehours = row(idx + 11)(using TypoShort.column),
+          currentflag = row(idx + 12)(using Flag.column),
+          rowguid = row(idx + 13)(using TypoUUID.column),
+          modifieddate = row(idx + 14)(using TypoLocalDateTime.column),
+          organizationnode = row(idx + 15)(using Column.columnToOption(using Column.columnToString))
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[EViewRow] = {
+    OWrites[EViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> BusinessentityId.writes.writes(o.id),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "nationalidnumber" -> Writes.StringWrites.writes(o.nationalidnumber),
+        "loginid" -> Writes.StringWrites.writes(o.loginid),
+        "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
+        "birthdate" -> TypoLocalDate.writes.writes(o.birthdate),
+        "maritalstatus" -> Writes.StringWrites.writes(o.maritalstatus),
+        "gender" -> Writes.StringWrites.writes(o.gender),
+        "hiredate" -> TypoLocalDate.writes.writes(o.hiredate),
+        "salariedflag" -> Flag.writes.writes(o.salariedflag),
+        "vacationhours" -> TypoShort.writes.writes(o.vacationhours),
+        "sickleavehours" -> TypoShort.writes.writes(o.sickleavehours),
+        "currentflag" -> Flag.writes.writes(o.currentflag),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate),
+        "organizationnode" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.organizationnode)
+      ))
+    )
+  }
 }

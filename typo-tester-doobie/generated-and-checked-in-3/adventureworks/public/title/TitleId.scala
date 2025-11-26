@@ -15,34 +15,49 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Type for the primary key of table `public.title`. It has some known values: 
-  *  - dr
-  *  - mr
-  *  - ms
-  *  - phd
-  */
+ *  - dr
+ *  - mr
+ *  - ms
+ *  - phd
+ */
+
 sealed abstract class TitleId(val value: String)
 
 object TitleId {
   def apply(underlying: String): TitleId =
     ByName.getOrElse(underlying, Unknown(underlying))
+  given put: Put[TitleId] = Meta.StringMeta.put.contramap(_.value)
+
+  given arrayPut: Put[Array[TitleId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
+
+  given get: Get[TitleId] = Meta.StringMeta.get.map(TitleId.apply)
+
+  given arrayGet: Get[Array[TitleId]] = adventureworks.StringArrayMeta.get.map(_.map(TitleId.apply))
+
+  given write: Write[TitleId] = new Write.Single(put)
+
+  given read: Read[TitleId] = new Read.Single(get)
+
+  given pgText: Text[TitleId] = {
+    new Text[TitleId] {
+      override def unsafeEncode(v: TitleId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TitleId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  given decoder: Decoder[TitleId] = Decoder.decodeString.map(TitleId.apply)
+
+  given encoder: Encoder[TitleId] = Encoder.encodeString.contramap(_.value)
+
   case object dr extends TitleId("dr")
+
   case object mr extends TitleId("mr")
+
   case object ms extends TitleId("ms")
+
   case object phd extends TitleId("phd")
   case class Unknown(override val value: String) extends TitleId(value)
-  val All: List[TitleId] = List(dr, mr, ms, phd)
-  val ByName: Map[String, TitleId] = All.map(x => (x.value, x)).toMap
-              
-  given arrayGet: Get[Array[TitleId]] = adventureworks.StringArrayMeta.get.map(_.map(TitleId.apply))
-  given arrayPut: Put[Array[TitleId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given decoder: Decoder[TitleId] = Decoder.decodeString.map(TitleId.apply)
-  given encoder: Encoder[TitleId] = Encoder.encodeString.contramap(_.value)
-  given get: Get[TitleId] = Meta.StringMeta.get.map(TitleId.apply)
-  given put: Put[TitleId] = Meta.StringMeta.put.contramap(_.value)
-  given read: Read[TitleId] = new Read.Single(get)
-  given text: Text[TitleId] = new Text[TitleId] {
-    override def unsafeEncode(v: TitleId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TitleId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  given write: Write[TitleId] = new Write.Single(put)
+  val All: scala.List[TitleId] = scala.List(dr, mr, ms, phd)
+  val ByName: scala.collection.immutable.Map[String, TitleId] = All.map(x => (x.value, x)).toMap
+
 }

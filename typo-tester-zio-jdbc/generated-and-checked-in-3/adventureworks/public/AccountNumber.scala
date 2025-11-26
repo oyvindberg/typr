@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `public.AccountNumber`
-  * No constraint
-  */
+ * No constraint
+ */
 case class AccountNumber(value: String)
+
 object AccountNumber {
   given arrayJdbcDecoder: JdbcDecoder[Array[AccountNumber]] = adventureworks.StringArrayDecoder.map(_.map(AccountNumber.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[AccountNumber]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[AccountNumber]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[AccountNumber, String] = Bijection[AccountNumber, String](_.value)(AccountNumber.apply)
+
+  given bijection: Bijection[AccountNumber, String] = Bijection.apply[AccountNumber, String](_.value)(AccountNumber.apply)
+
   given jdbcDecoder: JdbcDecoder[AccountNumber] = JdbcDecoder.stringDecoder.map(AccountNumber.apply)
+
   given jdbcEncoder: JdbcEncoder[AccountNumber] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[AccountNumber] = JsonDecoder.string.map(AccountNumber.apply)
+
   given jsonEncoder: JsonEncoder[AccountNumber] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[AccountNumber] = PGType.instance(""""public"."AccountNumber"""", Types.OTHER)
-  given setter: Setter[AccountNumber] = Setter.stringSetter.contramap(_.value)
-  given text: Text[AccountNumber] = new Text[AccountNumber] {
-    override def unsafeEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[AccountNumber] = {
+    new Text[AccountNumber] {
+      override def unsafeEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[AccountNumber] = PGType.instance(""""public"."AccountNumber"""", Types.OTHER)
+
+  given setter: Setter[AccountNumber] = Setter.stringSetter.contramap(_.value)
 }

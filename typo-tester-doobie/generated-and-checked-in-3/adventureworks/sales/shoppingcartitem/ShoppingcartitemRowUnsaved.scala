@@ -6,6 +6,7 @@
 package adventureworks.sales.shoppingcartitem
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import doobie.postgres.Text
@@ -17,57 +18,60 @@ case class ShoppingcartitemRowUnsaved(
   /** Shopping cart identification number. */
   shoppingcartid: /* max 50 chars */ String,
   /** Product ordered. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: nextval('sales.shoppingcartitem_shoppingcartitemid_seq'::regclass)
-      Primary key for ShoppingCartItem records. */
-  shoppingcartitemid: Defaulted[ShoppingcartitemId] = Defaulted.UseDefault,
+   * Primary key for ShoppingCartItem records.
+   */
+  shoppingcartitemid: Defaulted[ShoppingcartitemId] = new UseDefault(),
   /** Default: 1
-      Product quantity ordered.
-      Constraint CK_ShoppingCartItem_Quantity affecting columns quantity:  ((quantity >= 1)) */
-  quantity: Defaulted[Int] = Defaulted.UseDefault,
+   * Product quantity ordered.
+   * Constraint CK_ShoppingCartItem_Quantity affecting columns quantity:  ((quantity >= 1))
+   */
+  quantity: Defaulted[Int] = new UseDefault(),
   /** Default: now()
-      Date the time the record was created. */
-  datecreated: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+   * Date the time the record was created.
+   */
+  datecreated: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(shoppingcartitemidDefault: => ShoppingcartitemId, quantityDefault: => Int, datecreatedDefault: => TypoLocalDateTime, modifieddateDefault: => TypoLocalDateTime): ShoppingcartitemRow =
-    ShoppingcartitemRow(
+  def toRow(
+    shoppingcartitemidDefault: => ShoppingcartitemId,
+    quantityDefault: => Int,
+    datecreatedDefault: => TypoLocalDateTime,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ShoppingcartitemRow = {
+    new ShoppingcartitemRow(
+      shoppingcartitemid = shoppingcartitemid.getOrElse(shoppingcartitemidDefault),
       shoppingcartid = shoppingcartid,
+      quantity = quantity.getOrElse(quantityDefault),
       productid = productid,
-      shoppingcartitemid = shoppingcartitemid match {
-                             case Defaulted.UseDefault => shoppingcartitemidDefault
-                             case Defaulted.Provided(value) => value
-                           },
-      quantity = quantity match {
-                   case Defaulted.UseDefault => quantityDefault
-                   case Defaulted.Provided(value) => value
-                 },
-      datecreated = datecreated match {
-                      case Defaulted.UseDefault => datecreatedDefault
-                      case Defaulted.Provided(value) => value
-                    },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      datecreated = datecreated.getOrElse(datecreatedDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ShoppingcartitemRowUnsaved {
   given decoder: Decoder[ShoppingcartitemRowUnsaved] = Decoder.forProduct6[ShoppingcartitemRowUnsaved, /* max 50 chars */ String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(ShoppingcartitemRowUnsaved.apply)(using Decoder.decodeString, ProductId.decoder, Defaulted.decoder(using ShoppingcartitemId.decoder), Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ShoppingcartitemRowUnsaved] = Encoder.forProduct6[ShoppingcartitemRowUnsaved, /* max 50 chars */ String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(x => (x.shoppingcartid, x.productid, x.shoppingcartitemid, x.quantity, x.datecreated, x.modifieddate))(using Encoder.encodeString, ProductId.encoder, Defaulted.encoder(using ShoppingcartitemId.encoder), Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ShoppingcartitemRowUnsaved] = Text.instance[ShoppingcartitemRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.shoppingcartid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ShoppingcartitemId.text).unsafeEncode(row.shoppingcartitemid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.quantity, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.datecreated, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ShoppingcartitemRowUnsaved] = {
+    Text.instance[ShoppingcartitemRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.shoppingcartid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ShoppingcartitemId.pgText).unsafeEncode(row.shoppingcartitemid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.quantity, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.datecreated, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

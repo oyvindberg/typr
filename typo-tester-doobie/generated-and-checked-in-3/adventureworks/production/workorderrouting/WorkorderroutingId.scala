@@ -16,7 +16,9 @@ case class WorkorderroutingId(
   productid: Int,
   operationsequence: TypoShort
 )
+
 object WorkorderroutingId {
   given decoder: Decoder[WorkorderroutingId] = Decoder.forProduct3[WorkorderroutingId, WorkorderId, Int, TypoShort]("workorderid", "productid", "operationsequence")(WorkorderroutingId.apply)(using WorkorderId.decoder, Decoder.decodeInt, TypoShort.decoder)
+
   given encoder: Encoder[WorkorderroutingId] = Encoder.forProduct3[WorkorderroutingId, WorkorderId, Int, TypoShort]("workorderid", "productid", "operationsequence")(x => (x.workorderid, x.productid, x.operationsequence))(using WorkorderId.encoder, Encoder.encodeInt, TypoShort.encoder)
 }

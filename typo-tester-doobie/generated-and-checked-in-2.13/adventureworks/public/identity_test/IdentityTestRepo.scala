@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait IdentityTestRepo {
   def delete: DeleteBuilder[IdentityTestFields, IdentityTestRow]
+
   def deleteById(name: IdentityTestId): ConnectionIO[Boolean]
+
   def deleteByIds(names: Array[IdentityTestId]): ConnectionIO[Int]
+
   def insert(unsaved: IdentityTestRow): ConnectionIO[IdentityTestRow]
+
   def insert(unsaved: IdentityTestRowUnsaved): ConnectionIO[IdentityTestRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, IdentityTestRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, IdentityTestRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, IdentityTestRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, IdentityTestRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[IdentityTestFields, IdentityTestRow]
+
   def selectAll: Stream[ConnectionIO, IdentityTestRow]
+
   def selectById(name: IdentityTestId): ConnectionIO[Option[IdentityTestRow]]
+
   def selectByIds(names: Array[IdentityTestId]): Stream[ConnectionIO, IdentityTestRow]
+
   def selectByIdsTracked(names: Array[IdentityTestId]): ConnectionIO[Map[IdentityTestId, IdentityTestRow]]
+
   def update: UpdateBuilder[IdentityTestFields, IdentityTestRow]
+
   def update(row: IdentityTestRow): ConnectionIO[Option[IdentityTestRow]]
+
   def upsert(unsaved: IdentityTestRow): ConnectionIO[IdentityTestRow]
+
   def upsertBatch(unsaved: List[IdentityTestRow]): Stream[ConnectionIO, IdentityTestRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, IdentityTestRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, IdentityTestRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

@@ -14,7 +14,9 @@ case class PurchaseorderdetailId(
   purchaseorderid: PurchaseorderheaderId,
   purchaseorderdetailid: Int
 )
+
 object PurchaseorderdetailId {
   given decoder: Decoder[PurchaseorderdetailId] = Decoder.forProduct2[PurchaseorderdetailId, PurchaseorderheaderId, Int]("purchaseorderid", "purchaseorderdetailid")(PurchaseorderdetailId.apply)(using PurchaseorderheaderId.decoder, Decoder.decodeInt)
+
   given encoder: Encoder[PurchaseorderdetailId] = Encoder.forProduct2[PurchaseorderdetailId, PurchaseorderheaderId, Int]("purchaseorderid", "purchaseorderdetailid")(x => (x.purchaseorderid, x.purchaseorderdetailid))(using PurchaseorderheaderId.encoder, Encoder.encodeInt)
 }

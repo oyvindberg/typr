@@ -13,30 +13,38 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: public.test_organisasjon
-    Primary key: organisasjonskode */
-case class TestOrganisasjonRow(
-  organisasjonskode: TestOrganisasjonId
-){
-   val id = organisasjonskode
- }
+ * Primary key: organisasjonskode
+ */
+case class TestOrganisasjonRow(organisasjonskode: TestOrganisasjonId) {
+  def id: TestOrganisasjonId = organisasjonskode
+}
 
 object TestOrganisasjonRow {
   given jdbcDecoder: JdbcDecoder[TestOrganisasjonRow] = TestOrganisasjonId.jdbcDecoder.map(v => TestOrganisasjonRow(organisasjonskode = v))
-  given jsonDecoder: JsonDecoder[TestOrganisasjonRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val organisasjonskode = jsonObj.get("organisasjonskode").toRight("Missing field 'organisasjonskode'").flatMap(_.as(using TestOrganisasjonId.jsonDecoder))
-    if (organisasjonskode.isRight)
-      Right(TestOrganisasjonRow(organisasjonskode = organisasjonskode.toOption.get))
-    else Left(List[Either[String, Any]](organisasjonskode).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[TestOrganisasjonRow] = new JsonEncoder[TestOrganisasjonRow] {
-    override def unsafeEncode(a: TestOrganisasjonRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""organisasjonskode":""")
-      TestOrganisasjonId.jsonEncoder.unsafeEncode(a.organisasjonskode, indent, out)
-      out.write("}")
+
+  given jsonDecoder: JsonDecoder[TestOrganisasjonRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val organisasjonskode = jsonObj.get("organisasjonskode").toRight("Missing field 'organisasjonskode'").flatMap(_.as(using TestOrganisasjonId.jsonDecoder))
+      if (organisasjonskode.isRight)
+        Right(TestOrganisasjonRow(organisasjonskode = organisasjonskode.toOption.get))
+      else Left(List[Either[String, Any]](organisasjonskode).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[TestOrganisasjonRow] = Text.instance[TestOrganisasjonRow]{ (row, sb) =>
-    TestOrganisasjonId.text.unsafeEncode(row.organisasjonskode, sb)
+
+  given jsonEncoder: JsonEncoder[TestOrganisasjonRow] = {
+    new JsonEncoder[TestOrganisasjonRow] {
+      override def unsafeEncode(a: TestOrganisasjonRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""organisasjonskode":""")
+        TestOrganisasjonId.jsonEncoder.unsafeEncode(a.organisasjonskode, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[TestOrganisasjonRow] = {
+    Text.instance[TestOrganisasjonRow]{ (row, sb) =>
+      TestOrganisasjonId.pgText.unsafeEncode(row.organisasjonskode, sb)
+    }
   }
 }

@@ -17,23 +17,29 @@ case class EmployeepayhistoryId(
   businessentityid: BusinessentityId,
   ratechangedate: TypoLocalDateTime
 )
+
 object EmployeepayhistoryId {
-  given jsonDecoder: JsonDecoder[EmployeepayhistoryId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val ratechangedate = jsonObj.get("ratechangedate").toRight("Missing field 'ratechangedate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (businessentityid.isRight && ratechangedate.isRight)
-      Right(EmployeepayhistoryId(businessentityid = businessentityid.toOption.get, ratechangedate = ratechangedate.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, ratechangedate).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[EmployeepayhistoryId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val ratechangedate = jsonObj.get("ratechangedate").toRight("Missing field 'ratechangedate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (businessentityid.isRight && ratechangedate.isRight)
+        Right(EmployeepayhistoryId(businessentityid = businessentityid.toOption.get, ratechangedate = ratechangedate.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, ratechangedate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[EmployeepayhistoryId] = new JsonEncoder[EmployeepayhistoryId] {
-    override def unsafeEncode(a: EmployeepayhistoryId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""ratechangedate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.ratechangedate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[EmployeepayhistoryId] = {
+    new JsonEncoder[EmployeepayhistoryId] {
+      override def unsafeEncode(a: EmployeepayhistoryId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""ratechangedate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.ratechangedate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.culture` */
-case class CultureId(value: /* bpchar, max 6 chars */ String) extends AnyVal
+case class CultureId(value: /* bpchar, max 6 chars */ String) extends scala.AnyVal
+
 object CultureId {
   implicit lazy val arrayColumn: Column[Array[CultureId]] = Column.columnToArray(column, implicitly)
+
   implicit lazy val arrayToStatement: ToStatement[Array[CultureId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[CultureId, /* bpchar, max 6 chars */ String] = Bijection[CultureId, /* bpchar, max 6 chars */ String](_.value)(CultureId.apply)
+
+  implicit lazy val bijection: Bijection[CultureId, /* bpchar, max 6 chars */ String] = Bijection.apply[CultureId, /* bpchar, max 6 chars */ String](_.value)(CultureId.apply)
+
   implicit lazy val column: Column[CultureId] = Column.columnToString.map(CultureId.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[CultureId] = new ParameterMetaData[CultureId] {
-    override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+
+  implicit lazy val parameterMetadata: ParameterMetaData[CultureId] = {
+    new ParameterMetaData[CultureId] {
+      override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+    }
   }
+
+  implicit lazy val pgText: Text[CultureId] = {
+    new Text[CultureId] {
+      override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[CultureId] = Reads.StringReads.map(CultureId.apply)
-  implicit lazy val text: Text[CultureId] = new Text[CultureId] {
-    override def unsafeEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CultureId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[CultureId] = ToStatement.stringToStatement.contramap(_.value)
+
   implicit lazy val writes: Writes[CultureId] = Writes.StringWrites.contramap(_.value)
 }

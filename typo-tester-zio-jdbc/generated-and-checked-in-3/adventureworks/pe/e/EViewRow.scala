@@ -32,50 +32,58 @@ case class EViewRow(
 )
 
 object EViewRow {
-  given jdbcDecoder: JdbcDecoder[EViewRow] = new JdbcDecoder[EViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, EViewRow) =
-      columIndex + 5 ->
-        EViewRow(
-          id = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          emailaddressid = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          emailaddress = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
-          rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[EViewRow] = {
+    new JdbcDecoder[EViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, EViewRow) =
+        columIndex + 5 ->
+          EViewRow(
+            id = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            emailaddressid = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            emailaddress = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[EViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using JsonDecoder.int))
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val emailaddressid = jsonObj.get("emailaddressid").toRight("Missing field 'emailaddressid'").flatMap(_.as(using JsonDecoder.int))
-    val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && businessentityid.isRight && emailaddressid.isRight && emailaddress.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(EViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, emailaddressid = emailaddressid.toOption.get, emailaddress = emailaddress.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, businessentityid, emailaddressid, emailaddress, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[EViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using JsonDecoder.int))
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val emailaddressid = jsonObj.get("emailaddressid").toRight("Missing field 'emailaddressid'").flatMap(_.as(using JsonDecoder.int))
+      val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && businessentityid.isRight && emailaddressid.isRight && emailaddress.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(EViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, emailaddressid = emailaddressid.toOption.get, emailaddress = emailaddress.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, businessentityid, emailaddressid, emailaddress, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[EViewRow] = new JsonEncoder[EViewRow] {
-    override def unsafeEncode(a: EViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      JsonEncoder.int.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""emailaddressid":""")
-      JsonEncoder.int.unsafeEncode(a.emailaddressid, indent, out)
-      out.write(",")
-      out.write(""""emailaddress":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[EViewRow] = {
+    new JsonEncoder[EViewRow] {
+      override def unsafeEncode(a: EViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        JsonEncoder.int.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""emailaddressid":""")
+        JsonEncoder.int.unsafeEncode(a.emailaddressid, indent, out)
+        out.write(",")
+        out.write(""""emailaddress":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

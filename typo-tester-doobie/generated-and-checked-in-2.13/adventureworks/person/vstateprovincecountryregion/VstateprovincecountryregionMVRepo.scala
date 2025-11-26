@@ -11,5 +11,6 @@ import typo.dsl.SelectBuilder
 
 trait VstateprovincecountryregionMVRepo {
   def select: SelectBuilder[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow]
+
   def selectAll: Stream[ConnectionIO, VstateprovincecountryregionMVRow]
 }

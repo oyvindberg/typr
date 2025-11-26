@@ -27,11 +27,11 @@ trait VstorewithaddressesViewFields {
 
 object VstorewithaddressesViewFields {
   lazy val structure: Relation[VstorewithaddressesViewFields, VstorewithaddressesViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VstorewithaddressesViewFields, VstorewithaddressesViewRow] {
-  
+
     override lazy val fields: VstorewithaddressesViewFields = new VstorewithaddressesViewFields {
       override def businessentityid = Field[BusinessentityId, VstorewithaddressesViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def name = Field[Name, VstorewithaddressesViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
@@ -43,12 +43,11 @@ object VstorewithaddressesViewFields {
       override def postalcode = Field[/* max 15 chars */ String, VstorewithaddressesViewRow](_path, "postalcode", None, None, x => x.postalcode, (row, value) => row.copy(postalcode = value))
       override def countryregionname = Field[Name, VstorewithaddressesViewRow](_path, "countryregionname", None, None, x => x.countryregionname, (row, value) => row.copy(countryregionname = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VstorewithaddressesViewRow]] =
       List[FieldLike[?, VstorewithaddressesViewRow]](fields.businessentityid, fields.name, fields.addresstype, fields.addressline1, fields.addressline2, fields.city, fields.stateprovincename, fields.postalcode, fields.countryregionname)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

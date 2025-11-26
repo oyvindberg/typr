@@ -37,39 +37,47 @@ case class PscViewRow(
 )
 
 object PscViewRow {
-  implicit lazy val reads: Reads[PscViewRow] = Reads[PscViewRow](json => JsResult.fromTry(
-      Try(
-        PscViewRow(
-          id = json.\("id").as(ProductsubcategoryId.reads),
-          productsubcategoryid = json.\("productsubcategoryid").as(ProductsubcategoryId.reads),
-          productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
-          name = json.\("name").as(Name.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[PscViewRow] = {
+    Reads[PscViewRow](json => JsResult.fromTry(
+        Try(
+          PscViewRow(
+            id = json.\("id").as(ProductsubcategoryId.reads),
+            productsubcategoryid = json.\("productsubcategoryid").as(ProductsubcategoryId.reads),
+            productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
+            name = json.\("name").as(Name.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PscViewRow] = RowParser[PscViewRow] { row =>
-    Success(
-      PscViewRow(
-        id = row(idx + 0)(ProductsubcategoryId.column),
-        productsubcategoryid = row(idx + 1)(ProductsubcategoryId.column),
-        productcategoryid = row(idx + 2)(ProductcategoryId.column),
-        name = row(idx + 3)(Name.column),
-        rowguid = row(idx + 4)(TypoUUID.column),
-        modifieddate = row(idx + 5)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PscViewRow] = OWrites[PscViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductsubcategoryId.writes.writes(o.id),
-      "productsubcategoryid" -> ProductsubcategoryId.writes.writes(o.productsubcategoryid),
-      "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
-      "name" -> Name.writes.writes(o.name),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PscViewRow] = {
+    RowParser[PscViewRow] { row =>
+      Success(
+        PscViewRow(
+          id = row(idx + 0)(ProductsubcategoryId.column),
+          productsubcategoryid = row(idx + 1)(ProductsubcategoryId.column),
+          productcategoryid = row(idx + 2)(ProductcategoryId.column),
+          name = row(idx + 3)(Name.column),
+          rowguid = row(idx + 4)(TypoUUID.column),
+          modifieddate = row(idx + 5)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PscViewRow] = {
+    OWrites[PscViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductsubcategoryId.writes.writes(o.id),
+        "productsubcategoryid" -> ProductsubcategoryId.writes.writes(o.productsubcategoryid),
+        "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
+        "name" -> Name.writes.writes(o.name),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

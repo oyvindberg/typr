@@ -14,9 +14,17 @@ import zio.stream.ZStream
 
 trait PgtestRepo {
   def delete: DeleteBuilder[PgtestFields, PgtestRow]
+
   def insert(unsaved: PgtestRow): ZIO[ZConnection, Throwable, PgtestRow]
-  def insertStreaming(unsaved: ZStream[ZConnection, Throwable, PgtestRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, PgtestRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
   def select: SelectBuilder[PgtestFields, PgtestRow]
+
   def selectAll: ZStream[ZConnection, Throwable, PgtestRow]
+
   def update: UpdateBuilder[PgtestFields, PgtestRow]
 }

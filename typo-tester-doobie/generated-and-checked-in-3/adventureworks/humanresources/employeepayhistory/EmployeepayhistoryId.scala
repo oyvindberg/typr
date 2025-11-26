@@ -15,7 +15,9 @@ case class EmployeepayhistoryId(
   businessentityid: BusinessentityId,
   ratechangedate: TypoLocalDateTime
 )
+
 object EmployeepayhistoryId {
   given decoder: Decoder[EmployeepayhistoryId] = Decoder.forProduct2[EmployeepayhistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "ratechangedate")(EmployeepayhistoryId.apply)(using BusinessentityId.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[EmployeepayhistoryId] = Encoder.forProduct2[EmployeepayhistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "ratechangedate")(x => (x.businessentityid, x.ratechangedate))(using BusinessentityId.encoder, TypoLocalDateTime.encoder)
 }

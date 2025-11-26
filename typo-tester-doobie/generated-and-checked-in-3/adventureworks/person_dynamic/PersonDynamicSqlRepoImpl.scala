@@ -7,17 +7,17 @@ package adventureworks.person_dynamic
 
 import doobie.free.connection.ConnectionIO
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
-import doobie.syntax.string.toSqlInterpolator
 import doobie.util.Write
 import doobie.util.meta.Meta
 import fs2.Stream
+import doobie.syntax.string.toSqlInterpolator
 
 class PersonDynamicSqlRepoImpl extends PersonDynamicSqlRepo {
-  override def apply(firstName: Option[String]): Stream[ConnectionIO, PersonDynamicSqlRow] = {
+  def apply(firstName: Option[String]): Stream[ConnectionIO, PersonDynamicSqlRow] = {
     val sql =
       sql"""SELECT p.title, p.firstname, p.middlename, p.lastname
-            FROM person.person p
-            WHERE ${fromWrite(firstName)(using new Write.SingleOpt(Meta.StringMeta.put))}::text IS NULL OR p.firstname = ${fromWrite(firstName)(using new Write.SingleOpt(Meta.StringMeta.put))}
+      FROM person.person p
+      WHERE ${fromWrite(firstName)(using new Write.SingleOpt(Meta.StringMeta.put))}::text IS NULL OR p.firstname = ${fromWrite(firstName)(using new Write.SingleOpt(Meta.StringMeta.put))}
       """
     sql.query(using PersonDynamicSqlRow.read).stream
   }

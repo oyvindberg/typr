@@ -13,20 +13,38 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
+/** upsertBatch: Not implementable for zio-jdbc */
 trait OnlyPkColumnsRepo {
   def delete: DeleteBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow]
+
   def deleteById(compositeId: OnlyPkColumnsId): ZIO[ZConnection, Throwable, Boolean]
+
   def deleteByIds(compositeIds: Array[OnlyPkColumnsId]): ZIO[ZConnection, Throwable, Long]
+
   def insert(unsaved: OnlyPkColumnsRow): ZIO[ZConnection, Throwable, OnlyPkColumnsRow]
-  def insertStreaming(unsaved: ZStream[ZConnection, Throwable, OnlyPkColumnsRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, OnlyPkColumnsRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
   def select: SelectBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow]
+
   def selectAll: ZStream[ZConnection, Throwable, OnlyPkColumnsRow]
+
   def selectById(compositeId: OnlyPkColumnsId): ZIO[ZConnection, Throwable, Option[OnlyPkColumnsRow]]
+
   def selectByIds(compositeIds: Array[OnlyPkColumnsId]): ZStream[ZConnection, Throwable, OnlyPkColumnsRow]
+
   def selectByIdsTracked(compositeIds: Array[OnlyPkColumnsId]): ZIO[ZConnection, Throwable, Map[OnlyPkColumnsId, OnlyPkColumnsRow]]
+
   def update: UpdateBuilder[OnlyPkColumnsFields, OnlyPkColumnsRow]
+
   def upsert(unsaved: OnlyPkColumnsRow): ZIO[ZConnection, Throwable, UpdateResult[OnlyPkColumnsRow]]
-  // Not implementable for zio-jdbc: upsertBatch
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, OnlyPkColumnsRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, OnlyPkColumnsRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
 }

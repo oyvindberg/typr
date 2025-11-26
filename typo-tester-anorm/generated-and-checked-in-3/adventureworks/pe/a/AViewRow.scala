@@ -47,51 +47,59 @@ case class AViewRow(
 )
 
 object AViewRow {
-  given reads: Reads[AViewRow] = Reads[AViewRow](json => JsResult.fromTry(
-      Try(
-        AViewRow(
-          id = json.\("id").as(AddressId.reads),
-          addressid = json.\("addressid").as(AddressId.reads),
-          addressline1 = json.\("addressline1").as(Reads.StringReads),
-          addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
-          city = json.\("city").as(Reads.StringReads),
-          stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
-          postalcode = json.\("postalcode").as(Reads.StringReads),
-          spatiallocation = json.\("spatiallocation").toOption.map(_.as(TypoBytea.reads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[AViewRow] = {
+    Reads[AViewRow](json => JsResult.fromTry(
+        Try(
+          AViewRow(
+            id = json.\("id").as(AddressId.reads),
+            addressid = json.\("addressid").as(AddressId.reads),
+            addressline1 = json.\("addressline1").as(Reads.StringReads),
+            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            city = json.\("city").as(Reads.StringReads),
+            stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
+            postalcode = json.\("postalcode").as(Reads.StringReads),
+            spatiallocation = json.\("spatiallocation").toOption.map(_.as(TypoBytea.reads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[AViewRow] = RowParser[AViewRow] { row =>
-    Success(
-      AViewRow(
-        id = row(idx + 0)(using AddressId.column),
-        addressid = row(idx + 1)(using AddressId.column),
-        addressline1 = row(idx + 2)(using Column.columnToString),
-        addressline2 = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
-        city = row(idx + 4)(using Column.columnToString),
-        stateprovinceid = row(idx + 5)(using StateprovinceId.column),
-        postalcode = row(idx + 6)(using Column.columnToString),
-        spatiallocation = row(idx + 7)(using Column.columnToOption(using TypoBytea.column)),
-        rowguid = row(idx + 8)(using TypoUUID.column),
-        modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[AViewRow] = OWrites[AViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> AddressId.writes.writes(o.id),
-      "addressid" -> AddressId.writes.writes(o.addressid),
-      "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-      "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
-      "city" -> Writes.StringWrites.writes(o.city),
-      "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
-      "postalcode" -> Writes.StringWrites.writes(o.postalcode),
-      "spatiallocation" -> Writes.OptionWrites(using TypoBytea.writes).writes(o.spatiallocation),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[AViewRow] = {
+    RowParser[AViewRow] { row =>
+      Success(
+        AViewRow(
+          id = row(idx + 0)(using AddressId.column),
+          addressid = row(idx + 1)(using AddressId.column),
+          addressline1 = row(idx + 2)(using Column.columnToString),
+          addressline2 = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          city = row(idx + 4)(using Column.columnToString),
+          stateprovinceid = row(idx + 5)(using StateprovinceId.column),
+          postalcode = row(idx + 6)(using Column.columnToString),
+          spatiallocation = row(idx + 7)(using Column.columnToOption(using TypoBytea.column)),
+          rowguid = row(idx + 8)(using TypoUUID.column),
+          modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[AViewRow] = {
+    OWrites[AViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> AddressId.writes.writes(o.id),
+        "addressid" -> AddressId.writes.writes(o.addressid),
+        "addressline1" -> Writes.StringWrites.writes(o.addressline1),
+        "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
+        "city" -> Writes.StringWrites.writes(o.city),
+        "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
+        "postalcode" -> Writes.StringWrites.writes(o.postalcode),
+        "spatiallocation" -> Writes.OptionWrites(using TypoBytea.writes).writes(o.spatiallocation),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -20,49 +20,69 @@ import zio.json.JsonEncoder
 case class TypoUnknownCitext(value: String)
 
 object TypoUnknownCitext {
-  given arrayJdbcDecoder: JdbcDecoder[Array[TypoUnknownCitext]] = JdbcDecoder[Array[TypoUnknownCitext]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoUnknownCitext(x.asInstanceOf[String]))
-    },
-    "Array[java.lang.String]"
-  )
+  given arrayJdbcDecoder: JdbcDecoder[Array[TypoUnknownCitext]] = {
+    JdbcDecoder[Array[TypoUnknownCitext]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoUnknownCitext(x.asInstanceOf[String]))
+      },
+      "Array[java.lang.String]"
+    )
+  }
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TypoUnknownCitext]] = JdbcEncoder.singleParamEncoder(using arraySetter)
-  given arraySetter: Setter[Array[TypoUnknownCitext]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "citext",
-        v.map { vv =>
-          vv.value
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  given bijection: Bijection[TypoUnknownCitext, String] = Bijection[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
-  given jdbcDecoder: JdbcDecoder[TypoUnknownCitext] = JdbcDecoder[TypoUnknownCitext](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoUnknownCitext(v.asInstanceOf[String])
-    },
-    "java.lang.String"
-  )
-  given jdbcEncoder: JdbcEncoder[TypoUnknownCitext] = JdbcEncoder.singleParamEncoder(using setter)
-  given jsonDecoder: JsonDecoder[TypoUnknownCitext] = JsonDecoder.string.map(TypoUnknownCitext.apply)
-  given jsonEncoder: JsonEncoder[TypoUnknownCitext] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[TypoUnknownCitext] = PGType.instance[TypoUnknownCitext]("citext", Types.OTHER)
-  given setter: Setter[TypoUnknownCitext] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  given arraySetter: Setter[Array[TypoUnknownCitext]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value
-      )
-    },
-    "citext"
-  )
-  given text: Text[TypoUnknownCitext] = new Text[TypoUnknownCitext] {
-    override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+        ps.getConnection.createArrayOf(
+          "citext",
+          v.map { vv =>
+            vv.value
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  given bijection: Bijection[TypoUnknownCitext, String] = Bijection.apply[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoUnknownCitext] = {
+    JdbcDecoder[TypoUnknownCitext](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoUnknownCitext(v.asInstanceOf[String])
+      },
+      "java.lang.String"
+    )
+  }
+
+  given jdbcEncoder: JdbcEncoder[TypoUnknownCitext] = JdbcEncoder.singleParamEncoder(using setter)
+
+  given jsonDecoder: JsonDecoder[TypoUnknownCitext] = JsonDecoder.string.map(TypoUnknownCitext.apply)
+
+  given jsonEncoder: JsonEncoder[TypoUnknownCitext] = JsonEncoder.string.contramap(_.value)
+
+  given pgText: Text[TypoUnknownCitext] = {
+    new Text[TypoUnknownCitext] {
+      override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given pgType: PGType[TypoUnknownCitext] = PGType.instance[TypoUnknownCitext]("citext", Types.OTHER)
+
+  given setter: Setter[TypoUnknownCitext] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value
+        )
+      },
+      "citext"
+    )
   }
 }

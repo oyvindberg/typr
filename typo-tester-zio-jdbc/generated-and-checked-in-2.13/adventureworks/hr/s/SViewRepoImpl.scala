@@ -6,16 +6,12 @@
 package adventureworks.hr.s
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class SViewRepoImpl extends SViewRepo {
-  override def select: SelectBuilder[SViewFields, SViewRow] = {
-    SelectBuilderSql(""""hr"."s"""", SViewFields.structure, SViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, SViewRow] = {
-    sql"""select "id", "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text from "hr"."s"""".query(SViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[SViewFields, SViewRow] = SelectBuilder.of(""""hr"."s"""", SViewFields.structure, SViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, SViewRow] = sql"""select "id", "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text from "hr"."s"""".query(SViewRow.jdbcDecoder).selectStream()
 }

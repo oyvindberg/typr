@@ -69,11 +69,11 @@ trait ProductFields {
 
 object ProductFields {
   lazy val structure: Relation[ProductFields, ProductRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductFields, ProductRow] {
-  
+
     override lazy val fields: ProductFields = new ProductFields {
       override def productid = IdField[ProductId, ProductRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def name = Field[Name, ProductRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
@@ -101,12 +101,11 @@ object ProductFields {
       override def rowguid = Field[TypoUUID, ProductRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductRow]] =
       List[FieldLike[?, ProductRow]](fields.productid, fields.name, fields.productnumber, fields.makeflag, fields.finishedgoodsflag, fields.color, fields.safetystocklevel, fields.reorderpoint, fields.standardcost, fields.listprice, fields.size, fields.sizeunitmeasurecode, fields.weightunitmeasurecode, fields.weight, fields.daystomanufacture, fields.productline, fields.`class`, fields.style, fields.productsubcategoryid, fields.productmodelid, fields.sellstartdate, fields.sellenddate, fields.discontinueddate, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

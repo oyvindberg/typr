@@ -7,6 +7,7 @@ package adventureworks.humanresources.shift
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoLocalTime
 import adventureworks.public.Name
@@ -24,66 +25,74 @@ case class ShiftRowUnsaved(
   /** Shift end time. */
   endtime: TypoLocalTime,
   /** Default: nextval('humanresources.shift_shiftid_seq'::regclass)
-      Primary key for Shift records. */
-  shiftid: Defaulted[ShiftId] = Defaulted.UseDefault,
+   * Primary key for Shift records.
+   */
+  shiftid: Defaulted[ShiftId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(shiftidDefault: => ShiftId, modifieddateDefault: => TypoLocalDateTime): ShiftRow =
-    ShiftRow(
+  def toRow(
+    shiftidDefault: => ShiftId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ShiftRow = {
+    new ShiftRow(
+      shiftid = shiftid.getOrElse(shiftidDefault),
       name = name,
       starttime = starttime,
       endtime = endtime,
-      shiftid = shiftid match {
-                  case Defaulted.UseDefault => shiftidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object ShiftRowUnsaved {
-  given jsonDecoder: JsonDecoder[ShiftRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val starttime = jsonObj.get("starttime").toRight("Missing field 'starttime'").flatMap(_.as(using TypoLocalTime.jsonDecoder))
-    val endtime = jsonObj.get("endtime").toRight("Missing field 'endtime'").flatMap(_.as(using TypoLocalTime.jsonDecoder))
-    val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(using Defaulted.jsonDecoder(using ShiftId.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (name.isRight && starttime.isRight && endtime.isRight && shiftid.isRight && modifieddate.isRight)
-      Right(ShiftRowUnsaved(name = name.toOption.get, starttime = starttime.toOption.get, endtime = endtime.toOption.get, shiftid = shiftid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](name, starttime, endtime, shiftid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  given jsonEncoder: JsonEncoder[ShiftRowUnsaved] = new JsonEncoder[ShiftRowUnsaved] {
-    override def unsafeEncode(a: ShiftRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""starttime":""")
-      TypoLocalTime.jsonEncoder.unsafeEncode(a.starttime, indent, out)
-      out.write(",")
-      out.write(""""endtime":""")
-      TypoLocalTime.jsonEncoder.unsafeEncode(a.endtime, indent, out)
-      out.write(",")
-      out.write(""""shiftid":""")
-      Defaulted.jsonEncoder(using ShiftId.jsonEncoder).unsafeEncode(a.shiftid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object ShiftRowUnsaved {
+  given jsonDecoder: JsonDecoder[ShiftRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val starttime = jsonObj.get("starttime").toRight("Missing field 'starttime'").flatMap(_.as(using TypoLocalTime.jsonDecoder))
+      val endtime = jsonObj.get("endtime").toRight("Missing field 'endtime'").flatMap(_.as(using TypoLocalTime.jsonDecoder))
+      val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(using Defaulted.jsonDecoder(using ShiftId.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (name.isRight && starttime.isRight && endtime.isRight && shiftid.isRight && modifieddate.isRight)
+        Right(ShiftRowUnsaved(name = name.toOption.get, starttime = starttime.toOption.get, endtime = endtime.toOption.get, shiftid = shiftid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](name, starttime, endtime, shiftid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[ShiftRowUnsaved] = Text.instance[ShiftRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalTime.text.unsafeEncode(row.starttime, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalTime.text.unsafeEncode(row.endtime, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ShiftId.text).unsafeEncode(row.shiftid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[ShiftRowUnsaved] = {
+    new JsonEncoder[ShiftRowUnsaved] {
+      override def unsafeEncode(a: ShiftRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""starttime":""")
+        TypoLocalTime.jsonEncoder.unsafeEncode(a.starttime, indent, out)
+        out.write(",")
+        out.write(""""endtime":""")
+        TypoLocalTime.jsonEncoder.unsafeEncode(a.endtime, indent, out)
+        out.write(",")
+        out.write(""""shiftid":""")
+        Defaulted.jsonEncoder(using ShiftId.jsonEncoder).unsafeEncode(a.shiftid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[ShiftRowUnsaved] = {
+    Text.instance[ShiftRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalTime.pgText.unsafeEncode(row.starttime, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalTime.pgText.unsafeEncode(row.endtime, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ShiftId.pgText).unsafeEncode(row.shiftid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

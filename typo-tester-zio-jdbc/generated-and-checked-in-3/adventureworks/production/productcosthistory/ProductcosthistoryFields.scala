@@ -35,16 +35,16 @@ trait ProductcosthistoryFields {
     productid.isEqual(compositeId.productid).and(startdate.isEqual(compositeId.startdate))
   def compositeIdIn(compositeIds: Array[ProductcosthistoryId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[ProductcosthistoryId](productid)(_.productid)(using as[Array[ProductId]](using ProductId.arrayJdbcEncoder, PGType.forArray(using ProductId.pgType)), implicitly), TuplePart[ProductcosthistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDateTime]](using TypoLocalDateTime.arrayJdbcEncoder, PGType.forArray(using TypoLocalDateTime.pgType)), implicitly))
-  
+
 }
 
 object ProductcosthistoryFields {
   lazy val structure: Relation[ProductcosthistoryFields, ProductcosthistoryRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductcosthistoryFields, ProductcosthistoryRow] {
-  
+
     override lazy val fields: ProductcosthistoryFields = new ProductcosthistoryFields {
       override def productid = IdField[ProductId, ProductcosthistoryRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def startdate = IdField[TypoLocalDateTime, ProductcosthistoryRow](_path, "startdate", Some("text"), Some("timestamp"), x => x.startdate, (row, value) => row.copy(startdate = value))
@@ -52,12 +52,11 @@ object ProductcosthistoryFields {
       override def standardcost = Field[BigDecimal, ProductcosthistoryRow](_path, "standardcost", None, Some("numeric"), x => x.standardcost, (row, value) => row.copy(standardcost = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductcosthistoryRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductcosthistoryRow]] =
       List[FieldLike[?, ProductcosthistoryRow]](fields.productid, fields.startdate, fields.enddate, fields.standardcost, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

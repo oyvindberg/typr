@@ -7,6 +7,7 @@ package adventureworks.sales.specialofferproduct
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
@@ -19,64 +20,73 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `sales.specialofferproduct` which has not been persisted yet */
 case class SpecialofferproductRowUnsaved(
   /** Primary key for SpecialOfferProduct records.
-      Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
+   * Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]]
+   */
   specialofferid: SpecialofferId,
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SpecialofferproductRow =
-    SpecialofferproductRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SpecialofferproductRow = {
+    new SpecialofferproductRow(
       specialofferid = specialofferid,
       productid = productid,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object SpecialofferproductRowUnsaved {
-  given jsonDecoder: JsonDecoder[SpecialofferproductRowUnsaved] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val specialofferid = jsonObj.get("specialofferid").toRight("Missing field 'specialofferid'").flatMap(_.as(using SpecialofferId.jsonDecoder))
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoUUID.jsonDecoder)))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
-    if (specialofferid.isRight && productid.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(SpecialofferproductRowUnsaved(specialofferid = specialofferid.toOption.get, productid = productid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](specialofferid, productid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
   }
-  given jsonEncoder: JsonEncoder[SpecialofferproductRowUnsaved] = new JsonEncoder[SpecialofferproductRowUnsaved] {
-    override def unsafeEncode(a: SpecialofferproductRowUnsaved, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""specialofferid":""")
-      SpecialofferId.jsonEncoder.unsafeEncode(a.specialofferid, indent, out)
-      out.write(",")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      Defaulted.jsonEncoder(using TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+}
+
+object SpecialofferproductRowUnsaved {
+  given jsonDecoder: JsonDecoder[SpecialofferproductRowUnsaved] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val specialofferid = jsonObj.get("specialofferid").toRight("Missing field 'specialofferid'").flatMap(_.as(using SpecialofferId.jsonDecoder))
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoUUID.jsonDecoder)))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using Defaulted.jsonDecoder(using TypoLocalDateTime.jsonDecoder)))
+      if (specialofferid.isRight && productid.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(SpecialofferproductRowUnsaved(specialofferid = specialofferid.toOption.get, productid = productid.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](specialofferid, productid, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  given text: Text[SpecialofferproductRowUnsaved] = Text.instance[SpecialofferproductRowUnsaved]{ (row, sb) =>
-    SpecialofferId.text.unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given jsonEncoder: JsonEncoder[SpecialofferproductRowUnsaved] = {
+    new JsonEncoder[SpecialofferproductRowUnsaved] {
+      override def unsafeEncode(a: SpecialofferproductRowUnsaved, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""specialofferid":""")
+        SpecialofferId.jsonEncoder.unsafeEncode(a.specialofferid, indent, out)
+        out.write(",")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        Defaulted.jsonEncoder(using TypoUUID.jsonEncoder).unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        Defaulted.jsonEncoder(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[SpecialofferproductRowUnsaved] = {
+    Text.instance[SpecialofferproductRowUnsaved]{ (row, sb) =>
+      SpecialofferId.pgText.unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

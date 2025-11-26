@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `public.table-with-generated-columns` */
-case class TableWithGeneratedColumnsId(value: String) extends AnyVal
+case class TableWithGeneratedColumnsId(value: String) extends scala.AnyVal
+
 object TableWithGeneratedColumnsId {
   given arrayColumn: Column[Array[TableWithGeneratedColumnsId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[TableWithGeneratedColumnsId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  given bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
+  given bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection.apply[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
   given column: Column[TableWithGeneratedColumnsId] = Column.columnToString.map(TableWithGeneratedColumnsId.apply)
-  given parameterMetadata: ParameterMetaData[TableWithGeneratedColumnsId] = new ParameterMetaData[TableWithGeneratedColumnsId] {
-    override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[TableWithGeneratedColumnsId] = {
+    new ParameterMetaData[TableWithGeneratedColumnsId] {
+      override def sqlType: String = ParameterMetaData.StringParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.StringParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[TableWithGeneratedColumnsId] = {
+    new Text[TableWithGeneratedColumnsId] {
+      override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[TableWithGeneratedColumnsId] = Reads.StringReads.map(TableWithGeneratedColumnsId.apply)
-  given text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {
-    override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[TableWithGeneratedColumnsId] = ToStatement.stringToStatement.contramap(_.value)
+
   given writes: Writes[TableWithGeneratedColumnsId] = Writes.StringWrites.contramap(_.value)
 }

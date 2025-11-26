@@ -20,20 +20,26 @@ case class ProductlistpricehistoryId(
   productid: ProductId,
   startdate: TypoLocalDateTime
 )
+
 object ProductlistpricehistoryId {
-  implicit lazy val reads: Reads[ProductlistpricehistoryId] = Reads[ProductlistpricehistoryId](json => JsResult.fromTry(
-      Try(
-        ProductlistpricehistoryId(
-          productid = json.\("productid").as(ProductId.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[ProductlistpricehistoryId] = {
+    Reads[ProductlistpricehistoryId](json => JsResult.fromTry(
+        Try(
+          ProductlistpricehistoryId(
+            productid = json.\("productid").as(ProductId.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[ProductlistpricehistoryId] = OWrites[ProductlistpricehistoryId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[ProductlistpricehistoryId] = {
+    OWrites[ProductlistpricehistoryId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate)
+      ))
+    )
+  }
 }

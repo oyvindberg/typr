@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `information_schema.yes_or_no`
-  * Constraint: CHECK (((VALUE)::text = ANY ((ARRAY['YES'::character varying, 'NO'::character varying])::text[])))
-  */
+ * Constraint: CHECK (((VALUE)::text = ANY ((ARRAY['YES'::character varying, 'NO'::character varying])::text[])))
+ */
 case class YesOrNo(value: String)
+
 object YesOrNo {
   given arrayJdbcDecoder: JdbcDecoder[Array[YesOrNo]] = adventureworks.StringArrayDecoder.map(_.map(YesOrNo.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[YesOrNo]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[YesOrNo]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[YesOrNo, String] = Bijection[YesOrNo, String](_.value)(YesOrNo.apply)
+
+  given bijection: Bijection[YesOrNo, String] = Bijection.apply[YesOrNo, String](_.value)(YesOrNo.apply)
+
   given jdbcDecoder: JdbcDecoder[YesOrNo] = JdbcDecoder.stringDecoder.map(YesOrNo.apply)
+
   given jdbcEncoder: JdbcEncoder[YesOrNo] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[YesOrNo] = JsonDecoder.string.map(YesOrNo.apply)
+
   given jsonEncoder: JsonEncoder[YesOrNo] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[YesOrNo] = PGType.instance(""""information_schema"."yes_or_no"""", Types.OTHER)
-  given setter: Setter[YesOrNo] = Setter.stringSetter.contramap(_.value)
-  given text: Text[YesOrNo] = new Text[YesOrNo] {
-    override def unsafeEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[YesOrNo] = {
+    new Text[YesOrNo] {
+      override def unsafeEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[YesOrNo] = PGType.instance(""""information_schema"."yes_or_no"""", Types.OTHER)
+
+  given setter: Setter[YesOrNo] = Setter.stringSetter.contramap(_.value)
 }

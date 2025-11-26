@@ -31,22 +31,26 @@ case class LViewRow(
 
 object LViewRow {
   given decoder: Decoder[LViewRow] = Decoder.forProduct6[LViewRow, LocationId, LocationId, Name, BigDecimal, BigDecimal, TypoLocalDateTime]("id", "locationid", "name", "costrate", "availability", "modifieddate")(LViewRow.apply)(using LocationId.decoder, LocationId.decoder, Name.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[LViewRow] = Encoder.forProduct6[LViewRow, LocationId, LocationId, Name, BigDecimal, BigDecimal, TypoLocalDateTime]("id", "locationid", "name", "costrate", "availability", "modifieddate")(x => (x.id, x.locationid, x.name, x.costrate, x.availability, x.modifieddate))(using LocationId.encoder, LocationId.encoder, Name.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
-  given read: Read[LViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(LocationId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[LViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(LocationId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    LViewRow(
-      id = arr(0).asInstanceOf[LocationId],
-          locationid = arr(1).asInstanceOf[LocationId],
-          name = arr(2).asInstanceOf[Name],
-          costrate = arr(3).asInstanceOf[BigDecimal],
-          availability = arr(4).asInstanceOf[BigDecimal],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(LocationId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      LViewRow(
+        id = arr(0).asInstanceOf[LocationId],
+            locationid = arr(1).asInstanceOf[LocationId],
+            name = arr(2).asInstanceOf[Name],
+            costrate = arr(3).asInstanceOf[BigDecimal],
+            availability = arr(4).asInstanceOf[BigDecimal],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

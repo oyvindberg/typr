@@ -35,32 +35,31 @@ trait TestSakSoknadsalternativFields {
     organisasjonskodeSaksbehandler.isEqual(compositeId.organisasjonskodeSaksbehandler).and(utdanningsmulighetKode.isEqual(compositeId.utdanningsmulighetKode))
   def compositeIdIn(compositeIds: Array[TestSakSoknadsalternativId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[TestSakSoknadsalternativId](organisasjonskodeSaksbehandler)(_.organisasjonskodeSaksbehandler)(using as[Array[String]](using ToParameterValue(null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(using ParameterMetaData.StringParameterMetaData)), implicitly), TuplePart[TestSakSoknadsalternativId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String]](using ToParameterValue(null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(using ParameterMetaData.StringParameterMetaData)), implicitly))
-  
+
   def extractTestUtdanningstilbudIdIs(id: TestUtdanningstilbudId): SqlExpr[Boolean] =
     organisasjonskodeTilbyder.isEqual(id.organisasjonskode).and(utdanningsmulighetKode.isEqual(id.utdanningsmulighetKode))
   def extractTestUtdanningstilbudIdIn(ids: Array[TestUtdanningstilbudId]): SqlExpr[Boolean] =
     new CompositeIn(ids)(TuplePart[TestUtdanningstilbudId](organisasjonskodeTilbyder)(_.organisasjonskode)(using as[Array[TestOrganisasjonId]](using ToParameterValue(null, TestOrganisasjonId.arrayToStatement), adventureworks.arrayParameterMetaData(using TestOrganisasjonId.parameterMetadata)), implicitly), TuplePart[TestUtdanningstilbudId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String]](using ToParameterValue(null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(using ParameterMetaData.StringParameterMetaData)), implicitly))
-  
+
 }
 
 object TestSakSoknadsalternativFields {
   lazy val structure: Relation[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] {
-  
+
     override lazy val fields: TestSakSoknadsalternativFields = new TestSakSoknadsalternativFields {
       override def organisasjonskodeSaksbehandler = IdField[String, TestSakSoknadsalternativRow](_path, "organisasjonskode_saksbehandler", None, None, x => x.organisasjonskodeSaksbehandler, (row, value) => row.copy(organisasjonskodeSaksbehandler = value))
       override def utdanningsmulighetKode = IdField[String, TestSakSoknadsalternativRow](_path, "utdanningsmulighet_kode", None, None, x => x.utdanningsmulighetKode, (row, value) => row.copy(utdanningsmulighetKode = value))
       override def organisasjonskodeTilbyder = Field[TestOrganisasjonId, TestSakSoknadsalternativRow](_path, "organisasjonskode_tilbyder", None, None, x => x.organisasjonskodeTilbyder, (row, value) => row.copy(organisasjonskodeTilbyder = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, TestSakSoknadsalternativRow]] =
       List[FieldLike[?, TestSakSoknadsalternativRow]](fields.organisasjonskodeSaksbehandler, fields.utdanningsmulighetKode, fields.organisasjonskodeTilbyder)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

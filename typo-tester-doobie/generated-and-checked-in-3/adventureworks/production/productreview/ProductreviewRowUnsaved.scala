@@ -6,6 +6,7 @@
 package adventureworks.production.productreview
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
@@ -16,65 +17,70 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.productreview` which has not been persisted yet */
 case class ProductreviewRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Name of the reviewer. */
   reviewername: Name,
   /** Reviewer's e-mail address. */
   emailaddress: /* max 50 chars */ String,
   /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
-      Constraint CK_ProductReview_Rating affecting columns rating:  (((rating >= 1) AND (rating <= 5))) */
+   * Constraint CK_ProductReview_Rating affecting columns rating:  (((rating >= 1) AND (rating <= 5)))
+   */
   rating: Int,
   /** Reviewer's comments */
-  comments: Option[/* max 3850 chars */ String],
+  comments: Option[/* max 3850 chars */ String] = None,
   /** Default: nextval('production.productreview_productreviewid_seq'::regclass)
-      Primary key for ProductReview records. */
-  productreviewid: Defaulted[ProductreviewId] = Defaulted.UseDefault,
+   * Primary key for ProductReview records.
+   */
+  productreviewid: Defaulted[ProductreviewId] = new UseDefault(),
   /** Default: now()
-      Date review was submitted. */
-  reviewdate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+   * Date review was submitted.
+   */
+  reviewdate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(productreviewidDefault: => ProductreviewId, reviewdateDefault: => TypoLocalDateTime, modifieddateDefault: => TypoLocalDateTime): ProductreviewRow =
-    ProductreviewRow(
+  def toRow(
+    productreviewidDefault: => ProductreviewId,
+    reviewdateDefault: => TypoLocalDateTime,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ProductreviewRow = {
+    new ProductreviewRow(
+      productreviewid = productreviewid.getOrElse(productreviewidDefault),
       productid = productid,
       reviewername = reviewername,
+      reviewdate = reviewdate.getOrElse(reviewdateDefault),
       emailaddress = emailaddress,
       rating = rating,
       comments = comments,
-      productreviewid = productreviewid match {
-                          case Defaulted.UseDefault => productreviewidDefault
-                          case Defaulted.Provided(value) => value
-                        },
-      reviewdate = reviewdate match {
-                     case Defaulted.UseDefault => reviewdateDefault
-                     case Defaulted.Provided(value) => value
-                   },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object ProductreviewRowUnsaved {
   given decoder: Decoder[ProductreviewRowUnsaved] = Decoder.forProduct8[ProductreviewRowUnsaved, ProductId, Name, /* max 50 chars */ String, Int, Option[/* max 3850 chars */ String], Defaulted[ProductreviewId], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "reviewername", "emailaddress", "rating", "comments", "productreviewid", "reviewdate", "modifieddate")(ProductreviewRowUnsaved.apply)(using ProductId.decoder, Name.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), Defaulted.decoder(using ProductreviewId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[ProductreviewRowUnsaved] = Encoder.forProduct8[ProductreviewRowUnsaved, ProductId, Name, /* max 50 chars */ String, Int, Option[/* max 3850 chars */ String], Defaulted[ProductreviewId], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "reviewername", "emailaddress", "rating", "comments", "productreviewid", "reviewdate", "modifieddate")(x => (x.productid, x.reviewername, x.emailaddress, x.rating, x.comments, x.productreviewid, x.reviewdate, x.modifieddate))(using ProductId.encoder, Name.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), Defaulted.encoder(using ProductreviewId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[ProductreviewRowUnsaved] = Text.instance[ProductreviewRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.reviewername, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.emailaddress, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.rating, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.comments, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ProductreviewId.text).unsafeEncode(row.productreviewid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.reviewdate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[ProductreviewRowUnsaved] = {
+    Text.instance[ProductreviewRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.reviewername, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.emailaddress, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.rating, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.comments, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ProductreviewId.pgText).unsafeEncode(row.productreviewid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.reviewdate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `purchasing.purchaseorderheader` */
-case class PurchaseorderheaderId(value: Int) extends AnyVal
+case class PurchaseorderheaderId(value: Int) extends scala.AnyVal
+
 object PurchaseorderheaderId {
   implicit lazy val arrayGet: Get[Array[PurchaseorderheaderId]] = adventureworks.IntegerArrayMeta.get.map(_.map(PurchaseorderheaderId.apply))
+
   implicit lazy val arrayPut: Put[Array[PurchaseorderheaderId]] = adventureworks.IntegerArrayMeta.put.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[PurchaseorderheaderId, Int] = Bijection[PurchaseorderheaderId, Int](_.value)(PurchaseorderheaderId.apply)
+
+  implicit lazy val bijection: Bijection[PurchaseorderheaderId, Int] = Bijection.apply[PurchaseorderheaderId, Int](_.value)(PurchaseorderheaderId.apply)
+
   implicit lazy val decoder: Decoder[PurchaseorderheaderId] = Decoder.decodeInt.map(PurchaseorderheaderId.apply)
+
   implicit lazy val encoder: Encoder[PurchaseorderheaderId] = Encoder.encodeInt.contramap(_.value)
+
   implicit lazy val get: Get[PurchaseorderheaderId] = Meta.IntMeta.get.map(PurchaseorderheaderId.apply)
-  implicit lazy val put: Put[PurchaseorderheaderId] = Meta.IntMeta.put.contramap(_.value)
-  implicit lazy val text: Text[PurchaseorderheaderId] = new Text[PurchaseorderheaderId] {
-    override def unsafeEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[PurchaseorderheaderId] = {
+    new Text[PurchaseorderheaderId] {
+      override def unsafeEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: PurchaseorderheaderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val put: Put[PurchaseorderheaderId] = Meta.IntMeta.put.contramap(_.value)
 }

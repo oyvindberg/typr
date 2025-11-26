@@ -26,35 +26,43 @@ case class PmiViewRow(
 )
 
 object PmiViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[PmiViewRow] = new JdbcDecoder[PmiViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PmiViewRow) =
-      columIndex + 2 ->
-        PmiViewRow(
-          productmodelid = ProductmodelId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          illustrationid = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[PmiViewRow] = {
+    new JdbcDecoder[PmiViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, PmiViewRow) =
+        columIndex + 2 ->
+          PmiViewRow(
+            productmodelid = ProductmodelId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            illustrationid = IllustrationId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[PmiViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(ProductmodelId.jsonDecoder))
-    val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(IllustrationId.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (productmodelid.isRight && illustrationid.isRight && modifieddate.isRight)
-      Right(PmiViewRow(productmodelid = productmodelid.toOption.get, illustrationid = illustrationid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](productmodelid, illustrationid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[PmiViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(ProductmodelId.jsonDecoder))
+      val illustrationid = jsonObj.get("illustrationid").toRight("Missing field 'illustrationid'").flatMap(_.as(IllustrationId.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (productmodelid.isRight && illustrationid.isRight && modifieddate.isRight)
+        Right(PmiViewRow(productmodelid = productmodelid.toOption.get, illustrationid = illustrationid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](productmodelid, illustrationid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[PmiViewRow] = new JsonEncoder[PmiViewRow] {
-    override def unsafeEncode(a: PmiViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productmodelid":""")
-      ProductmodelId.jsonEncoder.unsafeEncode(a.productmodelid, indent, out)
-      out.write(",")
-      out.write(""""illustrationid":""")
-      IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[PmiViewRow] = {
+    new JsonEncoder[PmiViewRow] {
+      override def unsafeEncode(a: PmiViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productmodelid":""")
+        ProductmodelId.jsonEncoder.unsafeEncode(a.productmodelid, indent, out)
+        out.write(",")
+        out.write(""""illustrationid":""")
+        IllustrationId.jsonEncoder.unsafeEncode(a.illustrationid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

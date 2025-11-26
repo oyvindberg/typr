@@ -16,6 +16,9 @@ case class ForeignKey[Fields2, Row2](
 }
 
 object ForeignKey {
+  def of[Fields2, Row2](name: String): ForeignKey[Fields2, Row2] =
+    ForeignKey[Fields2, Row2](name, Nil)
+
   case class ColumnPair[T, Fields2](
       thisField: SqlExpr[T],
       thatField: Fields2 => SqlExpr[T]

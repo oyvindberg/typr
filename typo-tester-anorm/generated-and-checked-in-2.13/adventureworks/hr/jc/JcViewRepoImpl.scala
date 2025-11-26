@@ -5,18 +5,16 @@
  */
 package adventureworks.hr.jc
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class JcViewRepoImpl extends JcViewRepo {
-  override def select: SelectBuilder[JcViewFields, JcViewRow] = {
-    SelectBuilderSql(""""hr"."jc"""", JcViewFields.structure, JcViewRow.rowParser)
-  }
-  override def selectAll(implicit c: Connection): List[JcViewRow] = {
+  def select: SelectBuilder[JcViewFields, JcViewRow] = SelectBuilder.of(""""hr"."jc"""", JcViewFields.structure, JcViewRow.rowParser)
+
+  def selectAll(implicit c: Connection): List[JcViewRow] = {
     SQL"""select "id", "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
-          from "hr"."jc"
-       """.as(JcViewRow.rowParser(1).*)
+    from "hr"."jc"
+    """.as(JcViewRow.rowParser(1).*)
   }
 }

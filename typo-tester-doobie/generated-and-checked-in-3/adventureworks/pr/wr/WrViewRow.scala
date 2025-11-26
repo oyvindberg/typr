@@ -46,36 +46,40 @@ case class WrViewRow(
 
 object WrViewRow {
   given decoder: Decoder[WrViewRow] = Decoder.forProduct13[WrViewRow, WorkorderId, WorkorderId, Int, TypoShort, LocationId, TypoLocalDateTime, TypoLocalDateTime, Option[TypoLocalDateTime], Option[TypoLocalDateTime], Option[BigDecimal], BigDecimal, Option[BigDecimal], TypoLocalDateTime]("id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")(WrViewRow.apply)(using WorkorderId.decoder, WorkorderId.decoder, Decoder.decodeInt, TypoShort.decoder, LocationId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), Decoder.decodeOption(using TypoLocalDateTime.decoder), Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeBigDecimal, Decoder.decodeOption(using Decoder.decodeBigDecimal), TypoLocalDateTime.decoder)
+
   given encoder: Encoder[WrViewRow] = Encoder.forProduct13[WrViewRow, WorkorderId, WorkorderId, Int, TypoShort, LocationId, TypoLocalDateTime, TypoLocalDateTime, Option[TypoLocalDateTime], Option[TypoLocalDateTime], Option[BigDecimal], BigDecimal, Option[BigDecimal], TypoLocalDateTime]("id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")(x => (x.id, x.workorderid, x.productid, x.operationsequence, x.locationid, x.scheduledstartdate, x.scheduledenddate, x.actualstartdate, x.actualenddate, x.actualresourcehrs, x.plannedcost, x.actualcost, x.modifieddate))(using WorkorderId.encoder, WorkorderId.encoder, Encoder.encodeInt, TypoShort.encoder, LocationId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), Encoder.encodeOption(using TypoLocalDateTime.encoder), Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeBigDecimal, Encoder.encodeOption(using Encoder.encodeBigDecimal), TypoLocalDateTime.encoder)
-  given read: Read[WrViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(WorkorderId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[WrViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(WorkorderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(LocationId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    WrViewRow(
-      id = arr(0).asInstanceOf[WorkorderId],
-          workorderid = arr(1).asInstanceOf[WorkorderId],
-          productid = arr(2).asInstanceOf[Int],
-          operationsequence = arr(3).asInstanceOf[TypoShort],
-          locationid = arr(4).asInstanceOf[LocationId],
-          scheduledstartdate = arr(5).asInstanceOf[TypoLocalDateTime],
-          scheduledenddate = arr(6).asInstanceOf[TypoLocalDateTime],
-          actualstartdate = arr(7).asInstanceOf[Option[TypoLocalDateTime]],
-          actualenddate = arr(8).asInstanceOf[Option[TypoLocalDateTime]],
-          actualresourcehrs = arr(9).asInstanceOf[Option[BigDecimal]],
-          plannedcost = arr(10).asInstanceOf[BigDecimal],
-          actualcost = arr(11).asInstanceOf[Option[BigDecimal]],
-          modifieddate = arr(12).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(WorkorderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(LocationId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      WrViewRow(
+        id = arr(0).asInstanceOf[WorkorderId],
+            workorderid = arr(1).asInstanceOf[WorkorderId],
+            productid = arr(2).asInstanceOf[Int],
+            operationsequence = arr(3).asInstanceOf[TypoShort],
+            locationid = arr(4).asInstanceOf[LocationId],
+            scheduledstartdate = arr(5).asInstanceOf[TypoLocalDateTime],
+            scheduledenddate = arr(6).asInstanceOf[TypoLocalDateTime],
+            actualstartdate = arr(7).asInstanceOf[Option[TypoLocalDateTime]],
+            actualenddate = arr(8).asInstanceOf[Option[TypoLocalDateTime]],
+            actualresourcehrs = arr(9).asInstanceOf[Option[BigDecimal]],
+            plannedcost = arr(10).asInstanceOf[BigDecimal],
+            actualcost = arr(11).asInstanceOf[Option[BigDecimal]],
+            modifieddate = arr(12).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

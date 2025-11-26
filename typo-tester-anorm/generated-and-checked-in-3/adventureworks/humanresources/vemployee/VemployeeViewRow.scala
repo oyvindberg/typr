@@ -63,75 +63,83 @@ case class VemployeeViewRow(
 )
 
 object VemployeeViewRow {
-  given reads: Reads[VemployeeViewRow] = Reads[VemployeeViewRow](json => JsResult.fromTry(
-      Try(
-        VemployeeViewRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads),
-          suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-          jobtitle = json.\("jobtitle").as(Reads.StringReads),
-          phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
-          phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
-          emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
-          emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
-          addressline1 = json.\("addressline1").as(Reads.StringReads),
-          addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
-          city = json.\("city").as(Reads.StringReads),
-          stateprovincename = json.\("stateprovincename").as(Name.reads),
-          postalcode = json.\("postalcode").as(Reads.StringReads),
-          countryregionname = json.\("countryregionname").as(Name.reads),
-          additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads))
+  given reads: Reads[VemployeeViewRow] = {
+    Reads[VemployeeViewRow](json => JsResult.fromTry(
+        Try(
+          VemployeeViewRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads),
+            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            jobtitle = json.\("jobtitle").as(Reads.StringReads),
+            phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
+            phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
+            emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
+            emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
+            addressline1 = json.\("addressline1").as(Reads.StringReads),
+            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            city = json.\("city").as(Reads.StringReads),
+            stateprovincename = json.\("stateprovincename").as(Name.reads),
+            postalcode = json.\("postalcode").as(Reads.StringReads),
+            countryregionname = json.\("countryregionname").as(Name.reads),
+            additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VemployeeViewRow] = RowParser[VemployeeViewRow] { row =>
-    Success(
-      VemployeeViewRow(
-        businessentityid = row(idx + 0)(using BusinessentityId.column),
-        title = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
-        firstname = row(idx + 2)(using /* user-picked */ FirstName.column),
-        middlename = row(idx + 3)(using Column.columnToOption(using Name.column)),
-        lastname = row(idx + 4)(using Name.column),
-        suffix = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
-        jobtitle = row(idx + 6)(using Column.columnToString),
-        phonenumber = row(idx + 7)(using Column.columnToOption(using Phone.column)),
-        phonenumbertype = row(idx + 8)(using Column.columnToOption(using Name.column)),
-        emailaddress = row(idx + 9)(using Column.columnToOption(using Column.columnToString)),
-        emailpromotion = row(idx + 10)(using Column.columnToInt),
-        addressline1 = row(idx + 11)(using Column.columnToString),
-        addressline2 = row(idx + 12)(using Column.columnToOption(using Column.columnToString)),
-        city = row(idx + 13)(using Column.columnToString),
-        stateprovincename = row(idx + 14)(using Name.column),
-        postalcode = row(idx + 15)(using Column.columnToString),
-        countryregionname = row(idx + 16)(using Name.column),
-        additionalcontactinfo = row(idx + 17)(using Column.columnToOption(using TypoXml.column))
-      )
+      ),
     )
   }
-  given writes: OWrites[VemployeeViewRow] = OWrites[VemployeeViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname),
-      "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
-      "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
-      "phonenumber" -> Writes.OptionWrites(using Phone.writes).writes(o.phonenumber),
-      "phonenumbertype" -> Writes.OptionWrites(using Name.writes).writes(o.phonenumbertype),
-      "emailaddress" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.emailaddress),
-      "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
-      "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-      "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
-      "city" -> Writes.StringWrites.writes(o.city),
-      "stateprovincename" -> Name.writes.writes(o.stateprovincename),
-      "postalcode" -> Writes.StringWrites.writes(o.postalcode),
-      "countryregionname" -> Name.writes.writes(o.countryregionname),
-      "additionalcontactinfo" -> Writes.OptionWrites(using TypoXml.writes).writes(o.additionalcontactinfo)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VemployeeViewRow] = {
+    RowParser[VemployeeViewRow] { row =>
+      Success(
+        VemployeeViewRow(
+          businessentityid = row(idx + 0)(using BusinessentityId.column),
+          title = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          firstname = row(idx + 2)(using /* user-picked */ FirstName.column),
+          middlename = row(idx + 3)(using Column.columnToOption(using Name.column)),
+          lastname = row(idx + 4)(using Name.column),
+          suffix = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
+          jobtitle = row(idx + 6)(using Column.columnToString),
+          phonenumber = row(idx + 7)(using Column.columnToOption(using Phone.column)),
+          phonenumbertype = row(idx + 8)(using Column.columnToOption(using Name.column)),
+          emailaddress = row(idx + 9)(using Column.columnToOption(using Column.columnToString)),
+          emailpromotion = row(idx + 10)(using Column.columnToInt),
+          addressline1 = row(idx + 11)(using Column.columnToString),
+          addressline2 = row(idx + 12)(using Column.columnToOption(using Column.columnToString)),
+          city = row(idx + 13)(using Column.columnToString),
+          stateprovincename = row(idx + 14)(using Name.column),
+          postalcode = row(idx + 15)(using Column.columnToString),
+          countryregionname = row(idx + 16)(using Name.column),
+          additionalcontactinfo = row(idx + 17)(using Column.columnToOption(using TypoXml.column))
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[VemployeeViewRow] = {
+    OWrites[VemployeeViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname),
+        "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
+        "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
+        "phonenumber" -> Writes.OptionWrites(using Phone.writes).writes(o.phonenumber),
+        "phonenumbertype" -> Writes.OptionWrites(using Name.writes).writes(o.phonenumbertype),
+        "emailaddress" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.emailaddress),
+        "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
+        "addressline1" -> Writes.StringWrites.writes(o.addressline1),
+        "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
+        "city" -> Writes.StringWrites.writes(o.city),
+        "stateprovincename" -> Name.writes.writes(o.stateprovincename),
+        "postalcode" -> Writes.StringWrites.writes(o.postalcode),
+        "countryregionname" -> Name.writes.writes(o.countryregionname),
+        "additionalcontactinfo" -> Writes.OptionWrites(using TypoXml.writes).writes(o.additionalcontactinfo)
+      ))
+    )
+  }
 }

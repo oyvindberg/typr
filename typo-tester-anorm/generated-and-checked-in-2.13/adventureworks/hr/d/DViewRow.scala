@@ -33,36 +33,44 @@ case class DViewRow(
 )
 
 object DViewRow {
-  implicit lazy val reads: Reads[DViewRow] = Reads[DViewRow](json => JsResult.fromTry(
-      Try(
-        DViewRow(
-          id = json.\("id").as(DepartmentId.reads),
-          departmentid = json.\("departmentid").as(DepartmentId.reads),
-          name = json.\("name").as(Name.reads),
-          groupname = json.\("groupname").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[DViewRow] = {
+    Reads[DViewRow](json => JsResult.fromTry(
+        Try(
+          DViewRow(
+            id = json.\("id").as(DepartmentId.reads),
+            departmentid = json.\("departmentid").as(DepartmentId.reads),
+            name = json.\("name").as(Name.reads),
+            groupname = json.\("groupname").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[DViewRow] = RowParser[DViewRow] { row =>
-    Success(
-      DViewRow(
-        id = row(idx + 0)(DepartmentId.column),
-        departmentid = row(idx + 1)(DepartmentId.column),
-        name = row(idx + 2)(Name.column),
-        groupname = row(idx + 3)(Name.column),
-        modifieddate = row(idx + 4)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[DViewRow] = OWrites[DViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> DepartmentId.writes.writes(o.id),
-      "departmentid" -> DepartmentId.writes.writes(o.departmentid),
-      "name" -> Name.writes.writes(o.name),
-      "groupname" -> Name.writes.writes(o.groupname),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[DViewRow] = {
+    RowParser[DViewRow] { row =>
+      Success(
+        DViewRow(
+          id = row(idx + 0)(DepartmentId.column),
+          departmentid = row(idx + 1)(DepartmentId.column),
+          name = row(idx + 2)(Name.column),
+          groupname = row(idx + 3)(Name.column),
+          modifieddate = row(idx + 4)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[DViewRow] = {
+    OWrites[DViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> DepartmentId.writes.writes(o.id),
+        "departmentid" -> DepartmentId.writes.writes(o.departmentid),
+        "name" -> Name.writes.writes(o.name),
+        "groupname" -> Name.writes.writes(o.groupname),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

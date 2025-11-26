@@ -14,19 +14,29 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Domain `public.Name`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Name(value: String)
+
 object Name {
   given arrayGet: Get[Array[Name]] = adventureworks.StringArrayMeta.get.map(_.map(Name.apply))
+
   given arrayPut: Put[Array[Name]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[Name, String] = Bijection[Name, String](_.value)(Name.apply)
+
+  given bijection: Bijection[Name, String] = Bijection.apply[Name, String](_.value)(Name.apply)
+
   given decoder: Decoder[Name] = Decoder.decodeString.map(Name.apply)
+
   given encoder: Encoder[Name] = Encoder.encodeString.contramap(_.value)
+
   given get: Get[Name] = Meta.StringMeta.get.map(Name.apply)
-  given put: Put[Name] = Meta.StringMeta.put.contramap(_.value)
-  given text: Text[Name] = new Text[Name] {
-    override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[Name] = {
+    new Text[Name] {
+      override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[Name] = Meta.StringMeta.put.contramap(_.value)
 }

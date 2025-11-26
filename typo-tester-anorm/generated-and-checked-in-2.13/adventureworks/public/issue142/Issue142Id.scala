@@ -15,32 +15,46 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 /** Type for the primary key of table `public.issue142`. It has some known values: 
-  *  - aa
-  *  - bb
-  */
+ *  - aa
+ *  - bb
+ */
+
 sealed abstract class Issue142Id(val value: String)
 
 object Issue142Id {
   def apply(underlying: String): Issue142Id =
     ByName.getOrElse(underlying, Unknown(underlying))
+  implicit lazy val arrayColumn: Column[Array[Issue142Id]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Issue142Id.apply))
+
+  implicit lazy val column: Column[Issue142Id] = Column.columnToString.map(Issue142Id.apply)
+
+  implicit lazy val toStatement: ToStatement[Issue142Id] = ToStatement.stringToStatement.contramap(_.value)
+
+  implicit lazy val arrayToStatement: ToStatement[Array[Issue142Id]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
+
+  implicit lazy val parameterMetadata: ParameterMetaData[Issue142Id] = {
+    new ParameterMetaData[Issue142Id] {
+      override def sqlType: String = "text"
+      override def jdbcType: Int = Types.OTHER
+    }
+  }
+
+  implicit lazy val pgText: Text[Issue142Id] = {
+    new Text[Issue142Id] {
+      override def unsafeEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[Issue142Id] = Reads[Issue142Id]{(value: JsValue) => value.validate(Reads.StringReads).map(Issue142Id.apply)}
+
+  implicit lazy val writes: Writes[Issue142Id] = Writes[Issue142Id](value => Writes.StringWrites.writes(value.value))
+
   case object aa extends Issue142Id("aa")
+
   case object bb extends Issue142Id("bb")
   case class Unknown(override val value: String) extends Issue142Id(value)
-  val All: List[Issue142Id] = List(aa, bb)
-  val ByName: Map[String, Issue142Id] = All.map(x => (x.value, x)).toMap
-              
-  implicit lazy val arrayColumn: Column[Array[Issue142Id]] = Column.columnToArray[String](Column.columnToString, implicitly).map(_.map(Issue142Id.apply))
-  implicit lazy val arrayToStatement: ToStatement[Array[Issue142Id]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  implicit lazy val column: Column[Issue142Id] = Column.columnToString.map(Issue142Id.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[Issue142Id] = new ParameterMetaData[Issue142Id] {
-    override def sqlType: String = "text"
-    override def jdbcType: Int = Types.OTHER
-  }
-  implicit lazy val reads: Reads[Issue142Id] = Reads[Issue142Id]{(value: JsValue) => value.validate(Reads.StringReads).map(Issue142Id.apply)}
-  implicit lazy val text: Text[Issue142Id] = new Text[Issue142Id] {
-    override def unsafeEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Issue142Id, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
-  implicit lazy val toStatement: ToStatement[Issue142Id] = ToStatement.stringToStatement.contramap(_.value)
-  implicit lazy val writes: Writes[Issue142Id] = Writes[Issue142Id](value => Writes.StringWrites.writes(value.value))
+  val All: scala.List[Issue142Id] = scala.List(aa, bb)
+  val ByName: scala.collection.immutable.Map[String, Issue142Id] = All.map(x => (x.value, x)).toMap
+
 }

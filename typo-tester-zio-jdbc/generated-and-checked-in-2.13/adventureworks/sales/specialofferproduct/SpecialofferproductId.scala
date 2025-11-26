@@ -17,23 +17,29 @@ case class SpecialofferproductId(
   specialofferid: SpecialofferId,
   productid: ProductId
 )
+
 object SpecialofferproductId {
-  implicit lazy val jsonDecoder: JsonDecoder[SpecialofferproductId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val specialofferid = jsonObj.get("specialofferid").toRight("Missing field 'specialofferid'").flatMap(_.as(SpecialofferId.jsonDecoder))
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
-    if (specialofferid.isRight && productid.isRight)
-      Right(SpecialofferproductId(specialofferid = specialofferid.toOption.get, productid = productid.toOption.get))
-    else Left(List[Either[String, Any]](specialofferid, productid).flatMap(_.left.toOption).mkString(", "))
+  implicit lazy val jsonDecoder: JsonDecoder[SpecialofferproductId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val specialofferid = jsonObj.get("specialofferid").toRight("Missing field 'specialofferid'").flatMap(_.as(SpecialofferId.jsonDecoder))
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(ProductId.jsonDecoder))
+      if (specialofferid.isRight && productid.isRight)
+        Right(SpecialofferproductId(specialofferid = specialofferid.toOption.get, productid = productid.toOption.get))
+      else Left(List[Either[String, Any]](specialofferid, productid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[SpecialofferproductId] = new JsonEncoder[SpecialofferproductId] {
-    override def unsafeEncode(a: SpecialofferproductId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""specialofferid":""")
-      SpecialofferId.jsonEncoder.unsafeEncode(a.specialofferid, indent, out)
-      out.write(",")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[SpecialofferproductId] = {
+    new JsonEncoder[SpecialofferproductId] {
+      override def unsafeEncode(a: SpecialofferproductId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""specialofferid":""")
+        SpecialofferId.jsonEncoder.unsafeEncode(a.specialofferid, indent, out)
+        out.write(",")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

@@ -35,24 +35,28 @@ case class VstateprovincecountryregionMVRow(
 
 object VstateprovincecountryregionMVRow {
   given decoder: Decoder[VstateprovincecountryregionMVRow] = Decoder.forProduct7[VstateprovincecountryregionMVRow, StateprovinceId, /* bpchar, max 3 chars */ String, Flag, Name, SalesterritoryId, CountryregionId, Name]("stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname")(VstateprovincecountryregionMVRow.apply)(using StateprovinceId.decoder, Decoder.decodeString, Flag.decoder, Name.decoder, SalesterritoryId.decoder, CountryregionId.decoder, Name.decoder)
+
   given encoder: Encoder[VstateprovincecountryregionMVRow] = Encoder.forProduct7[VstateprovincecountryregionMVRow, StateprovinceId, /* bpchar, max 3 chars */ String, Flag, Name, SalesterritoryId, CountryregionId, Name]("stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname")(x => (x.stateprovinceid, x.stateprovincecode, x.isonlystateprovinceflag, x.stateprovincename, x.territoryid, x.countryregioncode, x.countryregionname))(using StateprovinceId.encoder, Encoder.encodeString, Flag.encoder, Name.encoder, SalesterritoryId.encoder, CountryregionId.encoder, Name.encoder)
-  given read: Read[VstateprovincecountryregionMVRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VstateprovincecountryregionMVRow(
-      stateprovinceid = arr(0).asInstanceOf[StateprovinceId],
-          stateprovincecode = arr(1).asInstanceOf[/* bpchar, max 3 chars */ String],
-          isonlystateprovinceflag = arr(2).asInstanceOf[Flag],
-          stateprovincename = arr(3).asInstanceOf[Name],
-          territoryid = arr(4).asInstanceOf[SalesterritoryId],
-          countryregioncode = arr(5).asInstanceOf[CountryregionId],
-          countryregionname = arr(6).asInstanceOf[Name]
-    )
+
+  given read: Read[VstateprovincecountryregionMVRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VstateprovincecountryregionMVRow(
+        stateprovinceid = arr(0).asInstanceOf[StateprovinceId],
+            stateprovincecode = arr(1).asInstanceOf[/* bpchar, max 3 chars */ String],
+            isonlystateprovinceflag = arr(2).asInstanceOf[Flag],
+            stateprovincename = arr(3).asInstanceOf[Name],
+            territoryid = arr(4).asInstanceOf[SalesterritoryId],
+            countryregioncode = arr(5).asInstanceOf[CountryregionId],
+            countryregionname = arr(6).asInstanceOf[Name]
+      )
+    }
   }
 }

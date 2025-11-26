@@ -31,22 +31,26 @@ case class BecViewRow(
 
 object BecViewRow {
   given decoder: Decoder[BecViewRow] = Decoder.forProduct6[BecViewRow, BusinessentityId, BusinessentityId, BusinessentityId, ContacttypeId, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate")(BecViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, BusinessentityId.decoder, ContacttypeId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[BecViewRow] = Encoder.forProduct6[BecViewRow, BusinessentityId, BusinessentityId, BusinessentityId, ContacttypeId, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.personid, x.contacttypeid, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, BusinessentityId.encoder, ContacttypeId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[BecViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[BecViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ContacttypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    BecViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          personid = arr(2).asInstanceOf[BusinessentityId],
-          contacttypeid = arr(3).asInstanceOf[ContacttypeId],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ContacttypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      BecViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            personid = arr(2).asInstanceOf[BusinessentityId],
+            contacttypeid = arr(3).asInstanceOf[ContacttypeId],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

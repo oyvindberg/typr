@@ -37,11 +37,11 @@ trait VendorFields {
 
 object VendorFields {
   lazy val structure: Relation[VendorFields, VendorRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VendorFields, VendorRow] {
-  
+
     override lazy val fields: VendorFields = new VendorFields {
       override def businessentityid = IdField[BusinessentityId, VendorRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def accountnumber = Field[AccountNumber, VendorRow](_path, "accountnumber", None, Some("varchar"), x => x.accountnumber, (row, value) => row.copy(accountnumber = value))
@@ -52,12 +52,11 @@ object VendorFields {
       override def purchasingwebserviceurl = OptField[/* max 1024 chars */ String, VendorRow](_path, "purchasingwebserviceurl", None, None, x => x.purchasingwebserviceurl, (row, value) => row.copy(purchasingwebserviceurl = value))
       override def modifieddate = Field[TypoLocalDateTime, VendorRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VendorRow]] =
       List[FieldLike[?, VendorRow]](fields.businessentityid, fields.accountnumber, fields.name, fields.creditrating, fields.preferredvendorstatus, fields.activeflag, fields.purchasingwebserviceurl, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

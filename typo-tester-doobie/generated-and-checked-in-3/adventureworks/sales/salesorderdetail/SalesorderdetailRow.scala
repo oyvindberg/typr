@@ -21,110 +21,168 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.salesorderdetail
-    Individual products associated with a specific sales order. See SalesOrderHeader.
-    Composite primary key: salesorderid, salesorderdetailid */
+ * Individual products associated with a specific sales order. See SalesOrderHeader.
+ * Composite primary key: salesorderid, salesorderdetailid
+ */
 case class SalesorderdetailRow(
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
-      Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]] */
+   * Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid]]
+   */
   salesorderid: SalesorderheaderId,
   /** Primary key. One incremental unique number per product sold.
-      Default: nextval('sales.salesorderdetail_salesorderdetailid_seq'::regclass) */
+   * Default: nextval('sales.salesorderdetail_salesorderdetailid_seq'::regclass)
+   */
   salesorderdetailid: Int,
   /** Shipment tracking number supplied by the shipper. */
   carriertrackingnumber: Option[/* max 25 chars */ String],
   /** Quantity ordered per product.
-      Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0)) */
+   * Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0))
+   */
   orderqty: TypoShort,
   /** Product sold to customer. Foreign key to Product.ProductID.
-      Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]] */
+   * Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]]
+   */
   productid: ProductId,
   /** Promotional code. Foreign key to SpecialOffer.SpecialOfferID.
-      Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.specialofferid]] */
+   * Points to [[adventureworks.sales.specialofferproduct.SpecialofferproductRow.specialofferid]]
+   */
   specialofferid: SpecialofferId,
   /** Selling price of a single product.
-      Constraint CK_SalesOrderDetail_UnitPrice affecting columns unitprice: ((unitprice >= 0.00)) */
+   * Constraint CK_SalesOrderDetail_UnitPrice affecting columns unitprice: ((unitprice >= 0.00))
+   */
   unitprice: BigDecimal,
   /** Discount amount.
-      Default: 0.0
-      Constraint CK_SalesOrderDetail_UnitPriceDiscount affecting columns unitpricediscount: ((unitpricediscount >= 0.00)) */
+   * Default: 0.0
+   * Constraint CK_SalesOrderDetail_UnitPriceDiscount affecting columns unitpricediscount: ((unitpricediscount >= 0.00))
+   */
   unitpricediscount: BigDecimal,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: SalesorderdetailId = SalesorderdetailId(salesorderid, salesorderdetailid)
-   val id = compositeId
-   val extractSpecialofferproductId: SpecialofferproductId = SpecialofferproductId(
-     specialofferid = specialofferid,
-     productid = productid
-   )
-   def toUnsavedRow(salesorderdetailid: Defaulted[Int], unitpricediscount: Defaulted[BigDecimal] = Defaulted.Provided(this.unitpricediscount), rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SalesorderdetailRowUnsaved =
-     SalesorderdetailRowUnsaved(salesorderid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, salesorderdetailid, unitpricediscount, rowguid, modifieddate)
- }
+) {
+  def compositeId: SalesorderdetailId = new SalesorderdetailId(salesorderid, salesorderdetailid)
 
-object SalesorderdetailRow {
-  def apply(compositeId: SalesorderdetailId, carriertrackingnumber: Option[/* max 25 chars */ String], orderqty: TypoShort, productid: ProductId, specialofferid: SpecialofferId, unitprice: BigDecimal, unitpricediscount: BigDecimal, rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new SalesorderdetailRow(compositeId.salesorderid, compositeId.salesorderdetailid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, unitpricediscount, rowguid, modifieddate)
-  given decoder: Decoder[SalesorderdetailRow] = Decoder.forProduct10[SalesorderdetailRow, SalesorderheaderId, Int, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate")(SalesorderdetailRow.apply)(using SalesorderheaderId.decoder, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoShort.decoder, ProductId.decoder, SpecialofferId.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
-  given encoder: Encoder[SalesorderdetailRow] = Encoder.forProduct10[SalesorderdetailRow, SalesorderheaderId, Int, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate")(x => (x.salesorderid, x.salesorderdetailid, x.carriertrackingnumber, x.orderqty, x.productid, x.specialofferid, x.unitprice, x.unitpricediscount, x.rowguid, x.modifieddate))(using SalesorderheaderId.encoder, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoShort.encoder, ProductId.encoder, SpecialofferId.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SalesorderdetailRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SalesorderdetailRow(
-      salesorderid = arr(0).asInstanceOf[SalesorderheaderId],
-          salesorderdetailid = arr(1).asInstanceOf[Int],
-          carriertrackingnumber = arr(2).asInstanceOf[Option[/* max 25 chars */ String]],
-          orderqty = arr(3).asInstanceOf[TypoShort],
-          productid = arr(4).asInstanceOf[ProductId],
-          specialofferid = arr(5).asInstanceOf[SpecialofferId],
-          unitprice = arr(6).asInstanceOf[BigDecimal],
-          unitpricediscount = arr(7).asInstanceOf[BigDecimal],
-          rowguid = arr(8).asInstanceOf[TypoUUID],
-          modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
+  def id: SalesorderdetailId = this.compositeId
+
+  def extractSpecialofferproductId: SpecialofferproductId = new SpecialofferproductId(specialofferid = specialofferid, productid = productid)
+
+  def toUnsavedRow(
+    salesorderdetailid: Defaulted[Int],
+    unitpricediscount: Defaulted[BigDecimal] = Defaulted.Provided(this.unitpricediscount),
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): SalesorderdetailRowUnsaved = {
+    new SalesorderdetailRowUnsaved(
+      salesorderid,
+      carriertrackingnumber,
+      orderqty,
+      productid,
+      specialofferid,
+      unitprice,
+      salesorderdetailid,
+      unitpricediscount,
+      rowguid,
+      modifieddate
     )
   }
-  given text: Text[SalesorderdetailRow] = Text.instance[SalesorderdetailRow]{ (row, sb) =>
-    SalesorderheaderId.text.unsafeEncode(row.salesorderid, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.salesorderdetailid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.carriertrackingnumber, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.orderqty, sb)
-    sb.append(Text.DELIMETER)
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    SpecialofferId.text.unsafeEncode(row.specialofferid, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.unitprice, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.unitpricediscount, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object SalesorderdetailRow {
+  def apply(
+    compositeId: SalesorderdetailId,
+    carriertrackingnumber: Option[/* max 25 chars */ String],
+    orderqty: TypoShort,
+    productid: ProductId,
+    specialofferid: SpecialofferId,
+    unitprice: BigDecimal,
+    unitpricediscount: BigDecimal,
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): SalesorderdetailRow = {
+    new SalesorderdetailRow(
+      compositeId.salesorderid,
+      compositeId.salesorderdetailid,
+      carriertrackingnumber,
+      orderqty,
+      productid,
+      specialofferid,
+      unitprice,
+      unitpricediscount,
+      rowguid,
+      modifieddate
+    )
   }
-  given write: Write[SalesorderdetailRow] = new Write.Composite[SalesorderdetailRow](
-    List(new Write.Single(SalesorderheaderId.put),
-         new Write.Single(Meta.IntMeta.put),
-         new Write.Single(Meta.StringMeta.put).toOpt,
-         new Write.Single(TypoShort.put),
-         new Write.Single(ProductId.put),
-         new Write.Single(SpecialofferId.put),
-         new Write.Single(Meta.ScalaBigDecimalMeta.put),
-         new Write.Single(Meta.ScalaBigDecimalMeta.put),
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.salesorderid, a.salesorderdetailid, a.carriertrackingnumber, a.orderqty, a.productid, a.specialofferid, a.unitprice, a.unitpricediscount, a.rowguid, a.modifieddate)
-  )
+
+  given decoder: Decoder[SalesorderdetailRow] = Decoder.forProduct10[SalesorderdetailRow, SalesorderheaderId, Int, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate")(SalesorderdetailRow.apply)(using SalesorderheaderId.decoder, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoShort.decoder, ProductId.decoder, SpecialofferId.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
+  given encoder: Encoder[SalesorderdetailRow] = Encoder.forProduct10[SalesorderdetailRow, SalesorderheaderId, Int, Option[/* max 25 chars */ String], TypoShort, ProductId, SpecialofferId, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate")(x => (x.salesorderid, x.salesorderdetailid, x.carriertrackingnumber, x.orderqty, x.productid, x.specialofferid, x.unitprice, x.unitpricediscount, x.rowguid, x.modifieddate))(using SalesorderheaderId.encoder, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoShort.encoder, ProductId.encoder, SpecialofferId.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
+
+  given pgText: Text[SalesorderdetailRow] = {
+    Text.instance[SalesorderdetailRow]{ (row, sb) =>
+      SalesorderheaderId.pgText.unsafeEncode(row.salesorderid, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.salesorderdetailid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.carriertrackingnumber, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.orderqty, sb)
+      sb.append(Text.DELIMETER)
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      SpecialofferId.pgText.unsafeEncode(row.specialofferid, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.unitprice, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.unitpricediscount, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given read: Read[SalesorderdetailRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(SalesorderheaderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SalesorderdetailRow(
+        salesorderid = arr(0).asInstanceOf[SalesorderheaderId],
+            salesorderdetailid = arr(1).asInstanceOf[Int],
+            carriertrackingnumber = arr(2).asInstanceOf[Option[/* max 25 chars */ String]],
+            orderqty = arr(3).asInstanceOf[TypoShort],
+            productid = arr(4).asInstanceOf[ProductId],
+            specialofferid = arr(5).asInstanceOf[SpecialofferId],
+            unitprice = arr(6).asInstanceOf[BigDecimal],
+            unitpricediscount = arr(7).asInstanceOf[BigDecimal],
+            rowguid = arr(8).asInstanceOf[TypoUUID],
+            modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  given write: Write[SalesorderdetailRow] = {
+    new Write.Composite[SalesorderdetailRow](
+      List(new Write.Single(SalesorderheaderId.put),
+           new Write.Single(Meta.IntMeta.put),
+           new Write.Single(Meta.StringMeta.put).toOpt,
+           new Write.Single(TypoShort.put),
+           new Write.Single(ProductId.put),
+           new Write.Single(SpecialofferId.put),
+           new Write.Single(Meta.ScalaBigDecimalMeta.put),
+           new Write.Single(Meta.ScalaBigDecimalMeta.put),
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.salesorderid, a.salesorderdetailid, a.carriertrackingnumber, a.orderqty, a.productid, a.specialofferid, a.unitprice, a.unitpricediscount, a.rowguid, a.modifieddate)
+    )
+  }
 }

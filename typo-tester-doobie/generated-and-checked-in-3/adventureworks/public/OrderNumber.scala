@@ -14,19 +14,29 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Domain `public.OrderNumber`
-  * No constraint
-  */
+ * No constraint
+ */
 case class OrderNumber(value: String)
+
 object OrderNumber {
   given arrayGet: Get[Array[OrderNumber]] = adventureworks.StringArrayMeta.get.map(_.map(OrderNumber.apply))
+
   given arrayPut: Put[Array[OrderNumber]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[OrderNumber, String] = Bijection[OrderNumber, String](_.value)(OrderNumber.apply)
+
+  given bijection: Bijection[OrderNumber, String] = Bijection.apply[OrderNumber, String](_.value)(OrderNumber.apply)
+
   given decoder: Decoder[OrderNumber] = Decoder.decodeString.map(OrderNumber.apply)
+
   given encoder: Encoder[OrderNumber] = Encoder.encodeString.contramap(_.value)
+
   given get: Get[OrderNumber] = Meta.StringMeta.get.map(OrderNumber.apply)
-  given put: Put[OrderNumber] = Meta.StringMeta.put.contramap(_.value)
-  given text: Text[OrderNumber] = new Text[OrderNumber] {
-    override def unsafeEncode(v: OrderNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: OrderNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[OrderNumber] = {
+    new Text[OrderNumber] {
+      override def unsafeEncode(v: OrderNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: OrderNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[OrderNumber] = Meta.StringMeta.put.contramap(_.value)
 }

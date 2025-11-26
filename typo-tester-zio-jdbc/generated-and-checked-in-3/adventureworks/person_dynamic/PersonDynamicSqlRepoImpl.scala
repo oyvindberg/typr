@@ -8,15 +8,15 @@ package adventureworks.person_dynamic
 import zio.jdbc.SqlFragment.Segment
 import zio.jdbc.SqlFragment.Setter
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class PersonDynamicSqlRepoImpl extends PersonDynamicSqlRepo {
-  override def apply(firstName: Option[String]): ZStream[ZConnection, Throwable, PersonDynamicSqlRow] = {
+  def apply(firstName: Option[String]): ZStream[ZConnection, Throwable, PersonDynamicSqlRow] = {
     val sql =
       sql"""SELECT p.title, p.firstname, p.middlename, p.lastname
-            FROM person.person p
-            WHERE ${Segment.paramSegment(firstName)(using Setter.optionParamSetter(using Setter.stringSetter))}::text IS NULL OR p.firstname = ${Segment.paramSegment(firstName)(using Setter.optionParamSetter(using Setter.stringSetter))}
+      FROM person.person p
+      WHERE ${Segment.paramSegment(firstName)(using Setter.optionParamSetter(using Setter.stringSetter))}::text IS NULL OR p.firstname = ${Segment.paramSegment(firstName)(using Setter.optionParamSetter(using Setter.stringSetter))}
       """
     sql.query(using PersonDynamicSqlRow.jdbcDecoder).selectStream()
   }

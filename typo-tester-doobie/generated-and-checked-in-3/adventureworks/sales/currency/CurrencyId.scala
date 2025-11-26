@@ -14,17 +14,27 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.currency` */
-case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends AnyVal
+case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+
 object CurrencyId {
   given arrayGet: Get[Array[CurrencyId]] = adventureworks.StringArrayMeta.get.map(_.map(CurrencyId.apply))
+
   given arrayPut: Put[Array[CurrencyId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
-  given bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+
+  given bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection.apply[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+
   given decoder: Decoder[CurrencyId] = Decoder.decodeString.map(CurrencyId.apply)
+
   given encoder: Encoder[CurrencyId] = Encoder.encodeString.contramap(_.value)
+
   given get: Get[CurrencyId] = Meta.StringMeta.get.map(CurrencyId.apply)
-  given put: Put[CurrencyId] = Meta.StringMeta.put.contramap(_.value)
-  given text: Text[CurrencyId] = new Text[CurrencyId] {
-    override def unsafeEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[CurrencyId] = {
+    new Text[CurrencyId] {
+      override def unsafeEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: CurrencyId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given put: Put[CurrencyId] = Meta.StringMeta.put.contramap(_.value)
 }

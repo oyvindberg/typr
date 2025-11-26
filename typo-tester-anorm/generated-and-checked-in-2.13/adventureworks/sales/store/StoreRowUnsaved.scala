@@ -7,6 +7,7 @@ package adventureworks.sales.store
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
@@ -24,71 +25,80 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.store` which has not been persisted yet */
 case class StoreRowUnsaved(
   /** Primary key. Foreign key to Customer.BusinessEntityID.
-      Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]] */
+   * Points to [[adventureworks.person.businessentity.BusinessentityRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Name of the store. */
   name: Name,
   /** ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
-  salespersonid: Option[BusinessentityId],
+   * Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]]
+   */
+  salespersonid: Option[BusinessentityId] = None,
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  demographics: Option[TypoXml],
+  demographics: Option[TypoXml] = None,
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): StoreRow =
-    StoreRow(
+  def toRow(
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): StoreRow = {
+    new StoreRow(
       businessentityid = businessentityid,
       name = name,
       salespersonid = salespersonid,
       demographics = demographics,
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object StoreRowUnsaved {
-  implicit lazy val reads: Reads[StoreRowUnsaved] = Reads[StoreRowUnsaved](json => JsResult.fromTry(
-      Try(
-        StoreRowUnsaved(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          name = json.\("name").as(Name.reads),
-          salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
-          demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[StoreRowUnsaved] = Text.instance[StoreRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(BusinessentityId.text).unsafeEncode(row.salespersonid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoXml.text).unsafeEncode(row.demographics, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[StoreRowUnsaved] = OWrites[StoreRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "name" -> Name.writes.writes(o.name),
-      "salespersonid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.salespersonid),
-      "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics),
-      "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object StoreRowUnsaved {
+  implicit lazy val pgText: Text[StoreRowUnsaved] = {
+    Text.instance[StoreRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(BusinessentityId.pgText).unsafeEncode(row.salespersonid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoXml.pgText).unsafeEncode(row.demographics, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[StoreRowUnsaved] = {
+    Reads[StoreRowUnsaved](json => JsResult.fromTry(
+        Try(
+          StoreRowUnsaved(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            name = json.\("name").as(Name.reads),
+            salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
+            demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[StoreRowUnsaved] = {
+    OWrites[StoreRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "name" -> Name.writes.writes(o.name),
+        "salespersonid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.salespersonid),
+        "demographics" -> Writes.OptionWrites(TypoXml.writes).writes(o.demographics),
+        "rowguid" -> Defaulted.writes(TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

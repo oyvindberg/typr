@@ -26,18 +26,22 @@ case class SrViewRow(
 
 object SrViewRow {
   implicit lazy val decoder: Decoder[SrViewRow] = Decoder.forProduct4[SrViewRow, ScrapreasonId, ScrapreasonId, Name, TypoLocalDateTime]("id", "scrapreasonid", "name", "modifieddate")(SrViewRow.apply)(ScrapreasonId.decoder, ScrapreasonId.decoder, Name.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[SrViewRow] = Encoder.forProduct4[SrViewRow, ScrapreasonId, ScrapreasonId, Name, TypoLocalDateTime]("id", "scrapreasonid", "name", "modifieddate")(x => (x.id, x.scrapreasonid, x.name, x.modifieddate))(ScrapreasonId.encoder, ScrapreasonId.encoder, Name.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[SrViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ScrapreasonId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[SrViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(ScrapreasonId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    SrViewRow(
-      id = arr(0).asInstanceOf[ScrapreasonId],
-          scrapreasonid = arr(1).asInstanceOf[ScrapreasonId],
-          name = arr(2).asInstanceOf[Name],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(ScrapreasonId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      SrViewRow(
+        id = arr(0).asInstanceOf[ScrapreasonId],
+            scrapreasonid = arr(1).asInstanceOf[ScrapreasonId],
+            name = arr(2).asInstanceOf[Name],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

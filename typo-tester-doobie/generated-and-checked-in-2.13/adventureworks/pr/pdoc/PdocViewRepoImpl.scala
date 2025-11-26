@@ -6,16 +6,12 @@
 package adventureworks.pr.pdoc
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PdocViewRepoImpl extends PdocViewRepo {
-  override def select: SelectBuilder[PdocViewFields, PdocViewRow] = {
-    SelectBuilderSql(""""pr"."pdoc"""", PdocViewFields.structure, PdocViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PdocViewRow] = {
-    sql"""select "id", "productid", "modifieddate"::text, "documentnode" from "pr"."pdoc"""".query(PdocViewRow.read).stream
-  }
+  def select: SelectBuilder[PdocViewFields, PdocViewRow] = SelectBuilder.of(""""pr"."pdoc"""", PdocViewFields.structure, PdocViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PdocViewRow] = sql"""select "id", "productid", "modifieddate"::text, "documentnode" from "pr"."pdoc"""".query(PdocViewRow.read).stream
 }

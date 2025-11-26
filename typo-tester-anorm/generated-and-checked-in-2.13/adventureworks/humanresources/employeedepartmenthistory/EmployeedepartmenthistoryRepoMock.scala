@@ -17,79 +17,88 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class EmployeedepartmenthistoryRepoMock(toRow: Function1[EmployeedepartmenthistoryRowUnsaved, EmployeedepartmenthistoryRow],
-                                        map: scala.collection.mutable.Map[EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow] = scala.collection.mutable.Map.empty) extends EmployeedepartmenthistoryRepo {
-  override def delete: DeleteBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = {
-    DeleteBuilderMock(DeleteParams.empty, EmployeedepartmenthistoryFields.structure, map)
-  }
-  override def deleteById(compositeId: EmployeedepartmenthistoryId)(implicit c: Connection): Boolean = {
-    map.remove(compositeId).isDefined
-  }
-  override def deleteByIds(compositeIds: Array[EmployeedepartmenthistoryId])(implicit c: Connection): Int = {
-    compositeIds.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: EmployeedepartmenthistoryRow)(implicit c: Connection): EmployeedepartmenthistoryRow = {
+case class EmployeedepartmenthistoryRepoMock(
+  toRow: EmployeedepartmenthistoryRowUnsaved => EmployeedepartmenthistoryRow,
+  map: scala.collection.mutable.Map[EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow] = scala.collection.mutable.Map.empty[EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow]
+) extends EmployeedepartmenthistoryRepo {
+  def delete: DeleteBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = DeleteBuilderMock(DeleteParams.empty, EmployeedepartmenthistoryFields.structure, map)
+
+  def deleteById(compositeId: EmployeedepartmenthistoryId)(implicit c: Connection): Boolean = map.remove(compositeId).isDefined
+
+  def deleteByIds(compositeIds: Array[EmployeedepartmenthistoryId])(implicit c: Connection): Int = compositeIds.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: EmployeedepartmenthistoryRow)(implicit c: Connection): EmployeedepartmenthistoryRow = {
     val _ = if (map.contains(unsaved.compositeId))
       sys.error(s"id ${unsaved.compositeId} already exists")
     else
       map.put(unsaved.compositeId, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: EmployeedepartmenthistoryRowUnsaved)(implicit c: Connection): EmployeedepartmenthistoryRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[EmployeedepartmenthistoryRow], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  def insert(unsaved: EmployeedepartmenthistoryRowUnsaved)(implicit c: Connection): EmployeedepartmenthistoryRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[EmployeedepartmenthistoryRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.compositeId -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[EmployeedepartmenthistoryRowUnsaved], batchSize: Int = 10000)(implicit c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[EmployeedepartmenthistoryRowUnsaved],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.compositeId -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = {
-    SelectBuilderMock(EmployeedepartmenthistoryFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(implicit c: Connection): List[EmployeedepartmenthistoryRow] = {
-    map.values.toList
-  }
-  override def selectById(compositeId: EmployeedepartmenthistoryId)(implicit c: Connection): Option[EmployeedepartmenthistoryRow] = {
-    map.get(compositeId)
-  }
-  override def selectByIds(compositeIds: Array[EmployeedepartmenthistoryId])(implicit c: Connection): List[EmployeedepartmenthistoryRow] = {
-    compositeIds.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(compositeIds: Array[EmployeedepartmenthistoryId])(implicit c: Connection): Map[EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow] = {
+
+  def select: SelectBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = SelectBuilderMock(EmployeedepartmenthistoryFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(implicit c: Connection): List[EmployeedepartmenthistoryRow] = map.values.toList
+
+  def selectById(compositeId: EmployeedepartmenthistoryId)(implicit c: Connection): Option[EmployeedepartmenthistoryRow] = map.get(compositeId)
+
+  def selectByIds(compositeIds: Array[EmployeedepartmenthistoryId])(implicit c: Connection): List[EmployeedepartmenthistoryRow] = compositeIds.flatMap(map.get).toList
+
+  def selectByIdsTracked(compositeIds: Array[EmployeedepartmenthistoryId])(implicit c: Connection): Map[EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow] = {
     val byId = selectByIds(compositeIds).view.map(x => (x.compositeId, x)).toMap
     compositeIds.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = {
-    UpdateBuilderMock(UpdateParams.empty, EmployeedepartmenthistoryFields.structure, map)
-  }
-  override def update(row: EmployeedepartmenthistoryRow)(implicit c: Connection): Option[EmployeedepartmenthistoryRow] = {
+
+  def update: UpdateBuilder[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = UpdateBuilderMock(UpdateParams.empty, EmployeedepartmenthistoryFields.structure, map)
+
+  def update(row: EmployeedepartmenthistoryRow)(implicit c: Connection): Option[EmployeedepartmenthistoryRow] = {
     map.get(row.compositeId).map { _ =>
       map.put(row.compositeId, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: EmployeedepartmenthistoryRow)(implicit c: Connection): EmployeedepartmenthistoryRow = {
+
+  def upsert(unsaved: EmployeedepartmenthistoryRow)(implicit c: Connection): EmployeedepartmenthistoryRow = {
     map.put(unsaved.compositeId, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[EmployeedepartmenthistoryRow])(implicit c: Connection): List[EmployeedepartmenthistoryRow] = {
+
+  def upsertBatch(unsaved: Iterable[EmployeedepartmenthistoryRow])(implicit c: Connection): List[EmployeedepartmenthistoryRow] = {
     unsaved.map { row =>
       map += (row.compositeId -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[EmployeedepartmenthistoryRow], batchSize: Int = 10000)(implicit c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[EmployeedepartmenthistoryRow],
+    batchSize: Int = 10000
+  )(implicit c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.compositeId -> row)
     }

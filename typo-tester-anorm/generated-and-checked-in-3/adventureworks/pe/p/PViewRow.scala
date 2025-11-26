@@ -57,63 +57,71 @@ case class PViewRow(
 )
 
 object PViewRow {
-  given reads: Reads[PViewRow] = Reads[PViewRow](json => JsResult.fromTry(
-      Try(
-        PViewRow(
-          id = json.\("id").as(BusinessentityId.reads),
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          persontype = json.\("persontype").as(Reads.StringReads),
-          namestyle = json.\("namestyle").as(NameStyle.reads),
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads),
-          suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-          emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
-          additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads)),
-          demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PViewRow] = {
+    Reads[PViewRow](json => JsResult.fromTry(
+        Try(
+          PViewRow(
+            id = json.\("id").as(BusinessentityId.reads),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            persontype = json.\("persontype").as(Reads.StringReads),
+            namestyle = json.\("namestyle").as(NameStyle.reads),
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads),
+            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
+            additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads)),
+            demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PViewRow] = RowParser[PViewRow] { row =>
-    Success(
-      PViewRow(
-        id = row(idx + 0)(using BusinessentityId.column),
-        businessentityid = row(idx + 1)(using BusinessentityId.column),
-        persontype = row(idx + 2)(using Column.columnToString),
-        namestyle = row(idx + 3)(using NameStyle.column),
-        title = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
-        firstname = row(idx + 5)(using /* user-picked */ FirstName.column),
-        middlename = row(idx + 6)(using Column.columnToOption(using Name.column)),
-        lastname = row(idx + 7)(using Name.column),
-        suffix = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
-        emailpromotion = row(idx + 9)(using Column.columnToInt),
-        additionalcontactinfo = row(idx + 10)(using Column.columnToOption(using TypoXml.column)),
-        demographics = row(idx + 11)(using Column.columnToOption(using TypoXml.column)),
-        rowguid = row(idx + 12)(using TypoUUID.column),
-        modifieddate = row(idx + 13)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PViewRow] = OWrites[PViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> BusinessentityId.writes.writes(o.id),
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "persontype" -> Writes.StringWrites.writes(o.persontype),
-      "namestyle" -> NameStyle.writes.writes(o.namestyle),
-      "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname),
-      "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
-      "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
-      "additionalcontactinfo" -> Writes.OptionWrites(using TypoXml.writes).writes(o.additionalcontactinfo),
-      "demographics" -> Writes.OptionWrites(using TypoXml.writes).writes(o.demographics),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PViewRow] = {
+    RowParser[PViewRow] { row =>
+      Success(
+        PViewRow(
+          id = row(idx + 0)(using BusinessentityId.column),
+          businessentityid = row(idx + 1)(using BusinessentityId.column),
+          persontype = row(idx + 2)(using Column.columnToString),
+          namestyle = row(idx + 3)(using NameStyle.column),
+          title = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
+          firstname = row(idx + 5)(using /* user-picked */ FirstName.column),
+          middlename = row(idx + 6)(using Column.columnToOption(using Name.column)),
+          lastname = row(idx + 7)(using Name.column),
+          suffix = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
+          emailpromotion = row(idx + 9)(using Column.columnToInt),
+          additionalcontactinfo = row(idx + 10)(using Column.columnToOption(using TypoXml.column)),
+          demographics = row(idx + 11)(using Column.columnToOption(using TypoXml.column)),
+          rowguid = row(idx + 12)(using TypoUUID.column),
+          modifieddate = row(idx + 13)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PViewRow] = {
+    OWrites[PViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> BusinessentityId.writes.writes(o.id),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "persontype" -> Writes.StringWrites.writes(o.persontype),
+        "namestyle" -> NameStyle.writes.writes(o.namestyle),
+        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname),
+        "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
+        "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
+        "additionalcontactinfo" -> Writes.OptionWrites(using TypoXml.writes).writes(o.additionalcontactinfo),
+        "demographics" -> Writes.OptionWrites(using TypoXml.writes).writes(o.demographics),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

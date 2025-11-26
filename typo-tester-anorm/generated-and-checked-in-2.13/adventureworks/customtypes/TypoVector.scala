@@ -20,22 +20,34 @@ import typo.dsl.Bijection
 case class TypoVector(value: Array[Float])
 
 object TypoVector {
-  implicit lazy val bijection: Bijection[TypoVector, Array[Float]] = Bijection[TypoVector, Array[Float]](_.value)(TypoVector.apply)
-  implicit lazy val column: Column[TypoVector] = Column.nonNull[TypoVector]((v1: Any, _) =>
-    v1 match {
-      case v: PgArray => Right(TypoVector(v.getArray.asInstanceOf[Array[java.lang.Float]].map(Float2float)))
-      case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+  implicit lazy val bijection: Bijection[TypoVector, Array[Float]] = Bijection.apply[TypoVector, Array[Float]](_.value)(TypoVector.apply)
+
+  implicit lazy val column: Column[TypoVector] = {
+    Column.nonNull[TypoVector]((v1: Any, _) =>
+      v1 match {
+        case v: PgArray => Right(TypoVector(v.getArray.asInstanceOf[Array[java.lang.Float]].map(Float2float)))
+        case other => Left(TypeDoesNotMatch(s"Expected instance of org.postgresql.jdbc.PgArray, got ${other.getClass.getName}"))
+      }
+    )
+  }
+
+  implicit lazy val parameterMetadata: ParameterMetaData[TypoVector] = {
+    new ParameterMetaData[TypoVector] {
+      override def sqlType: String = "vector"
+      override def jdbcType: Int = Types.OTHER
     }
-  )
-  implicit lazy val parameterMetadata: ParameterMetaData[TypoVector] = new ParameterMetaData[TypoVector] {
-    override def sqlType: String = "vector"
-    override def jdbcType: Int = Types.OTHER
   }
+
+  implicit lazy val pgText: Text[TypoVector] = {
+    new Text[TypoVector] {
+      override def unsafeEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.mkString("[", ",", "]"), sb)
+      override def unsafeArrayEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.mkString("[", ",", "]"), sb)
+    }
+  }
+
   implicit lazy val reads: Reads[TypoVector] = Reads.ArrayReads[Float](Reads.FloatReads, implicitly).map(TypoVector.apply)
-  implicit lazy val text: Text[TypoVector] = new Text[TypoVector] {
-    override def unsafeEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.mkString("[", ",", "]"), sb)
-    override def unsafeArrayEncode(v: TypoVector, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.mkString("[", ",", "]"), sb)
-  }
+
   implicit lazy val toStatement: ToStatement[TypoVector] = ToStatement[TypoVector]((s, index, v) => s.setObject(index, v.value.map(x => x: java.lang.Float)))
+
   implicit lazy val writes: Writes[TypoVector] = Writes.arrayWrites[Float](implicitly, Writes.FloatWrites).contramap(_.value)
 }

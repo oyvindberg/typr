@@ -14,7 +14,9 @@ case class EmailaddressId(
   businessentityid: BusinessentityId,
   emailaddressid: Int
 )
+
 object EmailaddressId {
   given decoder: Decoder[EmailaddressId] = Decoder.forProduct2[EmailaddressId, BusinessentityId, Int]("businessentityid", "emailaddressid")(EmailaddressId.apply)(using BusinessentityId.decoder, Decoder.decodeInt)
+
   given encoder: Encoder[EmailaddressId] = Encoder.forProduct2[EmailaddressId, BusinessentityId, Int]("businessentityid", "emailaddressid")(x => (x.businessentityid, x.emailaddressid))(using BusinessentityId.encoder, Encoder.encodeInt)
 }

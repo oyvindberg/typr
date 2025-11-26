@@ -7,6 +7,7 @@ package adventureworks.person.contacttype
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -22,47 +23,49 @@ case class ContacttypeRowUnsaved(
   /** Contact type description. */
   name: Name,
   /** Default: nextval('person.contacttype_contacttypeid_seq'::regclass)
-      Primary key for ContactType records. */
-  contacttypeid: Defaulted[ContacttypeId] = Defaulted.UseDefault,
+   * Primary key for ContactType records.
+   */
+  contacttypeid: Defaulted[ContacttypeId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(contacttypeidDefault: => ContacttypeId, modifieddateDefault: => TypoLocalDateTime): ContacttypeRow =
-    ContacttypeRow(
-      name = name,
-      contacttypeid = contacttypeid match {
-                        case Defaulted.UseDefault => contacttypeidDefault
-                        case Defaulted.Provided(value) => value
-                      },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    contacttypeidDefault: => ContacttypeId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): ContacttypeRow = new ContacttypeRow(contacttypeid = contacttypeid.getOrElse(contacttypeidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object ContacttypeRowUnsaved {
-  given reads: Reads[ContacttypeRowUnsaved] = Reads[ContacttypeRowUnsaved](json => JsResult.fromTry(
-      Try(
-        ContacttypeRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          contacttypeid = json.\("contacttypeid").as(Defaulted.reads(using ContacttypeId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[ContacttypeRowUnsaved] = Text.instance[ContacttypeRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using ContacttypeId.text).unsafeEncode(row.contacttypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  given pgText: Text[ContacttypeRowUnsaved] = {
+    Text.instance[ContacttypeRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using ContacttypeId.pgText).unsafeEncode(row.contacttypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  given writes: OWrites[ContacttypeRowUnsaved] = OWrites[ContacttypeRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "contacttypeid" -> Defaulted.writes(using ContacttypeId.writes).writes(o.contacttypeid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  given reads: Reads[ContacttypeRowUnsaved] = {
+    Reads[ContacttypeRowUnsaved](json => JsResult.fromTry(
+        Try(
+          ContacttypeRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            contacttypeid = json.\("contacttypeid").as(Defaulted.reads(using ContacttypeId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[ContacttypeRowUnsaved] = {
+    OWrites[ContacttypeRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "contacttypeid" -> Defaulted.writes(using ContacttypeId.writes).writes(o.contacttypeid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

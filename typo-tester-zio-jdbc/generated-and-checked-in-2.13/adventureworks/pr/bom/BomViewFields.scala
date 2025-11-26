@@ -30,11 +30,11 @@ trait BomViewFields {
 
 object BomViewFields {
   lazy val structure: Relation[BomViewFields, BomViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[BomViewFields, BomViewRow] {
-  
+
     override lazy val fields: BomViewFields = new BomViewFields {
       override def id = Field[Int, BomViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def billofmaterialsid = Field[Int, BomViewRow](_path, "billofmaterialsid", None, None, x => x.billofmaterialsid, (row, value) => row.copy(billofmaterialsid = value))
@@ -47,12 +47,11 @@ object BomViewFields {
       override def perassemblyqty = Field[BigDecimal, BomViewRow](_path, "perassemblyqty", None, None, x => x.perassemblyqty, (row, value) => row.copy(perassemblyqty = value))
       override def modifieddate = Field[TypoLocalDateTime, BomViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, BomViewRow]] =
       List[FieldLike[?, BomViewRow]](fields.id, fields.billofmaterialsid, fields.productassemblyid, fields.componentid, fields.startdate, fields.enddate, fields.unitmeasurecode, fields.bomlevel, fields.perassemblyqty, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

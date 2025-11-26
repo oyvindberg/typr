@@ -5,18 +5,16 @@
  */
 package adventureworks.sa.cc
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class CcViewRepoImpl extends CcViewRepo {
-  override def select: SelectBuilder[CcViewFields, CcViewRow] = {
-    SelectBuilderSql(""""sa"."cc"""", CcViewFields.structure, CcViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[CcViewRow] = {
+  def select: SelectBuilder[CcViewFields, CcViewRow] = SelectBuilder.of(""""sa"."cc"""", CcViewFields.structure, CcViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[CcViewRow] = {
     SQL"""select "id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text
-          from "sa"."cc"
-       """.as(CcViewRow.rowParser(1).*)
+    from "sa"."cc"
+    """.as(CcViewRow.rowParser(1).*)
   }
 }

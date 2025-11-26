@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `production.workorder` */
-case class WorkorderId(value: Int) extends AnyVal
+case class WorkorderId(value: Int) extends scala.AnyVal
+
 object WorkorderId {
   given arrayJdbcDecoder: JdbcDecoder[Array[WorkorderId]] = adventureworks.IntArrayDecoder.map(_.map(WorkorderId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[WorkorderId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[WorkorderId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[WorkorderId, Int] = Bijection[WorkorderId, Int](_.value)(WorkorderId.apply)
+
+  given bijection: Bijection[WorkorderId, Int] = Bijection.apply[WorkorderId, Int](_.value)(WorkorderId.apply)
+
   given jdbcDecoder: JdbcDecoder[WorkorderId] = JdbcDecoder.intDecoder.map(WorkorderId.apply)
+
   given jdbcEncoder: JdbcEncoder[WorkorderId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[WorkorderId] = JsonDecoder.int.map(WorkorderId.apply)
+
   given jsonEncoder: JsonEncoder[WorkorderId] = JsonEncoder.int.contramap(_.value)
-  given pgType: PGType[WorkorderId] = PGType.PGTypeInt.as
-  given setter: Setter[WorkorderId] = Setter.intSetter.contramap(_.value)
-  given text: Text[WorkorderId] = new Text[WorkorderId] {
-    override def unsafeEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[WorkorderId] = {
+    new Text[WorkorderId] {
+      override def unsafeEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[WorkorderId] = PGType.PGTypeInt.as
+
+  given setter: Setter[WorkorderId] = Setter.intSetter.contramap(_.value)
 }

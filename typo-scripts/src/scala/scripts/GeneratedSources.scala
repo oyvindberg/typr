@@ -1,6 +1,7 @@
 package scripts
 
 import typo.*
+import typo.internal.codegen.LangScala
 
 import java.nio.file.Path
 import scala.annotation.nowarn
@@ -24,6 +25,7 @@ object GeneratedSources {
 
     val options = Options(
       pkg = "typo.generated",
+      lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
       jsonLibs = List(JsonLibName.PlayJson),
       dbLib = Some(DbLibName.Anorm),
       fileHeader = header,
@@ -48,7 +50,7 @@ object GeneratedSources {
       List(buildDir.resolve("sql"))
     )
 
-    files.foreach(_.overwriteFolder(options.dialect))
+    files.foreach(_.overwriteFolder())
 
     import scala.sys.process.*
     List("git", "add", "-f", typoSources.toString).!! : @nowarn

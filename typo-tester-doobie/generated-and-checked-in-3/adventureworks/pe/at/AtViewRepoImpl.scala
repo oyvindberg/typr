@@ -6,16 +6,12 @@
 package adventureworks.pe.at
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class AtViewRepoImpl extends AtViewRepo {
-  override def select: SelectBuilder[AtViewFields, AtViewRow] = {
-    SelectBuilderSql(""""pe"."at"""", AtViewFields.structure, AtViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, AtViewRow] = {
-    sql"""select "id", "addresstypeid", "name", "rowguid", "modifieddate"::text from "pe"."at"""".query(using AtViewRow.read).stream
-  }
+  def select: SelectBuilder[AtViewFields, AtViewRow] = SelectBuilder.of(""""pe"."at"""", AtViewFields.structure, AtViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, AtViewRow] = sql"""select "id", "addresstypeid", "name", "rowguid", "modifieddate"::text from "pe"."at"""".query(using AtViewRow.read).stream
 }

@@ -31,45 +31,53 @@ case class AtViewRow(
 )
 
 object AtViewRow {
-  given jdbcDecoder: JdbcDecoder[AtViewRow] = new JdbcDecoder[AtViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, AtViewRow) =
-      columIndex + 4 ->
-        AtViewRow(
-          id = AddresstypeId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          addresstypeid = AddresstypeId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2
-        )
+  given jdbcDecoder: JdbcDecoder[AtViewRow] = {
+    new JdbcDecoder[AtViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, AtViewRow) =
+        columIndex + 4 ->
+          AtViewRow(
+            id = AddresstypeId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            addresstypeid = AddresstypeId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2
+          )
+    }
   }
-  given jsonDecoder: JsonDecoder[AtViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using AddresstypeId.jsonDecoder))
-    val addresstypeid = jsonObj.get("addresstypeid").toRight("Missing field 'addresstypeid'").flatMap(_.as(using AddresstypeId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-    val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && addresstypeid.isRight && name.isRight && rowguid.isRight && modifieddate.isRight)
-      Right(AtViewRow(id = id.toOption.get, addresstypeid = addresstypeid.toOption.get, name = name.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, addresstypeid, name, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  given jsonDecoder: JsonDecoder[AtViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using AddresstypeId.jsonDecoder))
+      val addresstypeid = jsonObj.get("addresstypeid").toRight("Missing field 'addresstypeid'").flatMap(_.as(using AddresstypeId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
+      val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && addresstypeid.isRight && name.isRight && rowguid.isRight && modifieddate.isRight)
+        Right(AtViewRow(id = id.toOption.get, addresstypeid = addresstypeid.toOption.get, name = name.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, addresstypeid, name, rowguid, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[AtViewRow] = new JsonEncoder[AtViewRow] {
-    override def unsafeEncode(a: AtViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      AddresstypeId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""addresstypeid":""")
-      AddresstypeId.jsonEncoder.unsafeEncode(a.addresstypeid, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""rowguid":""")
-      TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[AtViewRow] = {
+    new JsonEncoder[AtViewRow] {
+      override def unsafeEncode(a: AtViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        AddresstypeId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""addresstypeid":""")
+        AddresstypeId.jsonEncoder.unsafeEncode(a.addresstypeid, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""rowguid":""")
+        TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

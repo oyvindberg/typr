@@ -34,36 +34,44 @@ case class PcViewRow(
 )
 
 object PcViewRow {
-  given reads: Reads[PcViewRow] = Reads[PcViewRow](json => JsResult.fromTry(
-      Try(
-        PcViewRow(
-          id = json.\("id").as(ProductcategoryId.reads),
-          productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
-          name = json.\("name").as(Name.reads),
-          rowguid = json.\("rowguid").as(TypoUUID.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given reads: Reads[PcViewRow] = {
+    Reads[PcViewRow](json => JsResult.fromTry(
+        Try(
+          PcViewRow(
+            id = json.\("id").as(ProductcategoryId.reads),
+            productcategoryid = json.\("productcategoryid").as(ProductcategoryId.reads),
+            name = json.\("name").as(Name.reads),
+            rowguid = json.\("rowguid").as(TypoUUID.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PcViewRow] = RowParser[PcViewRow] { row =>
-    Success(
-      PcViewRow(
-        id = row(idx + 0)(using ProductcategoryId.column),
-        productcategoryid = row(idx + 1)(using ProductcategoryId.column),
-        name = row(idx + 2)(using Name.column),
-        rowguid = row(idx + 3)(using TypoUUID.column),
-        modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[PcViewRow] = OWrites[PcViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> ProductcategoryId.writes.writes(o.id),
-      "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
-      "name" -> Name.writes.writes(o.name),
-      "rowguid" -> TypoUUID.writes.writes(o.rowguid),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PcViewRow] = {
+    RowParser[PcViewRow] { row =>
+      Success(
+        PcViewRow(
+          id = row(idx + 0)(using ProductcategoryId.column),
+          productcategoryid = row(idx + 1)(using ProductcategoryId.column),
+          name = row(idx + 2)(using Name.column),
+          rowguid = row(idx + 3)(using TypoUUID.column),
+          modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PcViewRow] = {
+    OWrites[PcViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> ProductcategoryId.writes.writes(o.id),
+        "productcategoryid" -> ProductcategoryId.writes.writes(o.productcategoryid),
+        "name" -> Name.writes.writes(o.name),
+        "rowguid" -> TypoUUID.writes.writes(o.rowguid),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

@@ -13,24 +13,48 @@ import zio.jdbc.UpdateResult
 import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
+/** upsertBatch: Not implementable for zio-jdbc */
 trait SalesreasonRepo {
   def delete: DeleteBuilder[SalesreasonFields, SalesreasonRow]
+
   def deleteById(salesreasonid: SalesreasonId): ZIO[ZConnection, Throwable, Boolean]
+
   def deleteByIds(salesreasonids: Array[SalesreasonId]): ZIO[ZConnection, Throwable, Long]
+
   def insert(unsaved: SalesreasonRow): ZIO[ZConnection, Throwable, SalesreasonRow]
+
   def insert(unsaved: SalesreasonRowUnsaved): ZIO[ZConnection, Throwable, SalesreasonRow]
-  def insertStreaming(unsaved: ZStream[ZConnection, Throwable, SalesreasonRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: ZStream[ZConnection, Throwable, SalesreasonRowUnsaved], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  def insertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, SalesreasonRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: ZStream[ZConnection, Throwable, SalesreasonRowUnsaved],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
+
   def select: SelectBuilder[SalesreasonFields, SalesreasonRow]
+
   def selectAll: ZStream[ZConnection, Throwable, SalesreasonRow]
+
   def selectById(salesreasonid: SalesreasonId): ZIO[ZConnection, Throwable, Option[SalesreasonRow]]
+
   def selectByIds(salesreasonids: Array[SalesreasonId]): ZStream[ZConnection, Throwable, SalesreasonRow]
+
   def selectByIdsTracked(salesreasonids: Array[SalesreasonId]): ZIO[ZConnection, Throwable, Map[SalesreasonId, SalesreasonRow]]
+
   def update: UpdateBuilder[SalesreasonFields, SalesreasonRow]
+
   def update(row: SalesreasonRow): ZIO[ZConnection, Throwable, Option[SalesreasonRow]]
+
   def upsert(unsaved: SalesreasonRow): ZIO[ZConnection, Throwable, UpdateResult[SalesreasonRow]]
-  // Not implementable for zio-jdbc: upsertBatch
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: ZStream[ZConnection, Throwable, SalesreasonRow], batchSize: Int = 10000): ZIO[ZConnection, Throwable, Long]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: ZStream[ZConnection, Throwable, SalesreasonRow],
+    batchSize: Int = 10000
+  ): ZIO[ZConnection, Throwable, Long]
 }

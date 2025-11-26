@@ -7,6 +7,7 @@ package adventureworks.sales.customer
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
@@ -23,76 +24,85 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.customer` which has not been persisted yet */
 case class CustomerRowUnsaved(
   /** Foreign key to Person.BusinessEntityID
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
-  personid: Option[BusinessentityId],
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
+  personid: Option[BusinessentityId] = None,
   /** Foreign key to Store.BusinessEntityID
-      Points to [[adventureworks.sales.store.StoreRow.businessentityid]] */
-  storeid: Option[BusinessentityId],
+   * Points to [[adventureworks.sales.store.StoreRow.businessentityid]]
+   */
+  storeid: Option[BusinessentityId] = None,
   /** ID of the territory in which the customer is located. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+   * Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]]
+   */
+  territoryid: Option[SalesterritoryId] = None,
   /** Default: nextval('sales.customer_customerid_seq'::regclass)
-      Primary key. */
-  customerid: Defaulted[CustomerId] = Defaulted.UseDefault,
+   * Primary key.
+   */
+  customerid: Defaulted[CustomerId] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(customeridDefault: => CustomerId, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): CustomerRow =
-    CustomerRow(
+  def toRow(
+    customeridDefault: => CustomerId,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): CustomerRow = {
+    new CustomerRow(
+      customerid = customerid.getOrElse(customeridDefault),
       personid = personid,
       storeid = storeid,
       territoryid = territoryid,
-      customerid = customerid match {
-                     case Defaulted.UseDefault => customeridDefault
-                     case Defaulted.Provided(value) => value
-                   },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object CustomerRowUnsaved {
-  given reads: Reads[CustomerRowUnsaved] = Reads[CustomerRowUnsaved](json => JsResult.fromTry(
-      Try(
-        CustomerRowUnsaved(
-          personid = json.\("personid").toOption.map(_.as(BusinessentityId.reads)),
-          storeid = json.\("storeid").toOption.map(_.as(BusinessentityId.reads)),
-          territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
-          customerid = json.\("customerid").as(Defaulted.reads(using CustomerId.reads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[CustomerRowUnsaved] = Text.instance[CustomerRowUnsaved]{ (row, sb) =>
-    Text.option(using BusinessentityId.text).unsafeEncode(row.personid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using BusinessentityId.text).unsafeEncode(row.storeid, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using SalesterritoryId.text).unsafeEncode(row.territoryid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using CustomerId.text).unsafeEncode(row.customerid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[CustomerRowUnsaved] = OWrites[CustomerRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "personid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.personid),
-      "storeid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.storeid),
-      "territoryid" -> Writes.OptionWrites(using SalesterritoryId.writes).writes(o.territoryid),
-      "customerid" -> Defaulted.writes(using CustomerId.writes).writes(o.customerid),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object CustomerRowUnsaved {
+  given pgText: Text[CustomerRowUnsaved] = {
+    Text.instance[CustomerRowUnsaved]{ (row, sb) =>
+      Text.option(using BusinessentityId.pgText).unsafeEncode(row.personid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using BusinessentityId.pgText).unsafeEncode(row.storeid, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using SalesterritoryId.pgText).unsafeEncode(row.territoryid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using CustomerId.pgText).unsafeEncode(row.customerid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[CustomerRowUnsaved] = {
+    Reads[CustomerRowUnsaved](json => JsResult.fromTry(
+        Try(
+          CustomerRowUnsaved(
+            personid = json.\("personid").toOption.map(_.as(BusinessentityId.reads)),
+            storeid = json.\("storeid").toOption.map(_.as(BusinessentityId.reads)),
+            territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
+            customerid = json.\("customerid").as(Defaulted.reads(using CustomerId.reads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[CustomerRowUnsaved] = {
+    OWrites[CustomerRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "personid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.personid),
+        "storeid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.storeid),
+        "territoryid" -> Writes.OptionWrites(using SalesterritoryId.writes).writes(o.territoryid),
+        "customerid" -> Defaulted.writes(using CustomerId.writes).writes(o.customerid),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

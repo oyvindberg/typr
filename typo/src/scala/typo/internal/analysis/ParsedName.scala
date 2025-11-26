@@ -4,8 +4,8 @@ package analysis
 
 import play.api.libs.json.{Json, Writes}
 
-case class ParsedName(name: db.ColName, originalName: db.ColName, nullability: Option[Nullability], bareOverriddenType: Option[sc.Type.Qualified]) {
-  val overriddenType: Option[sc.Type] = bareOverriddenType.map(sc.Type.UserDefined.apply)
+case class ParsedName(name: db.ColName, originalName: db.ColName, nullability: Option[Nullability], bareOverriddenType: Option[jvm.Type.Qualified]) {
+  val overriddenType: Option[jvm.Type] = bareOverriddenType.map(jvm.Type.UserDefined.apply)
 }
 
 object ParsedName {
@@ -18,7 +18,7 @@ object ParsedName {
     val (dbName, overriddenType) = shortened.split(":").toList match {
       case Nil                 => sys.error("shouldn't happen (tm)")
       case name :: Nil         => (db.ColName(name), None)
-      case name :: tpeStr :: _ => (db.ColName(name), Some(sc.Type.Qualified(tpeStr)))
+      case name :: tpeStr :: _ => (db.ColName(name), Some(jvm.Type.Qualified(tpeStr)))
     }
     ParsedName(dbName, originalName = db.ColName(name), nullability, overriddenType)
   }

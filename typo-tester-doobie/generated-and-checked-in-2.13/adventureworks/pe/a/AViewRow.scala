@@ -41,30 +41,34 @@ case class AViewRow(
 
 object AViewRow {
   implicit lazy val decoder: Decoder[AViewRow] = Decoder.forProduct10[AViewRow, AddressId, AddressId, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("id", "addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(AViewRow.apply)(AddressId.decoder, AddressId.decoder, Decoder.decodeString, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeString, StateprovinceId.decoder, Decoder.decodeString, Decoder.decodeOption(TypoBytea.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[AViewRow] = Encoder.forProduct10[AViewRow, AddressId, AddressId, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("id", "addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(x => (x.id, x.addressid, x.addressline1, x.addressline2, x.city, x.stateprovinceid, x.postalcode, x.spatiallocation, x.rowguid, x.modifieddate))(AddressId.encoder, AddressId.encoder, Encoder.encodeString, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeString, StateprovinceId.encoder, Encoder.encodeString, Encoder.encodeOption(TypoBytea.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[AViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[AViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    AViewRow(
-      id = arr(0).asInstanceOf[AddressId],
-          addressid = arr(1).asInstanceOf[AddressId],
-          addressline1 = arr(2).asInstanceOf[/* max 60 chars */ String],
-          addressline2 = arr(3).asInstanceOf[Option[/* max 60 chars */ String]],
-          city = arr(4).asInstanceOf[/* max 30 chars */ String],
-          stateprovinceid = arr(5).asInstanceOf[StateprovinceId],
-          postalcode = arr(6).asInstanceOf[/* max 15 chars */ String],
-          spatiallocation = arr(7).asInstanceOf[Option[TypoBytea]],
-          rowguid = arr(8).asInstanceOf[TypoUUID],
-          modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(AddressId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(StateprovinceId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      AViewRow(
+        id = arr(0).asInstanceOf[AddressId],
+            addressid = arr(1).asInstanceOf[AddressId],
+            addressline1 = arr(2).asInstanceOf[/* max 60 chars */ String],
+            addressline2 = arr(3).asInstanceOf[Option[/* max 60 chars */ String]],
+            city = arr(4).asInstanceOf[/* max 30 chars */ String],
+            stateprovinceid = arr(5).asInstanceOf[StateprovinceId],
+            postalcode = arr(6).asInstanceOf[/* max 15 chars */ String],
+            spatiallocation = arr(7).asInstanceOf[Option[TypoBytea]],
+            rowguid = arr(8).asInstanceOf[TypoUUID],
+            modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

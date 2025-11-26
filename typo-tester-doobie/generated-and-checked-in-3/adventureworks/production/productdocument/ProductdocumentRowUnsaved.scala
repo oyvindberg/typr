@@ -6,6 +6,7 @@
 package adventureworks.production.productdocument
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
@@ -16,36 +17,35 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.productdocument` which has not been persisted yet */
 case class ProductdocumentRowUnsaved(
   /** Product identification number. Foreign key to Product.ProductID.
-      Points to [[adventureworks.production.product.ProductRow.productid]] */
+   * Points to [[adventureworks.production.product.ProductRow.productid]]
+   */
   productid: ProductId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Document identification number. Foreign key to Document.DocumentNode.
-      Points to [[adventureworks.production.document.DocumentRow.documentnode]] */
-  documentnode: Defaulted[DocumentId] = Defaulted.UseDefault
+   * Document identification number. Foreign key to Document.DocumentNode.
+   * Points to [[adventureworks.production.document.DocumentRow.documentnode]]
+   */
+  documentnode: Defaulted[DocumentId] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime, documentnodeDefault: => DocumentId): ProductdocumentRow =
-    ProductdocumentRow(
-      productid = productid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      documentnode = documentnode match {
-                       case Defaulted.UseDefault => documentnodeDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(
+    modifieddateDefault: => TypoLocalDateTime,
+    documentnodeDefault: => DocumentId
+  ): ProductdocumentRow = new ProductdocumentRow(productid = productid, modifieddate = modifieddate.getOrElse(modifieddateDefault), documentnode = documentnode.getOrElse(documentnodeDefault))
 }
+
 object ProductdocumentRowUnsaved {
   given decoder: Decoder[ProductdocumentRowUnsaved] = Decoder.forProduct3[ProductdocumentRowUnsaved, ProductId, Defaulted[TypoLocalDateTime], Defaulted[DocumentId]]("productid", "modifieddate", "documentnode")(ProductdocumentRowUnsaved.apply)(using ProductId.decoder, Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using DocumentId.decoder))
+
   given encoder: Encoder[ProductdocumentRowUnsaved] = Encoder.forProduct3[ProductdocumentRowUnsaved, ProductId, Defaulted[TypoLocalDateTime], Defaulted[DocumentId]]("productid", "modifieddate", "documentnode")(x => (x.productid, x.modifieddate, x.documentnode))(using ProductId.encoder, Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using DocumentId.encoder))
-  given text: Text[ProductdocumentRowUnsaved] = Text.instance[ProductdocumentRowUnsaved]{ (row, sb) =>
-    ProductId.text.unsafeEncode(row.productid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using DocumentId.text).unsafeEncode(row.documentnode, sb)
+
+  given pgText: Text[ProductdocumentRowUnsaved] = {
+    Text.instance[ProductdocumentRowUnsaved]{ (row, sb) =>
+      ProductId.pgText.unsafeEncode(row.productid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using DocumentId.pgText).unsafeEncode(row.documentnode, sb)
+    }
   }
 }

@@ -20,20 +20,26 @@ case class ProductcosthistoryId(
   productid: ProductId,
   startdate: TypoLocalDateTime
 )
+
 object ProductcosthistoryId {
-  given reads: Reads[ProductcosthistoryId] = Reads[ProductcosthistoryId](json => JsResult.fromTry(
-      Try(
-        ProductcosthistoryId(
-          productid = json.\("productid").as(ProductId.reads),
-          startdate = json.\("startdate").as(TypoLocalDateTime.reads)
+  given reads: Reads[ProductcosthistoryId] = {
+    Reads[ProductcosthistoryId](json => JsResult.fromTry(
+        Try(
+          ProductcosthistoryId(
+            productid = json.\("productid").as(ProductId.reads),
+            startdate = json.\("startdate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  given writes: OWrites[ProductcosthistoryId] = OWrites[ProductcosthistoryId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "productid" -> ProductId.writes.writes(o.productid),
-      "startdate" -> TypoLocalDateTime.writes.writes(o.startdate)
-    ))
-  )
+      ),
+    )
+  }
+
+  given writes: OWrites[ProductcosthistoryId] = {
+    OWrites[ProductcosthistoryId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "productid" -> ProductId.writes.writes(o.productid),
+        "startdate" -> TypoLocalDateTime.writes.writes(o.startdate)
+      ))
+    )
+  }
 }

@@ -45,51 +45,59 @@ case class PersonDetailSqlRow(
 )
 
 object PersonDetailSqlRow {
-  given reads: Reads[PersonDetailSqlRow] = Reads[PersonDetailSqlRow](json => JsResult.fromTry(
-      Try(
-        PersonDetailSqlRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads),
-          jobtitle = json.\("jobtitle").as(Reads.StringReads),
-          addressline1 = json.\("addressline1").toOption.map(_.as(Reads.StringReads)),
-          city = json.\("city").toOption.map(_.as(Reads.StringReads)),
-          postalcode = json.\("postalcode").toOption.map(_.as(Reads.StringReads)),
-          rowguid = json.\("rowguid").as(Reads.StringReads)
+  given reads: Reads[PersonDetailSqlRow] = {
+    Reads[PersonDetailSqlRow](json => JsResult.fromTry(
+        Try(
+          PersonDetailSqlRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads),
+            jobtitle = json.\("jobtitle").as(Reads.StringReads),
+            addressline1 = json.\("addressline1").toOption.map(_.as(Reads.StringReads)),
+            city = json.\("city").toOption.map(_.as(Reads.StringReads)),
+            postalcode = json.\("postalcode").toOption.map(_.as(Reads.StringReads)),
+            rowguid = json.\("rowguid").as(Reads.StringReads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersonDetailSqlRow] = RowParser[PersonDetailSqlRow] { row =>
-    Success(
-      PersonDetailSqlRow(
-        businessentityid = row(idx + 0)(using BusinessentityId.column),
-        title = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
-        firstname = row(idx + 2)(using /* user-picked */ FirstName.column),
-        middlename = row(idx + 3)(using Column.columnToOption(using Name.column)),
-        lastname = row(idx + 4)(using Name.column),
-        jobtitle = row(idx + 5)(using Column.columnToString),
-        addressline1 = row(idx + 6)(using Column.columnToOption(using Column.columnToString)),
-        city = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
-        postalcode = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
-        rowguid = row(idx + 9)(using Column.columnToString)
-      )
+      ),
     )
   }
-  given writes: OWrites[PersonDetailSqlRow] = OWrites[PersonDetailSqlRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname),
-      "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
-      "addressline1" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline1),
-      "city" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.city),
-      "postalcode" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.postalcode),
-      "rowguid" -> Writes.StringWrites.writes(o.rowguid)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PersonDetailSqlRow] = {
+    RowParser[PersonDetailSqlRow] { row =>
+      Success(
+        PersonDetailSqlRow(
+          businessentityid = row(idx + 0)(using BusinessentityId.column),
+          title = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          firstname = row(idx + 2)(using /* user-picked */ FirstName.column),
+          middlename = row(idx + 3)(using Column.columnToOption(using Name.column)),
+          lastname = row(idx + 4)(using Name.column),
+          jobtitle = row(idx + 5)(using Column.columnToString),
+          addressline1 = row(idx + 6)(using Column.columnToOption(using Column.columnToString)),
+          city = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
+          postalcode = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
+          rowguid = row(idx + 9)(using Column.columnToString)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[PersonDetailSqlRow] = {
+    OWrites[PersonDetailSqlRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname),
+        "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
+        "addressline1" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline1),
+        "city" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.city),
+        "postalcode" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.postalcode),
+        "rowguid" -> Writes.StringWrites.writes(o.rowguid)
+      ))
+    )
+  }
 }

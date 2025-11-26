@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait SrViewRepo {
   def select: SelectBuilder[SrViewFields, SrViewRow]
+
   def selectAll(implicit c: Connection): List[SrViewRow]
 }

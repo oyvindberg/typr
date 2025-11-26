@@ -19,27 +19,33 @@ case class SalesterritoryhistoryId(
   startdate: TypoLocalDateTime,
   territoryid: SalesterritoryId
 )
+
 object SalesterritoryhistoryId {
-  given jsonDecoder: JsonDecoder[SalesterritoryhistoryId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-    val territoryid = jsonObj.get("territoryid").toRight("Missing field 'territoryid'").flatMap(_.as(using SalesterritoryId.jsonDecoder))
-    if (businessentityid.isRight && startdate.isRight && territoryid.isRight)
-      Right(SalesterritoryhistoryId(businessentityid = businessentityid.toOption.get, startdate = startdate.toOption.get, territoryid = territoryid.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, startdate, territoryid).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[SalesterritoryhistoryId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      val territoryid = jsonObj.get("territoryid").toRight("Missing field 'territoryid'").flatMap(_.as(using SalesterritoryId.jsonDecoder))
+      if (businessentityid.isRight && startdate.isRight && territoryid.isRight)
+        Right(SalesterritoryhistoryId(businessentityid = businessentityid.toOption.get, startdate = startdate.toOption.get, territoryid = territoryid.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, startdate, territoryid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[SalesterritoryhistoryId] = new JsonEncoder[SalesterritoryhistoryId] {
-    override def unsafeEncode(a: SalesterritoryhistoryId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""startdate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
-      out.write(",")
-      out.write(""""territoryid":""")
-      SalesterritoryId.jsonEncoder.unsafeEncode(a.territoryid, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[SalesterritoryhistoryId] = {
+    new JsonEncoder[SalesterritoryhistoryId] {
+      override def unsafeEncode(a: SalesterritoryhistoryId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""startdate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
+        out.write(",")
+        out.write(""""territoryid":""")
+        SalesterritoryId.jsonEncoder.unsafeEncode(a.territoryid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

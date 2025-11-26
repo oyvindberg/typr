@@ -7,6 +7,7 @@ package adventureworks.person.personphone
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
@@ -22,54 +23,63 @@ import scala.util.Try
 /** This class corresponds to a row in table `person.personphone` which has not been persisted yet */
 case class PersonphoneRowUnsaved(
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Telephone number identification number. */
   phonenumber: Phone,
   /** Kind of phone number. Foreign key to PhoneNumberType.PhoneNumberTypeID.
-      Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]] */
+   * Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.phonenumbertypeid]]
+   */
   phonenumbertypeid: PhonenumbertypeId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): PersonphoneRow =
-    PersonphoneRow(
+  def toRow(modifieddateDefault: => TypoLocalDateTime): PersonphoneRow = {
+    new PersonphoneRow(
       businessentityid = businessentityid,
       phonenumber = phonenumber,
       phonenumbertypeid = phonenumbertypeid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object PersonphoneRowUnsaved {
-  given reads: Reads[PersonphoneRowUnsaved] = Reads[PersonphoneRowUnsaved](json => JsResult.fromTry(
-      Try(
-        PersonphoneRowUnsaved(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          phonenumber = json.\("phonenumber").as(Phone.reads),
-          phonenumbertypeid = json.\("phonenumbertypeid").as(PhonenumbertypeId.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[PersonphoneRowUnsaved] = Text.instance[PersonphoneRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    Phone.text.unsafeEncode(row.phonenumber, sb)
-    sb.append(Text.DELIMETER)
-    PhonenumbertypeId.text.unsafeEncode(row.phonenumbertypeid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  given writes: OWrites[PersonphoneRowUnsaved] = OWrites[PersonphoneRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "phonenumber" -> Phone.writes.writes(o.phonenumber),
-      "phonenumbertypeid" -> PhonenumbertypeId.writes.writes(o.phonenumbertypeid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object PersonphoneRowUnsaved {
+  given pgText: Text[PersonphoneRowUnsaved] = {
+    Text.instance[PersonphoneRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      Phone.pgText.unsafeEncode(row.phonenumber, sb)
+      sb.append(Text.DELIMETER)
+      PhonenumbertypeId.pgText.unsafeEncode(row.phonenumbertypeid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[PersonphoneRowUnsaved] = {
+    Reads[PersonphoneRowUnsaved](json => JsResult.fromTry(
+        Try(
+          PersonphoneRowUnsaved(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            phonenumber = json.\("phonenumber").as(Phone.reads),
+            phonenumbertypeid = json.\("phonenumbertypeid").as(PhonenumbertypeId.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[PersonphoneRowUnsaved] = {
+    OWrites[PersonphoneRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "phonenumber" -> Phone.writes.writes(o.phonenumber),
+        "phonenumbertypeid" -> PhonenumbertypeId.writes.writes(o.phonenumbertypeid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

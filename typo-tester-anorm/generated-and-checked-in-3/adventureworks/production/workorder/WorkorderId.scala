@@ -14,21 +14,34 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.workorder` */
-case class WorkorderId(value: Int) extends AnyVal
+case class WorkorderId(value: Int) extends scala.AnyVal
+
 object WorkorderId {
   given arrayColumn: Column[Array[WorkorderId]] = Column.columnToArray(using column, implicitly)
+
   given arrayToStatement: ToStatement[Array[WorkorderId]] = adventureworks.IntArrayToStatement.contramap(_.map(_.value))
-  given bijection: Bijection[WorkorderId, Int] = Bijection[WorkorderId, Int](_.value)(WorkorderId.apply)
+
+  given bijection: Bijection[WorkorderId, Int] = Bijection.apply[WorkorderId, Int](_.value)(WorkorderId.apply)
+
   given column: Column[WorkorderId] = Column.columnToInt.map(WorkorderId.apply)
-  given parameterMetadata: ParameterMetaData[WorkorderId] = new ParameterMetaData[WorkorderId] {
-    override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
-    override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+
+  given parameterMetadata: ParameterMetaData[WorkorderId] = {
+    new ParameterMetaData[WorkorderId] {
+      override def sqlType: String = ParameterMetaData.IntParameterMetaData.sqlType
+      override def jdbcType: Int = ParameterMetaData.IntParameterMetaData.jdbcType
+    }
   }
+
+  given pgText: Text[WorkorderId] = {
+    new Text[WorkorderId] {
+      override def unsafeEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   given reads: Reads[WorkorderId] = Reads.IntReads.map(WorkorderId.apply)
-  given text: Text[WorkorderId] = new Text[WorkorderId] {
-    override def unsafeEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: WorkorderId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   given toStatement: ToStatement[WorkorderId] = ToStatement.intToStatement.contramap(_.value)
+
   given writes: Writes[WorkorderId] = Writes.IntWrites.contramap(_.value)
 }

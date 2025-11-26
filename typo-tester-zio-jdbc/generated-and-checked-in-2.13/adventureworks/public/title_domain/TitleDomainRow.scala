@@ -13,30 +13,38 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: public.title_domain
-    Primary key: code */
-case class TitleDomainRow(
-  code: TitleDomainId
-){
-   val id = code
- }
+ * Primary key: code
+ */
+case class TitleDomainRow(code: TitleDomainId) {
+  def id: TitleDomainId = code
+}
 
 object TitleDomainRow {
   implicit lazy val jdbcDecoder: JdbcDecoder[TitleDomainRow] = TitleDomainId.jdbcDecoder.map(v => TitleDomainRow(code = v))
-  implicit lazy val jsonDecoder: JsonDecoder[TitleDomainRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val code = jsonObj.get("code").toRight("Missing field 'code'").flatMap(_.as(TitleDomainId.jsonDecoder))
-    if (code.isRight)
-      Right(TitleDomainRow(code = code.toOption.get))
-    else Left(List[Either[String, Any]](code).flatMap(_.left.toOption).mkString(", "))
-  }
-  implicit lazy val jsonEncoder: JsonEncoder[TitleDomainRow] = new JsonEncoder[TitleDomainRow] {
-    override def unsafeEncode(a: TitleDomainRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""code":""")
-      TitleDomainId.jsonEncoder.unsafeEncode(a.code, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonDecoder: JsonDecoder[TitleDomainRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val code = jsonObj.get("code").toRight("Missing field 'code'").flatMap(_.as(TitleDomainId.jsonDecoder))
+      if (code.isRight)
+        Right(TitleDomainRow(code = code.toOption.get))
+      else Left(List[Either[String, Any]](code).flatMap(_.left.toOption).mkString(", "))
     }
   }
-  implicit lazy val text: Text[TitleDomainRow] = Text.instance[TitleDomainRow]{ (row, sb) =>
-    TitleDomainId.text.unsafeEncode(row.code, sb)
+
+  implicit lazy val jsonEncoder: JsonEncoder[TitleDomainRow] = {
+    new JsonEncoder[TitleDomainRow] {
+      override def unsafeEncode(a: TitleDomainRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""code":""")
+        TitleDomainId.jsonEncoder.unsafeEncode(a.code, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[TitleDomainRow] = {
+    Text.instance[TitleDomainRow]{ (row, sb) =>
+      TitleDomainId.pgText.unsafeEncode(row.code, sb)
+    }
   }
 }

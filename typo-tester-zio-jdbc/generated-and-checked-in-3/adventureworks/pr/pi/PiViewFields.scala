@@ -28,11 +28,11 @@ trait PiViewFields {
 
 object PiViewFields {
   lazy val structure: Relation[PiViewFields, PiViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PiViewFields, PiViewRow] {
-  
+
     override lazy val fields: PiViewFields = new PiViewFields {
       override def id = Field[ProductId, PiViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productid = Field[ProductId, PiViewRow](_path, "productid", None, None, x => x.productid, (row, value) => row.copy(productid = value))
@@ -43,12 +43,11 @@ object PiViewFields {
       override def rowguid = Field[TypoUUID, PiViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PiViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PiViewRow]] =
       List[FieldLike[?, PiViewRow]](fields.id, fields.productid, fields.locationid, fields.shelf, fields.bin, fields.quantity, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

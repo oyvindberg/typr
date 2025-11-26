@@ -32,33 +32,41 @@ case class PersonDynamicSqlRow(
 )
 
 object PersonDynamicSqlRow {
-  implicit lazy val reads: Reads[PersonDynamicSqlRow] = Reads[PersonDynamicSqlRow](json => JsResult.fromTry(
-      Try(
-        PersonDynamicSqlRow(
-          title = json.\("title").toOption.map(_.as(Reads.StringReads)),
-          firstname = json.\("firstname").as(FirstName.reads),
-          middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
-          lastname = json.\("lastname").as(Name.reads)
+  implicit lazy val reads: Reads[PersonDynamicSqlRow] = {
+    Reads[PersonDynamicSqlRow](json => JsResult.fromTry(
+        Try(
+          PersonDynamicSqlRow(
+            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            firstname = json.\("firstname").as(FirstName.reads),
+            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            lastname = json.\("lastname").as(Name.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersonDynamicSqlRow] = RowParser[PersonDynamicSqlRow] { row =>
-    Success(
-      PersonDynamicSqlRow(
-        title = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-        firstname = row(idx + 1)(/* user-picked */ FirstName.column),
-        middlename = row(idx + 2)(Column.columnToOption(Name.column)),
-        lastname = row(idx + 3)(Name.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PersonDynamicSqlRow] = OWrites[PersonDynamicSqlRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "title" -> Writes.OptionWrites(Writes.StringWrites).writes(o.title),
-      "firstname" -> FirstName.writes.writes(o.firstname),
-      "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
-      "lastname" -> Name.writes.writes(o.lastname)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PersonDynamicSqlRow] = {
+    RowParser[PersonDynamicSqlRow] { row =>
+      Success(
+        PersonDynamicSqlRow(
+          title = row(idx + 0)(Column.columnToOption(Column.columnToString)),
+          firstname = row(idx + 1)(/* user-picked */ FirstName.column),
+          middlename = row(idx + 2)(Column.columnToOption(Name.column)),
+          lastname = row(idx + 3)(Name.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PersonDynamicSqlRow] = {
+    OWrites[PersonDynamicSqlRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "title" -> Writes.OptionWrites(Writes.StringWrites).writes(o.title),
+        "firstname" -> FirstName.writes.writes(o.firstname),
+        "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
+        "lastname" -> Name.writes.writes(o.lastname)
+      ))
+    )
+  }
 }

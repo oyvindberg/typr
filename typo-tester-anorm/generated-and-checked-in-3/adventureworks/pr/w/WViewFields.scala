@@ -31,11 +31,11 @@ trait WViewFields {
 
 object WViewFields {
   lazy val structure: Relation[WViewFields, WViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[WViewFields, WViewRow] {
-  
+
     override lazy val fields: WViewFields = new WViewFields {
       override def id = Field[WorkorderId, WViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def workorderid = Field[WorkorderId, WViewRow](_path, "workorderid", None, None, x => x.workorderid, (row, value) => row.copy(workorderid = value))
@@ -48,12 +48,11 @@ object WViewFields {
       override def scrapreasonid = OptField[ScrapreasonId, WViewRow](_path, "scrapreasonid", None, None, x => x.scrapreasonid, (row, value) => row.copy(scrapreasonid = value))
       override def modifieddate = Field[TypoLocalDateTime, WViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, WViewRow]] =
       List[FieldLike[?, WViewRow]](fields.id, fields.workorderid, fields.productid, fields.orderqty, fields.scrappedqty, fields.startdate, fields.enddate, fields.duedate, fields.scrapreasonid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

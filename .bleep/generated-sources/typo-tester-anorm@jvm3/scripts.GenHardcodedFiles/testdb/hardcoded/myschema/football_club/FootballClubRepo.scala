@@ -12,21 +12,46 @@ import typo.dsl.UpdateBuilder
 
 trait FootballClubRepo {
   def delete: DeleteBuilder[FootballClubFields, FootballClubRow]
+
   def deleteById(id: FootballClubId)(using c: Connection): Boolean
+
   def deleteByIds(ids: Array[FootballClubId])(using c: Connection): Int
+
   def insert(unsaved: FootballClubRow)(using c: Connection): FootballClubRow
-  def insertStreaming(unsaved: Iterator[FootballClubRow], batchSize: Int = 10000)(using c: Connection): Long
+
+  def insertStreaming(
+    unsaved: Iterator[FootballClubRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long
+
   def select: SelectBuilder[FootballClubFields, FootballClubRow]
+
   def selectAll(using c: Connection): List[FootballClubRow]
-  def selectByFieldValues(fieldValues: List[FootballClubFieldOrIdValue[?]])(using c: Connection): List[FootballClubRow]
+
+  def selectByFieldValues(fieldValues: List[FootballClubFieldValue[?]])(using c: Connection): List[FootballClubRow]
+
   def selectById(id: FootballClubId)(using c: Connection): Option[FootballClubRow]
+
   def selectByIds(ids: Array[FootballClubId])(using c: Connection): List[FootballClubRow]
+
   def selectByIdsTracked(ids: Array[FootballClubId])(using c: Connection): Map[FootballClubId, FootballClubRow]
+
   def update: UpdateBuilder[FootballClubFields, FootballClubRow]
+
   def update(row: FootballClubRow)(using c: Connection): Option[FootballClubRow]
-  def updateFieldValues(id: FootballClubId, fieldValues: List[FootballClubFieldValue[?]])(using c: Connection): Boolean
+
+  def updateFieldValues(
+    id: FootballClubId,
+    fieldValues: List[FootballClubFieldValue[?]]
+  )(using c: Connection): Boolean
+
   def upsert(unsaved: FootballClubRow)(using c: Connection): FootballClubRow
+
   def upsertBatch(unsaved: Iterable[FootballClubRow])(using c: Connection): List[FootballClubRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Iterator[FootballClubRow], batchSize: Int = 10000)(using c: Connection): Int
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[FootballClubRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int
 }

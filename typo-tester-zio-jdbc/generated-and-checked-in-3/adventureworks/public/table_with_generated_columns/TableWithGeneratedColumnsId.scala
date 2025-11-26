@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `public.table-with-generated-columns` */
-case class TableWithGeneratedColumnsId(value: String) extends AnyVal
+case class TableWithGeneratedColumnsId(value: String) extends scala.AnyVal
+
 object TableWithGeneratedColumnsId {
   given arrayJdbcDecoder: JdbcDecoder[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayDecoder.map(_.map(TableWithGeneratedColumnsId.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
+  given bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection.apply[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
   given jdbcDecoder: JdbcDecoder[TableWithGeneratedColumnsId] = JdbcDecoder.stringDecoder.map(TableWithGeneratedColumnsId.apply)
+
   given jdbcEncoder: JdbcEncoder[TableWithGeneratedColumnsId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[TableWithGeneratedColumnsId] = JsonDecoder.string.map(TableWithGeneratedColumnsId.apply)
+
   given jsonEncoder: JsonEncoder[TableWithGeneratedColumnsId] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[TableWithGeneratedColumnsId] = PGType.PGTypeString.as
-  given setter: Setter[TableWithGeneratedColumnsId] = Setter.stringSetter.contramap(_.value)
-  given text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {
-    override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[TableWithGeneratedColumnsId] = {
+    new Text[TableWithGeneratedColumnsId] {
+      override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[TableWithGeneratedColumnsId] = PGType.PGTypeString.as
+
+  given setter: Setter[TableWithGeneratedColumnsId] = Setter.stringSetter.contramap(_.value)
 }

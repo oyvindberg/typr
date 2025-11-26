@@ -16,27 +16,34 @@ case class TestSakSoknadsalternativId(
   organisasjonskodeSaksbehandler: String,
   utdanningsmulighetKode: String
 )
+
 object TestSakSoknadsalternativId {
-  def from(TestUtdanningstilbudId: TestUtdanningstilbudId, organisasjonskodeSaksbehandler: String): TestSakSoknadsalternativId = TestSakSoknadsalternativId(
-    organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler,
-    utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode
-  )
-  given jsonDecoder: JsonDecoder[TestSakSoknadsalternativId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val organisasjonskodeSaksbehandler = jsonObj.get("organisasjonskode_saksbehandler").toRight("Missing field 'organisasjonskode_saksbehandler'").flatMap(_.as(using JsonDecoder.string))
-    val utdanningsmulighetKode = jsonObj.get("utdanningsmulighet_kode").toRight("Missing field 'utdanningsmulighet_kode'").flatMap(_.as(using JsonDecoder.string))
-    if (organisasjonskodeSaksbehandler.isRight && utdanningsmulighetKode.isRight)
-      Right(TestSakSoknadsalternativId(organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler.toOption.get, utdanningsmulighetKode = utdanningsmulighetKode.toOption.get))
-    else Left(List[Either[String, Any]](organisasjonskodeSaksbehandler, utdanningsmulighetKode).flatMap(_.left.toOption).mkString(", "))
+  def from(
+    TestUtdanningstilbudId: TestUtdanningstilbudId,
+    organisasjonskodeSaksbehandler: String
+  ): TestSakSoknadsalternativId = new TestSakSoknadsalternativId(organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler, utdanningsmulighetKode = TestUtdanningstilbudId.utdanningsmulighetKode)
+
+  given jsonDecoder: JsonDecoder[TestSakSoknadsalternativId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val organisasjonskodeSaksbehandler = jsonObj.get("organisasjonskode_saksbehandler").toRight("Missing field 'organisasjonskode_saksbehandler'").flatMap(_.as(using JsonDecoder.string))
+      val utdanningsmulighetKode = jsonObj.get("utdanningsmulighet_kode").toRight("Missing field 'utdanningsmulighet_kode'").flatMap(_.as(using JsonDecoder.string))
+      if (organisasjonskodeSaksbehandler.isRight && utdanningsmulighetKode.isRight)
+        Right(TestSakSoknadsalternativId(organisasjonskodeSaksbehandler = organisasjonskodeSaksbehandler.toOption.get, utdanningsmulighetKode = utdanningsmulighetKode.toOption.get))
+      else Left(List[Either[String, Any]](organisasjonskodeSaksbehandler, utdanningsmulighetKode).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[TestSakSoknadsalternativId] = new JsonEncoder[TestSakSoknadsalternativId] {
-    override def unsafeEncode(a: TestSakSoknadsalternativId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""organisasjonskode_saksbehandler":""")
-      JsonEncoder.string.unsafeEncode(a.organisasjonskodeSaksbehandler, indent, out)
-      out.write(",")
-      out.write(""""utdanningsmulighet_kode":""")
-      JsonEncoder.string.unsafeEncode(a.utdanningsmulighetKode, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[TestSakSoknadsalternativId] = {
+    new JsonEncoder[TestSakSoknadsalternativId] {
+      override def unsafeEncode(a: TestSakSoknadsalternativId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""organisasjonskode_saksbehandler":""")
+        JsonEncoder.string.unsafeEncode(a.organisasjonskodeSaksbehandler, indent, out)
+        out.write(",")
+        out.write(""""utdanningsmulighet_kode":""")
+        JsonEncoder.string.unsafeEncode(a.utdanningsmulighetKode, indent, out)
+        out.write("}")
+      }
     }
   }
 }

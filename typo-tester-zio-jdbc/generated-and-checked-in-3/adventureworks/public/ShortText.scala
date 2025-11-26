@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `public.short_text`
-  * Constraint: CHECK ((length(VALUE) <= 55))
-  */
+ * Constraint: CHECK ((length(VALUE) <= 55))
+ */
 case class ShortText(value: String)
+
 object ShortText {
   given arrayJdbcDecoder: JdbcDecoder[Array[ShortText]] = adventureworks.StringArrayDecoder.map(_.map(ShortText.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[ShortText]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[ShortText]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[ShortText, String] = Bijection[ShortText, String](_.value)(ShortText.apply)
+
+  given bijection: Bijection[ShortText, String] = Bijection.apply[ShortText, String](_.value)(ShortText.apply)
+
   given jdbcDecoder: JdbcDecoder[ShortText] = JdbcDecoder.stringDecoder.map(ShortText.apply)
+
   given jdbcEncoder: JdbcEncoder[ShortText] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[ShortText] = JsonDecoder.string.map(ShortText.apply)
+
   given jsonEncoder: JsonEncoder[ShortText] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[ShortText] = PGType.instance(""""public"."short_text"""", Types.OTHER)
-  given setter: Setter[ShortText] = Setter.stringSetter.contramap(_.value)
-  given text: Text[ShortText] = new Text[ShortText] {
-    override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[ShortText] = {
+    new Text[ShortText] {
+      override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[ShortText] = PGType.instance(""""public"."short_text"""", Types.OTHER)
+
+  given setter: Setter[ShortText] = Setter.stringSetter.contramap(_.value)
 }

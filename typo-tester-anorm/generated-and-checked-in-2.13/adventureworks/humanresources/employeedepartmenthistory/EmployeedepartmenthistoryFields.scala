@@ -49,16 +49,16 @@ trait EmployeedepartmenthistoryFields {
     businessentityid.isEqual(compositeId.businessentityid).and(startdate.isEqual(compositeId.startdate)).and(departmentid.isEqual(compositeId.departmentid)).and(shiftid.isEqual(compositeId.shiftid))
   def compositeIdIn(compositeIds: Array[EmployeedepartmenthistoryId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[EmployeedepartmenthistoryId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](ToParameterValue(null, BusinessentityId.arrayToStatement), adventureworks.arrayParameterMetaData(BusinessentityId.parameterMetadata)), implicitly), TuplePart[EmployeedepartmenthistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDate]](ToParameterValue(null, TypoLocalDate.arrayToStatement), adventureworks.arrayParameterMetaData(TypoLocalDate.parameterMetadata)), implicitly), TuplePart[EmployeedepartmenthistoryId](departmentid)(_.departmentid)(using as[Array[DepartmentId]](ToParameterValue(null, DepartmentId.arrayToStatement), adventureworks.arrayParameterMetaData(DepartmentId.parameterMetadata)), implicitly), TuplePart[EmployeedepartmenthistoryId](shiftid)(_.shiftid)(using as[Array[ShiftId]](ToParameterValue(null, ShiftId.arrayToStatement), adventureworks.arrayParameterMetaData(ShiftId.parameterMetadata)), implicitly))
-  
+
 }
 
 object EmployeedepartmenthistoryFields {
   lazy val structure: Relation[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] {
-  
+
     override lazy val fields: EmployeedepartmenthistoryFields = new EmployeedepartmenthistoryFields {
       override def businessentityid = IdField[BusinessentityId, EmployeedepartmenthistoryRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def departmentid = IdField[DepartmentId, EmployeedepartmenthistoryRow](_path, "departmentid", None, Some("int2"), x => x.departmentid, (row, value) => row.copy(departmentid = value))
@@ -67,12 +67,11 @@ object EmployeedepartmenthistoryFields {
       override def enddate = OptField[TypoLocalDate, EmployeedepartmenthistoryRow](_path, "enddate", Some("text"), Some("date"), x => x.enddate, (row, value) => row.copy(enddate = value))
       override def modifieddate = Field[TypoLocalDateTime, EmployeedepartmenthistoryRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, EmployeedepartmenthistoryRow]] =
       List[FieldLike[?, EmployeedepartmenthistoryRow]](fields.businessentityid, fields.departmentid, fields.shiftid, fields.startdate, fields.enddate, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

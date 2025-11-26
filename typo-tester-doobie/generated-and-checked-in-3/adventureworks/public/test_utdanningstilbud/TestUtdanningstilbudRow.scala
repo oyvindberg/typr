@@ -14,38 +14,50 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.test_utdanningstilbud
-    Composite primary key: organisasjonskode, utdanningsmulighet_kode */
+ * Composite primary key: organisasjonskode, utdanningsmulighet_kode
+ */
 case class TestUtdanningstilbudRow(
   /** Points to [[adventureworks.public.test_organisasjon.TestOrganisasjonRow.organisasjonskode]] */
   organisasjonskode: TestOrganisasjonId,
   utdanningsmulighetKode: String
-){
-   val compositeId: TestUtdanningstilbudId = TestUtdanningstilbudId(organisasjonskode, utdanningsmulighetKode)
-   val id = compositeId
- }
+) {
+  def compositeId: TestUtdanningstilbudId = new TestUtdanningstilbudId(organisasjonskode, utdanningsmulighetKode)
+
+  def id: TestUtdanningstilbudId = this.compositeId
+}
 
 object TestUtdanningstilbudRow {
-  def apply(compositeId: TestUtdanningstilbudId) =
-    new TestUtdanningstilbudRow(compositeId.organisasjonskode, compositeId.utdanningsmulighetKode)
+  def apply(compositeId: TestUtdanningstilbudId): TestUtdanningstilbudRow = new TestUtdanningstilbudRow(compositeId.organisasjonskode, compositeId.utdanningsmulighetKode)
+
   given decoder: Decoder[TestUtdanningstilbudRow] = Decoder.forProduct2[TestUtdanningstilbudRow, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(TestUtdanningstilbudRow.apply)(using TestOrganisasjonId.decoder, Decoder.decodeString)
+
   given encoder: Encoder[TestUtdanningstilbudRow] = Encoder.forProduct2[TestUtdanningstilbudRow, TestOrganisasjonId, String]("organisasjonskode", "utdanningsmulighet_kode")(x => (x.organisasjonskode, x.utdanningsmulighetKode))(using TestOrganisasjonId.encoder, Encoder.encodeString)
-  given read: Read[TestUtdanningstilbudRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(TestOrganisasjonId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    TestUtdanningstilbudRow(
-      organisasjonskode = arr(0).asInstanceOf[TestOrganisasjonId],
-          utdanningsmulighetKode = arr(1).asInstanceOf[String]
+
+  given pgText: Text[TestUtdanningstilbudRow] = {
+    Text.instance[TestUtdanningstilbudRow]{ (row, sb) =>
+      TestOrganisasjonId.pgText.unsafeEncode(row.organisasjonskode, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.utdanningsmulighetKode, sb)
+    }
+  }
+
+  given read: Read[TestUtdanningstilbudRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(TestOrganisasjonId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      TestUtdanningstilbudRow(
+        organisasjonskode = arr(0).asInstanceOf[TestOrganisasjonId],
+            utdanningsmulighetKode = arr(1).asInstanceOf[String]
+      )
+    }
+  }
+
+  given write: Write[TestUtdanningstilbudRow] = {
+    new Write.Composite[TestUtdanningstilbudRow](
+      List(new Write.Single(TestOrganisasjonId.put),
+           new Write.Single(Meta.StringMeta.put)),
+      a => List(a.organisasjonskode, a.utdanningsmulighetKode)
     )
   }
-  given text: Text[TestUtdanningstilbudRow] = Text.instance[TestUtdanningstilbudRow]{ (row, sb) =>
-    TestOrganisasjonId.text.unsafeEncode(row.organisasjonskode, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.utdanningsmulighetKode, sb)
-  }
-  given write: Write[TestUtdanningstilbudRow] = new Write.Composite[TestUtdanningstilbudRow](
-    List(new Write.Single(TestOrganisasjonId.put),
-         new Write.Single(Meta.StringMeta.put)),
-    a => List(a.organisasjonskode, a.utdanningsmulighetKode)
-  )
 }

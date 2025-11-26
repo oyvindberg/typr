@@ -28,40 +28,48 @@ case class CuViewRow(
 )
 
 object CuViewRow {
-  implicit lazy val jdbcDecoder: JdbcDecoder[CuViewRow] = new JdbcDecoder[CuViewRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, CuViewRow) =
-      columIndex + 3 ->
-        CuViewRow(
-          id = CurrencyId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          currencycode = CurrencyId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-          modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
-        )
+  implicit lazy val jdbcDecoder: JdbcDecoder[CuViewRow] = {
+    new JdbcDecoder[CuViewRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, CuViewRow) =
+        columIndex + 3 ->
+          CuViewRow(
+            id = CurrencyId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            currencycode = CurrencyId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2
+          )
+    }
   }
-  implicit lazy val jsonDecoder: JsonDecoder[CuViewRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(CurrencyId.jsonDecoder))
-    val currencycode = jsonObj.get("currencycode").toRight("Missing field 'currencycode'").flatMap(_.as(CurrencyId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-    val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-    if (id.isRight && currencycode.isRight && name.isRight && modifieddate.isRight)
-      Right(CuViewRow(id = id.toOption.get, currencycode = currencycode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
-    else Left(List[Either[String, Any]](id, currencycode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+
+  implicit lazy val jsonDecoder: JsonDecoder[CuViewRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(CurrencyId.jsonDecoder))
+      val currencycode = jsonObj.get("currencycode").toRight("Missing field 'currencycode'").flatMap(_.as(CurrencyId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
+      val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
+      if (id.isRight && currencycode.isRight && name.isRight && modifieddate.isRight)
+        Right(CuViewRow(id = id.toOption.get, currencycode = currencycode.toOption.get, name = name.toOption.get, modifieddate = modifieddate.toOption.get))
+      else Left(List[Either[String, Any]](id, currencycode, name, modifieddate).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  implicit lazy val jsonEncoder: JsonEncoder[CuViewRow] = new JsonEncoder[CuViewRow] {
-    override def unsafeEncode(a: CuViewRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""id":""")
-      CurrencyId.jsonEncoder.unsafeEncode(a.id, indent, out)
-      out.write(",")
-      out.write(""""currencycode":""")
-      CurrencyId.jsonEncoder.unsafeEncode(a.currencycode, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      Name.jsonEncoder.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""modifieddate":""")
-      TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
-      out.write("}")
+
+  implicit lazy val jsonEncoder: JsonEncoder[CuViewRow] = {
+    new JsonEncoder[CuViewRow] {
+      override def unsafeEncode(a: CuViewRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""id":""")
+        CurrencyId.jsonEncoder.unsafeEncode(a.id, indent, out)
+        out.write(",")
+        out.write(""""currencycode":""")
+        CurrencyId.jsonEncoder.unsafeEncode(a.currencycode, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        Name.jsonEncoder.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""modifieddate":""")
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
+        out.write("}")
+      }
     }
   }
 }

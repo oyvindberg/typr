@@ -6,16 +6,12 @@
 package adventureworks.pr.sr
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class SrViewRepoImpl extends SrViewRepo {
-  override def select: SelectBuilder[SrViewFields, SrViewRow] = {
-    SelectBuilderSql(""""pr"."sr"""", SrViewFields.structure, SrViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, SrViewRow] = {
-    sql"""select "id", "scrapreasonid", "name", "modifieddate"::text from "pr"."sr"""".query(SrViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[SrViewFields, SrViewRow] = SelectBuilder.of(""""pr"."sr"""", SrViewFields.structure, SrViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, SrViewRow] = sql"""select "id", "scrapreasonid", "name", "modifieddate"::text from "pr"."sr"""".query(SrViewRow.jdbcDecoder).selectStream()
 }

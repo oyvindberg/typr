@@ -15,6 +15,7 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 import testdb.hardcoded.Text
 import testdb.hardcoded.customtypes.Defaulted
+import testdb.hardcoded.customtypes.Defaulted.UseDefault
 import testdb.hardcoded.myschema.Number
 import testdb.hardcoded.myschema.Sector
 import testdb.hardcoded.myschema.football_club.FootballClubId
@@ -25,26 +26,29 @@ case class PersonRowUnsaved(
   /** Points to [[testdb.hardcoded.myschema.football_club.FootballClubRow.id]] */
   favouriteFootballClubId: FootballClubId,
   name: /* max 100 chars */ String,
-  nickName: Option[/* max 30 chars */ String],
-  blogUrl: Option[/* max 100 chars */ String],
+  nickName: Option[/* max 30 chars */ String] = None,
+  blogUrl: Option[/* max 100 chars */ String] = None,
   email: /* max 254 chars */ String,
   phone: /* max 8 chars */ String,
   likesPizza: Boolean,
-  workEmail: Option[/* max 254 chars */ String],
+  workEmail: Option[/* max 254 chars */ String] = None,
   /** Default: auto-increment */
-  id: Defaulted[PersonId] = Defaulted.UseDefault,
+  id: Defaulted[PersonId] = new UseDefault(),
   /** Default: some-value
-      Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]] */
-  maritalStatusId: Defaulted[MaritalStatusId] = Defaulted.UseDefault,
+   * Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]]
+   */
+  maritalStatusId: Defaulted[MaritalStatusId] = new UseDefault(),
   /** Default: one */
-  favoriteNumber: Defaulted[Number] = Defaulted.UseDefault
+  favoriteNumber: Defaulted[Number] = new UseDefault()
 ) {
-  def toRow(idDefault: => PersonId, maritalStatusIdDefault: => MaritalStatusId, favoriteNumberDefault: => Number, sectorDefault: => Sector): PersonRow =
-    PersonRow(
-      id = id match {
-             case Defaulted.UseDefault => idDefault
-             case Defaulted.Provided(value) => value
-           },
+  def toRow(
+    idDefault: => PersonId,
+    maritalStatusIdDefault: => MaritalStatusId,
+    favoriteNumberDefault: => Number,
+    sectorDefault: => Sector
+  ): PersonRow = {
+    new PersonRow(
+      id = id.getOrElse(idDefault),
       favouriteFootballClubId = favouriteFootballClubId,
       name = name,
       nickName = nickName,
@@ -52,73 +56,77 @@ case class PersonRowUnsaved(
       email = email,
       phone = phone,
       likesPizza = likesPizza,
-      maritalStatusId = maritalStatusId match {
-                          case Defaulted.UseDefault => maritalStatusIdDefault
-                          case Defaulted.Provided(value) => value
-                        },
+      maritalStatusId = maritalStatusId.getOrElse(maritalStatusIdDefault),
       workEmail = workEmail,
       sector = sectorDefault,
-      favoriteNumber = favoriteNumber match {
-                         case Defaulted.UseDefault => favoriteNumberDefault
-                         case Defaulted.Provided(value) => value
-                       }
+      favoriteNumber = favoriteNumber.getOrElse(favoriteNumberDefault)
     )
-}
-object PersonRowUnsaved {
-  implicit lazy val reads: Reads[PersonRowUnsaved] = Reads[PersonRowUnsaved](json => JsResult.fromTry(
-      Try(
-        PersonRowUnsaved(
-          favouriteFootballClubId = json.\("favourite_football_club_id").as(FootballClubId.reads),
-          name = json.\("name").as(Reads.StringReads),
-          nickName = json.\("nick_name").toOption.map(_.as(Reads.StringReads)),
-          blogUrl = json.\("blog_url").toOption.map(_.as(Reads.StringReads)),
-          email = json.\("email").as(Reads.StringReads),
-          phone = json.\("phone").as(Reads.StringReads),
-          likesPizza = json.\("likes_pizza").as(Reads.BooleanReads),
-          workEmail = json.\("work_email").toOption.map(_.as(Reads.StringReads)),
-          id = json.\("id").as(Defaulted.reads(PersonId.reads)),
-          maritalStatusId = json.\("marital_status_id").as(Defaulted.reads(MaritalStatusId.reads)),
-          favoriteNumber = json.\("favorite_number").as(Defaulted.reads(Number.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[PersonRowUnsaved] = Text.instance[PersonRowUnsaved]{ (row, sb) =>
-    FootballClubId.text.unsafeEncode(row.favouriteFootballClubId, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.nickName, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.blogUrl, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.email, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.phone, sb)
-    sb.append(Text.DELIMETER)
-    Text.booleanInstance.unsafeEncode(row.likesPizza, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(Text.stringInstance).unsafeEncode(row.workEmail, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(PersonId.text).unsafeEncode(row.id, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(MaritalStatusId.text).unsafeEncode(row.maritalStatusId, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(Number.text).unsafeEncode(row.favoriteNumber, sb)
   }
-  implicit lazy val writes: OWrites[PersonRowUnsaved] = OWrites[PersonRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "favourite_football_club_id" -> FootballClubId.writes.writes(o.favouriteFootballClubId),
-      "name" -> Writes.StringWrites.writes(o.name),
-      "nick_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nickName),
-      "blog_url" -> Writes.OptionWrites(Writes.StringWrites).writes(o.blogUrl),
-      "email" -> Writes.StringWrites.writes(o.email),
-      "phone" -> Writes.StringWrites.writes(o.phone),
-      "likes_pizza" -> Writes.BooleanWrites.writes(o.likesPizza),
-      "work_email" -> Writes.OptionWrites(Writes.StringWrites).writes(o.workEmail),
-      "id" -> Defaulted.writes(PersonId.writes).writes(o.id),
-      "marital_status_id" -> Defaulted.writes(MaritalStatusId.writes).writes(o.maritalStatusId),
-      "favorite_number" -> Defaulted.writes(Number.writes).writes(o.favoriteNumber)
-    ))
-  )
+}
+
+object PersonRowUnsaved {
+  implicit lazy val pgText: Text[PersonRowUnsaved] = {
+    Text.instance[PersonRowUnsaved]{ (row, sb) =>
+      FootballClubId.pgText.unsafeEncode(row.favouriteFootballClubId, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.nickName, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.blogUrl, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.email, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.phone, sb)
+      sb.append(Text.DELIMETER)
+      Text.booleanInstance.unsafeEncode(row.likesPizza, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(Text.stringInstance).unsafeEncode(row.workEmail, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(PersonId.pgText).unsafeEncode(row.id, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(MaritalStatusId.pgText).unsafeEncode(row.maritalStatusId, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(Number.pgText).unsafeEncode(row.favoriteNumber, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[PersonRowUnsaved] = {
+    Reads[PersonRowUnsaved](json => JsResult.fromTry(
+        Try(
+          PersonRowUnsaved(
+            favouriteFootballClubId = json.\("favourite_football_club_id").as(FootballClubId.reads),
+            name = json.\("name").as(Reads.StringReads),
+            nickName = json.\("nick_name").toOption.map(_.as(Reads.StringReads)),
+            blogUrl = json.\("blog_url").toOption.map(_.as(Reads.StringReads)),
+            email = json.\("email").as(Reads.StringReads),
+            phone = json.\("phone").as(Reads.StringReads),
+            likesPizza = json.\("likes_pizza").as(Reads.BooleanReads),
+            workEmail = json.\("work_email").toOption.map(_.as(Reads.StringReads)),
+            id = json.\("id").as(Defaulted.reads(PersonId.reads)),
+            maritalStatusId = json.\("marital_status_id").as(Defaulted.reads(MaritalStatusId.reads)),
+            favoriteNumber = json.\("favorite_number").as(Defaulted.reads(Number.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[PersonRowUnsaved] = {
+    OWrites[PersonRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "favourite_football_club_id" -> FootballClubId.writes.writes(o.favouriteFootballClubId),
+        "name" -> Writes.StringWrites.writes(o.name),
+        "nick_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nickName),
+        "blog_url" -> Writes.OptionWrites(Writes.StringWrites).writes(o.blogUrl),
+        "email" -> Writes.StringWrites.writes(o.email),
+        "phone" -> Writes.StringWrites.writes(o.phone),
+        "likes_pizza" -> Writes.BooleanWrites.writes(o.likesPizza),
+        "work_email" -> Writes.OptionWrites(Writes.StringWrites).writes(o.workEmail),
+        "id" -> Defaulted.writes(PersonId.writes).writes(o.id),
+        "marital_status_id" -> Defaulted.writes(MaritalStatusId.writes).writes(o.maritalStatusId),
+        "favorite_number" -> Defaulted.writes(Number.writes).writes(o.favoriteNumber)
+      ))
+    )
+  }
 }

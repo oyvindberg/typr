@@ -6,16 +6,12 @@
 package adventureworks.sales.vindividualcustomer
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class VindividualcustomerViewRepoImpl extends VindividualcustomerViewRepo {
-  override def select: SelectBuilder[VindividualcustomerViewFields, VindividualcustomerViewRow] = {
-    SelectBuilderSql(""""sales"."vindividualcustomer"""", VindividualcustomerViewFields.structure, VindividualcustomerViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, VindividualcustomerViewRow] = {
-    sql"""select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "demographics" from "sales"."vindividualcustomer"""".query(VindividualcustomerViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[VindividualcustomerViewFields, VindividualcustomerViewRow] = SelectBuilder.of(""""sales"."vindividualcustomer"""", VindividualcustomerViewFields.structure, VindividualcustomerViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, VindividualcustomerViewRow] = sql"""select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "demographics" from "sales"."vindividualcustomer"""".query(VindividualcustomerViewRow.jdbcDecoder).selectStream()
 }

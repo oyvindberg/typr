@@ -17,7 +17,8 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Table: public.users
-    Primary key: user_id */
+ * Primary key: user_id
+ */
 case class UsersRow(
   userId: UsersId,
   name: String,
@@ -27,77 +28,98 @@ case class UsersRow(
   /** Default: now() */
   createdAt: TypoInstant,
   verifiedOn: Option[TypoInstant]
-){
-   val id = userId
-   def toUnsavedRow(createdAt: Defaulted[TypoInstant] = Defaulted.Provided(this.createdAt)): UsersRowUnsaved =
-     UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt)
- }
+) {
+  def id: UsersId = userId
+
+  def toUnsavedRow(createdAt: Defaulted[TypoInstant] = Defaulted.Provided(this.createdAt)): UsersRowUnsaved = {
+    new UsersRowUnsaved(
+      userId,
+      name,
+      lastName,
+      email,
+      password,
+      verifiedOn,
+      createdAt
+    )
+  }
+}
 
 object UsersRow {
-  given jdbcDecoder: JdbcDecoder[UsersRow] = new JdbcDecoder[UsersRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, UsersRow) =
-      columIndex + 6 ->
-        UsersRow(
-          userId = UsersId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          name = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          lastName = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 2, rs)._2,
-          email = TypoUnknownCitext.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-          password = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
-          createdAt = TypoInstant.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
-          verifiedOn = JdbcDecoder.optionDecoder(using TypoInstant.jdbcDecoder).unsafeDecode(columIndex + 6, rs)._2
-        )
-  }
-  given jsonDecoder: JsonDecoder[UsersRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val userId = jsonObj.get("user_id").toRight("Missing field 'user_id'").flatMap(_.as(using UsersId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using JsonDecoder.string))
-    val lastName = jsonObj.get("last_name").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-    val email = jsonObj.get("email").toRight("Missing field 'email'").flatMap(_.as(using TypoUnknownCitext.jsonDecoder))
-    val password = jsonObj.get("password").toRight("Missing field 'password'").flatMap(_.as(using JsonDecoder.string))
-    val createdAt = jsonObj.get("created_at").toRight("Missing field 'created_at'").flatMap(_.as(using TypoInstant.jsonDecoder))
-    val verifiedOn = jsonObj.get("verified_on").fold[Either[String, Option[TypoInstant]]](Right(None))(_.as(using JsonDecoder.option(using TypoInstant.jsonDecoder)))
-    if (userId.isRight && name.isRight && lastName.isRight && email.isRight && password.isRight && createdAt.isRight && verifiedOn.isRight)
-      Right(UsersRow(userId = userId.toOption.get, name = name.toOption.get, lastName = lastName.toOption.get, email = email.toOption.get, password = password.toOption.get, createdAt = createdAt.toOption.get, verifiedOn = verifiedOn.toOption.get))
-    else Left(List[Either[String, Any]](userId, name, lastName, email, password, createdAt, verifiedOn).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[UsersRow] = new JsonEncoder[UsersRow] {
-    override def unsafeEncode(a: UsersRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""user_id":""")
-      UsersId.jsonEncoder.unsafeEncode(a.userId, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      JsonEncoder.string.unsafeEncode(a.name, indent, out)
-      out.write(",")
-      out.write(""""last_name":""")
-      JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.lastName, indent, out)
-      out.write(",")
-      out.write(""""email":""")
-      TypoUnknownCitext.jsonEncoder.unsafeEncode(a.email, indent, out)
-      out.write(",")
-      out.write(""""password":""")
-      JsonEncoder.string.unsafeEncode(a.password, indent, out)
-      out.write(",")
-      out.write(""""created_at":""")
-      TypoInstant.jsonEncoder.unsafeEncode(a.createdAt, indent, out)
-      out.write(",")
-      out.write(""""verified_on":""")
-      JsonEncoder.option(using TypoInstant.jsonEncoder).unsafeEncode(a.verifiedOn, indent, out)
-      out.write("}")
+  given jdbcDecoder: JdbcDecoder[UsersRow] = {
+    new JdbcDecoder[UsersRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, UsersRow) =
+        columIndex + 6 ->
+          UsersRow(
+            userId = UsersId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            name = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            lastName = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            email = TypoUnknownCitext.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            password = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            createdAt = TypoInstant.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
+            verifiedOn = JdbcDecoder.optionDecoder(using TypoInstant.jdbcDecoder).unsafeDecode(columIndex + 6, rs)._2
+          )
     }
   }
-  given text: Text[UsersRow] = Text.instance[UsersRow]{ (row, sb) =>
-    UsersId.text.unsafeEncode(row.userId, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.lastName, sb)
-    sb.append(Text.DELIMETER)
-    TypoUnknownCitext.text.unsafeEncode(row.email, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.password, sb)
-    sb.append(Text.DELIMETER)
-    TypoInstant.text.unsafeEncode(row.createdAt, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoInstant.text).unsafeEncode(row.verifiedOn, sb)
+
+  given jsonDecoder: JsonDecoder[UsersRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val userId = jsonObj.get("user_id").toRight("Missing field 'user_id'").flatMap(_.as(using UsersId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using JsonDecoder.string))
+      val lastName = jsonObj.get("last_name").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val email = jsonObj.get("email").toRight("Missing field 'email'").flatMap(_.as(using TypoUnknownCitext.jsonDecoder))
+      val password = jsonObj.get("password").toRight("Missing field 'password'").flatMap(_.as(using JsonDecoder.string))
+      val createdAt = jsonObj.get("created_at").toRight("Missing field 'created_at'").flatMap(_.as(using TypoInstant.jsonDecoder))
+      val verifiedOn = jsonObj.get("verified_on").fold[Either[String, Option[TypoInstant]]](Right(None))(_.as(using JsonDecoder.option(using TypoInstant.jsonDecoder)))
+      if (userId.isRight && name.isRight && lastName.isRight && email.isRight && password.isRight && createdAt.isRight && verifiedOn.isRight)
+        Right(UsersRow(userId = userId.toOption.get, name = name.toOption.get, lastName = lastName.toOption.get, email = email.toOption.get, password = password.toOption.get, createdAt = createdAt.toOption.get, verifiedOn = verifiedOn.toOption.get))
+      else Left(List[Either[String, Any]](userId, name, lastName, email, password, createdAt, verifiedOn).flatMap(_.left.toOption).mkString(", "))
+    }
+  }
+
+  given jsonEncoder: JsonEncoder[UsersRow] = {
+    new JsonEncoder[UsersRow] {
+      override def unsafeEncode(a: UsersRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""user_id":""")
+        UsersId.jsonEncoder.unsafeEncode(a.userId, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        JsonEncoder.string.unsafeEncode(a.name, indent, out)
+        out.write(",")
+        out.write(""""last_name":""")
+        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.lastName, indent, out)
+        out.write(",")
+        out.write(""""email":""")
+        TypoUnknownCitext.jsonEncoder.unsafeEncode(a.email, indent, out)
+        out.write(",")
+        out.write(""""password":""")
+        JsonEncoder.string.unsafeEncode(a.password, indent, out)
+        out.write(",")
+        out.write(""""created_at":""")
+        TypoInstant.jsonEncoder.unsafeEncode(a.createdAt, indent, out)
+        out.write(",")
+        out.write(""""verified_on":""")
+        JsonEncoder.option(using TypoInstant.jsonEncoder).unsafeEncode(a.verifiedOn, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[UsersRow] = {
+    Text.instance[UsersRow]{ (row, sb) =>
+      UsersId.pgText.unsafeEncode(row.userId, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.lastName, sb)
+      sb.append(Text.DELIMETER)
+      TypoUnknownCitext.pgText.unsafeEncode(row.email, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.password, sb)
+      sb.append(Text.DELIMETER)
+      TypoInstant.pgText.unsafeEncode(row.createdAt, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoInstant.pgText).unsafeEncode(row.verifiedOn, sb)
+    }
   }
 }

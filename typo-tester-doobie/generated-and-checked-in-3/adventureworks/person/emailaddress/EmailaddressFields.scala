@@ -35,16 +35,16 @@ trait EmailaddressFields {
     businessentityid.isEqual(compositeId.businessentityid).and(emailaddressid.isEqual(compositeId.emailaddressid))
   def compositeIdIn(compositeIds: Array[EmailaddressId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[EmailaddressId](businessentityid)(_.businessentityid)(using as[Array[BusinessentityId]](using BusinessentityId.arrayPut), implicitly), TuplePart[EmailaddressId](emailaddressid)(_.emailaddressid)(using as[Array[Int]](using adventureworks.IntegerArrayMeta.put), implicitly))
-  
+
 }
 
 object EmailaddressFields {
   lazy val structure: Relation[EmailaddressFields, EmailaddressRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[EmailaddressFields, EmailaddressRow] {
-  
+
     override lazy val fields: EmailaddressFields = new EmailaddressFields {
       override def businessentityid = IdField[BusinessentityId, EmailaddressRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def emailaddressid = IdField[Int, EmailaddressRow](_path, "emailaddressid", None, Some("int4"), x => x.emailaddressid, (row, value) => row.copy(emailaddressid = value))
@@ -52,12 +52,11 @@ object EmailaddressFields {
       override def rowguid = Field[TypoUUID, EmailaddressRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, EmailaddressRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, EmailaddressRow]] =
       List[FieldLike[?, EmailaddressRow]](fields.businessentityid, fields.emailaddressid, fields.emailaddress, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

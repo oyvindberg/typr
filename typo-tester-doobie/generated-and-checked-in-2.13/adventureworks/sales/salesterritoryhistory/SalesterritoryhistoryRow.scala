@@ -17,74 +17,116 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: sales.salesterritoryhistory
-    Sales representative transfers to other sales territories.
-    Composite primary key: businessentityid, startdate, territoryid */
+ * Sales representative transfers to other sales territories.
+ * Composite primary key: businessentityid, startdate, territoryid
+ */
 case class SalesterritoryhistoryRow(
   /** Primary key. The sales rep.  Foreign key to SalesPerson.BusinessEntityID.
-      Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
+   * Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Primary key. Territory identification number. Foreign key to SalesTerritory.SalesTerritoryID.
-      Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]] */
+   * Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]]
+   */
   territoryid: SalesterritoryId,
   /** Primary key. Date the sales representive started work in the territory.
-      Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL))) */
+   * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
+   */
   startdate: TypoLocalDateTime,
   /** Date the sales representative left work in the territory.
-      Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL))) */
+   * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
+   */
   enddate: Option[TypoLocalDateTime],
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val compositeId: SalesterritoryhistoryId = SalesterritoryhistoryId(businessentityid, startdate, territoryid)
-   val id = compositeId
-   def toUnsavedRow(rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid), modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SalesterritoryhistoryRowUnsaved =
-     SalesterritoryhistoryRowUnsaved(businessentityid, territoryid, startdate, enddate, rowguid, modifieddate)
- }
+) {
+  def compositeId: SalesterritoryhistoryId = new SalesterritoryhistoryId(businessentityid, startdate, territoryid)
 
-object SalesterritoryhistoryRow {
-  def apply(compositeId: SalesterritoryhistoryId, enddate: Option[TypoLocalDateTime], rowguid: TypoUUID, modifieddate: TypoLocalDateTime) =
-    new SalesterritoryhistoryRow(compositeId.businessentityid, compositeId.territoryid, compositeId.startdate, enddate, rowguid, modifieddate)
-  implicit lazy val decoder: Decoder[SalesterritoryhistoryRow] = Decoder.forProduct6[SalesterritoryhistoryRow, BusinessentityId, SalesterritoryId, TypoLocalDateTime, Option[TypoLocalDateTime], TypoUUID, TypoLocalDateTime]("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(SalesterritoryhistoryRow.apply)(BusinessentityId.decoder, SalesterritoryId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(TypoLocalDateTime.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
-  implicit lazy val encoder: Encoder[SalesterritoryhistoryRow] = Encoder.forProduct6[SalesterritoryhistoryRow, BusinessentityId, SalesterritoryId, TypoLocalDateTime, Option[TypoLocalDateTime], TypoUUID, TypoLocalDateTime]("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(x => (x.businessentityid, x.territoryid, x.startdate, x.enddate, x.rowguid, x.modifieddate))(BusinessentityId.encoder, SalesterritoryId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(TypoLocalDateTime.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[SalesterritoryhistoryRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    SalesterritoryhistoryRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          territoryid = arr(1).asInstanceOf[SalesterritoryId],
-          startdate = arr(2).asInstanceOf[TypoLocalDateTime],
-          enddate = arr(3).asInstanceOf[Option[TypoLocalDateTime]],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+  def id: SalesterritoryhistoryId = this.compositeId
+
+  def toUnsavedRow(
+    rowguid: Defaulted[TypoUUID] = Defaulted.Provided(this.rowguid),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): SalesterritoryhistoryRowUnsaved = {
+    new SalesterritoryhistoryRowUnsaved(
+      businessentityid,
+      territoryid,
+      startdate,
+      enddate,
+      rowguid,
+      modifieddate
     )
   }
-  implicit lazy val text: Text[SalesterritoryhistoryRow] = Text.instance[SalesterritoryhistoryRow]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    SalesterritoryId.text.unsafeEncode(row.territoryid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.startdate, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(TypoLocalDateTime.text).unsafeEncode(row.enddate, sb)
-    sb.append(Text.DELIMETER)
-    TypoUUID.text.unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object SalesterritoryhistoryRow {
+  def apply(
+    compositeId: SalesterritoryhistoryId,
+    enddate: Option[TypoLocalDateTime],
+    rowguid: TypoUUID,
+    modifieddate: TypoLocalDateTime
+  ): SalesterritoryhistoryRow = {
+    new SalesterritoryhistoryRow(
+      compositeId.businessentityid,
+      compositeId.territoryid,
+      compositeId.startdate,
+      enddate,
+      rowguid,
+      modifieddate
+    )
   }
-  implicit lazy val write: Write[SalesterritoryhistoryRow] = new Write.Composite[SalesterritoryhistoryRow](
-    List(new Write.Single(BusinessentityId.put),
-         new Write.Single(SalesterritoryId.put),
-         new Write.Single(TypoLocalDateTime.put),
-         new Write.Single(TypoLocalDateTime.put).toOpt,
-         new Write.Single(TypoUUID.put),
-         new Write.Single(TypoLocalDateTime.put)),
-    a => List(a.businessentityid, a.territoryid, a.startdate, a.enddate, a.rowguid, a.modifieddate)
-  )
+
+  implicit lazy val decoder: Decoder[SalesterritoryhistoryRow] = Decoder.forProduct6[SalesterritoryhistoryRow, BusinessentityId, SalesterritoryId, TypoLocalDateTime, Option[TypoLocalDateTime], TypoUUID, TypoLocalDateTime]("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(SalesterritoryhistoryRow.apply)(BusinessentityId.decoder, SalesterritoryId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(TypoLocalDateTime.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
+  implicit lazy val encoder: Encoder[SalesterritoryhistoryRow] = Encoder.forProduct6[SalesterritoryhistoryRow, BusinessentityId, SalesterritoryId, TypoLocalDateTime, Option[TypoLocalDateTime], TypoUUID, TypoLocalDateTime]("businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(x => (x.businessentityid, x.territoryid, x.startdate, x.enddate, x.rowguid, x.modifieddate))(BusinessentityId.encoder, SalesterritoryId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(TypoLocalDateTime.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
+
+  implicit lazy val pgText: Text[SalesterritoryhistoryRow] = {
+    Text.instance[SalesterritoryhistoryRow]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      SalesterritoryId.pgText.unsafeEncode(row.territoryid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.startdate, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(TypoLocalDateTime.pgText).unsafeEncode(row.enddate, sb)
+      sb.append(Text.DELIMETER)
+      TypoUUID.pgText.unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val read: Read[SalesterritoryhistoryRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      SalesterritoryhistoryRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            territoryid = arr(1).asInstanceOf[SalesterritoryId],
+            startdate = arr(2).asInstanceOf[TypoLocalDateTime],
+            enddate = arr(3).asInstanceOf[Option[TypoLocalDateTime]],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
+  }
+
+  implicit lazy val write: Write[SalesterritoryhistoryRow] = {
+    new Write.Composite[SalesterritoryhistoryRow](
+      List(new Write.Single(BusinessentityId.put),
+           new Write.Single(SalesterritoryId.put),
+           new Write.Single(TypoLocalDateTime.put),
+           new Write.Single(TypoLocalDateTime.put).toOpt,
+           new Write.Single(TypoUUID.put),
+           new Write.Single(TypoLocalDateTime.put)),
+      a => List(a.businessentityid, a.territoryid, a.startdate, a.enddate, a.rowguid, a.modifieddate)
+    )
+  }
 }

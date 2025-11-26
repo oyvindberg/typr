@@ -17,7 +17,9 @@ case class BusinessentityaddressId(
   addressid: AddressId,
   addresstypeid: AddresstypeId
 )
+
 object BusinessentityaddressId {
   given decoder: Decoder[BusinessentityaddressId] = Decoder.forProduct3[BusinessentityaddressId, BusinessentityId, AddressId, AddresstypeId]("businessentityid", "addressid", "addresstypeid")(BusinessentityaddressId.apply)(using BusinessentityId.decoder, AddressId.decoder, AddresstypeId.decoder)
+
   given encoder: Encoder[BusinessentityaddressId] = Encoder.forProduct3[BusinessentityaddressId, BusinessentityId, AddressId, AddresstypeId]("businessentityid", "addressid", "addresstypeid")(x => (x.businessentityid, x.addressid, x.addresstypeid))(using BusinessentityId.encoder, AddressId.encoder, AddresstypeId.encoder)
 }

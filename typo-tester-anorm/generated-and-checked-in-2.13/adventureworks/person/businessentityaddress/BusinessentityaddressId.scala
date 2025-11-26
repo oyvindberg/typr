@@ -22,22 +22,28 @@ case class BusinessentityaddressId(
   addressid: AddressId,
   addresstypeid: AddresstypeId
 )
+
 object BusinessentityaddressId {
-  implicit lazy val reads: Reads[BusinessentityaddressId] = Reads[BusinessentityaddressId](json => JsResult.fromTry(
-      Try(
-        BusinessentityaddressId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          addressid = json.\("addressid").as(AddressId.reads),
-          addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads)
+  implicit lazy val reads: Reads[BusinessentityaddressId] = {
+    Reads[BusinessentityaddressId](json => JsResult.fromTry(
+        Try(
+          BusinessentityaddressId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            addressid = json.\("addressid").as(AddressId.reads),
+            addresstypeid = json.\("addresstypeid").as(AddresstypeId.reads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[BusinessentityaddressId] = OWrites[BusinessentityaddressId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "addressid" -> AddressId.writes.writes(o.addressid),
-      "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[BusinessentityaddressId] = {
+    OWrites[BusinessentityaddressId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "addressid" -> AddressId.writes.writes(o.addressid),
+        "addresstypeid" -> AddresstypeId.writes.writes(o.addresstypeid)
+      ))
+    )
+  }
 }

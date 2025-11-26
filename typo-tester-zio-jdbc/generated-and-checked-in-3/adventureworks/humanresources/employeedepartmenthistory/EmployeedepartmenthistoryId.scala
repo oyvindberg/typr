@@ -21,31 +21,37 @@ case class EmployeedepartmenthistoryId(
   departmentid: DepartmentId,
   shiftid: ShiftId
 )
+
 object EmployeedepartmenthistoryId {
-  given jsonDecoder: JsonDecoder[EmployeedepartmenthistoryId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-    val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDate.jsonDecoder))
-    val departmentid = jsonObj.get("departmentid").toRight("Missing field 'departmentid'").flatMap(_.as(using DepartmentId.jsonDecoder))
-    val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(using ShiftId.jsonDecoder))
-    if (businessentityid.isRight && startdate.isRight && departmentid.isRight && shiftid.isRight)
-      Right(EmployeedepartmenthistoryId(businessentityid = businessentityid.toOption.get, startdate = startdate.toOption.get, departmentid = departmentid.toOption.get, shiftid = shiftid.toOption.get))
-    else Left(List[Either[String, Any]](businessentityid, startdate, departmentid, shiftid).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[EmployeedepartmenthistoryId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
+      val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDate.jsonDecoder))
+      val departmentid = jsonObj.get("departmentid").toRight("Missing field 'departmentid'").flatMap(_.as(using DepartmentId.jsonDecoder))
+      val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(using ShiftId.jsonDecoder))
+      if (businessentityid.isRight && startdate.isRight && departmentid.isRight && shiftid.isRight)
+        Right(EmployeedepartmenthistoryId(businessentityid = businessentityid.toOption.get, startdate = startdate.toOption.get, departmentid = departmentid.toOption.get, shiftid = shiftid.toOption.get))
+      else Left(List[Either[String, Any]](businessentityid, startdate, departmentid, shiftid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[EmployeedepartmenthistoryId] = new JsonEncoder[EmployeedepartmenthistoryId] {
-    override def unsafeEncode(a: EmployeedepartmenthistoryId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""businessentityid":""")
-      BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
-      out.write(",")
-      out.write(""""startdate":""")
-      TypoLocalDate.jsonEncoder.unsafeEncode(a.startdate, indent, out)
-      out.write(",")
-      out.write(""""departmentid":""")
-      DepartmentId.jsonEncoder.unsafeEncode(a.departmentid, indent, out)
-      out.write(",")
-      out.write(""""shiftid":""")
-      ShiftId.jsonEncoder.unsafeEncode(a.shiftid, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[EmployeedepartmenthistoryId] = {
+    new JsonEncoder[EmployeedepartmenthistoryId] {
+      override def unsafeEncode(a: EmployeedepartmenthistoryId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""businessentityid":""")
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
+        out.write(",")
+        out.write(""""startdate":""")
+        TypoLocalDate.jsonEncoder.unsafeEncode(a.startdate, indent, out)
+        out.write(",")
+        out.write(""""departmentid":""")
+        DepartmentId.jsonEncoder.unsafeEncode(a.departmentid, indent, out)
+        out.write(",")
+        out.write(""""shiftid":""")
+        ShiftId.jsonEncoder.unsafeEncode(a.shiftid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

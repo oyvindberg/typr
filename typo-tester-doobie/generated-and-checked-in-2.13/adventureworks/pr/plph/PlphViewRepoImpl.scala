@@ -6,16 +6,12 @@
 package adventureworks.pr.plph
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PlphViewRepoImpl extends PlphViewRepo {
-  override def select: SelectBuilder[PlphViewFields, PlphViewRow] = {
-    SelectBuilderSql(""""pr"."plph"""", PlphViewFields.structure, PlphViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PlphViewRow] = {
-    sql"""select "id", "productid", "startdate"::text, "enddate"::text, "listprice", "modifieddate"::text from "pr"."plph"""".query(PlphViewRow.read).stream
-  }
+  def select: SelectBuilder[PlphViewFields, PlphViewRow] = SelectBuilder.of(""""pr"."plph"""", PlphViewFields.structure, PlphViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PlphViewRow] = sql"""select "id", "productid", "startdate"::text, "enddate"::text, "listprice", "modifieddate"::text from "pr"."plph"""".query(PlphViewRow.read).stream
 }

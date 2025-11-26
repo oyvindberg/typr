@@ -31,11 +31,11 @@ trait VViewFields {
 
 object VViewFields {
   lazy val structure: Relation[VViewFields, VViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VViewFields, VViewRow] {
-  
+
     override lazy val fields: VViewFields = new VViewFields {
       override def id = Field[BusinessentityId, VViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, VViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -47,12 +47,11 @@ object VViewFields {
       override def purchasingwebserviceurl = OptField[/* max 1024 chars */ String, VViewRow](_path, "purchasingwebserviceurl", None, None, x => x.purchasingwebserviceurl, (row, value) => row.copy(purchasingwebserviceurl = value))
       override def modifieddate = Field[TypoLocalDateTime, VViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VViewRow]] =
       List[FieldLike[?, VViewRow]](fields.id, fields.businessentityid, fields.accountnumber, fields.name, fields.creditrating, fields.preferredvendorstatus, fields.activeflag, fields.purchasingwebserviceurl, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -17,18 +17,33 @@ import typo.dsl.Bijection
 case class TypoUnknownCitext(value: String)
 
 object TypoUnknownCitext {
-  given arrayGet: Get[Array[TypoUnknownCitext]] = Get.Advanced.array[AnyRef](NonEmptyList.one("citext[]"))
-    .map(_.map(v => TypoUnknownCitext(v.asInstanceOf[String])))
-  given arrayPut: Put[Array[TypoUnknownCitext]] = Put.Advanced.array[AnyRef](NonEmptyList.one("citext[]"), "citext")
-    .contramap(_.map(v => v.value))
-  given bijection: Bijection[TypoUnknownCitext, String] = Bijection[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
-  given decoder: Decoder[TypoUnknownCitext] = Decoder.decodeString.map(TypoUnknownCitext.apply)
-  given encoder: Encoder[TypoUnknownCitext] = Encoder.encodeString.contramap(_.value)
-  given get: Get[TypoUnknownCitext] = Get.Advanced.other[String](NonEmptyList.one("citext"))
-    .map(v => TypoUnknownCitext(v))
-  given put: Put[TypoUnknownCitext] = Put.Advanced.other[String](NonEmptyList.one("citext")).contramap(v => v.value)
-  given text: Text[TypoUnknownCitext] = new Text[TypoUnknownCitext] {
-    override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+  given arrayGet: Get[Array[TypoUnknownCitext]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("citext[]"))
+      .map(_.map(v => new TypoUnknownCitext(v.asInstanceOf[String])))
   }
+
+  given arrayPut: Put[Array[TypoUnknownCitext]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("citext[]"), "citext")
+      .contramap(_.map(v => v.value))
+  }
+
+  given bijection: Bijection[TypoUnknownCitext, String] = Bijection.apply[TypoUnknownCitext, String](_.value)(TypoUnknownCitext.apply)
+
+  given decoder: Decoder[TypoUnknownCitext] = Decoder.decodeString.map(TypoUnknownCitext.apply)
+
+  given encoder: Encoder[TypoUnknownCitext] = Encoder.encodeString.contramap(_.value)
+
+  given get: Get[TypoUnknownCitext] = {
+    Get.Advanced.other[String](NonEmptyList.one("citext"))
+      .map(v => new TypoUnknownCitext(v))
+  }
+
+  given pgText: Text[TypoUnknownCitext] = {
+    new Text[TypoUnknownCitext] {
+      override def unsafeEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoUnknownCitext, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given put: Put[TypoUnknownCitext] = Put.Advanced.other[String](NonEmptyList.one("citext")).contramap(v => v.value)
 }

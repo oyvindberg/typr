@@ -5,18 +5,16 @@
  */
 package adventureworks.hr.e
 
-import anorm.SqlStringInterpolation
 import java.sql.Connection
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import anorm.SqlStringInterpolation
 
 class EViewRepoImpl extends EViewRepo {
-  override def select: SelectBuilder[EViewFields, EViewRow] = {
-    SelectBuilderSql(""""hr"."e"""", EViewFields.structure, EViewRow.rowParser)
-  }
-  override def selectAll(using c: Connection): List[EViewRow] = {
+  def select: SelectBuilder[EViewFields, EViewRow] = SelectBuilder.of(""""hr"."e"""", EViewFields.structure, EViewRow.rowParser)
+
+  def selectAll(using c: Connection): List[EViewRow] = {
     SQL"""select "id", "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"
-          from "hr"."e"
-       """.as(EViewRow.rowParser(1).*)
+    from "hr"."e"
+    """.as(EViewRow.rowParser(1).*)
   }
 }

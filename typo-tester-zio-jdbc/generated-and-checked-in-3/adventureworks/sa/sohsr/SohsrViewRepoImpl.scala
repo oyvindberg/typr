@@ -6,16 +6,12 @@
 package adventureworks.sa.sohsr
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class SohsrViewRepoImpl extends SohsrViewRepo {
-  override def select: SelectBuilder[SohsrViewFields, SohsrViewRow] = {
-    SelectBuilderSql(""""sa"."sohsr"""", SohsrViewFields.structure, SohsrViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, SohsrViewRow] = {
-    sql"""select "salesorderid", "salesreasonid", "modifieddate"::text from "sa"."sohsr"""".query(using SohsrViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[SohsrViewFields, SohsrViewRow] = SelectBuilder.of(""""sa"."sohsr"""", SohsrViewFields.structure, SohsrViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, SohsrViewRow] = sql"""select "salesorderid", "salesreasonid", "modifieddate"::text from "sa"."sohsr"""".query(using SohsrViewRow.jdbcDecoder).selectStream()
 }

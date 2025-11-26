@@ -17,35 +17,45 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: public.issue142
-    Primary key: tabellkode */
-case class Issue142Row(
-  tabellkode: Issue142Id
-){
-   val id = tabellkode
- }
+ * Primary key: tabellkode
+ */
+case class Issue142Row(tabellkode: Issue142Id) {
+  def id: Issue142Id = tabellkode
+}
 
 object Issue142Row {
-  implicit lazy val reads: Reads[Issue142Row] = Reads[Issue142Row](json => JsResult.fromTry(
-      Try(
-        Issue142Row(
-          tabellkode = json.\("tabellkode").as(Issue142Id.reads)
+  implicit lazy val pgText: Text[Issue142Row] = {
+    Text.instance[Issue142Row]{ (row, sb) =>
+      Issue142Id.pgText.unsafeEncode(row.tabellkode, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[Issue142Row] = {
+    Reads[Issue142Row](json => JsResult.fromTry(
+        Try(
+          Issue142Row(
+            tabellkode = json.\("tabellkode").as(Issue142Id.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[Issue142Row] = RowParser[Issue142Row] { row =>
-    Success(
-      Issue142Row(
-        tabellkode = row(idx + 0)(Issue142Id.column)
-      )
+      ),
     )
   }
-  implicit lazy val text: Text[Issue142Row] = Text.instance[Issue142Row]{ (row, sb) =>
-    Issue142Id.text.unsafeEncode(row.tabellkode, sb)
+
+  def rowParser(idx: Int): RowParser[Issue142Row] = {
+    RowParser[Issue142Row] { row =>
+      Success(
+        Issue142Row(
+          tabellkode = row(idx + 0)(Issue142Id.column)
+        )
+      )
+    }
   }
-  implicit lazy val writes: OWrites[Issue142Row] = OWrites[Issue142Row](o =>
-    new JsObject(ListMap[String, JsValue](
-      "tabellkode" -> Issue142Id.writes.writes(o.tabellkode)
-    ))
-  )
+
+  implicit lazy val writes: OWrites[Issue142Row] = {
+    OWrites[Issue142Row](o =>
+      new JsObject(ListMap[String, JsValue](
+        "tabellkode" -> Issue142Id.writes.writes(o.tabellkode)
+      ))
+    )
+  }
 }

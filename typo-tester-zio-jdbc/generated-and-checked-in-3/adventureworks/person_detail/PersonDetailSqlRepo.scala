@@ -11,5 +11,8 @@ import zio.jdbc.ZConnection
 import zio.stream.ZStream
 
 trait PersonDetailSqlRepo {
-  def apply(businessentityid: /* user-picked */ BusinessentityId, modifiedAfter: TypoLocalDateTime): ZStream[ZConnection, Throwable, PersonDetailSqlRow]
+  def apply(
+    businessentityid: /* user-picked */ BusinessentityId,
+    modifiedAfter: TypoLocalDateTime
+  ): ZStream[ZConnection, Throwable, PersonDetailSqlRow]
 }

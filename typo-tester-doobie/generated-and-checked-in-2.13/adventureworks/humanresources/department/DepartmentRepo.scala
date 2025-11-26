@@ -13,22 +13,47 @@ import typo.dsl.UpdateBuilder
 
 trait DepartmentRepo {
   def delete: DeleteBuilder[DepartmentFields, DepartmentRow]
+
   def deleteById(departmentid: DepartmentId): ConnectionIO[Boolean]
+
   def deleteByIds(departmentids: Array[DepartmentId]): ConnectionIO[Int]
+
   def insert(unsaved: DepartmentRow): ConnectionIO[DepartmentRow]
+
   def insert(unsaved: DepartmentRowUnsaved): ConnectionIO[DepartmentRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, DepartmentRow], batchSize: Int = 10000): ConnectionIO[Long]
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  def insertUnsavedStreaming(unsaved: Stream[ConnectionIO, DepartmentRowUnsaved], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, DepartmentRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Stream[ConnectionIO, DepartmentRowUnsaved],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[DepartmentFields, DepartmentRow]
+
   def selectAll: Stream[ConnectionIO, DepartmentRow]
+
   def selectById(departmentid: DepartmentId): ConnectionIO[Option[DepartmentRow]]
+
   def selectByIds(departmentids: Array[DepartmentId]): Stream[ConnectionIO, DepartmentRow]
+
   def selectByIdsTracked(departmentids: Array[DepartmentId]): ConnectionIO[Map[DepartmentId, DepartmentRow]]
+
   def update: UpdateBuilder[DepartmentFields, DepartmentRow]
+
   def update(row: DepartmentRow): ConnectionIO[Option[DepartmentRow]]
+
   def upsert(unsaved: DepartmentRow): ConnectionIO[DepartmentRow]
+
   def upsertBatch(unsaved: List[DepartmentRow]): Stream[ConnectionIO, DepartmentRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, DepartmentRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, DepartmentRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

@@ -17,79 +17,88 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class CurrencyRepoMock(toRow: Function1[CurrencyRowUnsaved, CurrencyRow],
-                       map: scala.collection.mutable.Map[CurrencyId, CurrencyRow] = scala.collection.mutable.Map.empty) extends CurrencyRepo {
-  override def delete: DeleteBuilder[CurrencyFields, CurrencyRow] = {
-    DeleteBuilderMock(DeleteParams.empty, CurrencyFields.structure, map)
-  }
-  override def deleteById(currencycode: CurrencyId)(using c: Connection): Boolean = {
-    map.remove(currencycode).isDefined
-  }
-  override def deleteByIds(currencycodes: Array[CurrencyId])(using c: Connection): Int = {
-    currencycodes.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: CurrencyRow)(using c: Connection): CurrencyRow = {
+case class CurrencyRepoMock(
+  toRow: CurrencyRowUnsaved => CurrencyRow,
+  map: scala.collection.mutable.Map[CurrencyId, CurrencyRow] = scala.collection.mutable.Map.empty[CurrencyId, CurrencyRow]
+) extends CurrencyRepo {
+  def delete: DeleteBuilder[CurrencyFields, CurrencyRow] = DeleteBuilderMock(DeleteParams.empty, CurrencyFields.structure, map)
+
+  def deleteById(currencycode: CurrencyId)(using c: Connection): Boolean = map.remove(currencycode).isDefined
+
+  def deleteByIds(currencycodes: Array[CurrencyId])(using c: Connection): Int = currencycodes.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: CurrencyRow)(using c: Connection): CurrencyRow = {
     val _ = if (map.contains(unsaved.currencycode))
       sys.error(s"id ${unsaved.currencycode} already exists")
     else
       map.put(unsaved.currencycode, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: CurrencyRowUnsaved)(using c: Connection): CurrencyRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[CurrencyRow], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  def insert(unsaved: CurrencyRowUnsaved)(using c: Connection): CurrencyRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[CurrencyRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.currencycode -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[CurrencyRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[CurrencyRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.currencycode -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[CurrencyFields, CurrencyRow] = {
-    SelectBuilderMock(CurrencyFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(using c: Connection): List[CurrencyRow] = {
-    map.values.toList
-  }
-  override def selectById(currencycode: CurrencyId)(using c: Connection): Option[CurrencyRow] = {
-    map.get(currencycode)
-  }
-  override def selectByIds(currencycodes: Array[CurrencyId])(using c: Connection): List[CurrencyRow] = {
-    currencycodes.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(currencycodes: Array[CurrencyId])(using c: Connection): Map[CurrencyId, CurrencyRow] = {
+
+  def select: SelectBuilder[CurrencyFields, CurrencyRow] = SelectBuilderMock(CurrencyFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(using c: Connection): List[CurrencyRow] = map.values.toList
+
+  def selectById(currencycode: CurrencyId)(using c: Connection): Option[CurrencyRow] = map.get(currencycode)
+
+  def selectByIds(currencycodes: Array[CurrencyId])(using c: Connection): List[CurrencyRow] = currencycodes.flatMap(map.get).toList
+
+  def selectByIdsTracked(currencycodes: Array[CurrencyId])(using c: Connection): Map[CurrencyId, CurrencyRow] = {
     val byId = selectByIds(currencycodes).view.map(x => (x.currencycode, x)).toMap
     currencycodes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[CurrencyFields, CurrencyRow] = {
-    UpdateBuilderMock(UpdateParams.empty, CurrencyFields.structure, map)
-  }
-  override def update(row: CurrencyRow)(using c: Connection): Option[CurrencyRow] = {
+
+  def update: UpdateBuilder[CurrencyFields, CurrencyRow] = UpdateBuilderMock(UpdateParams.empty, CurrencyFields.structure, map)
+
+  def update(row: CurrencyRow)(using c: Connection): Option[CurrencyRow] = {
     map.get(row.currencycode).map { _ =>
       map.put(row.currencycode, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: CurrencyRow)(using c: Connection): CurrencyRow = {
+
+  def upsert(unsaved: CurrencyRow)(using c: Connection): CurrencyRow = {
     map.put(unsaved.currencycode, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[CurrencyRow])(using c: Connection): List[CurrencyRow] = {
+
+  def upsertBatch(unsaved: Iterable[CurrencyRow])(using c: Connection): List[CurrencyRow] = {
     unsaved.map { row =>
       map += (row.currencycode -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[CurrencyRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[CurrencyRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.currencycode -> row)
     }

@@ -37,39 +37,47 @@ case class LViewRow(
 )
 
 object LViewRow {
-  implicit lazy val reads: Reads[LViewRow] = Reads[LViewRow](json => JsResult.fromTry(
-      Try(
-        LViewRow(
-          id = json.\("id").as(LocationId.reads),
-          locationid = json.\("locationid").as(LocationId.reads),
-          name = json.\("name").as(Name.reads),
-          costrate = json.\("costrate").as(Reads.bigDecReads),
-          availability = json.\("availability").as(Reads.bigDecReads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  implicit lazy val reads: Reads[LViewRow] = {
+    Reads[LViewRow](json => JsResult.fromTry(
+        Try(
+          LViewRow(
+            id = json.\("id").as(LocationId.reads),
+            locationid = json.\("locationid").as(LocationId.reads),
+            name = json.\("name").as(Name.reads),
+            costrate = json.\("costrate").as(Reads.bigDecReads),
+            availability = json.\("availability").as(Reads.bigDecReads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[LViewRow] = RowParser[LViewRow] { row =>
-    Success(
-      LViewRow(
-        id = row(idx + 0)(LocationId.column),
-        locationid = row(idx + 1)(LocationId.column),
-        name = row(idx + 2)(Name.column),
-        costrate = row(idx + 3)(Column.columnToScalaBigDecimal),
-        availability = row(idx + 4)(Column.columnToScalaBigDecimal),
-        modifieddate = row(idx + 5)(TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[LViewRow] = OWrites[LViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "id" -> LocationId.writes.writes(o.id),
-      "locationid" -> LocationId.writes.writes(o.locationid),
-      "name" -> Name.writes.writes(o.name),
-      "costrate" -> Writes.BigDecimalWrites.writes(o.costrate),
-      "availability" -> Writes.BigDecimalWrites.writes(o.availability),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[LViewRow] = {
+    RowParser[LViewRow] { row =>
+      Success(
+        LViewRow(
+          id = row(idx + 0)(LocationId.column),
+          locationid = row(idx + 1)(LocationId.column),
+          name = row(idx + 2)(Name.column),
+          costrate = row(idx + 3)(Column.columnToScalaBigDecimal),
+          availability = row(idx + 4)(Column.columnToScalaBigDecimal),
+          modifieddate = row(idx + 5)(TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[LViewRow] = {
+    OWrites[LViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "id" -> LocationId.writes.writes(o.id),
+        "locationid" -> LocationId.writes.writes(o.locationid),
+        "name" -> Name.writes.writes(o.name),
+        "costrate" -> Writes.BigDecimalWrites.writes(o.costrate),
+        "availability" -> Writes.BigDecimalWrites.writes(o.availability),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

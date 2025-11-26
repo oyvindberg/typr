@@ -15,23 +15,36 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Domain `public.Name`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Name(value: String)
+
 object Name {
   implicit lazy val arrayColumn: Column[Array[Name]] = Column.columnToArray(column, implicitly)
+
   implicit lazy val arrayToStatement: ToStatement[Array[Name]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[Name, String] = Bijection[Name, String](_.value)(Name.apply)
+
+  implicit lazy val bijection: Bijection[Name, String] = Bijection.apply[Name, String](_.value)(Name.apply)
+
   implicit lazy val column: Column[Name] = Column.columnToString.map(Name.apply)
-  implicit lazy val parameterMetadata: ParameterMetaData[Name] = new ParameterMetaData[Name] {
-    override def sqlType: String = """"public"."Name""""
-    override def jdbcType: Int = Types.OTHER
+
+  implicit lazy val parameterMetadata: ParameterMetaData[Name] = {
+    new ParameterMetaData[Name] {
+      override def sqlType: String = """"public"."Name""""
+      override def jdbcType: Int = Types.OTHER
+    }
   }
+
+  implicit lazy val pgText: Text[Name] = {
+    new Text[Name] {
+      override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
+  }
+
   implicit lazy val reads: Reads[Name] = Reads.StringReads.map(Name.apply)
-  implicit lazy val text: Text[Name] = new Text[Name] {
-    override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
-  }
+
   implicit lazy val toStatement: ToStatement[Name] = ToStatement.stringToStatement.contramap(_.value)
+
   implicit lazy val writes: Writes[Name] = Writes.StringWrites.contramap(_.value)
 }

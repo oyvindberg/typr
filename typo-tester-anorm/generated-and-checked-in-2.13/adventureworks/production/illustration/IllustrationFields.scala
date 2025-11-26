@@ -22,22 +22,21 @@ trait IllustrationFields {
 
 object IllustrationFields {
   lazy val structure: Relation[IllustrationFields, IllustrationRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[IllustrationFields, IllustrationRow] {
-  
+
     override lazy val fields: IllustrationFields = new IllustrationFields {
       override def illustrationid = IdField[IllustrationId, IllustrationRow](_path, "illustrationid", None, Some("int4"), x => x.illustrationid, (row, value) => row.copy(illustrationid = value))
       override def diagram = OptField[TypoXml, IllustrationRow](_path, "diagram", None, Some("xml"), x => x.diagram, (row, value) => row.copy(diagram = value))
       override def modifieddate = Field[TypoLocalDateTime, IllustrationRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, IllustrationRow]] =
       List[FieldLike[?, IllustrationRow]](fields.illustrationid, fields.diagram, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

@@ -25,53 +25,77 @@ import zio.json.JsonEncoder
 case class TypoOffsetTime(value: OffsetTime)
 
 object TypoOffsetTime {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter
   def apply(value: OffsetTime): TypoOffsetTime = new TypoOffsetTime(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoOffsetTime = apply(OffsetTime.parse(str, parser))
-  def now = TypoOffsetTime(OffsetTime.now)
-  given arrayJdbcDecoder: JdbcDecoder[Array[TypoOffsetTime]] = JdbcDecoder[Array[TypoOffsetTime]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoOffsetTime(OffsetTime.parse(x.asInstanceOf[String], parser)))
-    },
-    "Array[java.lang.String]"
-  )
+
+  def apply(str: String): TypoOffsetTime = new TypoOffsetTime(OffsetTime.parse(str, parser))
+
+  given arrayJdbcDecoder: JdbcDecoder[Array[TypoOffsetTime]] = {
+    JdbcDecoder[Array[TypoOffsetTime]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoOffsetTime(OffsetTime.parse(x.asInstanceOf[String], parser)))
+      },
+      "Array[java.lang.String]"
+    )
+  }
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TypoOffsetTime]] = JdbcEncoder.singleParamEncoder(using arraySetter)
-  given arraySetter: Setter[Array[TypoOffsetTime]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "timetz",
-        v.map { vv =>
-          vv.value.toString
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  given bijection: Bijection[TypoOffsetTime, OffsetTime] = Bijection[TypoOffsetTime, OffsetTime](_.value)(TypoOffsetTime.apply)
-  given jdbcDecoder: JdbcDecoder[TypoOffsetTime] = JdbcDecoder[TypoOffsetTime](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoOffsetTime(OffsetTime.parse(v.asInstanceOf[String], parser))
-    },
-    "java.lang.String"
-  )
-  given jdbcEncoder: JdbcEncoder[TypoOffsetTime] = JdbcEncoder.singleParamEncoder(using setter)
-  given jsonDecoder: JsonDecoder[TypoOffsetTime] = JsonDecoder.offsetTime.map(TypoOffsetTime.apply)
-  given jsonEncoder: JsonEncoder[TypoOffsetTime] = JsonEncoder.offsetTime.contramap(_.value)
-  given pgType: PGType[TypoOffsetTime] = PGType.instance[TypoOffsetTime]("timetz", Types.OTHER)
-  given setter: Setter[TypoOffsetTime] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  given arraySetter: Setter[Array[TypoOffsetTime]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value.toString
-      )
-    },
-    "timetz"
-  )
-  given text: Text[TypoOffsetTime] = new Text[TypoOffsetTime] {
-    override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+        ps.getConnection.createArrayOf(
+          "timetz",
+          v.map { vv =>
+            vv.value.toString
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  given bijection: Bijection[TypoOffsetTime, OffsetTime] = Bijection.apply[TypoOffsetTime, OffsetTime](_.value)(TypoOffsetTime.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoOffsetTime] = {
+    JdbcDecoder[TypoOffsetTime](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoOffsetTime(OffsetTime.parse(v.asInstanceOf[String], parser))
+      },
+      "java.lang.String"
+    )
+  }
+
+  given jdbcEncoder: JdbcEncoder[TypoOffsetTime] = JdbcEncoder.singleParamEncoder(using setter)
+
+  given jsonDecoder: JsonDecoder[TypoOffsetTime] = JsonDecoder.offsetTime.map(TypoOffsetTime.apply)
+
+  given jsonEncoder: JsonEncoder[TypoOffsetTime] = JsonEncoder.offsetTime.contramap(_.value)
+
+  def now: TypoOffsetTime = new TypoOffsetTime(OffsetTime.now())
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
+
+  given pgText: Text[TypoOffsetTime] = {
+    new Text[TypoOffsetTime] {
+      override def unsafeEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoOffsetTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given pgType: PGType[TypoOffsetTime] = PGType.instance[TypoOffsetTime]("timetz", Types.OTHER)
+
+  given setter: Setter[TypoOffsetTime] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value.toString
+        )
+      },
+      "timetz"
+    )
   }
 }

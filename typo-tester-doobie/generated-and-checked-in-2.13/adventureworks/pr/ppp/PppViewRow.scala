@@ -27,18 +27,22 @@ case class PppViewRow(
 
 object PppViewRow {
   implicit lazy val decoder: Decoder[PppViewRow] = Decoder.forProduct4[PppViewRow, ProductId, ProductphotoId, Flag, TypoLocalDateTime]("productid", "productphotoid", "primary", "modifieddate")(PppViewRow.apply)(ProductId.decoder, ProductphotoId.decoder, Flag.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[PppViewRow] = Encoder.forProduct4[PppViewRow, ProductId, ProductphotoId, Flag, TypoLocalDateTime]("productid", "productphotoid", "primary", "modifieddate")(x => (x.productid, x.productphotoid, x.primary, x.modifieddate))(ProductId.encoder, ProductphotoId.encoder, Flag.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[PppViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    PppViewRow(
-      productid = arr(0).asInstanceOf[ProductId],
-          productphotoid = arr(1).asInstanceOf[ProductphotoId],
-          primary = arr(2).asInstanceOf[Flag],
-          modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
-    )
+
+  implicit lazy val read: Read[PppViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Flag.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      PppViewRow(
+        productid = arr(0).asInstanceOf[ProductId],
+            productphotoid = arr(1).asInstanceOf[ProductphotoId],
+            primary = arr(2).asInstanceOf[Flag],
+            modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

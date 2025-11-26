@@ -24,11 +24,11 @@ trait PaViewFields {
 
 object PaViewFields {
   lazy val structure: Relation[PaViewFields, PaViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[PaViewFields, PaViewRow] {
-  
+
     override lazy val fields: PaViewFields = new PaViewFields {
       override def id = Field[BusinessentityId, PaViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, PaViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
@@ -37,12 +37,11 @@ object PaViewFields {
       override def rowguid = Field[TypoUUID, PaViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PaViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, PaViewRow]] =
       List[FieldLike[?, PaViewRow]](fields.id, fields.businessentityid, fields.passwordhash, fields.passwordsalt, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

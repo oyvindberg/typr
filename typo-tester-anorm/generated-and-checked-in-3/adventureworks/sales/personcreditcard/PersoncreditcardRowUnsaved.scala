@@ -7,6 +7,7 @@ package adventureworks.sales.personcreditcard
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
@@ -21,47 +22,50 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.personcreditcard` which has not been persisted yet */
 case class PersoncreditcardRowUnsaved(
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
-      Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
+   * Points to [[adventureworks.person.person.PersonRow.businessentityid]]
+   */
   businessentityid: BusinessentityId,
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
-      Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
+   * Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]]
+   */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(modifieddateDefault: => TypoLocalDateTime): PersoncreditcardRow =
-    PersoncreditcardRow(
-      businessentityid = businessentityid,
-      creditcardid = creditcardid,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
-    )
+  def toRow(modifieddateDefault: => TypoLocalDateTime): PersoncreditcardRow = new PersoncreditcardRow(businessentityid = businessentityid, creditcardid = creditcardid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 }
+
 object PersoncreditcardRowUnsaved {
-  given reads: Reads[PersoncreditcardRowUnsaved] = Reads[PersoncreditcardRowUnsaved](json => JsResult.fromTry(
-      Try(
-        PersoncreditcardRowUnsaved(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[PersoncreditcardRowUnsaved] = Text.instance[PersoncreditcardRowUnsaved]{ (row, sb) =>
-    BusinessentityId.text.unsafeEncode(row.businessentityid, sb)
-    sb.append(Text.DELIMETER)
-    /* user-picked */ CustomCreditcardId.text.unsafeEncode(row.creditcardid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+  given pgText: Text[PersoncreditcardRowUnsaved] = {
+    Text.instance[PersoncreditcardRowUnsaved]{ (row, sb) =>
+      BusinessentityId.pgText.unsafeEncode(row.businessentityid, sb)
+      sb.append(Text.DELIMETER)
+      /* user-picked */ CustomCreditcardId.pgText.unsafeEncode(row.creditcardid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
-  given writes: OWrites[PersoncreditcardRowUnsaved] = OWrites[PersoncreditcardRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+
+  given reads: Reads[PersoncreditcardRowUnsaved] = {
+    Reads[PersoncreditcardRowUnsaved](json => JsResult.fromTry(
+        Try(
+          PersoncreditcardRowUnsaved(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[PersoncreditcardRowUnsaved] = {
+    OWrites[PersoncreditcardRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

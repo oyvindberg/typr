@@ -24,5 +24,5 @@ object CustomCreditcardId {
   implicit lazy val ordering: Ordering[CustomCreditcardId] = Ordering.by(_.value)
   implicit lazy val pgType: PGType[CustomCreditcardId] = PGType.PGTypeInt.as
   implicit lazy val setter: Setter[CustomCreditcardId] = Setter.intSetter.contramap(_.value)
-  implicit lazy val text: Text[CustomCreditcardId] = Text.intInstance.contramap(_.value)
+  implicit lazy val pgText: Text[CustomCreditcardId] = Text.intInstance.contramap(_.value)
 }

@@ -57,46 +57,50 @@ case class VindividualcustomerViewRow(
 
 object VindividualcustomerViewRow {
   given decoder: Decoder[VindividualcustomerViewRow] = Decoder.forProduct18[VindividualcustomerViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Option[Phone], Option[Name], Option[/* max 50 chars */ String], Int, Name, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name, Option[TypoXml]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "demographics")(VindividualcustomerViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Phone.decoder), Decoder.decodeOption(using Name.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Name.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Name.decoder, Decoder.decodeString, Name.decoder, Decoder.decodeOption(using TypoXml.decoder))
+
   given encoder: Encoder[VindividualcustomerViewRow] = Encoder.forProduct18[VindividualcustomerViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Option[Phone], Option[Name], Option[/* max 50 chars */ String], Int, Name, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name, Option[TypoXml]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "demographics")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.phonenumber, x.phonenumbertype, x.emailaddress, x.emailpromotion, x.addresstype, x.addressline1, x.addressline2, x.city, x.stateprovincename, x.postalcode, x.countryregionname, x.demographics))(using BusinessentityId.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Phone.encoder), Encoder.encodeOption(using Name.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Name.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Name.encoder, Encoder.encodeString, Name.encoder, Encoder.encodeOption(using TypoXml.encoder))
-  given read: Read[VindividualcustomerViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Phone.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VindividualcustomerViewRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          title = arr(1).asInstanceOf[Option[/* max 8 chars */ String]],
-          firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
-          middlename = arr(3).asInstanceOf[Option[Name]],
-          lastname = arr(4).asInstanceOf[Name],
-          suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
-          phonenumber = arr(6).asInstanceOf[Option[Phone]],
-          phonenumbertype = arr(7).asInstanceOf[Option[Name]],
-          emailaddress = arr(8).asInstanceOf[Option[/* max 50 chars */ String]],
-          emailpromotion = arr(9).asInstanceOf[Int],
-          addresstype = arr(10).asInstanceOf[Name],
-          addressline1 = arr(11).asInstanceOf[/* max 60 chars */ String],
-          addressline2 = arr(12).asInstanceOf[Option[/* max 60 chars */ String]],
-          city = arr(13).asInstanceOf[/* max 30 chars */ String],
-          stateprovincename = arr(14).asInstanceOf[Name],
-          postalcode = arr(15).asInstanceOf[/* max 15 chars */ String],
-          countryregionname = arr(16).asInstanceOf[Name],
-          demographics = arr(17).asInstanceOf[Option[TypoXml]]
-    )
+
+  given read: Read[VindividualcustomerViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Phone.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VindividualcustomerViewRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            title = arr(1).asInstanceOf[Option[/* max 8 chars */ String]],
+            firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
+            middlename = arr(3).asInstanceOf[Option[Name]],
+            lastname = arr(4).asInstanceOf[Name],
+            suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
+            phonenumber = arr(6).asInstanceOf[Option[Phone]],
+            phonenumbertype = arr(7).asInstanceOf[Option[Name]],
+            emailaddress = arr(8).asInstanceOf[Option[/* max 50 chars */ String]],
+            emailpromotion = arr(9).asInstanceOf[Int],
+            addresstype = arr(10).asInstanceOf[Name],
+            addressline1 = arr(11).asInstanceOf[/* max 60 chars */ String],
+            addressline2 = arr(12).asInstanceOf[Option[/* max 60 chars */ String]],
+            city = arr(13).asInstanceOf[/* max 30 chars */ String],
+            stateprovincename = arr(14).asInstanceOf[Name],
+            postalcode = arr(15).asInstanceOf[/* max 15 chars */ String],
+            countryregionname = arr(16).asInstanceOf[Name],
+            demographics = arr(17).asInstanceOf[Option[TypoXml]]
+      )
+    }
   }
 }

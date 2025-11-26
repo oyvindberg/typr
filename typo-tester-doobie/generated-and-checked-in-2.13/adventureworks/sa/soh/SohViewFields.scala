@@ -56,11 +56,11 @@ trait SohViewFields {
 
 object SohViewFields {
   lazy val structure: Relation[SohViewFields, SohViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SohViewFields, SohViewRow] {
-  
+
     override lazy val fields: SohViewFields = new SohViewFields {
       override def id = Field[SalesorderheaderId, SohViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def salesorderid = Field[SalesorderheaderId, SohViewRow](_path, "salesorderid", None, None, x => x.salesorderid, (row, value) => row.copy(salesorderid = value))
@@ -89,12 +89,11 @@ object SohViewFields {
       override def rowguid = Field[TypoUUID, SohViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SohViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SohViewRow]] =
       List[FieldLike[?, SohViewRow]](fields.id, fields.salesorderid, fields.revisionnumber, fields.orderdate, fields.duedate, fields.shipdate, fields.status, fields.onlineorderflag, fields.purchaseordernumber, fields.accountnumber, fields.customerid, fields.salespersonid, fields.territoryid, fields.billtoaddressid, fields.shiptoaddressid, fields.shipmethodid, fields.creditcardid, fields.creditcardapprovalcode, fields.currencyrateid, fields.subtotal, fields.taxamt, fields.freight, fields.totaldue, fields.comment, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

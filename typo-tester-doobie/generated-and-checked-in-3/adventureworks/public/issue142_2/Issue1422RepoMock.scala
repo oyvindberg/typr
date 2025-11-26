@@ -20,27 +20,28 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class Issue1422RepoMock(map: scala.collection.mutable.Map[Issue142Id, Issue1422Row] = scala.collection.mutable.Map.empty) extends Issue1422Repo {
-  override def delete: DeleteBuilder[Issue1422Fields, Issue1422Row] = {
-    DeleteBuilderMock(DeleteParams.empty, Issue1422Fields.structure, map)
+case class Issue1422RepoMock(map: scala.collection.mutable.Map[Issue142Id, Issue1422Row] = scala.collection.mutable.Map.empty[Issue142Id, Issue1422Row]) extends Issue1422Repo {
+  def delete: DeleteBuilder[Issue1422Fields, Issue1422Row] = DeleteBuilderMock(DeleteParams.empty, Issue1422Fields.structure, map)
+
+  def deleteById(tabellkode: Issue142Id): ConnectionIO[Boolean] = delay(map.remove(tabellkode).isDefined)
+
+  def deleteByIds(tabellkodes: Array[Issue142Id]): ConnectionIO[Int] = delay(tabellkodes.map(id => map.remove(id)).count(_.isDefined))
+
+  def insert(unsaved: Issue1422Row): ConnectionIO[Issue1422Row] = {
+  delay {
+    val _ = if (map.contains(unsaved.tabellkode))
+      sys.error(s"id ${unsaved.tabellkode} already exists")
+    else
+      map.put(unsaved.tabellkode, unsaved)
+
+    unsaved
   }
-  override def deleteById(tabellkode: Issue142Id): ConnectionIO[Boolean] = {
-    delay(map.remove(tabellkode).isDefined)
   }
-  override def deleteByIds(tabellkodes: Array[Issue142Id]): ConnectionIO[Int] = {
-    delay(tabellkodes.map(id => map.remove(id)).count(_.isDefined))
-  }
-  override def insert(unsaved: Issue1422Row): ConnectionIO[Issue1422Row] = {
-    delay {
-      val _ = if (map.contains(unsaved.tabellkode))
-        sys.error(s"id ${unsaved.tabellkode} already exists")
-      else
-        map.put(unsaved.tabellkode, unsaved)
-    
-      unsaved
-    }
-  }
-  override def insertStreaming(unsaved: Stream[ConnectionIO, Issue1422Row], batchSize: Int = 10000): ConnectionIO[Long] = {
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, Issue1422Row],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long] = {
     unsaved.compile.toList.map { rows =>
       var num = 0L
       rows.foreach { row =>
@@ -50,34 +51,32 @@ class Issue1422RepoMock(map: scala.collection.mutable.Map[Issue142Id, Issue1422R
       num
     }
   }
-  override def select: SelectBuilder[Issue1422Fields, Issue1422Row] = {
-    SelectBuilderMock(Issue1422Fields.structure, delay(map.values.toList), SelectParams.empty)
-  }
-  override def selectAll: Stream[ConnectionIO, Issue1422Row] = {
-    Stream.emits(map.values.toList)
-  }
-  override def selectById(tabellkode: Issue142Id): ConnectionIO[Option[Issue1422Row]] = {
-    delay(map.get(tabellkode))
-  }
-  override def selectByIds(tabellkodes: Array[Issue142Id]): Stream[ConnectionIO, Issue1422Row] = {
-    Stream.emits(tabellkodes.flatMap(map.get).toList)
-  }
-  override def selectByIdsTracked(tabellkodes: Array[Issue142Id]): ConnectionIO[Map[Issue142Id, Issue1422Row]] = {
+
+  def select: SelectBuilder[Issue1422Fields, Issue1422Row] = SelectBuilderMock(Issue1422Fields.structure, delay(map.values.toList), SelectParams.empty)
+
+  def selectAll: Stream[ConnectionIO, Issue1422Row] = Stream.emits(map.values.toList)
+
+  def selectById(tabellkode: Issue142Id): ConnectionIO[Option[Issue1422Row]] = delay(map.get(tabellkode))
+
+  def selectByIds(tabellkodes: Array[Issue142Id]): Stream[ConnectionIO, Issue1422Row] = Stream.emits(tabellkodes.flatMap(map.get).toList)
+
+  def selectByIdsTracked(tabellkodes: Array[Issue142Id]): ConnectionIO[Map[Issue142Id, Issue1422Row]] = {
     selectByIds(tabellkodes).compile.toList.map { rows =>
       val byId = rows.view.map(x => (x.tabellkode, x)).toMap
       tabellkodes.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
     }
   }
-  override def update: UpdateBuilder[Issue1422Fields, Issue1422Row] = {
-    UpdateBuilderMock(UpdateParams.empty, Issue1422Fields.structure, map)
-  }
-  override def upsert(unsaved: Issue1422Row): ConnectionIO[Issue1422Row] = {
+
+  def update: UpdateBuilder[Issue1422Fields, Issue1422Row] = UpdateBuilderMock(UpdateParams.empty, Issue1422Fields.structure, map)
+
+  def upsert(unsaved: Issue1422Row): ConnectionIO[Issue1422Row] = {
     delay {
       map.put(unsaved.tabellkode, unsaved): @nowarn
       unsaved
     }
   }
-  override def upsertBatch(unsaved: List[Issue1422Row]): Stream[ConnectionIO, Issue1422Row] = {
+
+  def upsertBatch(unsaved: List[Issue1422Row]): Stream[ConnectionIO, Issue1422Row] = {
     Stream.emits {
       unsaved.map { row =>
         map += (row.tabellkode -> row)
@@ -85,8 +84,12 @@ class Issue1422RepoMock(map: scala.collection.mutable.Map[Issue142Id, Issue1422R
       }
     }
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Stream[ConnectionIO, Issue1422Row], batchSize: Int = 10000): ConnectionIO[Int] = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, Issue1422Row],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int] = {
     unsaved.compile.toList.map { rows =>
       var num = 0
       rows.foreach { row =>

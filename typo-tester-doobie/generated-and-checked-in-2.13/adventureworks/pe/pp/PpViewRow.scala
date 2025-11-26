@@ -29,20 +29,24 @@ case class PpViewRow(
 
 object PpViewRow {
   implicit lazy val decoder: Decoder[PpViewRow] = Decoder.forProduct5[PpViewRow, BusinessentityId, BusinessentityId, Phone, PhonenumbertypeId, TypoLocalDateTime]("id", "businessentityid", "phonenumber", "phonenumbertypeid", "modifieddate")(PpViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, Phone.decoder, PhonenumbertypeId.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[PpViewRow] = Encoder.forProduct5[PpViewRow, BusinessentityId, BusinessentityId, Phone, PhonenumbertypeId, TypoLocalDateTime]("id", "businessentityid", "phonenumber", "phonenumbertypeid", "modifieddate")(x => (x.id, x.businessentityid, x.phonenumber, x.phonenumbertypeid, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, Phone.encoder, PhonenumbertypeId.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[PpViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[PpViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Phone.get).asInstanceOf[Read[Any]],
-      new Read.Single(PhonenumbertypeId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    PpViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          phonenumber = arr(2).asInstanceOf[Phone],
-          phonenumbertypeid = arr(3).asInstanceOf[PhonenumbertypeId],
-          modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Phone.get).asInstanceOf[Read[Any]],
+        new Read.Single(PhonenumbertypeId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      PpViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            phonenumber = arr(2).asInstanceOf[Phone],
+            phonenumbertypeid = arr(3).asInstanceOf[PhonenumbertypeId],
+            modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

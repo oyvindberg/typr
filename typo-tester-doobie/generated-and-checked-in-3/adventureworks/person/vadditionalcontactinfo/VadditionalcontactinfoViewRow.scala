@@ -45,44 +45,48 @@ case class VadditionalcontactinfoViewRow(
 
 object VadditionalcontactinfoViewRow {
   given decoder: Decoder[VadditionalcontactinfoViewRow] = Decoder.forProduct17[VadditionalcontactinfoViewRow, BusinessentityId, /* user-picked */ FirstName, Option[Name], Name, /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[String], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[String], /* nullability unknown */ Option[TypoXml], TypoUUID, TypoLocalDateTime]("businessentityid", "firstname", "middlename", "lastname", "telephonenumber", "telephonespecialinstructions", "street", "city", "stateprovince", "postalcode", "countryregion", "homeaddressspecialinstructions", "emailaddress", "emailspecialinstructions", "emailtelephonenumber", "rowguid", "modifieddate")(VadditionalcontactinfoViewRow.apply)(using BusinessentityId.decoder, FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoXml.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[VadditionalcontactinfoViewRow] = Encoder.forProduct17[VadditionalcontactinfoViewRow, BusinessentityId, /* user-picked */ FirstName, Option[Name], Name, /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[String], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[TypoXml], /* nullability unknown */ Option[String], /* nullability unknown */ Option[TypoXml], TypoUUID, TypoLocalDateTime]("businessentityid", "firstname", "middlename", "lastname", "telephonenumber", "telephonespecialinstructions", "street", "city", "stateprovince", "postalcode", "countryregion", "homeaddressspecialinstructions", "emailaddress", "emailspecialinstructions", "emailtelephonenumber", "rowguid", "modifieddate")(x => (x.businessentityid, x.firstname, x.middlename, x.lastname, x.telephonenumber, x.telephonespecialinstructions, x.street, x.city, x.stateprovince, x.postalcode, x.countryregion, x.homeaddressspecialinstructions, x.emailaddress, x.emailspecialinstructions, x.emailtelephonenumber, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoXml.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[VadditionalcontactinfoViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    VadditionalcontactinfoViewRow(
-      businessentityid = arr(0).asInstanceOf[BusinessentityId],
-          firstname = arr(1).asInstanceOf[/* user-picked */ FirstName],
-          middlename = arr(2).asInstanceOf[Option[Name]],
-          lastname = arr(3).asInstanceOf[Name],
-          telephonenumber = arr(4).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          telephonespecialinstructions = arr(5).asInstanceOf[/* nullability unknown */ Option[String]],
-          street = arr(6).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          city = arr(7).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          stateprovince = arr(8).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          postalcode = arr(9).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          countryregion = arr(10).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          homeaddressspecialinstructions = arr(11).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          emailaddress = arr(12).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          emailspecialinstructions = arr(13).asInstanceOf[/* nullability unknown */ Option[String]],
-          emailtelephonenumber = arr(14).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
-          rowguid = arr(15).asInstanceOf[TypoUUID],
-          modifieddate = arr(16).asInstanceOf[TypoLocalDateTime]
-    )
+
+  given read: Read[VadditionalcontactinfoViewRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      VadditionalcontactinfoViewRow(
+        businessentityid = arr(0).asInstanceOf[BusinessentityId],
+            firstname = arr(1).asInstanceOf[/* user-picked */ FirstName],
+            middlename = arr(2).asInstanceOf[Option[Name]],
+            lastname = arr(3).asInstanceOf[Name],
+            telephonenumber = arr(4).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            telephonespecialinstructions = arr(5).asInstanceOf[/* nullability unknown */ Option[String]],
+            street = arr(6).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            city = arr(7).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            stateprovince = arr(8).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            postalcode = arr(9).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            countryregion = arr(10).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            homeaddressspecialinstructions = arr(11).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            emailaddress = arr(12).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            emailspecialinstructions = arr(13).asInstanceOf[/* nullability unknown */ Option[String]],
+            emailtelephonenumber = arr(14).asInstanceOf[/* nullability unknown */ Option[TypoXml]],
+            rowguid = arr(15).asInstanceOf[TypoUUID],
+            modifieddate = arr(16).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `person.address` */
-case class AddressId(value: Int) extends AnyVal
+case class AddressId(value: Int) extends scala.AnyVal
+
 object AddressId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[AddressId]] = adventureworks.IntArrayDecoder.map(_.map(AddressId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[AddressId]] = adventureworks.IntArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[AddressId]] = adventureworks.IntArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[AddressId, Int] = Bijection[AddressId, Int](_.value)(AddressId.apply)
+
+  implicit lazy val bijection: Bijection[AddressId, Int] = Bijection.apply[AddressId, Int](_.value)(AddressId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[AddressId] = JdbcDecoder.intDecoder.map(AddressId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[AddressId] = JdbcEncoder.intEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[AddressId] = JsonDecoder.int.map(AddressId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[AddressId] = JsonEncoder.int.contramap(_.value)
-  implicit lazy val pgType: PGType[AddressId] = PGType.PGTypeInt.as
-  implicit lazy val setter: Setter[AddressId] = Setter.intSetter.contramap(_.value)
-  implicit lazy val text: Text[AddressId] = new Text[AddressId] {
-    override def unsafeEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[AddressId] = {
+    new Text[AddressId] {
+      override def unsafeEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: AddressId, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[AddressId] = PGType.PGTypeInt.as
+
+  implicit lazy val setter: Setter[AddressId] = Setter.intSetter.contramap(_.value)
 }

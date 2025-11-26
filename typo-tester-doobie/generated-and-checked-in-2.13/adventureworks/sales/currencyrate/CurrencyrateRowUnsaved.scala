@@ -6,6 +6,7 @@
 package adventureworks.sales.currencyrate
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
 import doobie.postgres.Text
@@ -17,54 +18,60 @@ case class CurrencyrateRowUnsaved(
   /** Date and time the exchange rate was obtained. */
   currencyratedate: TypoLocalDateTime,
   /** Exchange rate was converted from this currency code.
-      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
+   * Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]]
+   */
   fromcurrencycode: CurrencyId,
   /** Exchange rate was converted to this currency code.
-      Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]] */
+   * Points to [[adventureworks.sales.currency.CurrencyRow.currencycode]]
+   */
   tocurrencycode: CurrencyId,
   /** Average exchange rate for the day. */
   averagerate: BigDecimal,
   /** Final exchange rate for the day. */
   endofdayrate: BigDecimal,
   /** Default: nextval('sales.currencyrate_currencyrateid_seq'::regclass)
-      Primary key for CurrencyRate records. */
-  currencyrateid: Defaulted[CurrencyrateId] = Defaulted.UseDefault,
+   * Primary key for CurrencyRate records.
+   */
+  currencyrateid: Defaulted[CurrencyrateId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(currencyrateidDefault: => CurrencyrateId, modifieddateDefault: => TypoLocalDateTime): CurrencyrateRow =
-    CurrencyrateRow(
-      currencyrateid = currencyrateid match {
-                         case Defaulted.UseDefault => currencyrateidDefault
-                         case Defaulted.Provided(value) => value
-                       },
+  def toRow(
+    currencyrateidDefault: => CurrencyrateId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): CurrencyrateRow = {
+    new CurrencyrateRow(
+      currencyrateid = currencyrateid.getOrElse(currencyrateidDefault),
       currencyratedate = currencyratedate,
       fromcurrencycode = fromcurrencycode,
       tocurrencycode = tocurrencycode,
       averagerate = averagerate,
       endofdayrate = endofdayrate,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object CurrencyrateRowUnsaved {
   implicit lazy val decoder: Decoder[CurrencyrateRowUnsaved] = Decoder.forProduct7[CurrencyrateRowUnsaved, TypoLocalDateTime, CurrencyId, CurrencyId, BigDecimal, BigDecimal, Defaulted[CurrencyrateId], Defaulted[TypoLocalDateTime]]("currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "currencyrateid", "modifieddate")(CurrencyrateRowUnsaved.apply)(TypoLocalDateTime.decoder, CurrencyId.decoder, CurrencyId.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Defaulted.decoder(CurrencyrateId.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+
   implicit lazy val encoder: Encoder[CurrencyrateRowUnsaved] = Encoder.forProduct7[CurrencyrateRowUnsaved, TypoLocalDateTime, CurrencyId, CurrencyId, BigDecimal, BigDecimal, Defaulted[CurrencyrateId], Defaulted[TypoLocalDateTime]]("currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "currencyrateid", "modifieddate")(x => (x.currencyratedate, x.fromcurrencycode, x.tocurrencycode, x.averagerate, x.endofdayrate, x.currencyrateid, x.modifieddate))(TypoLocalDateTime.encoder, CurrencyId.encoder, CurrencyId.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Defaulted.encoder(CurrencyrateId.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
-  implicit lazy val text: Text[CurrencyrateRowUnsaved] = Text.instance[CurrencyrateRowUnsaved]{ (row, sb) =>
-    TypoLocalDateTime.text.unsafeEncode(row.currencyratedate, sb)
-    sb.append(Text.DELIMETER)
-    CurrencyId.text.unsafeEncode(row.fromcurrencycode, sb)
-    sb.append(Text.DELIMETER)
-    CurrencyId.text.unsafeEncode(row.tocurrencycode, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.averagerate, sb)
-    sb.append(Text.DELIMETER)
-    Text.bigDecimalInstance.unsafeEncode(row.endofdayrate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(CurrencyrateId.text).unsafeEncode(row.currencyrateid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  implicit lazy val pgText: Text[CurrencyrateRowUnsaved] = {
+    Text.instance[CurrencyrateRowUnsaved]{ (row, sb) =>
+      TypoLocalDateTime.pgText.unsafeEncode(row.currencyratedate, sb)
+      sb.append(Text.DELIMETER)
+      CurrencyId.pgText.unsafeEncode(row.fromcurrencycode, sb)
+      sb.append(Text.DELIMETER)
+      CurrencyId.pgText.unsafeEncode(row.tocurrencycode, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.averagerate, sb)
+      sb.append(Text.DELIMETER)
+      Text.bigDecimalInstance.unsafeEncode(row.endofdayrate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(CurrencyrateId.pgText).unsafeEncode(row.currencyrateid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

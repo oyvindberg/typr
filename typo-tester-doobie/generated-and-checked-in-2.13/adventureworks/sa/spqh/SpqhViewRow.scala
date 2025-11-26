@@ -31,22 +31,26 @@ case class SpqhViewRow(
 
 object SpqhViewRow {
   implicit lazy val decoder: Decoder[SpqhViewRow] = Decoder.forProduct6[SpqhViewRow, BusinessentityId, BusinessentityId, TypoLocalDateTime, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate")(SpqhViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, TypoLocalDateTime.decoder, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[SpqhViewRow] = Encoder.forProduct6[SpqhViewRow, BusinessentityId, BusinessentityId, TypoLocalDateTime, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.quotadate, x.salesquota, x.rowguid, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, TypoLocalDateTime.encoder, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[SpqhViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[SpqhViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    SpqhViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          quotadate = arr(2).asInstanceOf[TypoLocalDateTime],
-          salesquota = arr(3).asInstanceOf[BigDecimal],
-          rowguid = arr(4).asInstanceOf[TypoUUID],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      SpqhViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            quotadate = arr(2).asInstanceOf[TypoLocalDateTime],
+            salesquota = arr(3).asInstanceOf[BigDecimal],
+            rowguid = arr(4).asInstanceOf[TypoUUID],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

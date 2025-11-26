@@ -3,15 +3,14 @@ package internal
 package codegen
 
 object FileCustomType {
-  def apply(options: InternalOptions)(ct: CustomType): sc.File = {
-
-    val comments = scaladoc(ct.comment)(Nil)
+  def apply(options: InternalOptions, lang: Lang)(ct: CustomType): jvm.File = {
 
     val maybeBijection = ct.params match {
-      case NonEmptyList(sc.Param(name, underlying, _), Nil) if options.enableDsl =>
+      case NonEmptyList(jvm.Param(_, name, underlying, _), Nil) if options.enableDsl =>
         val bijection = {
-          val thisBijection = sc.Type.dsl.Bijection.of(ct.typoType, underlying)
-          sc.Given(Nil, sc.Ident("bijection"), Nil, thisBijection, code"$thisBijection(_.$name)(${ct.typoType}.apply)")
+          val thisBijection = jvm.Type.dsl.Bijection.of(ct.typoType, underlying)
+          val expr = lang.bijection(ct.typoType, underlying, jvm.FieldGetterRef(ct.typoType, name), jvm.ConstructorMethodRef(ct.typoType))
+          jvm.Given(Nil, jvm.Ident("bijection"), Nil, thisBijection, expr)
         }
         Some(bijection)
       case _ => None
@@ -22,13 +21,19 @@ object FileCustomType {
         options.jsonLibs.flatMap(_.customTypeInstances(ct)) ++
         options.dbLib.toList.flatMap(_.customTypeInstances(ct))
 
-    val str =
-      code"""$comments
-            |case class ${ct.typoType.name}(${ct.params.map(_.code).mkCode(", ")})
-            |
-            |${sc.Obj(ct.typoType.value, instances, ct.objBody0)}
-""".stripMargin
+    val cls = jvm.Adt.Record(
+      isWrapper = false,
+      comments = scaladoc(List(ct.comment)),
+      name = ct.typoType,
+      tparams = Nil,
+      params = ct.params.toList,
+      implicitParams = Nil,
+      `extends` = None,
+      implements = Nil,
+      members = Nil,
+      staticMembers = instances ++ ct.objBody0
+    )
 
-    sc.File(ct.typoType, str, secondaryTypes = Nil, scope = Scope.Main)
+    jvm.File(ct.typoType, cls, secondaryTypes = Nil, scope = Scope.Main)
   }
 }

@@ -7,6 +7,7 @@ package adventureworks.production.document
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
@@ -27,131 +28,138 @@ case class DocumentRowUnsaved(
   /** Title of the document. */
   title: /* max 50 chars */ String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
-      Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
+   * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
+   */
   owner: BusinessentityId,
   /** File name of the document */
   filename: /* max 400 chars */ String,
   /** File extension indicating the document type. For example, .doc or .txt. */
-  fileextension: Option[/* max 8 chars */ String],
+  fileextension: Option[/* max 8 chars */ String] = None,
   /** Revision number of the document. */
   revision: /* bpchar, max 5 chars */ String,
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
-      Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3))) */
+   * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
+   */
   status: TypoShort,
   /** Document abstract. */
-  documentsummary: Option[String],
+  documentsummary: Option[String] = None,
   /** Complete document. */
-  document: Option[TypoBytea],
+  document: Option[TypoBytea] = None,
   /** Default: false
-      0 = This is a folder, 1 = This is a document. */
-  folderflag: Defaulted[Flag] = Defaulted.UseDefault,
+   * 0 = This is a folder, 1 = This is a document.
+   */
+  folderflag: Defaulted[Flag] = new UseDefault(),
   /** Default: 0
-      Engineering change approval number. */
-  changenumber: Defaulted[Int] = Defaulted.UseDefault,
+   * Engineering change approval number.
+   */
+  changenumber: Defaulted[Int] = new UseDefault(),
   /** Default: uuid_generate_v1()
-      ROWGUIDCOL number uniquely identifying the record. Required for FileStream. */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+   * ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
+   */
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault,
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault(),
   /** Default: '/'::character varying
-      Primary key for Document records. */
-  documentnode: Defaulted[DocumentId] = Defaulted.UseDefault
+   * Primary key for Document records.
+   */
+  documentnode: Defaulted[DocumentId] = new UseDefault()
 ) {
-  def toRow(folderflagDefault: => Flag, changenumberDefault: => Int, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime, documentnodeDefault: => DocumentId): DocumentRow =
-    DocumentRow(
+  def toRow(
+    folderflagDefault: => Flag,
+    changenumberDefault: => Int,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime,
+    documentnodeDefault: => DocumentId
+  ): DocumentRow = {
+    new DocumentRow(
       title = title,
       owner = owner,
+      folderflag = folderflag.getOrElse(folderflagDefault),
       filename = filename,
       fileextension = fileextension,
       revision = revision,
+      changenumber = changenumber.getOrElse(changenumberDefault),
       status = status,
       documentsummary = documentsummary,
       document = document,
-      folderflag = folderflag match {
-                     case Defaulted.UseDefault => folderflagDefault
-                     case Defaulted.Provided(value) => value
-                   },
-      changenumber = changenumber match {
-                       case Defaulted.UseDefault => changenumberDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     },
-      documentnode = documentnode match {
-                       case Defaulted.UseDefault => documentnodeDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault),
+      documentnode = documentnode.getOrElse(documentnodeDefault)
     )
-}
-object DocumentRowUnsaved {
-  given reads: Reads[DocumentRowUnsaved] = Reads[DocumentRowUnsaved](json => JsResult.fromTry(
-      Try(
-        DocumentRowUnsaved(
-          title = json.\("title").as(Reads.StringReads),
-          owner = json.\("owner").as(BusinessentityId.reads),
-          filename = json.\("filename").as(Reads.StringReads),
-          fileextension = json.\("fileextension").toOption.map(_.as(Reads.StringReads)),
-          revision = json.\("revision").as(Reads.StringReads),
-          status = json.\("status").as(TypoShort.reads),
-          documentsummary = json.\("documentsummary").toOption.map(_.as(Reads.StringReads)),
-          document = json.\("document").toOption.map(_.as(TypoBytea.reads)),
-          folderflag = json.\("folderflag").as(Defaulted.reads(using Flag.reads)),
-          changenumber = json.\("changenumber").as(Defaulted.reads(using Reads.IntReads)),
-          rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads)),
-          documentnode = json.\("documentnode").as(Defaulted.reads(using DocumentId.reads))
-        )
-      )
-    ),
-  )
-  given text: Text[DocumentRowUnsaved] = Text.instance[DocumentRowUnsaved]{ (row, sb) =>
-    Text.stringInstance.unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    BusinessentityId.text.unsafeEncode(row.owner, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.filename, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.fileextension, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.revision, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.status, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using Text.stringInstance).unsafeEncode(row.documentsummary, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using TypoBytea.text).unsafeEncode(row.document, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Flag.text).unsafeEncode(row.folderflag, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.intInstance).unsafeEncode(row.changenumber, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using DocumentId.text).unsafeEncode(row.documentnode, sb)
   }
-  given writes: OWrites[DocumentRowUnsaved] = OWrites[DocumentRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "title" -> Writes.StringWrites.writes(o.title),
-      "owner" -> BusinessentityId.writes.writes(o.owner),
-      "filename" -> Writes.StringWrites.writes(o.filename),
-      "fileextension" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.fileextension),
-      "revision" -> Writes.StringWrites.writes(o.revision),
-      "status" -> TypoShort.writes.writes(o.status),
-      "documentsummary" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.documentsummary),
-      "document" -> Writes.OptionWrites(using TypoBytea.writes).writes(o.document),
-      "folderflag" -> Defaulted.writes(using Flag.writes).writes(o.folderflag),
-      "changenumber" -> Defaulted.writes(using Writes.IntWrites).writes(o.changenumber),
-      "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
-      "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate),
-      "documentnode" -> Defaulted.writes(using DocumentId.writes).writes(o.documentnode)
-    ))
-  )
+}
+
+object DocumentRowUnsaved {
+  given pgText: Text[DocumentRowUnsaved] = {
+    Text.instance[DocumentRowUnsaved]{ (row, sb) =>
+      Text.stringInstance.unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      BusinessentityId.pgText.unsafeEncode(row.owner, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.filename, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.fileextension, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.revision, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.status, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using Text.stringInstance).unsafeEncode(row.documentsummary, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using TypoBytea.pgText).unsafeEncode(row.document, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Flag.pgText).unsafeEncode(row.folderflag, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.intInstance).unsafeEncode(row.changenumber, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using DocumentId.pgText).unsafeEncode(row.documentnode, sb)
+    }
+  }
+
+  given reads: Reads[DocumentRowUnsaved] = {
+    Reads[DocumentRowUnsaved](json => JsResult.fromTry(
+        Try(
+          DocumentRowUnsaved(
+            title = json.\("title").as(Reads.StringReads),
+            owner = json.\("owner").as(BusinessentityId.reads),
+            filename = json.\("filename").as(Reads.StringReads),
+            fileextension = json.\("fileextension").toOption.map(_.as(Reads.StringReads)),
+            revision = json.\("revision").as(Reads.StringReads),
+            status = json.\("status").as(TypoShort.reads),
+            documentsummary = json.\("documentsummary").toOption.map(_.as(Reads.StringReads)),
+            document = json.\("document").toOption.map(_.as(TypoBytea.reads)),
+            folderflag = json.\("folderflag").as(Defaulted.reads(using Flag.reads)),
+            changenumber = json.\("changenumber").as(Defaulted.reads(using Reads.IntReads)),
+            rowguid = json.\("rowguid").as(Defaulted.reads(using TypoUUID.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(using TypoLocalDateTime.reads)),
+            documentnode = json.\("documentnode").as(Defaulted.reads(using DocumentId.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  given writes: OWrites[DocumentRowUnsaved] = {
+    OWrites[DocumentRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "title" -> Writes.StringWrites.writes(o.title),
+        "owner" -> BusinessentityId.writes.writes(o.owner),
+        "filename" -> Writes.StringWrites.writes(o.filename),
+        "fileextension" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.fileextension),
+        "revision" -> Writes.StringWrites.writes(o.revision),
+        "status" -> TypoShort.writes.writes(o.status),
+        "documentsummary" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.documentsummary),
+        "document" -> Writes.OptionWrites(using TypoBytea.writes).writes(o.document),
+        "folderflag" -> Defaulted.writes(using Flag.writes).writes(o.folderflag),
+        "changenumber" -> Defaulted.writes(using Writes.IntWrites).writes(o.changenumber),
+        "rowguid" -> Defaulted.writes(using TypoUUID.writes).writes(o.rowguid),
+        "modifieddate" -> Defaulted.writes(using TypoLocalDateTime.writes).writes(o.modifieddate),
+        "documentnode" -> Defaulted.writes(using DocumentId.writes).writes(o.documentnode)
+      ))
+    )
+  }
 }

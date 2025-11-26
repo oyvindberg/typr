@@ -19,67 +19,93 @@ import zio.json.ast.Json
 import zio.json.internal.Write
 
 /** Point datatype in PostgreSQL */
-case class TypoPoint(x: Double, y: Double)
+case class TypoPoint(
+  x: Double,
+  y: Double
+)
 
 object TypoPoint {
-  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoPoint]] = JdbcDecoder[Array[TypoPoint]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoPoint(x.asInstanceOf[PGpoint].x, x.asInstanceOf[PGpoint].y))
-    },
-    "Array[org.postgresql.geometric.PGpoint]"
-  )
-  implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TypoPoint]] = JdbcEncoder.singleParamEncoder(arraySetter)
-  implicit lazy val arraySetter: Setter[Array[TypoPoint]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "point",
-        v.map { vv =>
-          new PGpoint(vv.x, vv.y)
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  implicit lazy val jdbcDecoder: JdbcDecoder[TypoPoint] = JdbcDecoder[TypoPoint](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoPoint(v.asInstanceOf[PGpoint].x, v.asInstanceOf[PGpoint].y)
-    },
-    "org.postgresql.geometric.PGpoint"
-  )
-  implicit lazy val jdbcEncoder: JdbcEncoder[TypoPoint] = JdbcEncoder.singleParamEncoder(setter)
-  implicit lazy val jsonDecoder: JsonDecoder[TypoPoint] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val x = jsonObj.get("x").toRight("Missing field 'x'").flatMap(_.as(JsonDecoder.double))
-    val y = jsonObj.get("y").toRight("Missing field 'y'").flatMap(_.as(JsonDecoder.double))
-    if (x.isRight && y.isRight)
-      Right(TypoPoint(x = x.toOption.get, y = y.toOption.get))
-    else Left(List[Either[String, Any]](x, y).flatMap(_.left.toOption).mkString(", "))
+  implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TypoPoint]] = {
+    JdbcDecoder[Array[TypoPoint]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => new TypoPoint(x.asInstanceOf[PGpoint].x, x.asInstanceOf[PGpoint].y))
+      },
+      "Array[org.postgresql.geometric.PGpoint]"
+    )
   }
-  implicit lazy val jsonEncoder: JsonEncoder[TypoPoint] = new JsonEncoder[TypoPoint] {
-    override def unsafeEncode(a: TypoPoint, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""x":""")
-      JsonEncoder.double.unsafeEncode(a.x, indent, out)
-      out.write(",")
-      out.write(""""y":""")
-      JsonEncoder.double.unsafeEncode(a.y, indent, out)
-      out.write("}")
+
+  implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TypoPoint]] = JdbcEncoder.singleParamEncoder(arraySetter)
+
+  implicit lazy val arraySetter: Setter[Array[TypoPoint]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
+        i,
+        ps.getConnection.createArrayOf(
+          "point",
+          v.map { vv =>
+            new PGpoint(vv.x, vv.y)
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  implicit lazy val jdbcDecoder: JdbcDecoder[TypoPoint] = {
+    JdbcDecoder[TypoPoint](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else new TypoPoint(v.asInstanceOf[PGpoint].x, v.asInstanceOf[PGpoint].y)
+      },
+      "org.postgresql.geometric.PGpoint"
+    )
+  }
+
+  implicit lazy val jdbcEncoder: JdbcEncoder[TypoPoint] = JdbcEncoder.singleParamEncoder(setter)
+
+  implicit lazy val jsonDecoder: JsonDecoder[TypoPoint] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val x = jsonObj.get("x").toRight("Missing field 'x'").flatMap(_.as(JsonDecoder.double))
+      val y = jsonObj.get("y").toRight("Missing field 'y'").flatMap(_.as(JsonDecoder.double))
+      if (x.isRight && y.isRight)
+        Right(TypoPoint(x = x.toOption.get, y = y.toOption.get))
+      else Left(List[Either[String, Any]](x, y).flatMap(_.left.toOption).mkString(", "))
     }
   }
+
+  implicit lazy val jsonEncoder: JsonEncoder[TypoPoint] = {
+    new JsonEncoder[TypoPoint] {
+      override def unsafeEncode(a: TypoPoint, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""x":""")
+        JsonEncoder.double.unsafeEncode(a.x, indent, out)
+        out.write(",")
+        out.write(""""y":""")
+        JsonEncoder.double.unsafeEncode(a.y, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  implicit lazy val pgText: Text[TypoPoint] = {
+    new Text[TypoPoint] {
+      override def unsafeEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"(${v.x},${v.y})", sb)
+      override def unsafeArrayEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"(${v.x},${v.y})", sb)
+    }
+  }
+
   implicit lazy val pgType: PGType[TypoPoint] = PGType.instance[TypoPoint]("point", Types.OTHER)
-  implicit lazy val setter: Setter[TypoPoint] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
-        i,
-        new PGpoint(v.x, v.y)
-      )
-    },
-    "point"
-  )
-  implicit lazy val text: Text[TypoPoint] = new Text[TypoPoint] {
-    override def unsafeEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(s"(${v.x},${v.y})", sb)
-    override def unsafeArrayEncode(v: TypoPoint, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(s"(${v.x},${v.y})", sb)
+
+  implicit lazy val setter: Setter[TypoPoint] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          new PGpoint(v.x, v.y)
+        )
+      },
+      "point"
+    )
   }
 }

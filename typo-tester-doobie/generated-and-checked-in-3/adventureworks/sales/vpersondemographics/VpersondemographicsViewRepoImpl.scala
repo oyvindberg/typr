@@ -6,16 +6,12 @@
 package adventureworks.sales.vpersondemographics
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class VpersondemographicsViewRepoImpl extends VpersondemographicsViewRepo {
-  override def select: SelectBuilder[VpersondemographicsViewFields, VpersondemographicsViewRow] = {
-    SelectBuilderSql(""""sales"."vpersondemographics"""", VpersondemographicsViewFields.structure, VpersondemographicsViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, VpersondemographicsViewRow] = {
-    sql"""select "businessentityid", "totalpurchaseytd"::numeric, "datefirstpurchase"::text, "birthdate"::text, "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned" from "sales"."vpersondemographics"""".query(using VpersondemographicsViewRow.read).stream
-  }
+  def select: SelectBuilder[VpersondemographicsViewFields, VpersondemographicsViewRow] = SelectBuilder.of(""""sales"."vpersondemographics"""", VpersondemographicsViewFields.structure, VpersondemographicsViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, VpersondemographicsViewRow] = sql"""select "businessentityid", "totalpurchaseytd"::numeric, "datefirstpurchase"::text, "birthdate"::text, "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned" from "sales"."vpersondemographics"""".query(using VpersondemographicsViewRow.read).stream
 }

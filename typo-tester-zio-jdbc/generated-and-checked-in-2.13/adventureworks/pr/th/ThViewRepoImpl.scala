@@ -6,16 +6,12 @@
 package adventureworks.pr.th
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class ThViewRepoImpl extends ThViewRepo {
-  override def select: SelectBuilder[ThViewFields, ThViewRow] = {
-    SelectBuilderSql(""""pr"."th"""", ThViewFields.structure, ThViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, ThViewRow] = {
-    sql"""select "id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate"::text, "transactiontype", "quantity", "actualcost", "modifieddate"::text from "pr"."th"""".query(ThViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[ThViewFields, ThViewRow] = SelectBuilder.of(""""pr"."th"""", ThViewFields.structure, ThViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, ThViewRow] = sql"""select "id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate"::text, "transactiontype", "quantity", "actualcost", "modifieddate"::text from "pr"."th"""".query(ThViewRow.jdbcDecoder).selectStream()
 }

@@ -20,20 +20,26 @@ case class PersoncreditcardId(
   businessentityid: BusinessentityId,
   creditcardid: /* user-picked */ CustomCreditcardId
 )
+
 object PersoncreditcardId {
-  implicit lazy val reads: Reads[PersoncreditcardId] = Reads[PersoncreditcardId](json => JsResult.fromTry(
-      Try(
-        PersoncreditcardId(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads)
+  implicit lazy val reads: Reads[PersoncreditcardId] = {
+    Reads[PersoncreditcardId](json => JsResult.fromTry(
+        Try(
+          PersoncreditcardId(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            creditcardid = json.\("creditcardid").as(CustomCreditcardId.reads)
+          )
         )
-      )
-    ),
-  )
-  implicit lazy val writes: OWrites[PersoncreditcardId] = OWrites[PersoncreditcardId](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid)
-    ))
-  )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[PersoncreditcardId] = {
+    OWrites[PersoncreditcardId](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "creditcardid" -> CustomCreditcardId.writes.writes(o.creditcardid)
+      ))
+    )
+  }
 }

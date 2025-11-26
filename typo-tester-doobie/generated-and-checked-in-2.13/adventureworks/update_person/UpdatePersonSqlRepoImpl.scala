@@ -8,14 +8,17 @@ package adventureworks.update_person
 import adventureworks.customtypes.TypoLocalDateTime
 import doobie.free.connection.ConnectionIO
 import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
-import doobie.syntax.string.toSqlInterpolator
 import doobie.util.Write
 import doobie.util.meta.Meta
+import doobie.syntax.string.toSqlInterpolator
 
 class UpdatePersonSqlRepoImpl extends UpdatePersonSqlRepo {
-  override def apply(suffix: String, cutoff: Option[TypoLocalDateTime]): ConnectionIO[Int] = {
+  def apply(
+    suffix: String,
+    cutoff: Option[TypoLocalDateTime]
+  ): ConnectionIO[Int] = {
     sql"""update person.person
-          set firstname = firstname || '-' || ${fromWrite(suffix)(new Write.Single(Meta.StringMeta.put))}
-          where modifieddate < ${fromWrite(cutoff)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp""".update.run
+    set firstname = firstname || '-' || ${fromWrite(suffix)(new Write.Single(Meta.StringMeta.put))}
+    where modifieddate < ${fromWrite(cutoff)(new Write.SingleOpt(TypoLocalDateTime.put))}::timestamp""".update.run
   }
 }

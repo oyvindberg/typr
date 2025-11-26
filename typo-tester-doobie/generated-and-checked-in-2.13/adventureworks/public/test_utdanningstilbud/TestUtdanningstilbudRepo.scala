@@ -13,18 +13,37 @@ import typo.dsl.UpdateBuilder
 
 trait TestUtdanningstilbudRepo {
   def delete: DeleteBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow]
+
   def deleteById(compositeId: TestUtdanningstilbudId): ConnectionIO[Boolean]
+
   def deleteByIds(compositeIds: Array[TestUtdanningstilbudId]): ConnectionIO[Int]
+
   def insert(unsaved: TestUtdanningstilbudRow): ConnectionIO[TestUtdanningstilbudRow]
-  def insertStreaming(unsaved: Stream[ConnectionIO, TestUtdanningstilbudRow], batchSize: Int = 10000): ConnectionIO[Long]
+
+  def insertStreaming(
+    unsaved: Stream[ConnectionIO, TestUtdanningstilbudRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Long]
+
   def select: SelectBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow]
+
   def selectAll: Stream[ConnectionIO, TestUtdanningstilbudRow]
+
   def selectById(compositeId: TestUtdanningstilbudId): ConnectionIO[Option[TestUtdanningstilbudRow]]
+
   def selectByIds(compositeIds: Array[TestUtdanningstilbudId]): Stream[ConnectionIO, TestUtdanningstilbudRow]
+
   def selectByIdsTracked(compositeIds: Array[TestUtdanningstilbudId]): ConnectionIO[Map[TestUtdanningstilbudId, TestUtdanningstilbudRow]]
+
   def update: UpdateBuilder[TestUtdanningstilbudFields, TestUtdanningstilbudRow]
+
   def upsert(unsaved: TestUtdanningstilbudRow): ConnectionIO[TestUtdanningstilbudRow]
+
   def upsertBatch(unsaved: List[TestUtdanningstilbudRow]): Stream[ConnectionIO, TestUtdanningstilbudRow]
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  def upsertStreaming(unsaved: Stream[ConnectionIO, TestUtdanningstilbudRow], batchSize: Int = 10000): ConnectionIO[Int]
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Stream[ConnectionIO, TestUtdanningstilbudRow],
+    batchSize: Int = 10000
+  ): ConnectionIO[Int]
 }

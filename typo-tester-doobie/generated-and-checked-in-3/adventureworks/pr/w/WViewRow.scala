@@ -41,30 +41,34 @@ case class WViewRow(
 
 object WViewRow {
   given decoder: Decoder[WViewRow] = Decoder.forProduct10[WViewRow, WorkorderId, WorkorderId, ProductId, Int, TypoShort, TypoLocalDateTime, Option[TypoLocalDateTime], TypoLocalDateTime, Option[ScrapreasonId], TypoLocalDateTime]("id", "workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")(WViewRow.apply)(using WorkorderId.decoder, WorkorderId.decoder, ProductId.decoder, Decoder.decodeInt, TypoShort.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), TypoLocalDateTime.decoder, Decoder.decodeOption(using ScrapreasonId.decoder), TypoLocalDateTime.decoder)
+
   given encoder: Encoder[WViewRow] = Encoder.forProduct10[WViewRow, WorkorderId, WorkorderId, ProductId, Int, TypoShort, TypoLocalDateTime, Option[TypoLocalDateTime], TypoLocalDateTime, Option[ScrapreasonId], TypoLocalDateTime]("id", "workorderid", "productid", "orderqty", "scrappedqty", "startdate", "enddate", "duedate", "scrapreasonid", "modifieddate")(x => (x.id, x.workorderid, x.productid, x.orderqty, x.scrappedqty, x.startdate, x.enddate, x.duedate, x.scrapreasonid, x.modifieddate))(using WorkorderId.encoder, WorkorderId.encoder, ProductId.encoder, Encoder.encodeInt, TypoShort.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), TypoLocalDateTime.encoder, Encoder.encodeOption(using ScrapreasonId.encoder), TypoLocalDateTime.encoder)
-  given read: Read[WViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(WorkorderId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[WViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(WorkorderId.get).asInstanceOf[Read[Any]],
-      new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(ScrapreasonId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    WViewRow(
-      id = arr(0).asInstanceOf[WorkorderId],
-          workorderid = arr(1).asInstanceOf[WorkorderId],
-          productid = arr(2).asInstanceOf[ProductId],
-          orderqty = arr(3).asInstanceOf[Int],
-          scrappedqty = arr(4).asInstanceOf[TypoShort],
-          startdate = arr(5).asInstanceOf[TypoLocalDateTime],
-          enddate = arr(6).asInstanceOf[Option[TypoLocalDateTime]],
-          duedate = arr(7).asInstanceOf[TypoLocalDateTime],
-          scrapreasonid = arr(8).asInstanceOf[Option[ScrapreasonId]],
-          modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(WorkorderId.get).asInstanceOf[Read[Any]],
+        new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(ScrapreasonId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      WViewRow(
+        id = arr(0).asInstanceOf[WorkorderId],
+            workorderid = arr(1).asInstanceOf[WorkorderId],
+            productid = arr(2).asInstanceOf[ProductId],
+            orderqty = arr(3).asInstanceOf[Int],
+            scrappedqty = arr(4).asInstanceOf[TypoShort],
+            startdate = arr(5).asInstanceOf[TypoLocalDateTime],
+            enddate = arr(6).asInstanceOf[Option[TypoLocalDateTime]],
+            duedate = arr(7).asInstanceOf[TypoLocalDateTime],
+            scrapreasonid = arr(8).asInstanceOf[Option[ScrapreasonId]],
+            modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

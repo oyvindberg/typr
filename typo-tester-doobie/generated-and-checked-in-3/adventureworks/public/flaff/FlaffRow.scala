@@ -14,7 +14,8 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 /** Table: public.flaff
-    Composite primary key: code, another_code, some_number, specifier */
+ * Composite primary key: code, another_code, some_number, specifier
+ */
 case class FlaffRow(
   /** Points to [[adventureworks.public.flaff.FlaffRow.code]] */
   code: ShortText,
@@ -25,48 +26,77 @@ case class FlaffRow(
   specifier: ShortText,
   /** Points to [[adventureworks.public.flaff.FlaffRow.specifier]] */
   parentspecifier: Option[ShortText]
-){
-   val compositeId: FlaffId = FlaffId(code, anotherCode, someNumber, specifier)
-   val id = compositeId
- }
-
-object FlaffRow {
-  def apply(compositeId: FlaffId, parentspecifier: Option[ShortText]) =
-    new FlaffRow(compositeId.code, compositeId.anotherCode, compositeId.someNumber, compositeId.specifier, parentspecifier)
-  given decoder: Decoder[FlaffRow] = Decoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(FlaffRow.apply)(using ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder, Decoder.decodeOption(using ShortText.decoder))
-  given encoder: Encoder[FlaffRow] = Encoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier, x.parentspecifier))(using ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder, Encoder.encodeOption(using ShortText.encoder))
-  given read: Read[FlaffRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(ShortText.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(ShortText.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(ShortText.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    FlaffRow(
-      code = arr(0).asInstanceOf[ShortText],
-          anotherCode = arr(1).asInstanceOf[/* max 20 chars */ String],
-          someNumber = arr(2).asInstanceOf[Int],
-          specifier = arr(3).asInstanceOf[ShortText],
-          parentspecifier = arr(4).asInstanceOf[Option[ShortText]]
+) {
+  def compositeId: FlaffId = {
+    new FlaffId(
+      code,
+      anotherCode,
+      someNumber,
+      specifier
     )
   }
-  given text: Text[FlaffRow] = Text.instance[FlaffRow]{ (row, sb) =>
-    ShortText.text.unsafeEncode(row.code, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.anotherCode, sb)
-    sb.append(Text.DELIMETER)
-    Text.intInstance.unsafeEncode(row.someNumber, sb)
-    sb.append(Text.DELIMETER)
-    ShortText.text.unsafeEncode(row.specifier, sb)
-    sb.append(Text.DELIMETER)
-    Text.option(using ShortText.text).unsafeEncode(row.parentspecifier, sb)
+
+  def id: FlaffId = this.compositeId
+}
+
+object FlaffRow {
+  def apply(
+    compositeId: FlaffId,
+    parentspecifier: Option[ShortText]
+  ): FlaffRow = {
+    new FlaffRow(
+      compositeId.code,
+      compositeId.anotherCode,
+      compositeId.someNumber,
+      compositeId.specifier,
+      parentspecifier
+    )
   }
-  given write: Write[FlaffRow] = new Write.Composite[FlaffRow](
-    List(new Write.Single(ShortText.put),
-         new Write.Single(Meta.StringMeta.put),
-         new Write.Single(Meta.IntMeta.put),
-         new Write.Single(ShortText.put),
-         new Write.Single(ShortText.put).toOpt),
-    a => List(a.code, a.anotherCode, a.someNumber, a.specifier, a.parentspecifier)
-  )
+
+  given decoder: Decoder[FlaffRow] = Decoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(FlaffRow.apply)(using ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder, Decoder.decodeOption(using ShortText.decoder))
+
+  given encoder: Encoder[FlaffRow] = Encoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier, x.parentspecifier))(using ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder, Encoder.encodeOption(using ShortText.encoder))
+
+  given pgText: Text[FlaffRow] = {
+    Text.instance[FlaffRow]{ (row, sb) =>
+      ShortText.pgText.unsafeEncode(row.code, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.anotherCode, sb)
+      sb.append(Text.DELIMETER)
+      Text.intInstance.unsafeEncode(row.someNumber, sb)
+      sb.append(Text.DELIMETER)
+      ShortText.pgText.unsafeEncode(row.specifier, sb)
+      sb.append(Text.DELIMETER)
+      Text.option(using ShortText.pgText).unsafeEncode(row.parentspecifier, sb)
+    }
+  }
+
+  given read: Read[FlaffRow] = {
+    new Read.CompositeOfInstances(Array(
+      new Read.Single(ShortText.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(ShortText.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(ShortText.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      FlaffRow(
+        code = arr(0).asInstanceOf[ShortText],
+            anotherCode = arr(1).asInstanceOf[/* max 20 chars */ String],
+            someNumber = arr(2).asInstanceOf[Int],
+            specifier = arr(3).asInstanceOf[ShortText],
+            parentspecifier = arr(4).asInstanceOf[Option[ShortText]]
+      )
+    }
+  }
+
+  given write: Write[FlaffRow] = {
+    new Write.Composite[FlaffRow](
+      List(new Write.Single(ShortText.put),
+           new Write.Single(Meta.StringMeta.put),
+           new Write.Single(Meta.IntMeta.put),
+           new Write.Single(ShortText.put),
+           new Write.Single(ShortText.put).toOpt),
+      a => List(a.code, a.anotherCode, a.someNumber, a.specifier, a.parentspecifier)
+    )
+  }
 }

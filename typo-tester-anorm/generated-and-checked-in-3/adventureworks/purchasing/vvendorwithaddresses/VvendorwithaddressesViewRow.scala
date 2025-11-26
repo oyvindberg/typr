@@ -42,48 +42,56 @@ case class VvendorwithaddressesViewRow(
 )
 
 object VvendorwithaddressesViewRow {
-  given reads: Reads[VvendorwithaddressesViewRow] = Reads[VvendorwithaddressesViewRow](json => JsResult.fromTry(
-      Try(
-        VvendorwithaddressesViewRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          name = json.\("name").as(Name.reads),
-          addresstype = json.\("addresstype").as(Name.reads),
-          addressline1 = json.\("addressline1").as(Reads.StringReads),
-          addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
-          city = json.\("city").as(Reads.StringReads),
-          stateprovincename = json.\("stateprovincename").as(Name.reads),
-          postalcode = json.\("postalcode").as(Reads.StringReads),
-          countryregionname = json.\("countryregionname").as(Name.reads)
+  given reads: Reads[VvendorwithaddressesViewRow] = {
+    Reads[VvendorwithaddressesViewRow](json => JsResult.fromTry(
+        Try(
+          VvendorwithaddressesViewRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            name = json.\("name").as(Name.reads),
+            addresstype = json.\("addresstype").as(Name.reads),
+            addressline1 = json.\("addressline1").as(Reads.StringReads),
+            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            city = json.\("city").as(Reads.StringReads),
+            stateprovincename = json.\("stateprovincename").as(Name.reads),
+            postalcode = json.\("postalcode").as(Reads.StringReads),
+            countryregionname = json.\("countryregionname").as(Name.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[VvendorwithaddressesViewRow] = RowParser[VvendorwithaddressesViewRow] { row =>
-    Success(
-      VvendorwithaddressesViewRow(
-        businessentityid = row(idx + 0)(using BusinessentityId.column),
-        name = row(idx + 1)(using Name.column),
-        addresstype = row(idx + 2)(using Name.column),
-        addressline1 = row(idx + 3)(using Column.columnToString),
-        addressline2 = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
-        city = row(idx + 5)(using Column.columnToString),
-        stateprovincename = row(idx + 6)(using Name.column),
-        postalcode = row(idx + 7)(using Column.columnToString),
-        countryregionname = row(idx + 8)(using Name.column)
-      )
+      ),
     )
   }
-  given writes: OWrites[VvendorwithaddressesViewRow] = OWrites[VvendorwithaddressesViewRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "name" -> Name.writes.writes(o.name),
-      "addresstype" -> Name.writes.writes(o.addresstype),
-      "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-      "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
-      "city" -> Writes.StringWrites.writes(o.city),
-      "stateprovincename" -> Name.writes.writes(o.stateprovincename),
-      "postalcode" -> Writes.StringWrites.writes(o.postalcode),
-      "countryregionname" -> Name.writes.writes(o.countryregionname)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[VvendorwithaddressesViewRow] = {
+    RowParser[VvendorwithaddressesViewRow] { row =>
+      Success(
+        VvendorwithaddressesViewRow(
+          businessentityid = row(idx + 0)(using BusinessentityId.column),
+          name = row(idx + 1)(using Name.column),
+          addresstype = row(idx + 2)(using Name.column),
+          addressline1 = row(idx + 3)(using Column.columnToString),
+          addressline2 = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
+          city = row(idx + 5)(using Column.columnToString),
+          stateprovincename = row(idx + 6)(using Name.column),
+          postalcode = row(idx + 7)(using Column.columnToString),
+          countryregionname = row(idx + 8)(using Name.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[VvendorwithaddressesViewRow] = {
+    OWrites[VvendorwithaddressesViewRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "name" -> Name.writes.writes(o.name),
+        "addresstype" -> Name.writes.writes(o.addresstype),
+        "addressline1" -> Writes.StringWrites.writes(o.addressline1),
+        "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
+        "city" -> Writes.StringWrites.writes(o.city),
+        "stateprovincename" -> Name.writes.writes(o.stateprovincename),
+        "postalcode" -> Writes.StringWrites.writes(o.postalcode),
+        "countryregionname" -> Name.writes.writes(o.countryregionname)
+      ))
+    )
+  }
 }

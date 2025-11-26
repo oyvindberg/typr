@@ -25,42 +25,53 @@ case class TitledpersonRow(
 )
 
 object TitledpersonRow {
-  given jdbcDecoder: JdbcDecoder[TitledpersonRow] = new JdbcDecoder[TitledpersonRow] {
-    override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, TitledpersonRow) =
-      columIndex + 2 ->
-        TitledpersonRow(
-          titleShort = TitleDomainId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-          title = TitleId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-          name = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2
-        )
-  }
-  given jsonDecoder: JsonDecoder[TitledpersonRow] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val titleShort = jsonObj.get("title_short").toRight("Missing field 'title_short'").flatMap(_.as(using TitleDomainId.jsonDecoder))
-    val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(using TitleId.jsonDecoder))
-    val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using JsonDecoder.string))
-    if (titleShort.isRight && title.isRight && name.isRight)
-      Right(TitledpersonRow(titleShort = titleShort.toOption.get, title = title.toOption.get, name = name.toOption.get))
-    else Left(List[Either[String, Any]](titleShort, title, name).flatMap(_.left.toOption).mkString(", "))
-  }
-  given jsonEncoder: JsonEncoder[TitledpersonRow] = new JsonEncoder[TitledpersonRow] {
-    override def unsafeEncode(a: TitledpersonRow, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""title_short":""")
-      TitleDomainId.jsonEncoder.unsafeEncode(a.titleShort, indent, out)
-      out.write(",")
-      out.write(""""title":""")
-      TitleId.jsonEncoder.unsafeEncode(a.title, indent, out)
-      out.write(",")
-      out.write(""""name":""")
-      JsonEncoder.string.unsafeEncode(a.name, indent, out)
-      out.write("}")
+  given jdbcDecoder: JdbcDecoder[TitledpersonRow] = {
+    new JdbcDecoder[TitledpersonRow] {
+      override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, TitledpersonRow) =
+        columIndex + 2 ->
+          TitledpersonRow(
+            titleShort = TitleDomainId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
+            title = TitleId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            name = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2
+          )
     }
   }
-  given text: Text[TitledpersonRow] = Text.instance[TitledpersonRow]{ (row, sb) =>
-    TitleDomainId.text.unsafeEncode(row.titleShort, sb)
-    sb.append(Text.DELIMETER)
-    TitleId.text.unsafeEncode(row.title, sb)
-    sb.append(Text.DELIMETER)
-    Text.stringInstance.unsafeEncode(row.name, sb)
+
+  given jsonDecoder: JsonDecoder[TitledpersonRow] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val titleShort = jsonObj.get("title_short").toRight("Missing field 'title_short'").flatMap(_.as(using TitleDomainId.jsonDecoder))
+      val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(using TitleId.jsonDecoder))
+      val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using JsonDecoder.string))
+      if (titleShort.isRight && title.isRight && name.isRight)
+        Right(TitledpersonRow(titleShort = titleShort.toOption.get, title = title.toOption.get, name = name.toOption.get))
+      else Left(List[Either[String, Any]](titleShort, title, name).flatMap(_.left.toOption).mkString(", "))
+    }
+  }
+
+  given jsonEncoder: JsonEncoder[TitledpersonRow] = {
+    new JsonEncoder[TitledpersonRow] {
+      override def unsafeEncode(a: TitledpersonRow, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""title_short":""")
+        TitleDomainId.jsonEncoder.unsafeEncode(a.titleShort, indent, out)
+        out.write(",")
+        out.write(""""title":""")
+        TitleId.jsonEncoder.unsafeEncode(a.title, indent, out)
+        out.write(",")
+        out.write(""""name":""")
+        JsonEncoder.string.unsafeEncode(a.name, indent, out)
+        out.write("}")
+      }
+    }
+  }
+
+  given pgText: Text[TitledpersonRow] = {
+    Text.instance[TitledpersonRow]{ (row, sb) =>
+      TitleDomainId.pgText.unsafeEncode(row.titleShort, sb)
+      sb.append(Text.DELIMETER)
+      TitleId.pgText.unsafeEncode(row.title, sb)
+      sb.append(Text.DELIMETER)
+      Text.stringInstance.unsafeEncode(row.name, sb)
+    }
   }
 }

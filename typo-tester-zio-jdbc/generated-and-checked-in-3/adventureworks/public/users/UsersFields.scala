@@ -26,11 +26,11 @@ trait UsersFields {
 
 object UsersFields {
   lazy val structure: Relation[UsersFields, UsersRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[UsersFields, UsersRow] {
-  
+
     override lazy val fields: UsersFields = new UsersFields {
       override def userId = IdField[UsersId, UsersRow](_path, "user_id", None, Some("uuid"), x => x.userId, (row, value) => row.copy(userId = value))
       override def name = Field[String, UsersRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
@@ -40,12 +40,11 @@ object UsersFields {
       override def createdAt = Field[TypoInstant, UsersRow](_path, "created_at", Some("text"), Some("timestamptz"), x => x.createdAt, (row, value) => row.copy(createdAt = value))
       override def verifiedOn = OptField[TypoInstant, UsersRow](_path, "verified_on", Some("text"), Some("timestamptz"), x => x.verifiedOn, (row, value) => row.copy(verifiedOn = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, UsersRow]] =
       List[FieldLike[?, UsersRow]](fields.userId, fields.name, fields.lastName, fields.email, fields.password, fields.createdAt, fields.verifiedOn)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

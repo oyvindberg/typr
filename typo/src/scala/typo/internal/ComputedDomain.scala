@@ -1,12 +1,12 @@
 package typo
 package internal
 
-case class ComputedDomain(tpe: sc.Type.Qualified, underlyingType: sc.Type, underlying: db.Domain)
+case class ComputedDomain(tpe: jvm.Type.Qualified, underlyingType: jvm.Type, underlying: db.Domain)
 
 object ComputedDomain {
-  def apply(naming: Naming, typeMapperScala: TypeMapperScala)(dom: db.Domain): ComputedDomain =
+  def apply(naming: Naming, typeMapperScala: TypeMapperJvm)(dom: db.Domain): ComputedDomain =
     ComputedDomain(
-      tpe = sc.Type.Qualified(naming.domainName(dom.name)),
+      tpe = jvm.Type.Qualified(naming.domainName(dom.name)),
       underlyingType = typeMapperScala.domain(dom.tpe),
       underlying = dom
     )

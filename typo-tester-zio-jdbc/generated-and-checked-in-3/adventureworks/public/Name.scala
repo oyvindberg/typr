@@ -16,22 +16,35 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Domain `public.Name`
-  * No constraint
-  */
+ * No constraint
+ */
 case class Name(value: String)
+
 object Name {
   given arrayJdbcDecoder: JdbcDecoder[Array[Name]] = adventureworks.StringArrayDecoder.map(_.map(Name.apply))
+
   given arrayJdbcEncoder: JdbcEncoder[Array[Name]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   given arraySetter: Setter[Array[Name]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  given bijection: Bijection[Name, String] = Bijection[Name, String](_.value)(Name.apply)
+
+  given bijection: Bijection[Name, String] = Bijection.apply[Name, String](_.value)(Name.apply)
+
   given jdbcDecoder: JdbcDecoder[Name] = JdbcDecoder.stringDecoder.map(Name.apply)
+
   given jdbcEncoder: JdbcEncoder[Name] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   given jsonDecoder: JsonDecoder[Name] = JsonDecoder.string.map(Name.apply)
+
   given jsonEncoder: JsonEncoder[Name] = JsonEncoder.string.contramap(_.value)
-  given pgType: PGType[Name] = PGType.instance(""""public"."Name"""", Types.OTHER)
-  given setter: Setter[Name] = Setter.stringSetter.contramap(_.value)
-  given text: Text[Name] = new Text[Name] {
-    override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  given pgText: Text[Name] = {
+    new Text[Name] {
+      override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  given pgType: PGType[Name] = PGType.instance(""""public"."Name"""", Types.OTHER)
+
+  given setter: Setter[Name] = Setter.stringSetter.contramap(_.value)
 }

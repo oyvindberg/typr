@@ -6,16 +6,12 @@
 package adventureworks.pe.be
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class BeViewRepoImpl extends BeViewRepo {
-  override def select: SelectBuilder[BeViewFields, BeViewRow] = {
-    SelectBuilderSql(""""pe"."be"""", BeViewFields.structure, BeViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, BeViewRow] = {
-    sql"""select "id", "businessentityid", "rowguid", "modifieddate"::text from "pe"."be"""".query(using BeViewRow.read).stream
-  }
+  def select: SelectBuilder[BeViewFields, BeViewRow] = SelectBuilder.of(""""pe"."be"""", BeViewFields.structure, BeViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, BeViewRow] = sql"""select "id", "businessentityid", "rowguid", "modifieddate"::text from "pe"."be"""".query(using BeViewRow.read).stream
 }

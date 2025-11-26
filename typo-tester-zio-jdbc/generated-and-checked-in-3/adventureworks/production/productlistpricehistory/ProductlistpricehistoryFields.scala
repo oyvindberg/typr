@@ -35,16 +35,16 @@ trait ProductlistpricehistoryFields {
     productid.isEqual(compositeId.productid).and(startdate.isEqual(compositeId.startdate))
   def compositeIdIn(compositeIds: Array[ProductlistpricehistoryId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[ProductlistpricehistoryId](productid)(_.productid)(using as[Array[ProductId]](using ProductId.arrayJdbcEncoder, PGType.forArray(using ProductId.pgType)), implicitly), TuplePart[ProductlistpricehistoryId](startdate)(_.startdate)(using as[Array[TypoLocalDateTime]](using TypoLocalDateTime.arrayJdbcEncoder, PGType.forArray(using TypoLocalDateTime.pgType)), implicitly))
-  
+
 }
 
 object ProductlistpricehistoryFields {
   lazy val structure: Relation[ProductlistpricehistoryFields, ProductlistpricehistoryRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[ProductlistpricehistoryFields, ProductlistpricehistoryRow] {
-  
+
     override lazy val fields: ProductlistpricehistoryFields = new ProductlistpricehistoryFields {
       override def productid = IdField[ProductId, ProductlistpricehistoryRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def startdate = IdField[TypoLocalDateTime, ProductlistpricehistoryRow](_path, "startdate", Some("text"), Some("timestamp"), x => x.startdate, (row, value) => row.copy(startdate = value))
@@ -52,12 +52,11 @@ object ProductlistpricehistoryFields {
       override def listprice = Field[BigDecimal, ProductlistpricehistoryRow](_path, "listprice", None, Some("numeric"), x => x.listprice, (row, value) => row.copy(listprice = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductlistpricehistoryRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, ProductlistpricehistoryRow]] =
       List[FieldLike[?, ProductlistpricehistoryRow]](fields.productid, fields.startdate, fields.enddate, fields.listprice, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

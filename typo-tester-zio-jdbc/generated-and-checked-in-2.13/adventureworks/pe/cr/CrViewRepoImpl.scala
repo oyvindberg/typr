@@ -6,16 +6,12 @@
 package adventureworks.pe.cr
 
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
 import zio.jdbc.ZConnection
-import zio.jdbc.sqlInterpolator
 import zio.stream.ZStream
+import zio.jdbc.sqlInterpolator
 
 class CrViewRepoImpl extends CrViewRepo {
-  override def select: SelectBuilder[CrViewFields, CrViewRow] = {
-    SelectBuilderSql(""""pe"."cr"""", CrViewFields.structure, CrViewRow.jdbcDecoder)
-  }
-  override def selectAll: ZStream[ZConnection, Throwable, CrViewRow] = {
-    sql"""select "countryregioncode", "name", "modifieddate"::text from "pe"."cr"""".query(CrViewRow.jdbcDecoder).selectStream()
-  }
+  def select: SelectBuilder[CrViewFields, CrViewRow] = SelectBuilder.of(""""pe"."cr"""", CrViewFields.structure, CrViewRow.jdbcDecoder)
+
+  def selectAll: ZStream[ZConnection, Throwable, CrViewRow] = sql"""select "countryregioncode", "name", "modifieddate"::text from "pe"."cr"""".query(CrViewRow.jdbcDecoder).selectStream()
 }

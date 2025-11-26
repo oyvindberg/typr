@@ -10,5 +10,6 @@ import typo.dsl.SelectBuilder
 
 trait VsalespersonsalesbyfiscalyearsdataViewRepo {
   def select: SelectBuilder[VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow]
+
   def selectAll(implicit c: Connection): List[VsalespersonsalesbyfiscalyearsdataViewRow]
 }

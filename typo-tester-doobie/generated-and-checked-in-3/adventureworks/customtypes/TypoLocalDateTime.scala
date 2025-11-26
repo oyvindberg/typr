@@ -22,22 +22,41 @@ import typo.dsl.Bijection
 case class TypoLocalDateTime(value: LocalDateTime)
 
 object TypoLocalDateTime {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).toFormatter
   def apply(value: LocalDateTime): TypoLocalDateTime = new TypoLocalDateTime(value.truncatedTo(ChronoUnit.MICROS))
+
   def apply(str: String): TypoLocalDateTime = apply(LocalDateTime.parse(str, parser))
-  def now = TypoLocalDateTime(LocalDateTime.now)
-  given arrayGet: Get[Array[TypoLocalDateTime]] = Get.Advanced.array[AnyRef](NonEmptyList.one("timestamp[]"))
-    .map(_.map(v => TypoLocalDateTime(LocalDateTime.parse(v.asInstanceOf[String], parser))))
-  given arrayPut: Put[Array[TypoLocalDateTime]] = Put.Advanced.array[AnyRef](NonEmptyList.one("timestamp[]"), "timestamp")
-    .contramap(_.map(v => v.value.toString))
-  given bijection: Bijection[TypoLocalDateTime, LocalDateTime] = Bijection[TypoLocalDateTime, LocalDateTime](_.value)(TypoLocalDateTime.apply)
-  given decoder: Decoder[TypoLocalDateTime] = Decoder.decodeLocalDateTime.map(TypoLocalDateTime.apply)
-  given encoder: Encoder[TypoLocalDateTime] = Encoder.encodeLocalDateTime.contramap(_.value)
-  given get: Get[TypoLocalDateTime] = Get.Advanced.other[String](NonEmptyList.one("timestamp"))
-    .map(v => TypoLocalDateTime(LocalDateTime.parse(v, parser)))
-  given put: Put[TypoLocalDateTime] = Put.Advanced.other[String](NonEmptyList.one("timestamp")).contramap(v => v.value.toString)
-  given text: Text[TypoLocalDateTime] = new Text[TypoLocalDateTime] {
-    override def unsafeEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+
+  given arrayGet: Get[Array[TypoLocalDateTime]] = {
+    Get.Advanced.array[AnyRef](NonEmptyList.one("timestamp[]"))
+      .map(_.map(v => TypoLocalDateTime.apply(LocalDateTime.parse(v.asInstanceOf[String], parser))))
   }
+
+  given arrayPut: Put[Array[TypoLocalDateTime]] = {
+    Put.Advanced.array[AnyRef](NonEmptyList.one("timestamp[]"), "timestamp")
+      .contramap(_.map(v => v.value.toString))
+  }
+
+  given bijection: Bijection[TypoLocalDateTime, LocalDateTime] = Bijection.apply[TypoLocalDateTime, LocalDateTime](_.value)(TypoLocalDateTime.apply)
+
+  given decoder: Decoder[TypoLocalDateTime] = Decoder.decodeLocalDateTime.map(TypoLocalDateTime.apply)
+
+  given encoder: Encoder[TypoLocalDateTime] = Encoder.encodeLocalDateTime.contramap(_.value)
+
+  given get: Get[TypoLocalDateTime] = {
+    Get.Advanced.other[String](NonEmptyList.one("timestamp"))
+      .map(v => TypoLocalDateTime.apply(LocalDateTime.parse(v, parser)))
+  }
+
+  def now: TypoLocalDateTime = new TypoLocalDateTime(LocalDateTime.now())
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).toFormatter()
+
+  given pgText: Text[TypoLocalDateTime] = {
+    new Text[TypoLocalDateTime] {
+      override def unsafeEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoLocalDateTime, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given put: Put[TypoLocalDateTime] = Put.Advanced.other[String](NonEmptyList.one("timestamp")).contramap(v => v.value.toString)
 }

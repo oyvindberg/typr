@@ -43,34 +43,38 @@ case class SoViewRow(
 
 object SoViewRow {
   given decoder: Decoder[SoViewRow] = Decoder.forProduct12[SoViewRow, SpecialofferId, SpecialofferId, /* max 255 chars */ String, BigDecimal, /* max 50 chars */ String, /* max 50 chars */ String, TypoLocalDateTime, TypoLocalDateTime, Int, Option[Int], TypoUUID, TypoLocalDateTime]("id", "specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")(SoViewRow.apply)(using SpecialofferId.decoder, SpecialofferId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeString, Decoder.decodeString, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeInt), TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[SoViewRow] = Encoder.forProduct12[SoViewRow, SpecialofferId, SpecialofferId, /* max 255 chars */ String, BigDecimal, /* max 50 chars */ String, /* max 50 chars */ String, TypoLocalDateTime, TypoLocalDateTime, Int, Option[Int], TypoUUID, TypoLocalDateTime]("id", "specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")(x => (x.id, x.specialofferid, x.description, x.discountpct, x.`type`, x.category, x.startdate, x.enddate, x.minqty, x.maxqty, x.rowguid, x.modifieddate))(using SpecialofferId.encoder, SpecialofferId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeString, Encoder.encodeString, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeInt), TypoUUID.encoder, TypoLocalDateTime.encoder)
-  given read: Read[SoViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[SoViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    SoViewRow(
-      id = arr(0).asInstanceOf[SpecialofferId],
-          specialofferid = arr(1).asInstanceOf[SpecialofferId],
-          description = arr(2).asInstanceOf[/* max 255 chars */ String],
-          discountpct = arr(3).asInstanceOf[BigDecimal],
-          `type` = arr(4).asInstanceOf[/* max 50 chars */ String],
-          category = arr(5).asInstanceOf[/* max 50 chars */ String],
-          startdate = arr(6).asInstanceOf[TypoLocalDateTime],
-          enddate = arr(7).asInstanceOf[TypoLocalDateTime],
-          minqty = arr(8).asInstanceOf[Int],
-          maxqty = arr(9).asInstanceOf[Option[Int]],
-          rowguid = arr(10).asInstanceOf[TypoUUID],
-          modifieddate = arr(11).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(SpecialofferId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      SoViewRow(
+        id = arr(0).asInstanceOf[SpecialofferId],
+            specialofferid = arr(1).asInstanceOf[SpecialofferId],
+            description = arr(2).asInstanceOf[/* max 255 chars */ String],
+            discountpct = arr(3).asInstanceOf[BigDecimal],
+            `type` = arr(4).asInstanceOf[/* max 50 chars */ String],
+            category = arr(5).asInstanceOf[/* max 50 chars */ String],
+            startdate = arr(6).asInstanceOf[TypoLocalDateTime],
+            enddate = arr(7).asInstanceOf[TypoLocalDateTime],
+            minqty = arr(8).asInstanceOf[Int],
+            maxqty = arr(9).asInstanceOf[Option[Int]],
+            rowguid = arr(10).asInstanceOf[TypoUUID],
+            modifieddate = arr(11).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

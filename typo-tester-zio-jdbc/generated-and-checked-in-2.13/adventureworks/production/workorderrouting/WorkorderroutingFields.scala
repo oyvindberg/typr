@@ -49,16 +49,16 @@ trait WorkorderroutingFields {
     workorderid.isEqual(compositeId.workorderid).and(productid.isEqual(compositeId.productid)).and(operationsequence.isEqual(compositeId.operationsequence))
   def compositeIdIn(compositeIds: Array[WorkorderroutingId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[WorkorderroutingId](workorderid)(_.workorderid)(using as[Array[WorkorderId]](WorkorderId.arrayJdbcEncoder, PGType.forArray(WorkorderId.pgType)), implicitly), TuplePart[WorkorderroutingId](productid)(_.productid)(using as[Array[Int]](adventureworks.IntArrayEncoder, PGType.forArray(PGType.PGTypeInt)), implicitly), TuplePart[WorkorderroutingId](operationsequence)(_.operationsequence)(using as[Array[TypoShort]](TypoShort.arrayJdbcEncoder, PGType.forArray(TypoShort.pgType)), implicitly))
-  
+
 }
 
 object WorkorderroutingFields {
   lazy val structure: Relation[WorkorderroutingFields, WorkorderroutingRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[WorkorderroutingFields, WorkorderroutingRow] {
-  
+
     override lazy val fields: WorkorderroutingFields = new WorkorderroutingFields {
       override def workorderid = IdField[WorkorderId, WorkorderroutingRow](_path, "workorderid", None, Some("int4"), x => x.workorderid, (row, value) => row.copy(workorderid = value))
       override def productid = IdField[Int, WorkorderroutingRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
@@ -73,12 +73,11 @@ object WorkorderroutingFields {
       override def actualcost = OptField[BigDecimal, WorkorderroutingRow](_path, "actualcost", None, Some("numeric"), x => x.actualcost, (row, value) => row.copy(actualcost = value))
       override def modifieddate = Field[TypoLocalDateTime, WorkorderroutingRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, WorkorderroutingRow]] =
       List[FieldLike[?, WorkorderroutingRow]](fields.workorderid, fields.productid, fields.operationsequence, fields.locationid, fields.scheduledstartdate, fields.scheduledenddate, fields.actualstartdate, fields.actualenddate, fields.actualresourcehrs, fields.plannedcost, fields.actualcost, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

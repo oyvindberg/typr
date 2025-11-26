@@ -31,11 +31,11 @@ trait VjobcandidateeducationViewFields {
 
 object VjobcandidateeducationViewFields {
   lazy val structure: Relation[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] {
-  
+
     override lazy val fields: VjobcandidateeducationViewFields = new VjobcandidateeducationViewFields {
       override def jobcandidateid = Field[JobcandidateId, VjobcandidateeducationViewRow](_path, "jobcandidateid", None, None, x => x.jobcandidateid, (row, value) => row.copy(jobcandidateid = value))
       override def eduLevel = OptField[/* max 50 chars */ String, VjobcandidateeducationViewRow](_path, "Edu.Level", None, None, x => x.eduLevel, (row, value) => row.copy(eduLevel = value))
@@ -51,12 +51,11 @@ object VjobcandidateeducationViewFields {
       override def eduLocState = OptField[/* max 100 chars */ String, VjobcandidateeducationViewRow](_path, "Edu.Loc.State", None, None, x => x.eduLocState, (row, value) => row.copy(eduLocState = value))
       override def eduLocCity = OptField[/* max 100 chars */ String, VjobcandidateeducationViewRow](_path, "Edu.Loc.City", None, None, x => x.eduLocCity, (row, value) => row.copy(eduLocCity = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, VjobcandidateeducationViewRow]] =
       List[FieldLike[?, VjobcandidateeducationViewRow]](fields.jobcandidateid, fields.eduLevel, fields.eduStartDate, fields.eduEndDate, fields.eduDegree, fields.eduMajor, fields.eduMinor, fields.eduGPA, fields.eduGPAScale, fields.eduSchool, fields.eduLocCountryRegion, fields.eduLocState, fields.eduLocCity)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

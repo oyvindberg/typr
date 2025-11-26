@@ -31,22 +31,26 @@ case class EphViewRow(
 
 object EphViewRow {
   given decoder: Decoder[EphViewRow] = Decoder.forProduct6[EphViewRow, BusinessentityId, BusinessentityId, TypoLocalDateTime, BigDecimal, TypoShort, TypoLocalDateTime]("id", "businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate")(EphViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, TypoLocalDateTime.decoder, Decoder.decodeBigDecimal, TypoShort.decoder, TypoLocalDateTime.decoder)
+
   given encoder: Encoder[EphViewRow] = Encoder.forProduct6[EphViewRow, BusinessentityId, BusinessentityId, TypoLocalDateTime, BigDecimal, TypoShort, TypoLocalDateTime]("id", "businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate")(x => (x.id, x.businessentityid, x.ratechangedate, x.rate, x.payfrequency, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, TypoLocalDateTime.encoder, Encoder.encodeBigDecimal, TypoShort.encoder, TypoLocalDateTime.encoder)
-  given read: Read[EphViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+
+  given read: Read[EphViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(using scala.reflect.ClassTag.Any).map { arr =>
-    EphViewRow(
-      id = arr(0).asInstanceOf[BusinessentityId],
-          businessentityid = arr(1).asInstanceOf[BusinessentityId],
-          ratechangedate = arr(2).asInstanceOf[TypoLocalDateTime],
-          rate = arr(3).asInstanceOf[BigDecimal],
-          payfrequency = arr(4).asInstanceOf[TypoShort],
-          modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(using scala.reflect.ClassTag.Any).map { arr =>
+      EphViewRow(
+        id = arr(0).asInstanceOf[BusinessentityId],
+            businessentityid = arr(1).asInstanceOf[BusinessentityId],
+            ratechangedate = arr(2).asInstanceOf[TypoLocalDateTime],
+            rate = arr(3).asInstanceOf[BigDecimal],
+            payfrequency = arr(4).asInstanceOf[TypoShort],
+            modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

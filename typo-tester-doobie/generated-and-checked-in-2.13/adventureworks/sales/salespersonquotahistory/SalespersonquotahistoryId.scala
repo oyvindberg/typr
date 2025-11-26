@@ -15,7 +15,9 @@ case class SalespersonquotahistoryId(
   businessentityid: BusinessentityId,
   quotadate: TypoLocalDateTime
 )
+
 object SalespersonquotahistoryId {
   implicit lazy val decoder: Decoder[SalespersonquotahistoryId] = Decoder.forProduct2[SalespersonquotahistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "quotadate")(SalespersonquotahistoryId.apply)(BusinessentityId.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[SalespersonquotahistoryId] = Encoder.forProduct2[SalespersonquotahistoryId, BusinessentityId, TypoLocalDateTime]("businessentityid", "quotadate")(x => (x.businessentityid, x.quotadate))(BusinessentityId.encoder, TypoLocalDateTime.encoder)
 }

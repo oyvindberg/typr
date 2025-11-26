@@ -20,11 +20,13 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: sales.salesreason
-    Lookup table of customer purchase reasons.
-    Primary key: salesreasonid */
+ * Lookup table of customer purchase reasons.
+ * Primary key: salesreasonid
+ */
 case class SalesreasonRow(
   /** Primary key for SalesReason records.
-      Default: nextval('sales.salesreason_salesreasonid_seq'::regclass) */
+   * Default: nextval('sales.salesreason_salesreasonid_seq'::regclass)
+   */
   salesreasonid: SalesreasonId,
   /** Sales reason description. */
   name: Name,
@@ -32,49 +34,70 @@ case class SalesreasonRow(
   reasontype: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = salesreasonid
-   def toUnsavedRow(salesreasonid: Defaulted[SalesreasonId], modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): SalesreasonRowUnsaved =
-     SalesreasonRowUnsaved(name, reasontype, salesreasonid, modifieddate)
- }
+) {
+  def id: SalesreasonId = salesreasonid
 
-object SalesreasonRow {
-  given reads: Reads[SalesreasonRow] = Reads[SalesreasonRow](json => JsResult.fromTry(
-      Try(
-        SalesreasonRow(
-          salesreasonid = json.\("salesreasonid").as(SalesreasonId.reads),
-          name = json.\("name").as(Name.reads),
-          reasontype = json.\("reasontype").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
-        )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[SalesreasonRow] = RowParser[SalesreasonRow] { row =>
-    Success(
-      SalesreasonRow(
-        salesreasonid = row(idx + 0)(using SalesreasonId.column),
-        name = row(idx + 1)(using Name.column),
-        reasontype = row(idx + 2)(using Name.column),
-        modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
-      )
+  def toUnsavedRow(
+    salesreasonid: Defaulted[SalesreasonId],
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)
+  ): SalesreasonRowUnsaved = {
+    new SalesreasonRowUnsaved(
+      name,
+      reasontype,
+      salesreasonid,
+      modifieddate
     )
   }
-  given text: Text[SalesreasonRow] = Text.instance[SalesreasonRow]{ (row, sb) =>
-    SalesreasonId.text.unsafeEncode(row.salesreasonid, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.reasontype, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+}
+
+object SalesreasonRow {
+  given pgText: Text[SalesreasonRow] = {
+    Text.instance[SalesreasonRow]{ (row, sb) =>
+      SalesreasonId.pgText.unsafeEncode(row.salesreasonid, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.reasontype, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
   }
-  given writes: OWrites[SalesreasonRow] = OWrites[SalesreasonRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "salesreasonid" -> SalesreasonId.writes.writes(o.salesreasonid),
-      "name" -> Name.writes.writes(o.name),
-      "reasontype" -> Name.writes.writes(o.reasontype),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given reads: Reads[SalesreasonRow] = {
+    Reads[SalesreasonRow](json => JsResult.fromTry(
+        Try(
+          SalesreasonRow(
+            salesreasonid = json.\("salesreasonid").as(SalesreasonId.reads),
+            name = json.\("name").as(Name.reads),
+            reasontype = json.\("reasontype").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
+        )
+      ),
+    )
+  }
+
+  def rowParser(idx: Int): RowParser[SalesreasonRow] = {
+    RowParser[SalesreasonRow] { row =>
+      Success(
+        SalesreasonRow(
+          salesreasonid = row(idx + 0)(using SalesreasonId.column),
+          name = row(idx + 1)(using Name.column),
+          reasontype = row(idx + 2)(using Name.column),
+          modifieddate = row(idx + 3)(using TypoLocalDateTime.column)
+        )
+      )
+    }
+  }
+
+  given writes: OWrites[SalesreasonRow] = {
+    OWrites[SalesreasonRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "salesreasonid" -> SalesreasonId.writes.writes(o.salesreasonid),
+        "name" -> Name.writes.writes(o.name),
+        "reasontype" -> Name.writes.writes(o.reasontype),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

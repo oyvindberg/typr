@@ -20,8 +20,9 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 /** Table: sales.currency
-    Lookup table containing standard ISO currencies.
-    Primary key: currencycode */
+ * Lookup table containing standard ISO currencies.
+ * Primary key: currencycode
+ */
 case class CurrencyRow(
   /** The ISO code for the Currency. */
   currencycode: CurrencyId,
@@ -29,44 +30,55 @@ case class CurrencyRow(
   name: Name,
   /** Default: now() */
   modifieddate: TypoLocalDateTime
-){
-   val id = currencycode
-   def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CurrencyRowUnsaved =
-     CurrencyRowUnsaved(currencycode, name, modifieddate)
- }
+) {
+  def id: CurrencyId = currencycode
+
+  def toUnsavedRow(modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.Provided(this.modifieddate)): CurrencyRowUnsaved = new CurrencyRowUnsaved(currencycode, name, modifieddate)
+}
 
 object CurrencyRow {
-  given reads: Reads[CurrencyRow] = Reads[CurrencyRow](json => JsResult.fromTry(
-      Try(
-        CurrencyRow(
-          currencycode = json.\("currencycode").as(CurrencyId.reads),
-          name = json.\("name").as(Name.reads),
-          modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+  given pgText: Text[CurrencyRow] = {
+    Text.instance[CurrencyRow]{ (row, sb) =>
+      CurrencyId.pgText.unsafeEncode(row.currencycode, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      TypoLocalDateTime.pgText.unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  given reads: Reads[CurrencyRow] = {
+    Reads[CurrencyRow](json => JsResult.fromTry(
+        Try(
+          CurrencyRow(
+            currencycode = json.\("currencycode").as(CurrencyId.reads),
+            name = json.\("name").as(Name.reads),
+            modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[CurrencyRow] = RowParser[CurrencyRow] { row =>
-    Success(
-      CurrencyRow(
-        currencycode = row(idx + 0)(using CurrencyId.column),
-        name = row(idx + 1)(using Name.column),
-        modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
-      )
+      ),
     )
   }
-  given text: Text[CurrencyRow] = Text.instance[CurrencyRow]{ (row, sb) =>
-    CurrencyId.text.unsafeEncode(row.currencycode, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    TypoLocalDateTime.text.unsafeEncode(row.modifieddate, sb)
+
+  def rowParser(idx: Int): RowParser[CurrencyRow] = {
+    RowParser[CurrencyRow] { row =>
+      Success(
+        CurrencyRow(
+          currencycode = row(idx + 0)(using CurrencyId.column),
+          name = row(idx + 1)(using Name.column),
+          modifieddate = row(idx + 2)(using TypoLocalDateTime.column)
+        )
+      )
+    }
   }
-  given writes: OWrites[CurrencyRow] = OWrites[CurrencyRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "currencycode" -> CurrencyId.writes.writes(o.currencycode),
-      "name" -> Name.writes.writes(o.name),
-      "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
-    ))
-  )
+
+  given writes: OWrites[CurrencyRow] = {
+    OWrites[CurrencyRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "currencycode" -> CurrencyId.writes.writes(o.currencycode),
+        "name" -> Name.writes.writes(o.name),
+        "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
+      ))
+    )
+  }
 }

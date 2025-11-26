@@ -26,53 +26,77 @@ import zio.json.JsonEncoder
 case class TypoInstant(value: Instant)
 
 object TypoInstant {
-  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter
   def apply(value: Instant): TypoInstant = new TypoInstant(value.truncatedTo(ChronoUnit.MICROS))
-  def apply(str: String): TypoInstant = apply(OffsetDateTime.parse(str, parser).toInstant)
-  def now = TypoInstant(Instant.now)
-  given arrayJdbcDecoder: JdbcDecoder[Array[TypoInstant]] = JdbcDecoder[Array[TypoInstant]]((rs: ResultSet) => (i: Int) =>
-    rs.getArray(i) match {
-      case null => null
-      case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => TypoInstant(x.asInstanceOf[String]))
-    },
-    "Array[java.lang.String]"
-  )
+
+  def apply(str: String): TypoInstant = new TypoInstant(OffsetDateTime.parse(str, parser).toInstant())
+
+  given arrayJdbcDecoder: JdbcDecoder[Array[TypoInstant]] = {
+    JdbcDecoder[Array[TypoInstant]]((rs: ResultSet) => (i: Int) =>
+      rs.getArray(i) match {
+        case null => null
+        case arr => arr.getArray.asInstanceOf[Array[AnyRef]].map(x => apply(x.asInstanceOf[String]))
+      },
+      "Array[java.lang.String]"
+    )
+  }
+
   given arrayJdbcEncoder: JdbcEncoder[Array[TypoInstant]] = JdbcEncoder.singleParamEncoder(using arraySetter)
-  given arraySetter: Setter[Array[TypoInstant]] = Setter.forSqlType((ps, i, v) =>
-    ps.setArray(
-      i,
-      ps.getConnection.createArrayOf(
-        "timestamptz",
-        v.map { vv =>
-          vv.value.toString
-        }
-      )
-    ),
-    Types.ARRAY
-  )
-  given bijection: Bijection[TypoInstant, Instant] = Bijection[TypoInstant, Instant](_.value)(TypoInstant.apply)
-  given jdbcDecoder: JdbcDecoder[TypoInstant] = JdbcDecoder[TypoInstant](
-    (rs: ResultSet) => (i: Int) => {
-      val v = rs.getObject(i)
-      if (v eq null) null else TypoInstant(v.asInstanceOf[String])
-    },
-    "java.lang.String"
-  )
-  given jdbcEncoder: JdbcEncoder[TypoInstant] = JdbcEncoder.singleParamEncoder(using setter)
-  given jsonDecoder: JsonDecoder[TypoInstant] = JsonDecoder.instant.map(TypoInstant.apply)
-  given jsonEncoder: JsonEncoder[TypoInstant] = JsonEncoder.instant.contramap(_.value)
-  given pgType: PGType[TypoInstant] = PGType.instance[TypoInstant]("timestamptz", Types.OTHER)
-  given setter: Setter[TypoInstant] = Setter.other(
-    (ps, i, v) => {
-      ps.setObject(
+
+  given arraySetter: Setter[Array[TypoInstant]] = {
+    Setter.forSqlType((ps, i, v) =>
+      ps.setArray(
         i,
-        v.value.toString
-      )
-    },
-    "timestamptz"
-  )
-  given text: Text[TypoInstant] = new Text[TypoInstant] {
-    override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
-    override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+        ps.getConnection.createArrayOf(
+          "timestamptz",
+          v.map { vv =>
+            vv.value.toString
+          }
+        )
+      ),
+      Types.ARRAY
+    )
+  }
+
+  given bijection: Bijection[TypoInstant, Instant] = Bijection.apply[TypoInstant, Instant](_.value)(TypoInstant.apply)
+
+  given jdbcDecoder: JdbcDecoder[TypoInstant] = {
+    JdbcDecoder[TypoInstant](
+      (rs: ResultSet) => (i: Int) => {
+        val v = rs.getObject(i)
+        if (v eq null) null else apply(v.asInstanceOf[String])
+      },
+      "java.lang.String"
+    )
+  }
+
+  given jdbcEncoder: JdbcEncoder[TypoInstant] = JdbcEncoder.singleParamEncoder(using setter)
+
+  given jsonDecoder: JsonDecoder[TypoInstant] = JsonDecoder.instant.map(TypoInstant.apply)
+
+  given jsonEncoder: JsonEncoder[TypoInstant] = JsonEncoder.instant.contramap(_.value)
+
+  def now: TypoInstant = new TypoInstant(Instant.now())
+
+  val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
+
+  given pgText: Text[TypoInstant] = {
+    new Text[TypoInstant] {
+      override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString, sb)
+      override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString, sb)
+    }
+  }
+
+  given pgType: PGType[TypoInstant] = PGType.instance[TypoInstant]("timestamptz", Types.OTHER)
+
+  given setter: Setter[TypoInstant] = {
+    Setter.other(
+      (ps, i, v) => {
+        ps.setObject(
+          i,
+          v.value.toString
+        )
+      },
+      "timestamptz"
+    )
   }
 }

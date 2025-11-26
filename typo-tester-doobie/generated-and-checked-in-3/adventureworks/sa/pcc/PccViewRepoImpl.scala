@@ -6,16 +6,12 @@
 package adventureworks.sa.pcc
 
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.string.toSqlInterpolator
 import fs2.Stream
 import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderSql
+import doobie.syntax.string.toSqlInterpolator
 
 class PccViewRepoImpl extends PccViewRepo {
-  override def select: SelectBuilder[PccViewFields, PccViewRow] = {
-    SelectBuilderSql(""""sa"."pcc"""", PccViewFields.structure, PccViewRow.read)
-  }
-  override def selectAll: Stream[ConnectionIO, PccViewRow] = {
-    sql"""select "id", "businessentityid", "creditcardid", "modifieddate"::text from "sa"."pcc"""".query(using PccViewRow.read).stream
-  }
+  def select: SelectBuilder[PccViewFields, PccViewRow] = SelectBuilder.of(""""sa"."pcc"""", PccViewFields.structure, PccViewRow.read)
+
+  def selectAll: Stream[ConnectionIO, PccViewRow] = sql"""select "id", "businessentityid", "creditcardid", "modifieddate"::text from "sa"."pcc"""".query(using PccViewRow.read).stream
 }

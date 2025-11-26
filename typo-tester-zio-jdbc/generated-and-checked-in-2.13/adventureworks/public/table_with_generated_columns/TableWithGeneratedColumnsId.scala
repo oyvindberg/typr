@@ -15,20 +15,33 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `public.table-with-generated-columns` */
-case class TableWithGeneratedColumnsId(value: String) extends AnyVal
+case class TableWithGeneratedColumnsId(value: String) extends scala.AnyVal
+
 object TableWithGeneratedColumnsId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayDecoder.map(_.map(TableWithGeneratedColumnsId.apply))
+
   implicit lazy val arrayJdbcEncoder: JdbcEncoder[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArrayEncoder.contramap(_.map(_.value))
+
   implicit lazy val arraySetter: Setter[Array[TableWithGeneratedColumnsId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
-  implicit lazy val bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
+  implicit lazy val bijection: Bijection[TableWithGeneratedColumnsId, String] = Bijection.apply[TableWithGeneratedColumnsId, String](_.value)(TableWithGeneratedColumnsId.apply)
+
   implicit lazy val jdbcDecoder: JdbcDecoder[TableWithGeneratedColumnsId] = JdbcDecoder.stringDecoder.map(TableWithGeneratedColumnsId.apply)
+
   implicit lazy val jdbcEncoder: JdbcEncoder[TableWithGeneratedColumnsId] = JdbcEncoder.stringEncoder.contramap(_.value)
+
   implicit lazy val jsonDecoder: JsonDecoder[TableWithGeneratedColumnsId] = JsonDecoder.string.map(TableWithGeneratedColumnsId.apply)
+
   implicit lazy val jsonEncoder: JsonEncoder[TableWithGeneratedColumnsId] = JsonEncoder.string.contramap(_.value)
-  implicit lazy val pgType: PGType[TableWithGeneratedColumnsId] = PGType.PGTypeString.as
-  implicit lazy val setter: Setter[TableWithGeneratedColumnsId] = Setter.stringSetter.contramap(_.value)
-  implicit lazy val text: Text[TableWithGeneratedColumnsId] = new Text[TableWithGeneratedColumnsId] {
-    override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
-    override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+
+  implicit lazy val pgText: Text[TableWithGeneratedColumnsId] = {
+    new Text[TableWithGeneratedColumnsId] {
+      override def unsafeEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
+      override def unsafeArrayEncode(v: TableWithGeneratedColumnsId, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
+    }
   }
+
+  implicit lazy val pgType: PGType[TableWithGeneratedColumnsId] = PGType.PGTypeString.as
+
+  implicit lazy val setter: Setter[TableWithGeneratedColumnsId] = Setter.stringSetter.contramap(_.value)
 }

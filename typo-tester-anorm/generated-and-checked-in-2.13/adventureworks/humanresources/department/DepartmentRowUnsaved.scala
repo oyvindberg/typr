@@ -7,6 +7,7 @@ package adventureworks.humanresources.department
 
 import adventureworks.Text
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import play.api.libs.json.JsObject
@@ -24,52 +25,60 @@ case class DepartmentRowUnsaved(
   /** Name of the group to which the department belongs. */
   groupname: Name,
   /** Default: nextval('humanresources.department_departmentid_seq'::regclass)
-      Primary key for Department records. */
-  departmentid: Defaulted[DepartmentId] = Defaulted.UseDefault,
+   * Primary key for Department records.
+   */
+  departmentid: Defaulted[DepartmentId] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(departmentidDefault: => DepartmentId, modifieddateDefault: => TypoLocalDateTime): DepartmentRow =
-    DepartmentRow(
-      departmentid = departmentid match {
-                       case Defaulted.UseDefault => departmentidDefault
-                       case Defaulted.Provided(value) => value
-                     },
+  def toRow(
+    departmentidDefault: => DepartmentId,
+    modifieddateDefault: => TypoLocalDateTime
+  ): DepartmentRow = {
+    new DepartmentRow(
+      departmentid = departmentid.getOrElse(departmentidDefault),
       name = name,
       groupname = groupname,
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
-}
-object DepartmentRowUnsaved {
-  implicit lazy val reads: Reads[DepartmentRowUnsaved] = Reads[DepartmentRowUnsaved](json => JsResult.fromTry(
-      Try(
-        DepartmentRowUnsaved(
-          name = json.\("name").as(Name.reads),
-          groupname = json.\("groupname").as(Name.reads),
-          departmentid = json.\("departmentid").as(Defaulted.reads(DepartmentId.reads)),
-          modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
-        )
-      )
-    ),
-  )
-  implicit lazy val text: Text[DepartmentRowUnsaved] = Text.instance[DepartmentRowUnsaved]{ (row, sb) =>
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.groupname, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(DepartmentId.text).unsafeEncode(row.departmentid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
   }
-  implicit lazy val writes: OWrites[DepartmentRowUnsaved] = OWrites[DepartmentRowUnsaved](o =>
-    new JsObject(ListMap[String, JsValue](
-      "name" -> Name.writes.writes(o.name),
-      "groupname" -> Name.writes.writes(o.groupname),
-      "departmentid" -> Defaulted.writes(DepartmentId.writes).writes(o.departmentid),
-      "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
-    ))
-  )
+}
+
+object DepartmentRowUnsaved {
+  implicit lazy val pgText: Text[DepartmentRowUnsaved] = {
+    Text.instance[DepartmentRowUnsaved]{ (row, sb) =>
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.groupname, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(DepartmentId.pgText).unsafeEncode(row.departmentid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
+  }
+
+  implicit lazy val reads: Reads[DepartmentRowUnsaved] = {
+    Reads[DepartmentRowUnsaved](json => JsResult.fromTry(
+        Try(
+          DepartmentRowUnsaved(
+            name = json.\("name").as(Name.reads),
+            groupname = json.\("groupname").as(Name.reads),
+            departmentid = json.\("departmentid").as(Defaulted.reads(DepartmentId.reads)),
+            modifieddate = json.\("modifieddate").as(Defaulted.reads(TypoLocalDateTime.reads))
+          )
+        )
+      ),
+    )
+  }
+
+  implicit lazy val writes: OWrites[DepartmentRowUnsaved] = {
+    OWrites[DepartmentRowUnsaved](o =>
+      new JsObject(ListMap[String, JsValue](
+        "name" -> Name.writes.writes(o.name),
+        "groupname" -> Name.writes.writes(o.groupname),
+        "departmentid" -> Defaulted.writes(DepartmentId.writes).writes(o.departmentid),
+        "modifieddate" -> Defaulted.writes(TypoLocalDateTime.writes).writes(o.modifieddate)
+      ))
+    )
+  }
 }

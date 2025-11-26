@@ -28,30 +28,38 @@ case class PersonRowJoinSqlRow(
 )
 
 object PersonRowJoinSqlRow {
-  implicit lazy val reads: Reads[PersonRowJoinSqlRow] = Reads[PersonRowJoinSqlRow](json => JsResult.fromTry(
-      Try(
-        PersonRowJoinSqlRow(
-          businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-          email = json.\("email").toOption.map(_.as(Reads.ArrayReads[TypoRecord](TypoRecord.reads, implicitly))),
-          emails = json.\("emails").toOption.map(_.as(Reads.ArrayReads[TypoRecord](TypoRecord.reads, implicitly)))
+  implicit lazy val reads: Reads[PersonRowJoinSqlRow] = {
+    Reads[PersonRowJoinSqlRow](json => JsResult.fromTry(
+        Try(
+          PersonRowJoinSqlRow(
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            email = json.\("email").toOption.map(_.as(Reads.ArrayReads[TypoRecord](TypoRecord.reads, implicitly))),
+            emails = json.\("emails").toOption.map(_.as(Reads.ArrayReads[TypoRecord](TypoRecord.reads, implicitly)))
+          )
         )
-      )
-    ),
-  )
-  def rowParser(idx: Int): RowParser[PersonRowJoinSqlRow] = RowParser[PersonRowJoinSqlRow] { row =>
-    Success(
-      PersonRowJoinSqlRow(
-        businessentityid = row(idx + 0)(BusinessentityId.column),
-        email = row(idx + 1)(Column.columnToOption(TypoRecord.arrayColumn)),
-        emails = row(idx + 2)(Column.columnToOption(TypoRecord.arrayColumn))
-      )
+      ),
     )
   }
-  implicit lazy val writes: OWrites[PersonRowJoinSqlRow] = OWrites[PersonRowJoinSqlRow](o =>
-    new JsObject(ListMap[String, JsValue](
-      "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-      "email" -> Writes.OptionWrites(Writes.arrayWrites[TypoRecord](implicitly, TypoRecord.writes)).writes(o.email),
-      "emails" -> Writes.OptionWrites(Writes.arrayWrites[TypoRecord](implicitly, TypoRecord.writes)).writes(o.emails)
-    ))
-  )
+
+  def rowParser(idx: Int): RowParser[PersonRowJoinSqlRow] = {
+    RowParser[PersonRowJoinSqlRow] { row =>
+      Success(
+        PersonRowJoinSqlRow(
+          businessentityid = row(idx + 0)(BusinessentityId.column),
+          email = row(idx + 1)(Column.columnToOption(TypoRecord.arrayColumn)),
+          emails = row(idx + 2)(Column.columnToOption(TypoRecord.arrayColumn))
+        )
+      )
+    }
+  }
+
+  implicit lazy val writes: OWrites[PersonRowJoinSqlRow] = {
+    OWrites[PersonRowJoinSqlRow](o =>
+      new JsObject(ListMap[String, JsValue](
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "email" -> Writes.OptionWrites(Writes.arrayWrites[TypoRecord](implicitly, TypoRecord.writes)).writes(o.email),
+        "emails" -> Writes.OptionWrites(Writes.arrayWrites[TypoRecord](implicitly, TypoRecord.writes)).writes(o.emails)
+      ))
+    )
+  }
 }

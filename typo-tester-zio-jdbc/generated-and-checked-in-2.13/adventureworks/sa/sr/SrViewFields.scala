@@ -23,11 +23,11 @@ trait SrViewFields {
 
 object SrViewFields {
   lazy val structure: Relation[SrViewFields, SrViewRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[SrViewFields, SrViewRow] {
-  
+
     override lazy val fields: SrViewFields = new SrViewFields {
       override def id = Field[SalesreasonId, SrViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def salesreasonid = Field[SalesreasonId, SrViewRow](_path, "salesreasonid", None, None, x => x.salesreasonid, (row, value) => row.copy(salesreasonid = value))
@@ -35,12 +35,11 @@ object SrViewFields {
       override def reasontype = Field[Name, SrViewRow](_path, "reasontype", None, None, x => x.reasontype, (row, value) => row.copy(reasontype = value))
       override def modifieddate = Field[TypoLocalDateTime, SrViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, SrViewRow]] =
       List[FieldLike[?, SrViewRow]](fields.id, fields.salesreasonid, fields.name, fields.reasontype, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

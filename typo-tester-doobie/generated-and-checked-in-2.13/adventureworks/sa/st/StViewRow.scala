@@ -43,32 +43,36 @@ case class StViewRow(
 
 object StViewRow {
   implicit lazy val decoder: Decoder[StViewRow] = Decoder.forProduct11[StViewRow, SalesterritoryId, SalesterritoryId, Name, CountryregionId, /* max 50 chars */ String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(StViewRow.apply)(SalesterritoryId.decoder, SalesterritoryId.decoder, Name.decoder, CountryregionId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+
   implicit lazy val encoder: Encoder[StViewRow] = Encoder.forProduct11[StViewRow, SalesterritoryId, SalesterritoryId, Name, CountryregionId, /* max 50 chars */ String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(x => (x.id, x.territoryid, x.name, x.countryregioncode, x.group, x.salesytd, x.saleslastyear, x.costytd, x.costlastyear, x.rowguid, x.modifieddate))(SalesterritoryId.encoder, SalesterritoryId.encoder, Name.encoder, CountryregionId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
-  implicit lazy val read: Read[StViewRow] = new Read.CompositeOfInstances(Array(
-    new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
+
+  implicit lazy val read: Read[StViewRow] = {
+    new Read.CompositeOfInstances(Array(
       new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Name.get).asInstanceOf[Read[Any]],
-      new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
-      new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
-  ))(scala.reflect.ClassTag.Any).map { arr =>
-    StViewRow(
-      id = arr(0).asInstanceOf[SalesterritoryId],
-          territoryid = arr(1).asInstanceOf[SalesterritoryId],
-          name = arr(2).asInstanceOf[Name],
-          countryregioncode = arr(3).asInstanceOf[CountryregionId],
-          group = arr(4).asInstanceOf[/* max 50 chars */ String],
-          salesytd = arr(5).asInstanceOf[BigDecimal],
-          saleslastyear = arr(6).asInstanceOf[BigDecimal],
-          costytd = arr(7).asInstanceOf[BigDecimal],
-          costlastyear = arr(8).asInstanceOf[BigDecimal],
-          rowguid = arr(9).asInstanceOf[TypoUUID],
-          modifieddate = arr(10).asInstanceOf[TypoLocalDateTime]
-    )
+        new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(CountryregionId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
+    ))(scala.reflect.ClassTag.Any).map { arr =>
+      StViewRow(
+        id = arr(0).asInstanceOf[SalesterritoryId],
+            territoryid = arr(1).asInstanceOf[SalesterritoryId],
+            name = arr(2).asInstanceOf[Name],
+            countryregioncode = arr(3).asInstanceOf[CountryregionId],
+            group = arr(4).asInstanceOf[/* max 50 chars */ String],
+            salesytd = arr(5).asInstanceOf[BigDecimal],
+            saleslastyear = arr(6).asInstanceOf[BigDecimal],
+            costytd = arr(7).asInstanceOf[BigDecimal],
+            costlastyear = arr(8).asInstanceOf[BigDecimal],
+            rowguid = arr(9).asInstanceOf[TypoUUID],
+            modifieddate = arr(10).asInstanceOf[TypoLocalDateTime]
+      )
+    }
   }
 }

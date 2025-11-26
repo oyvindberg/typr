@@ -39,11 +39,11 @@ trait StoreFields {
 
 object StoreFields {
   lazy val structure: Relation[StoreFields, StoreRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[StoreFields, StoreRow] {
-  
+
     override lazy val fields: StoreFields = new StoreFields {
       override def businessentityid = IdField[BusinessentityId, StoreRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def name = Field[Name, StoreRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
@@ -52,12 +52,11 @@ object StoreFields {
       override def rowguid = Field[TypoUUID, StoreRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, StoreRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, StoreRow]] =
       List[FieldLike[?, StoreRow]](fields.businessentityid, fields.name, fields.salespersonid, fields.demographics, fields.rowguid, fields.modifieddate)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }

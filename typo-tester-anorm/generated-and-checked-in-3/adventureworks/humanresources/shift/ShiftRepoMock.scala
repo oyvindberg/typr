@@ -17,79 +17,88 @@ import typo.dsl.UpdateBuilder
 import typo.dsl.UpdateBuilder.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
-class ShiftRepoMock(toRow: Function1[ShiftRowUnsaved, ShiftRow],
-                    map: scala.collection.mutable.Map[ShiftId, ShiftRow] = scala.collection.mutable.Map.empty) extends ShiftRepo {
-  override def delete: DeleteBuilder[ShiftFields, ShiftRow] = {
-    DeleteBuilderMock(DeleteParams.empty, ShiftFields.structure, map)
-  }
-  override def deleteById(shiftid: ShiftId)(using c: Connection): Boolean = {
-    map.remove(shiftid).isDefined
-  }
-  override def deleteByIds(shiftids: Array[ShiftId])(using c: Connection): Int = {
-    shiftids.map(id => map.remove(id)).count(_.isDefined)
-  }
-  override def insert(unsaved: ShiftRow)(using c: Connection): ShiftRow = {
+case class ShiftRepoMock(
+  toRow: ShiftRowUnsaved => ShiftRow,
+  map: scala.collection.mutable.Map[ShiftId, ShiftRow] = scala.collection.mutable.Map.empty[ShiftId, ShiftRow]
+) extends ShiftRepo {
+  def delete: DeleteBuilder[ShiftFields, ShiftRow] = DeleteBuilderMock(DeleteParams.empty, ShiftFields.structure, map)
+
+  def deleteById(shiftid: ShiftId)(using c: Connection): Boolean = map.remove(shiftid).isDefined
+
+  def deleteByIds(shiftids: Array[ShiftId])(using c: Connection): Int = shiftids.map(id => map.remove(id)).count(_.isDefined)
+
+  def insert(unsaved: ShiftRow)(using c: Connection): ShiftRow = {
     val _ = if (map.contains(unsaved.shiftid))
       sys.error(s"id ${unsaved.shiftid} already exists")
     else
       map.put(unsaved.shiftid, unsaved)
-    
+  
     unsaved
   }
-  override def insert(unsaved: ShiftRowUnsaved)(using c: Connection): ShiftRow = {
-    insert(toRow(unsaved))
-  }
-  override def insertStreaming(unsaved: Iterator[ShiftRow], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  def insert(unsaved: ShiftRowUnsaved)(using c: Connection): ShiftRow = insert(toRow(unsaved))
+
+  def insertStreaming(
+    unsaved: Iterator[ShiftRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.shiftid -> row)
     }
     unsaved.size.toLong
   }
-  /* NOTE: this functionality requires PostgreSQL 16 or later! */
-  override def insertUnsavedStreaming(unsaved: Iterator[ShiftRowUnsaved], batchSize: Int = 10000)(using c: Connection): Long = {
+
+  /** NOTE: this functionality requires PostgreSQL 16 or later! */
+  def insertUnsavedStreaming(
+    unsaved: Iterator[ShiftRowUnsaved],
+    batchSize: Int = 10000
+  )(using c: Connection): Long = {
     unsaved.foreach { unsavedRow =>
       val row = toRow(unsavedRow)
       map += (row.shiftid -> row)
     }
     unsaved.size.toLong
   }
-  override def select: SelectBuilder[ShiftFields, ShiftRow] = {
-    SelectBuilderMock(ShiftFields.structure, () => map.values.toList, SelectParams.empty)
-  }
-  override def selectAll(using c: Connection): List[ShiftRow] = {
-    map.values.toList
-  }
-  override def selectById(shiftid: ShiftId)(using c: Connection): Option[ShiftRow] = {
-    map.get(shiftid)
-  }
-  override def selectByIds(shiftids: Array[ShiftId])(using c: Connection): List[ShiftRow] = {
-    shiftids.flatMap(map.get).toList
-  }
-  override def selectByIdsTracked(shiftids: Array[ShiftId])(using c: Connection): Map[ShiftId, ShiftRow] = {
+
+  def select: SelectBuilder[ShiftFields, ShiftRow] = SelectBuilderMock(ShiftFields.structure, () => map.values.toList, SelectParams.empty)
+
+  def selectAll(using c: Connection): List[ShiftRow] = map.values.toList
+
+  def selectById(shiftid: ShiftId)(using c: Connection): Option[ShiftRow] = map.get(shiftid)
+
+  def selectByIds(shiftids: Array[ShiftId])(using c: Connection): List[ShiftRow] = shiftids.flatMap(map.get).toList
+
+  def selectByIdsTracked(shiftids: Array[ShiftId])(using c: Connection): Map[ShiftId, ShiftRow] = {
     val byId = selectByIds(shiftids).view.map(x => (x.shiftid, x)).toMap
     shiftids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
-  override def update: UpdateBuilder[ShiftFields, ShiftRow] = {
-    UpdateBuilderMock(UpdateParams.empty, ShiftFields.structure, map)
-  }
-  override def update(row: ShiftRow)(using c: Connection): Option[ShiftRow] = {
+
+  def update: UpdateBuilder[ShiftFields, ShiftRow] = UpdateBuilderMock(UpdateParams.empty, ShiftFields.structure, map)
+
+  def update(row: ShiftRow)(using c: Connection): Option[ShiftRow] = {
     map.get(row.shiftid).map { _ =>
       map.put(row.shiftid, row): @nowarn
       row
     }
   }
-  override def upsert(unsaved: ShiftRow)(using c: Connection): ShiftRow = {
+
+  def upsert(unsaved: ShiftRow)(using c: Connection): ShiftRow = {
     map.put(unsaved.shiftid, unsaved): @nowarn
     unsaved
   }
-  override def upsertBatch(unsaved: Iterable[ShiftRow])(using c: Connection): List[ShiftRow] = {
+
+  def upsertBatch(unsaved: Iterable[ShiftRow])(using c: Connection): List[ShiftRow] = {
     unsaved.map { row =>
       map += (row.shiftid -> row)
       row
     }.toList
   }
-  /* NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  override def upsertStreaming(unsaved: Iterator[ShiftRow], batchSize: Int = 10000)(using c: Connection): Int = {
+
+  /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
+  def upsertStreaming(
+    unsaved: Iterator[ShiftRow],
+    batchSize: Int = 10000
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.shiftid -> row)
     }

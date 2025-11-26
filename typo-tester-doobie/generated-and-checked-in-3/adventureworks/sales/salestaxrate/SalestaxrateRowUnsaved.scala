@@ -6,6 +6,7 @@
 package adventureworks.sales.salestaxrate
 
 import adventureworks.customtypes.Defaulted
+import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.customtypes.TypoUUID
@@ -18,63 +19,66 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.salestaxrate` which has not been persisted yet */
 case class SalestaxrateRowUnsaved(
   /** State, province, or country/region the sales tax applies to.
-      Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
+   * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
+   */
   stateprovinceid: StateprovinceId,
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
-      Constraint CK_SalesTaxRate_TaxType affecting columns taxtype:  (((taxtype >= 1) AND (taxtype <= 3))) */
+   * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype:  (((taxtype >= 1) AND (taxtype <= 3)))
+   */
   taxtype: TypoShort,
   /** Tax rate description. */
   name: Name,
   /** Default: nextval('sales.salestaxrate_salestaxrateid_seq'::regclass)
-      Primary key for SalesTaxRate records. */
-  salestaxrateid: Defaulted[SalestaxrateId] = Defaulted.UseDefault,
+   * Primary key for SalesTaxRate records.
+   */
+  salestaxrateid: Defaulted[SalestaxrateId] = new UseDefault(),
   /** Default: 0.00
-      Tax rate amount. */
-  taxrate: Defaulted[BigDecimal] = Defaulted.UseDefault,
+   * Tax rate amount.
+   */
+  taxrate: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = new UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = new UseDefault()
 ) {
-  def toRow(salestaxrateidDefault: => SalestaxrateId, taxrateDefault: => BigDecimal, rowguidDefault: => TypoUUID, modifieddateDefault: => TypoLocalDateTime): SalestaxrateRow =
-    SalestaxrateRow(
+  def toRow(
+    salestaxrateidDefault: => SalestaxrateId,
+    taxrateDefault: => BigDecimal,
+    rowguidDefault: => TypoUUID,
+    modifieddateDefault: => TypoLocalDateTime
+  ): SalestaxrateRow = {
+    new SalestaxrateRow(
+      salestaxrateid = salestaxrateid.getOrElse(salestaxrateidDefault),
       stateprovinceid = stateprovinceid,
       taxtype = taxtype,
+      taxrate = taxrate.getOrElse(taxrateDefault),
       name = name,
-      salestaxrateid = salestaxrateid match {
-                         case Defaulted.UseDefault => salestaxrateidDefault
-                         case Defaulted.Provided(value) => value
-                       },
-      taxrate = taxrate match {
-                  case Defaulted.UseDefault => taxrateDefault
-                  case Defaulted.Provided(value) => value
-                },
-      rowguid = rowguid match {
-                  case Defaulted.UseDefault => rowguidDefault
-                  case Defaulted.Provided(value) => value
-                },
-      modifieddate = modifieddate match {
-                       case Defaulted.UseDefault => modifieddateDefault
-                       case Defaulted.Provided(value) => value
-                     }
+      rowguid = rowguid.getOrElse(rowguidDefault),
+      modifieddate = modifieddate.getOrElse(modifieddateDefault)
     )
+  }
 }
+
 object SalestaxrateRowUnsaved {
   given decoder: Decoder[SalestaxrateRowUnsaved] = Decoder.forProduct7[SalestaxrateRowUnsaved, StateprovinceId, TypoShort, Name, Defaulted[SalestaxrateId], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("stateprovinceid", "taxtype", "name", "salestaxrateid", "taxrate", "rowguid", "modifieddate")(SalestaxrateRowUnsaved.apply)(using StateprovinceId.decoder, TypoShort.decoder, Name.decoder, Defaulted.decoder(using SalestaxrateId.decoder), Defaulted.decoder(using Decoder.decodeBigDecimal), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+
   given encoder: Encoder[SalestaxrateRowUnsaved] = Encoder.forProduct7[SalestaxrateRowUnsaved, StateprovinceId, TypoShort, Name, Defaulted[SalestaxrateId], Defaulted[BigDecimal], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("stateprovinceid", "taxtype", "name", "salestaxrateid", "taxrate", "rowguid", "modifieddate")(x => (x.stateprovinceid, x.taxtype, x.name, x.salestaxrateid, x.taxrate, x.rowguid, x.modifieddate))(using StateprovinceId.encoder, TypoShort.encoder, Name.encoder, Defaulted.encoder(using SalestaxrateId.encoder), Defaulted.encoder(using Encoder.encodeBigDecimal), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
-  given text: Text[SalestaxrateRowUnsaved] = Text.instance[SalestaxrateRowUnsaved]{ (row, sb) =>
-    StateprovinceId.text.unsafeEncode(row.stateprovinceid, sb)
-    sb.append(Text.DELIMETER)
-    TypoShort.text.unsafeEncode(row.taxtype, sb)
-    sb.append(Text.DELIMETER)
-    Name.text.unsafeEncode(row.name, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using SalestaxrateId.text).unsafeEncode(row.salestaxrateid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using Text.bigDecimalInstance).unsafeEncode(row.taxrate, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoUUID.text).unsafeEncode(row.rowguid, sb)
-    sb.append(Text.DELIMETER)
-    Defaulted.text(using TypoLocalDateTime.text).unsafeEncode(row.modifieddate, sb)
+
+  given pgText: Text[SalestaxrateRowUnsaved] = {
+    Text.instance[SalestaxrateRowUnsaved]{ (row, sb) =>
+      StateprovinceId.pgText.unsafeEncode(row.stateprovinceid, sb)
+      sb.append(Text.DELIMETER)
+      TypoShort.pgText.unsafeEncode(row.taxtype, sb)
+      sb.append(Text.DELIMETER)
+      Name.pgText.unsafeEncode(row.name, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using SalestaxrateId.pgText).unsafeEncode(row.salestaxrateid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using Text.bigDecimalInstance).unsafeEncode(row.taxrate, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoUUID.pgText).unsafeEncode(row.rowguid, sb)
+      sb.append(Text.DELIMETER)
+      Defaulted.pgText(using TypoLocalDateTime.pgText).unsafeEncode(row.modifieddate, sb)
+    }
   }
 }

@@ -59,13 +59,6 @@ select ${SqlFragment(cols.mkString(","))} from ${SqlFragment(ctes.last.name)}"""
 }
 
 object SelectBuilderSql {
-  def apply[Fields, Row](
-      name: String,
-      structure: Structure.Relation[Fields, Row],
-      rowParser: JdbcDecoder[Row]
-  ): SelectBuilderSql[Fields, Row] =
-    Relation(name, structure, rowParser, SelectParams.empty)
-
   final case class Relation[Fields, Row](
       name: String,
       structure: Structure.Relation[Fields, Row],

@@ -17,23 +17,29 @@ case class ProductinventoryId(
   productid: ProductId,
   locationid: LocationId
 )
+
 object ProductinventoryId {
-  given jsonDecoder: JsonDecoder[ProductinventoryId] = JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-    val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
-    val locationid = jsonObj.get("locationid").toRight("Missing field 'locationid'").flatMap(_.as(using LocationId.jsonDecoder))
-    if (productid.isRight && locationid.isRight)
-      Right(ProductinventoryId(productid = productid.toOption.get, locationid = locationid.toOption.get))
-    else Left(List[Either[String, Any]](productid, locationid).flatMap(_.left.toOption).mkString(", "))
+  given jsonDecoder: JsonDecoder[ProductinventoryId] = {
+    JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
+      val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
+      val locationid = jsonObj.get("locationid").toRight("Missing field 'locationid'").flatMap(_.as(using LocationId.jsonDecoder))
+      if (productid.isRight && locationid.isRight)
+        Right(ProductinventoryId(productid = productid.toOption.get, locationid = locationid.toOption.get))
+      else Left(List[Either[String, Any]](productid, locationid).flatMap(_.left.toOption).mkString(", "))
+    }
   }
-  given jsonEncoder: JsonEncoder[ProductinventoryId] = new JsonEncoder[ProductinventoryId] {
-    override def unsafeEncode(a: ProductinventoryId, indent: Option[Int], out: Write): Unit = {
-      out.write("{")
-      out.write(""""productid":""")
-      ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
-      out.write(",")
-      out.write(""""locationid":""")
-      LocationId.jsonEncoder.unsafeEncode(a.locationid, indent, out)
-      out.write("}")
+
+  given jsonEncoder: JsonEncoder[ProductinventoryId] = {
+    new JsonEncoder[ProductinventoryId] {
+      override def unsafeEncode(a: ProductinventoryId, indent: Option[Int], out: Write): Unit = {
+        out.write("{")
+        out.write(""""productid":""")
+        ProductId.jsonEncoder.unsafeEncode(a.productid, indent, out)
+        out.write(",")
+        out.write(""""locationid":""")
+        LocationId.jsonEncoder.unsafeEncode(a.locationid, indent, out)
+        out.write("}")
+      }
     }
   }
 }

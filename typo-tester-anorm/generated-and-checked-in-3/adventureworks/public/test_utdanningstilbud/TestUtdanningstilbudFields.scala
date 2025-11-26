@@ -31,26 +31,25 @@ trait TestUtdanningstilbudFields {
     organisasjonskode.isEqual(compositeId.organisasjonskode).and(utdanningsmulighetKode.isEqual(compositeId.utdanningsmulighetKode))
   def compositeIdIn(compositeIds: Array[TestUtdanningstilbudId]): SqlExpr[Boolean] =
     new CompositeIn(compositeIds)(TuplePart[TestUtdanningstilbudId](organisasjonskode)(_.organisasjonskode)(using as[Array[TestOrganisasjonId]](using ToParameterValue(null, TestOrganisasjonId.arrayToStatement), adventureworks.arrayParameterMetaData(using TestOrganisasjonId.parameterMetadata)), implicitly), TuplePart[TestUtdanningstilbudId](utdanningsmulighetKode)(_.utdanningsmulighetKode)(using as[Array[String]](using ToParameterValue(null, ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData)), adventureworks.arrayParameterMetaData(using ParameterMetaData.StringParameterMetaData)), implicitly))
-  
+
 }
 
 object TestUtdanningstilbudFields {
   lazy val structure: Relation[TestUtdanningstilbudFields, TestUtdanningstilbudRow] =
-    new Impl(Nil)
+    new Impl(List())
 
   private final class Impl(val _path: List[Path])
     extends Relation[TestUtdanningstilbudFields, TestUtdanningstilbudRow] {
-  
+
     override lazy val fields: TestUtdanningstilbudFields = new TestUtdanningstilbudFields {
       override def organisasjonskode = IdField[TestOrganisasjonId, TestUtdanningstilbudRow](_path, "organisasjonskode", None, None, x => x.organisasjonskode, (row, value) => row.copy(organisasjonskode = value))
       override def utdanningsmulighetKode = IdField[String, TestUtdanningstilbudRow](_path, "utdanningsmulighet_kode", None, None, x => x.utdanningsmulighetKode, (row, value) => row.copy(utdanningsmulighetKode = value))
     }
-  
+
     override lazy val columns: List[FieldLike[?, TestUtdanningstilbudRow]] =
       List[FieldLike[?, TestUtdanningstilbudRow]](fields.organisasjonskode, fields.utdanningsmulighetKode)
-  
+
     override def copy(path: List[Path]): Impl =
       new Impl(path)
   }
-  
 }
