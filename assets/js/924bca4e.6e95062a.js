@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunksite=self.webpackChunksite||[]).push([[8921],{5940:s=>{s.exports=JSON.parse('{"label":"scala","permalink":"/typo/blog/tags/scala","allTagsPath":"/typo/blog/tags","count":1,"unlisted":false}')}}]);
