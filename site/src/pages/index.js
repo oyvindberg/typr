@@ -8,6 +8,8 @@ import HomepageFeatures from "@site/src/components/HomepageFeatures";
 import FeatureShowcase from "@site/src/components/FeatureShowcase";
 import WhyTypo from "@site/src/components/WhyTypo";
 import TypoLogo from "@site/src/components/TypoLogo";
+import { LanguageProvider } from "@site/src/components/LanguageContext";
+import LanguagePicker from "@site/src/components/LanguagePicker";
 
 import styles from "./index.module.css";
 
@@ -30,14 +32,14 @@ function HomepageHeader() {
                         </div>
                         
                         <h2 className={styles.heroHeadline}>
-                            The <span className={styles.highlight}>Scala + PostgreSQL</span> toolkit that
+                            The <span className={styles.highlight}>JVM + PostgreSQL</span> toolkit that
                             <br />
                             brings your database into your <span className={styles.highlight}>type system</span>.
                         </h2>
-                        
+
                         <p className={styles.heroSubtext}>
-                            Typr revolutionizes database development with unprecedented type safety, 
-                            a fantastic testing story, and a DSL so intuitive it feels like cheating. 
+                            Typr generates type-safe database code for <strong>Scala</strong>, <strong>Java</strong>, and <strong>Kotlin</strong>.
+                            Unprecedented type safety, a fantastic testing story, and a DSL so intuitive it feels like cheating.
                             Your database schema becomes your type system. Your domain model stays in sync automatically.
                         </p>
 
@@ -72,18 +74,25 @@ function HomepageHeader() {
 export default function Home() {
     const {siteConfig} = useDocusaurusContext();
     return (
-        <Layout
-            title="Typr"
-            description="Typed PostgreSQL boilerplate generation for Scala"
-        >
-            <div className="mainContainer"></div>
+        <LanguageProvider>
+            <Layout
+                title="Typr"
+                description="Type-safe PostgreSQL code generation for Scala, Java, and Kotlin"
+            >
+                <div className="mainContainer"></div>
 
-            <HomepageHeader/>
-            <main>
-                <HomepageFeatures/>
-                <FeatureShowcase/>
-                <WhyTypo/>
-            </main>
-        </Layout>
+                <HomepageHeader/>
+                <main>
+                    <div className={styles.languagePickerSection}>
+                        <div className="container">
+                            <LanguagePicker />
+                        </div>
+                    </div>
+                    <HomepageFeatures/>
+                    <FeatureShowcase/>
+                    <WhyTypo/>
+                </main>
+            </Layout>
+        </LanguageProvider>
     );
 }

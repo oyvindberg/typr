@@ -1,0 +1,52 @@
+.languagePicker {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--ifm-font-color-secondary);
+  font-size: 0.875rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--ifm-background-surface-color);
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--ifm-font-color-secondary);
+  transition: all 150ms ease;
+}
+
+.button:hover {
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-font-color-base);
+}
+
+.button.active {
+  background: var(--ifm-color-primary);
+  color: white;
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="dark"] .buttons {
+  background: var(--typr-gray-200);
+  border-color: var(--typr-gray-300);
+}
+
+[data-theme="dark"] .button:hover {
+  background: var(--typr-gray-300);
+}

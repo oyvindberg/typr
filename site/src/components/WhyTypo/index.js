@@ -34,9 +34,9 @@ export default function WhyTypo() {
                     <div className={styles.comparisonItem}>
                         <h3>vs. JOOQ</h3>
                         <ul className={styles.benefitsList}>
-                            <li>✅ <strong>Stronger type safety</strong> - Specific ID types and proper nullability with Option[T]</li>
+                            <li>✅ <strong>Stronger type safety</strong> - Specific ID types and proper nullability</li>
                             <li>✅ <strong>Open source</strong> - No commercial licensing headaches</li>
-                            <li>✅ <strong>Scala-native</strong> - Idiomatic code, not Java translations</li>
+                            <li>✅ <strong>Multi-language</strong> - Native support for Scala, Java, and Kotlin</li>
                             <li>✅ <strong>PostgreSQL-focused</strong> - Deep integration, not generic</li>
                         </ul>
                     </div>
