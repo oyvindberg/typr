@@ -7,9 +7,11 @@ package adventureworks.pe.be
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class BeViewRepoImpl extends BeViewRepo {
   def select: SelectBuilder[BeViewFields, BeViewRow] = SelectBuilder.of(""""pe"."be"""", BeViewFields.structure, BeViewRow.read)
 

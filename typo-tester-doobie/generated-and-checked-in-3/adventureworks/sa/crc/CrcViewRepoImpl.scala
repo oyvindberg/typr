@@ -7,9 +7,11 @@ package adventureworks.sa.crc
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class CrcViewRepoImpl extends CrcViewRepo {
   def select: SelectBuilder[CrcViewFields, CrcViewRow] = SelectBuilder.of(""""sa"."crc"""", CrcViewFields.structure, CrcViewRow.read)
 

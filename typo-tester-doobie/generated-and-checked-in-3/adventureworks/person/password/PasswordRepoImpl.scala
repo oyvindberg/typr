@@ -18,11 +18,13 @@ import doobie.util.fragment.Fragment
 import doobie.util.meta.Meta
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class PasswordRepoImpl extends PasswordRepo {
   def delete: DeleteBuilder[PasswordFields, PasswordRow] = DeleteBuilder.of(""""person"."password"""", PasswordFields.structure, PasswordRow.read)
 

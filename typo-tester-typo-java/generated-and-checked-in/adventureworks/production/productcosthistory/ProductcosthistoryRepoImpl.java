@@ -7,6 +7,7 @@ package adventureworks.production.productcosthistory;
 
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
   public DeleteBuilder<ProductcosthistoryFields, ProductcosthistoryRow> delete() {
     return DeleteBuilder.of("production.productcosthistory", ProductcosthistoryFields.structure());

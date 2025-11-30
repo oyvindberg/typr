@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.th;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class ThViewRepoImpl implements ThViewRepo {
   public SelectBuilder<ThViewFields, ThViewRow> select() {
     return SelectBuilder.of("pr.th", ThViewFields.structure(), ThViewRow._rowParser);

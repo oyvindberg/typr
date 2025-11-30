@@ -14,11 +14,13 @@ import doobie.util.Write
 import doobie.util.meta.Meta
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class FlaffRepoImpl extends FlaffRepo {
   def delete: DeleteBuilder[FlaffFields, FlaffRow] = DeleteBuilder.of(""""public"."flaff"""", FlaffFields.structure, FlaffRow.read)
 

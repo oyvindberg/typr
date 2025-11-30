@@ -5,11 +5,13 @@
  */
 package adventureworks.sa.tr;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class TrViewRepoImpl implements TrViewRepo {
   public SelectBuilder<TrViewFields, TrViewRow> select() {
     return SelectBuilder.of("sa.tr", TrViewFields.structure(), TrViewRow._rowParser);

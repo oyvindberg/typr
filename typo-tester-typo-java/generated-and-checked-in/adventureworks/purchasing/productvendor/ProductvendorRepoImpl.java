@@ -9,6 +9,7 @@ import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ProductvendorRepoImpl implements ProductvendorRepo {
   public DeleteBuilder<ProductvendorFields, ProductvendorRow> delete() {
     return DeleteBuilder.of("purchasing.productvendor", ProductvendorFields.structure());

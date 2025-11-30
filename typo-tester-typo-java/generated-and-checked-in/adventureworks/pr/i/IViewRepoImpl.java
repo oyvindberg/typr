@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.i;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class IViewRepoImpl implements IViewRepo {
   public SelectBuilder<IViewFields, IViewRow> select() {
     return SelectBuilder.of("pr.i", IViewFields.structure(), IViewRow._rowParser);

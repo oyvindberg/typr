@@ -12,6 +12,7 @@ import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.public_.NameStyle;
 import adventureworks.userdefined.FirstName;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class PersonRepoImpl implements PersonRepo {
   public DeleteBuilder<PersonFields, PersonRow> delete() {
     return DeleteBuilder.of("person.person", PersonFields.structure());

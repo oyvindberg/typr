@@ -7,9 +7,11 @@ package adventureworks.production.vproductmodelcatalogdescription
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class VproductmodelcatalogdescriptionViewRepoImpl extends VproductmodelcatalogdescriptionViewRepo {
   def select: SelectBuilder[VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow] = SelectBuilder.of(""""production"."vproductmodelcatalogdescription"""", VproductmodelcatalogdescriptionViewFields.structure, VproductmodelcatalogdescriptionViewRow.read)
 

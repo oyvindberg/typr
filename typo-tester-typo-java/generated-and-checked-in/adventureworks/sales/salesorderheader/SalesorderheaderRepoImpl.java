@@ -18,6 +18,7 @@ import adventureworks.sales.currencyrate.CurrencyrateId;
 import adventureworks.sales.customer.CustomerId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import adventureworks.userdefined.CustomCreditcardId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
   public DeleteBuilder<SalesorderheaderFields, SalesorderheaderRow> delete() {
     return DeleteBuilder.of("sales.salesorderheader", SalesorderheaderFields.structure());

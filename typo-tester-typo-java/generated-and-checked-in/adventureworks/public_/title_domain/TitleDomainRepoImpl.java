@@ -5,6 +5,7 @@
  */
 package adventureworks.public_.title_domain;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class TitleDomainRepoImpl implements TitleDomainRepo {
   public DeleteBuilder<TitleDomainFields, TitleDomainRow> delete() {
     return DeleteBuilder.of("public.title_domain", TitleDomainFields.structure());

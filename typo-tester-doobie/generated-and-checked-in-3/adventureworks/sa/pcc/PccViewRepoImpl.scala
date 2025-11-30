@@ -7,9 +7,11 @@ package adventureworks.sa.pcc
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class PccViewRepoImpl extends PccViewRepo {
   def select: SelectBuilder[PccViewFields, PccViewRow] = SelectBuilder.of(""""sa"."pcc"""", PccViewFields.structure, PccViewRow.read)
 

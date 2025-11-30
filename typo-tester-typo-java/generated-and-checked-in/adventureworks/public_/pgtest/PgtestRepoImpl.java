@@ -31,6 +31,7 @@ import adventureworks.customtypes.TypoVector;
 import adventureworks.customtypes.TypoXml;
 import adventureworks.public_.Mydomain;
 import adventureworks.public_.Myenum;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +43,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class PgtestRepoImpl implements PgtestRepo {
   public DeleteBuilder<PgtestFields, PgtestRow> delete() {
     return DeleteBuilder.of("public.pgtest", PgtestFields.structure());

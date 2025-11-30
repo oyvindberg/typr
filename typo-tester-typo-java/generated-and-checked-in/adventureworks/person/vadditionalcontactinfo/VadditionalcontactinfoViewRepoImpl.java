@@ -5,11 +5,13 @@
  */
 package adventureworks.person.vadditionalcontactinfo;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VadditionalcontactinfoViewRepoImpl implements VadditionalcontactinfoViewRepo {
   public SelectBuilder<VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow> select() {
     return SelectBuilder.of("person.vadditionalcontactinfo", VadditionalcontactinfoViewFields.structure(), VadditionalcontactinfoViewRow._rowParser);

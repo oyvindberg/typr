@@ -5,10 +5,12 @@
  */
 package adventureworks.person_row_join;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PersonRowJoinSqlRepoImpl implements PersonRowJoinSqlRepo {
   public List<PersonRowJoinSqlRow> apply(Connection c) {
     return interpolate(typo.runtime.Fragment.lit("""

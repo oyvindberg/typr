@@ -7,9 +7,11 @@ package adventureworks.sa.sohsr
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class SohsrViewRepoImpl extends SohsrViewRepo {
   def select: SelectBuilder[SohsrViewFields, SohsrViewRow] = SelectBuilder.of(""""sa"."sohsr"""", SohsrViewFields.structure, SohsrViewRow.read)
 

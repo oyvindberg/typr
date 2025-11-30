@@ -7,9 +7,11 @@ package adventureworks.sales.vstorewithaddresses
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class VstorewithaddressesViewRepoImpl extends VstorewithaddressesViewRepo {
   def select: SelectBuilder[VstorewithaddressesViewFields, VstorewithaddressesViewRow] = SelectBuilder.of(""""sales"."vstorewithaddresses"""", VstorewithaddressesViewFields.structure, VstorewithaddressesViewRow.read)
 

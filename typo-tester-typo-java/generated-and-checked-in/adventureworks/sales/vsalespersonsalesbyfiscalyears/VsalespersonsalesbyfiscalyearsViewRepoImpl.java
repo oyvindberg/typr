@@ -5,11 +5,13 @@
  */
 package adventureworks.sales.vsalespersonsalesbyfiscalyears;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VsalespersonsalesbyfiscalyearsViewRepoImpl implements VsalespersonsalesbyfiscalyearsViewRepo {
   public SelectBuilder<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow> select() {
     return SelectBuilder.of("sales.vsalespersonsalesbyfiscalyears", VsalespersonsalesbyfiscalyearsViewFields.structure(), VsalespersonsalesbyfiscalyearsViewRow._rowParser);

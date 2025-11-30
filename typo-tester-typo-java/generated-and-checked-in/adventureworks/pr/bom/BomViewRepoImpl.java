@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.bom;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class BomViewRepoImpl implements BomViewRepo {
   public SelectBuilder<BomViewFields, BomViewRow> select() {
     return SelectBuilder.of("pr.bom", BomViewFields.structure(), BomViewRow._rowParser);

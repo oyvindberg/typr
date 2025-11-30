@@ -5,11 +5,13 @@
  */
 package adventureworks.sa.crc;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class CrcViewRepoImpl implements CrcViewRepo {
   public SelectBuilder<CrcViewFields, CrcViewRow> select() {
     return SelectBuilder.of("sa.crc", CrcViewFields.structure(), CrcViewRow._rowParser);

@@ -37,11 +37,13 @@ import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
 import doobie.util.Write
 import doobie.util.meta.Meta
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class PgtestRepoImpl extends PgtestRepo {
   def delete: DeleteBuilder[PgtestFields, PgtestRow] = DeleteBuilder.of(""""public"."pgtest"""", PgtestFields.structure, PgtestRow.read)
 

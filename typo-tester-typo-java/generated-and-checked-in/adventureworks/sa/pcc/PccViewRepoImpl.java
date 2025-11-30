@@ -5,11 +5,13 @@
  */
 package adventureworks.sa.pcc;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PccViewRepoImpl implements PccViewRepo {
   public SelectBuilder<PccViewFields, PccViewRow> select() {
     return SelectBuilder.of("sa.pcc", PccViewFields.structure(), PccViewRow._rowParser);

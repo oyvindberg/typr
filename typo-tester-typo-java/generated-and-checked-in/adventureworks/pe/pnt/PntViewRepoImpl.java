@@ -5,11 +5,13 @@
  */
 package adventureworks.pe.pnt;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PntViewRepoImpl implements PntViewRepo {
   public SelectBuilder<PntViewFields, PntViewRow> select() {
     return SelectBuilder.of("pe.pnt", PntViewFields.structure(), PntViewRow._rowParser);

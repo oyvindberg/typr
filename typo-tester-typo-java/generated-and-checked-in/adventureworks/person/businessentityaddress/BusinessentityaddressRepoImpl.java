@@ -10,6 +10,7 @@ import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.addresstype.AddresstypeId;
 import adventureworks.person.businessentity.BusinessentityId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo {
   public DeleteBuilder<BusinessentityaddressFields, BusinessentityaddressRow> delete() {
     return DeleteBuilder.of("person.businessentityaddress", BusinessentityaddressFields.structure());

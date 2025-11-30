@@ -5,11 +5,13 @@
  */
 package adventureworks.pe.pa;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PaViewRepoImpl implements PaViewRepo {
   public SelectBuilder<PaViewFields, PaViewRow> select() {
     return SelectBuilder.of("pe.pa", PaViewFields.structure(), PaViewRow._rowParser);

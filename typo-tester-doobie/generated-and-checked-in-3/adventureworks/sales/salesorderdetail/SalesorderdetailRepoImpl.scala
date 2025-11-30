@@ -21,11 +21,13 @@ import doobie.util.fragment.Fragment
 import doobie.util.meta.Meta
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
   def delete: DeleteBuilder[SalesorderdetailFields, SalesorderdetailRow] = DeleteBuilder.of(""""sales"."salesorderdetail"""", SalesorderdetailFields.structure, SalesorderdetailRow.read)
 

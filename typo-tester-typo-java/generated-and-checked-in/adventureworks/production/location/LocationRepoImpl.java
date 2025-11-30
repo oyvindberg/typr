@@ -7,6 +7,7 @@ package adventureworks.production.location;
 
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class LocationRepoImpl implements LocationRepo {
   public DeleteBuilder<LocationFields, LocationRow> delete() {
     return DeleteBuilder.of("production.location", LocationFields.structure());

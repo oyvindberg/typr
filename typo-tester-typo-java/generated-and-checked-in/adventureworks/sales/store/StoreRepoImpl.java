@@ -10,6 +10,7 @@ import adventureworks.customtypes.TypoUUID;
 import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class StoreRepoImpl implements StoreRepo {
   public DeleteBuilder<StoreFields, StoreRow> delete() {
     return DeleteBuilder.of("sales.store", StoreFields.structure());

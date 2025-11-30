@@ -629,7 +629,7 @@ case class FilesRelation(
         }
       }
     val cls = jvm.Class(
-      annotations = Nil,
+      annotations = IocAnnotations.forMainScope(options.iocFramework),
       comments = jvm.Comments.Empty,
       classType = jvm.ClassType.Class,
       name = names.RepoImplName,

@@ -11,6 +11,7 @@ import adventureworks.customtypes.TypoShort;
 import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Flag;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class DocumentRepoImpl implements DocumentRepo {
   public DeleteBuilder<DocumentFields, DocumentRow> delete() {
     return DeleteBuilder.of("production.document", DocumentFields.structure());

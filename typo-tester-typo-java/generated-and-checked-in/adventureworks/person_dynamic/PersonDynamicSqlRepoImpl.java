@@ -5,12 +5,14 @@
  */
 package adventureworks.person_dynamic;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
 import typo.runtime.PgTypes;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PersonDynamicSqlRepoImpl implements PersonDynamicSqlRepo {
   public List<PersonDynamicSqlRow> apply(
     Optional<String> firstName,

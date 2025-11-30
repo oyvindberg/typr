@@ -11,8 +11,10 @@ import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
 import doobie.util.Write
 import doobie.util.meta.Meta
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class UpdatePersonReturningSqlRepoImpl extends UpdatePersonReturningSqlRepo {
   def apply(
     suffix: /* nullability unknown */ Option[String],

@@ -17,11 +17,13 @@ import doobie.util.Write
 import doobie.util.fragment.Fragment
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
   def delete: DeleteBuilder[CountryregioncurrencyFields, CountryregioncurrencyRow] = DeleteBuilder.of(""""sales"."countryregioncurrency"""", CountryregioncurrencyFields.structure, CountryregioncurrencyRow.read)
 

@@ -7,9 +7,11 @@ package adventureworks.pr.p
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class PViewRepoImpl extends PViewRepo {
   def select: SelectBuilder[PViewFields, PViewRow] = SelectBuilder.of(""""pr"."p"""", PViewFields.structure, PViewRow.read)
 

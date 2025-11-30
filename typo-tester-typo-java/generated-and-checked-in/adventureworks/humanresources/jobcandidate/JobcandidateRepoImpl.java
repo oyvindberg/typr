@@ -8,6 +8,7 @@ package adventureworks.humanresources.jobcandidate;
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class JobcandidateRepoImpl implements JobcandidateRepo {
   public DeleteBuilder<JobcandidateFields, JobcandidateRow> delete() {
     return DeleteBuilder.of("humanresources.jobcandidate", JobcandidateFields.structure());

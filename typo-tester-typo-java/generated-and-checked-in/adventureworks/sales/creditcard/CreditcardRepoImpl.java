@@ -8,6 +8,7 @@ package adventureworks.sales.creditcard;
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoShort;
 import adventureworks.userdefined.CustomCreditcardId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class CreditcardRepoImpl implements CreditcardRepo {
   public DeleteBuilder<CreditcardFields, CreditcardRow> delete() {
     return DeleteBuilder.of("sales.creditcard", CreditcardFields.structure());

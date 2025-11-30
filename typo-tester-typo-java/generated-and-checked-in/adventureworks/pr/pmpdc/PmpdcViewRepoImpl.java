@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.pmpdc;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PmpdcViewRepoImpl implements PmpdcViewRepo {
   public SelectBuilder<PmpdcViewFields, PmpdcViewRow> select() {
     return SelectBuilder.of("pr.pmpdc", PmpdcViewFields.structure(), PmpdcViewRow._rowParser);

@@ -8,6 +8,7 @@ package adventureworks.person.addresstype;
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class AddresstypeRepoImpl implements AddresstypeRepo {
   public DeleteBuilder<AddresstypeFields, AddresstypeRow> delete() {
     return DeleteBuilder.of("person.addresstype", AddresstypeFields.structure());

@@ -7,6 +7,7 @@ package adventureworks.production.productphoto;
 
 import adventureworks.customtypes.TypoBytea;
 import adventureworks.customtypes.TypoLocalDateTime;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ProductphotoRepoImpl implements ProductphotoRepo {
   public DeleteBuilder<ProductphotoFields, ProductphotoRow> delete() {
     return DeleteBuilder.of("production.productphoto", ProductphotoFields.structure());

@@ -7,6 +7,7 @@ package adventureworks.person.contacttype;
 
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ContacttypeRepoImpl implements ContacttypeRepo {
   public DeleteBuilder<ContacttypeFields, ContacttypeRow> delete() {
     return DeleteBuilder.of("person.contacttype", ContacttypeFields.structure());

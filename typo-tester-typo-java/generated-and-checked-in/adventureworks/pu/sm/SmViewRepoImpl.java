@@ -5,11 +5,13 @@
  */
 package adventureworks.pu.sm;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class SmViewRepoImpl implements SmViewRepo {
   public SelectBuilder<SmViewFields, SmViewRow> select() {
     return SelectBuilder.of("pu.sm", SmViewFields.structure(), SmViewRow._rowParser);

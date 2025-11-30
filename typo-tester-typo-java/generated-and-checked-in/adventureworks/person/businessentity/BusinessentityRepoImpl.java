@@ -7,6 +7,7 @@ package adventureworks.person.businessentity;
 
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoUUID;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class BusinessentityRepoImpl implements BusinessentityRepo {
   public DeleteBuilder<BusinessentityFields, BusinessentityRow> delete() {
     return DeleteBuilder.of("person.businessentity", BusinessentityFields.structure());

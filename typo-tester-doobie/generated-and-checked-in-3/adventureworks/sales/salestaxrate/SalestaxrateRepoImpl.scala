@@ -20,11 +20,13 @@ import doobie.util.fragment.Fragment
 import doobie.util.meta.Meta
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class SalestaxrateRepoImpl extends SalestaxrateRepo {
   def delete: DeleteBuilder[SalestaxrateFields, SalestaxrateRow] = DeleteBuilder.of(""""sales"."salestaxrate"""", SalestaxrateFields.structure, SalestaxrateRow.read)
 

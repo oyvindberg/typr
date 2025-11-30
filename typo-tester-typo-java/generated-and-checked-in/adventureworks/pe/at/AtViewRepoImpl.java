@@ -5,11 +5,13 @@
  */
 package adventureworks.pe.at;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class AtViewRepoImpl implements AtViewRepo {
   public SelectBuilder<AtViewFields, AtViewRow> select() {
     return SelectBuilder.of("pe.at", AtViewFields.structure(), AtViewRow._rowParser);

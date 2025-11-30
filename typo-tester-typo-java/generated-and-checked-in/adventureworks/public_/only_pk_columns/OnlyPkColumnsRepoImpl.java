@@ -5,6 +5,7 @@
  */
 package adventureworks.public_.only_pk_columns;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
   public DeleteBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> delete() {
     return DeleteBuilder.of("public.only_pk_columns", OnlyPkColumnsFields.structure());

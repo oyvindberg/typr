@@ -9,6 +9,7 @@ import adventureworks.customtypes.TypoBytea;
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.stateprovince.StateprovinceId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class AddressRepoImpl implements AddressRepo {
   public DeleteBuilder<AddressFields, AddressRow> delete() {
     return DeleteBuilder.of("person.address", AddressFields.structure());

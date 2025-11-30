@@ -5,6 +5,7 @@
  */
 package adventureworks.public_.test_organisasjon;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
   public DeleteBuilder<TestOrganisasjonFields, TestOrganisasjonRow> delete() {
     return DeleteBuilder.of("public.test_organisasjon", TestOrganisasjonFields.structure());

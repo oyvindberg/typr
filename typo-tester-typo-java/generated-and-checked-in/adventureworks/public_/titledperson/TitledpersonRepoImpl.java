@@ -7,6 +7,7 @@ package adventureworks.public_.titledperson;
 
 import adventureworks.public_.title.TitleId;
 import adventureworks.public_.title_domain.TitleDomainId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class TitledpersonRepoImpl implements TitledpersonRepo {
   public DeleteBuilder<TitledpersonFields, TitledpersonRow> delete() {
     return DeleteBuilder.of("public.titledperson", TitledpersonFields.structure());

@@ -7,6 +7,7 @@ package adventureworks.public_.users;
 
 import adventureworks.customtypes.TypoInstant;
 import adventureworks.customtypes.TypoUnknownCitext;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class UsersRepoImpl implements UsersRepo {
   public DeleteBuilder<UsersFields, UsersRow> delete() {
     return DeleteBuilder.of("public.users", UsersFields.structure());

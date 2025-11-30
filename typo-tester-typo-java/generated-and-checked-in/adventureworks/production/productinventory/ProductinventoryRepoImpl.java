@@ -10,6 +10,7 @@ import adventureworks.customtypes.TypoShort;
 import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.product.ProductId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ProductinventoryRepoImpl implements ProductinventoryRepo {
   public DeleteBuilder<ProductinventoryFields, ProductinventoryRow> delete() {
     return DeleteBuilder.of("production.productinventory", ProductinventoryFields.structure());

@@ -9,6 +9,7 @@ import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.scrapreason.ScrapreasonId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class WorkorderRepoImpl implements WorkorderRepo {
   public DeleteBuilder<WorkorderFields, WorkorderRow> delete() {
     return DeleteBuilder.of("production.workorder", WorkorderFields.structure());

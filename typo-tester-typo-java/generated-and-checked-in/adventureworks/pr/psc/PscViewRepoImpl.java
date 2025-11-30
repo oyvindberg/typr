@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.psc;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PscViewRepoImpl implements PscViewRepo {
   public SelectBuilder<PscViewFields, PscViewRow> select() {
     return SelectBuilder.of("pr.psc", PscViewFields.structure(), PscViewRow._rowParser);

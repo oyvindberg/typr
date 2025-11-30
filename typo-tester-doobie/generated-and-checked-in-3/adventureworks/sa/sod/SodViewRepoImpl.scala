@@ -7,9 +7,11 @@ package adventureworks.sa.sod
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class SodViewRepoImpl extends SodViewRepo {
   def select: SelectBuilder[SodViewFields, SodViewRow] = SelectBuilder.of(""""sa"."sod"""", SodViewFields.structure, SodViewRow.read)
 

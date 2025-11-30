@@ -6,6 +6,7 @@
 package adventureworks.public_.issue142_2;
 
 import adventureworks.public_.issue142.Issue142Id;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class Issue1422RepoImpl implements Issue1422Repo {
   public DeleteBuilder<Issue1422Fields, Issue1422Row> delete() {
     return DeleteBuilder.of("public.issue142_2", Issue1422Fields.structure());

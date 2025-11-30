@@ -5,11 +5,13 @@
  */
 package adventureworks.pu.pv;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PvViewRepoImpl implements PvViewRepo {
   public SelectBuilder<PvViewFields, PvViewRow> select() {
     return SelectBuilder.of("pu.pv", PvViewFields.structure(), PvViewRow._rowParser);

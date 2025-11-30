@@ -9,6 +9,7 @@ import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.phonenumbertype.PhonenumbertypeId;
 import adventureworks.public_.Phone;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class PersonphoneRepoImpl implements PersonphoneRepo {
   public DeleteBuilder<PersonphoneFields, PersonphoneRow> delete() {
     return DeleteBuilder.of("person.personphone", PersonphoneFields.structure());

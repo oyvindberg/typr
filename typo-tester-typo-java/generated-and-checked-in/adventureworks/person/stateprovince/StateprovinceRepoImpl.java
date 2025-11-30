@@ -11,6 +11,7 @@ import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class StateprovinceRepoImpl implements StateprovinceRepo {
   public DeleteBuilder<StateprovinceFields, StateprovinceRow> delete() {
     return DeleteBuilder.of("person.stateprovince", StateprovinceFields.structure());

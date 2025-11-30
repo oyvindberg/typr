@@ -13,11 +13,13 @@ import doobie.syntax.SqlInterpolator.SingleFragment.fromWrite
 import doobie.util.Write
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class Issue1422RepoImpl extends Issue1422Repo {
   def delete: DeleteBuilder[Issue1422Fields, Issue1422Row] = DeleteBuilder.of(""""public"."issue142_2"""", Issue1422Fields.structure, Issue1422Row.read)
 

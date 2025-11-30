@@ -5,11 +5,13 @@
  */
 package adventureworks.sales.vindividualcustomer;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VindividualcustomerViewRepoImpl implements VindividualcustomerViewRepo {
   public SelectBuilder<VindividualcustomerViewFields, VindividualcustomerViewRow> select() {
     return SelectBuilder.of("sales.vindividualcustomer", VindividualcustomerViewFields.structure(), VindividualcustomerViewRow._rowParser);

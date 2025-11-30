@@ -5,11 +5,13 @@
  */
 package adventureworks.pu.poh;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PohViewRepoImpl implements PohViewRepo {
   public SelectBuilder<PohViewFields, PohViewRow> select() {
     return SelectBuilder.of("pu.poh", PohViewFields.structure(), PohViewRow._rowParser);

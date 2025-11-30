@@ -5,11 +5,13 @@
  */
 package adventureworks.sa.soh;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class SohViewRepoImpl implements SohViewRepo {
   public SelectBuilder<SohViewFields, SohViewRow> select() {
     return SelectBuilder.of("sa.soh", SohViewFields.structure(), SohViewRow._rowParser);

@@ -11,6 +11,7 @@ import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.specialoffer.SpecialofferId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class SalesorderdetailRepoImpl implements SalesorderdetailRepo {
   public DeleteBuilder<SalesorderdetailFields, SalesorderdetailRow> delete() {
     return DeleteBuilder.of("sales.salesorderdetail", SalesorderdetailFields.structure());

@@ -18,11 +18,13 @@ import doobie.util.Write
 import doobie.util.fragment.Fragment
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class ProductsubcategoryRepoImpl extends ProductsubcategoryRepo {
   def delete: DeleteBuilder[ProductsubcategoryFields, ProductsubcategoryRow] = DeleteBuilder.of(""""production"."productsubcategory"""", ProductsubcategoryFields.structure, ProductsubcategoryRow.read)
 

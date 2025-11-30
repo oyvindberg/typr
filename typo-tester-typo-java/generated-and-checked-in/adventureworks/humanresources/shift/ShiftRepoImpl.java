@@ -8,6 +8,7 @@ package adventureworks.humanresources.shift;
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoLocalTime;
 import adventureworks.public_.Name;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ShiftRepoImpl implements ShiftRepo {
   public DeleteBuilder<ShiftFields, ShiftRow> delete() {
     return DeleteBuilder.of("humanresources.shift", ShiftFields.structure());

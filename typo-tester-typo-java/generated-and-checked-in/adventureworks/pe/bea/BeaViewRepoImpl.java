@@ -5,11 +5,13 @@
  */
 package adventureworks.pe.bea;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class BeaViewRepoImpl implements BeaViewRepo {
   public SelectBuilder<BeaViewFields, BeaViewRow> select() {
     return SelectBuilder.of("pe.bea", BeaViewFields.structure(), BeaViewRow._rowParser);

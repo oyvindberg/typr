@@ -7,9 +7,11 @@ package adventureworks.pr.psc
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class PscViewRepoImpl extends PscViewRepo {
   def select: SelectBuilder[PscViewFields, PscViewRow] = SelectBuilder.of(""""pr"."psc"""", PscViewFields.structure, PscViewRow.read)
 

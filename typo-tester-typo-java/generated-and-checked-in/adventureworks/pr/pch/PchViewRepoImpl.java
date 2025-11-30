@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.pch;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PchViewRepoImpl implements PchViewRepo {
   public SelectBuilder<PchViewFields, PchViewRow> select() {
     return SelectBuilder.of("pr.pch", PchViewFields.structure(), PchViewRow._rowParser);

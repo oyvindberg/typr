@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.pmi;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PmiViewRepoImpl implements PmiViewRepo {
   public SelectBuilder<PmiViewFields, PmiViewRow> select() {
     return SelectBuilder.of("pr.pmi", PmiViewFields.structure(), PmiViewRow._rowParser);

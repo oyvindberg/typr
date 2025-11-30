@@ -10,6 +10,7 @@ import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.humanresources.shift.ShiftId;
 import adventureworks.person.businessentity.BusinessentityId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class EmployeedepartmenthistoryRepoImpl implements EmployeedepartmenthistoryRepo {
   public DeleteBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> delete() {
     return DeleteBuilder.of("humanresources.employeedepartmenthistory", EmployeedepartmenthistoryFields.structure());

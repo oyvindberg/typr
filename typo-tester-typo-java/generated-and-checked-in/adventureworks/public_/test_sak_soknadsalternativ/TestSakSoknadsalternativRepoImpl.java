@@ -6,6 +6,7 @@
 package adventureworks.public_.test_sak_soknadsalternativ;
 
 import adventureworks.public_.test_organisasjon.TestOrganisasjonId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class TestSakSoknadsalternativRepoImpl implements TestSakSoknadsalternativRepo {
   public DeleteBuilder<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> delete() {
     return DeleteBuilder.of("public.test_sak_soknadsalternativ", TestSakSoknadsalternativFields.structure());

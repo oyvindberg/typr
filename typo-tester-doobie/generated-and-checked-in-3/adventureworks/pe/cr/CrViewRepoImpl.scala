@@ -7,9 +7,11 @@ package adventureworks.pe.cr
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class CrViewRepoImpl extends CrViewRepo {
   def select: SelectBuilder[CrViewFields, CrViewRow] = SelectBuilder.of(""""pe"."cr"""", CrViewFields.structure, CrViewRow.read)
 

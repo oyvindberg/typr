@@ -6,6 +6,7 @@
 package adventureworks.public_.flaff;
 
 import adventureworks.public_.ShortText;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class FlaffRepoImpl implements FlaffRepo {
   public DeleteBuilder<FlaffFields, FlaffRow> delete() {
     return DeleteBuilder.of("public.flaff", FlaffFields.structure());

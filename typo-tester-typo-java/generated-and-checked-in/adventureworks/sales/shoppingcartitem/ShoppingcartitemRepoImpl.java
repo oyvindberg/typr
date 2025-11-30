@@ -7,6 +7,7 @@ package adventureworks.sales.shoppingcartitem;
 
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ShoppingcartitemRepoImpl implements ShoppingcartitemRepo {
   public DeleteBuilder<ShoppingcartitemFields, ShoppingcartitemRow> delete() {
     return DeleteBuilder.of("sales.shoppingcartitem", ShoppingcartitemFields.structure());

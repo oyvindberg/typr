@@ -5,11 +5,13 @@
  */
 package adventureworks.humanresources.vjobcandidateeducation;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VjobcandidateeducationViewRepoImpl implements VjobcandidateeducationViewRepo {
   public SelectBuilder<VjobcandidateeducationViewFields, VjobcandidateeducationViewRow> select() {
     return SelectBuilder.of("humanresources.vjobcandidateeducation", VjobcandidateeducationViewFields.structure(), VjobcandidateeducationViewRow._rowParser);

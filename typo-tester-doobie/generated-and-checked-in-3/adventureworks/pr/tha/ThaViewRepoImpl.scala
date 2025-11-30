@@ -7,9 +7,11 @@ package adventureworks.pr.tha
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class ThaViewRepoImpl extends ThaViewRepo {
   def select: SelectBuilder[ThaViewFields, ThaViewRow] = SelectBuilder.of(""""pr"."tha"""", ThaViewFields.structure, ThaViewRow.read)
 

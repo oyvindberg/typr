@@ -5,11 +5,13 @@
  */
 package adventureworks.sales.vstorewithdemographics;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VstorewithdemographicsViewRepoImpl implements VstorewithdemographicsViewRepo {
   public SelectBuilder<VstorewithdemographicsViewFields, VstorewithdemographicsViewRow> select() {
     return SelectBuilder.of("sales.vstorewithdemographics", VstorewithdemographicsViewFields.structure(), VstorewithdemographicsViewRow._rowParser);

@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.pi;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PiViewRepoImpl implements PiViewRepo {
   public SelectBuilder<PiViewFields, PiViewRow> select() {
     return SelectBuilder.of("pr.pi", PiViewFields.structure(), PiViewRow._rowParser);

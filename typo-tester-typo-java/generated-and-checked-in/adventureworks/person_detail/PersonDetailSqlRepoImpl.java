@@ -7,10 +7,12 @@ package adventureworks.person_detail;
 
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PersonDetailSqlRepoImpl implements PersonDetailSqlRepo {
   public List<PersonDetailSqlRow> apply(
     /* user-picked */ BusinessentityId businessentityid,

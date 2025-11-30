@@ -90,4 +90,13 @@ object TypesJava {
   val Throwable = jvm.Type.Qualified("java.lang.Throwable")
   val UUID = Qualified("java.util.UUID")
   val ZoneOffset = Qualified("java.time.ZoneOffset")
+
+  object spring {
+    val Repository = Qualified("org.springframework.stereotype.Repository")
+  }
+
+  object jakarta {
+    val ApplicationScoped = Qualified("jakarta.enterprise.context.ApplicationScoped")
+    val Singleton = Qualified("jakarta.inject.Singleton")
+  }
 }

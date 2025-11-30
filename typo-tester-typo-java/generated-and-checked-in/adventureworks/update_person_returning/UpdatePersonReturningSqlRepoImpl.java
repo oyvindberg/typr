@@ -6,12 +6,14 @@
 package adventureworks.update_person_returning;
 
 import adventureworks.customtypes.TypoLocalDateTime;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
 import typo.runtime.PgTypes;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class UpdatePersonReturningSqlRepoImpl implements UpdatePersonReturningSqlRepo {
   public List<UpdatePersonReturningSqlRow> apply(
     /* nullability unknown */ Optional<String> suffix,

@@ -5,11 +5,13 @@
  */
 package adventureworks.hr.d;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class DViewRepoImpl implements DViewRepo {
   public SelectBuilder<DViewFields, DViewRow> select() {
     return SelectBuilder.of("hr.d", DViewFields.structure(), DViewRow._rowParser);

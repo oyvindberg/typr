@@ -5,11 +5,13 @@
  */
 package adventureworks.sa.cc;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class CcViewRepoImpl implements CcViewRepo {
   public SelectBuilder<CcViewFields, CcViewRow> select() {
     return SelectBuilder.of("sa.cc", CcViewFields.structure(), CcViewRow._rowParser);

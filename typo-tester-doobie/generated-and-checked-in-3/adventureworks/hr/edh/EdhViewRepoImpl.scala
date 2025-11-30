@@ -7,9 +7,11 @@ package adventureworks.hr.edh
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class EdhViewRepoImpl extends EdhViewRepo {
   def select: SelectBuilder[EdhViewFields, EdhViewRow] = SelectBuilder.of(""""hr"."edh"""", EdhViewFields.structure, EdhViewRow.read)
 

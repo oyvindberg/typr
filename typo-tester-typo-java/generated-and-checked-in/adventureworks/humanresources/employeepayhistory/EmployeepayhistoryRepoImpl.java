@@ -8,6 +8,7 @@ package adventureworks.humanresources.employeepayhistory;
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class EmployeepayhistoryRepoImpl implements EmployeepayhistoryRepo {
   public DeleteBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow> delete() {
     return DeleteBuilder.of("humanresources.employeepayhistory", EmployeepayhistoryFields.structure());

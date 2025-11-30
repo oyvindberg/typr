@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.pdoc;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PdocViewRepoImpl implements PdocViewRepo {
   public SelectBuilder<PdocViewFields, PdocViewRow> select() {
     return SelectBuilder.of("pr.pdoc", PdocViewFields.structure(), PdocViewRow._rowParser);

@@ -17,11 +17,13 @@ import doobie.util.fragment.Fragment
 import doobie.util.meta.Meta
 import doobie.util.update.Update
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.DeleteBuilder
 import typo.dsl.SelectBuilder
 import typo.dsl.UpdateBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class ProductphotoRepoImpl extends ProductphotoRepo {
   def delete: DeleteBuilder[ProductphotoFields, ProductphotoRow] = DeleteBuilder.of(""""production"."productphoto"""", ProductphotoFields.structure, ProductphotoRow.read)
 

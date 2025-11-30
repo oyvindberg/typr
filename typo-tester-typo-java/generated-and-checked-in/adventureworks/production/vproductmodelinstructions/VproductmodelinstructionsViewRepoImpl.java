@@ -5,11 +5,13 @@
  */
 package adventureworks.production.vproductmodelinstructions;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VproductmodelinstructionsViewRepoImpl implements VproductmodelinstructionsViewRepo {
   public SelectBuilder<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow> select() {
     return SelectBuilder.of("production.vproductmodelinstructions", VproductmodelinstructionsViewFields.structure(), VproductmodelinstructionsViewRow._rowParser);

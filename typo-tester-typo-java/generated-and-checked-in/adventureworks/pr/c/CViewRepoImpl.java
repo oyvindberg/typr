@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.c;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class CViewRepoImpl implements CViewRepo {
   public SelectBuilder<CViewFields, CViewRow> select() {
     return SelectBuilder.of("pr.c", CViewFields.structure(), CViewRow._rowParser);

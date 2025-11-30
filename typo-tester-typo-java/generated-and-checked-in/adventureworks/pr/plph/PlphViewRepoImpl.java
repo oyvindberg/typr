@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.plph;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PlphViewRepoImpl implements PlphViewRepo {
   public SelectBuilder<PlphViewFields, PlphViewRow> select() {
     return SelectBuilder.of("pr.plph", PlphViewFields.structure(), PlphViewRow._rowParser);

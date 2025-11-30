@@ -5,11 +5,13 @@
  */
 package adventureworks.purchasing.vvendorwithaddresses;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VvendorwithaddressesViewRepoImpl implements VvendorwithaddressesViewRepo {
   public SelectBuilder<VvendorwithaddressesViewFields, VvendorwithaddressesViewRow> select() {
     return SelectBuilder.of("purchasing.vvendorwithaddresses", VvendorwithaddressesViewFields.structure(), VvendorwithaddressesViewRow._rowParser);

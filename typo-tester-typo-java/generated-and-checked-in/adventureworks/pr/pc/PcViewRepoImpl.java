@@ -5,11 +5,13 @@
  */
 package adventureworks.pr.pc;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PcViewRepoImpl implements PcViewRepo {
   public SelectBuilder<PcViewFields, PcViewRow> select() {
     return SelectBuilder.of("pr.pc", PcViewFields.structure(), PcViewRow._rowParser);

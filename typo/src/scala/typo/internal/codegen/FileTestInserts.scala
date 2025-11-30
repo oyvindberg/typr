@@ -3,14 +3,14 @@ package internal
 package codegen
 
 object FileTestInserts {
-  def apply(x: ComputedTestInserts, dbLib: DbLib, lang: Lang): List[jvm.File] = {
+  def apply(x: ComputedTestInserts, dbLib: DbLib, lang: Lang, iocFramework: Option[IocFramework]): List[jvm.File] = {
     val params = List(
       Some(jvm.Param(ComputedTestInserts.random, lang.Random.tpe)),
       x.maybeDomainMethods.map(x => jvm.Param(ComputedTestInserts.domainInsert, x.tpe))
     ).flatten
 
     val cls = jvm.Adt.Record(
-      annotations = Nil,
+      annotations = IocAnnotations.forTestScope(iocFramework),
       isWrapper = false,
       comments = scaladoc(List(s"Methods to generate random data for `${x.tpe.name}`")),
       name = x.tpe,

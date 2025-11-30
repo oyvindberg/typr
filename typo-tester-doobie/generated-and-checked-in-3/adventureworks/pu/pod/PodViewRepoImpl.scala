@@ -7,9 +7,11 @@ package adventureworks.pu.pod
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class PodViewRepoImpl extends PodViewRepo {
   def select: SelectBuilder[PodViewFields, PodViewRow] = SelectBuilder.of(""""pu"."pod"""", PodViewFields.structure, PodViewRow.read)
 

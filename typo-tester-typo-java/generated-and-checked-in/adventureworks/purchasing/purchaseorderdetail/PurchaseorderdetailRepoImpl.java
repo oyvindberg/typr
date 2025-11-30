@@ -6,6 +6,7 @@
 package adventureworks.purchasing.purchaseorderdetail;
 
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class PurchaseorderdetailRepoImpl implements PurchaseorderdetailRepo {
   public SelectBuilder<PurchaseorderdetailFields, PurchaseorderdetailRow> select() {
     return SelectBuilder.of("purchasing.purchaseorderdetail", PurchaseorderdetailFields.structure(), PurchaseorderdetailRow._rowParser);

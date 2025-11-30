@@ -7,9 +7,11 @@ package adventureworks.humanresources.vjobcandidateemployment
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import typo.dsl.SelectBuilder
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class VjobcandidateemploymentViewRepoImpl extends VjobcandidateemploymentViewRepo {
   def select: SelectBuilder[VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow] = SelectBuilder.of(""""humanresources"."vjobcandidateemployment"""", VjobcandidateemploymentViewFields.structure, VjobcandidateemploymentViewRow.read)
 

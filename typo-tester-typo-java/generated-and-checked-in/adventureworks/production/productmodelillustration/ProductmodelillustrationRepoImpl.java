@@ -8,6 +8,7 @@ package adventureworks.production.productmodelillustration;
 import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.illustration.IllustrationId;
 import adventureworks.production.productmodel.ProductmodelId;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class ProductmodelillustrationRepoImpl implements ProductmodelillustrationRepo {
   public DeleteBuilder<ProductmodelillustrationFields, ProductmodelillustrationRow> delete() {
     return DeleteBuilder.of("production.productmodelillustration", ProductmodelillustrationFields.structure());

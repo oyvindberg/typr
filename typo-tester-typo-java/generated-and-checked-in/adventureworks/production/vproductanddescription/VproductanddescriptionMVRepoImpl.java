@@ -5,11 +5,13 @@
  */
 package adventureworks.production.vproductanddescription;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.List;
 import typo.dsl.SelectBuilder;
 import static typo.runtime.Fragment.interpolate;
 
+@ApplicationScoped
 public class VproductanddescriptionMVRepoImpl implements VproductanddescriptionMVRepo {
   public SelectBuilder<VproductanddescriptionMVFields, VproductanddescriptionMVRow> select() {
     return SelectBuilder.of("production.vproductanddescription", VproductanddescriptionMVFields.structure(), VproductanddescriptionMVRow._rowParser);

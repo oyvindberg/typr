@@ -7,8 +7,10 @@ package adventureworks.person_row_join
 
 import doobie.free.connection.ConnectionIO
 import fs2.Stream
+import org.springframework.stereotype.Repository
 import doobie.syntax.string.toSqlInterpolator
 
+@Repository
 class PersonRowJoinSqlRepoImpl extends PersonRowJoinSqlRepo {
   def apply: Stream[ConnectionIO, PersonRowJoinSqlRow] = {
     val sql =

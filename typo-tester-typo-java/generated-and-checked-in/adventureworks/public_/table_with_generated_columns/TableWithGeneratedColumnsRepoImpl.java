@@ -5,6 +5,7 @@
  */
 package adventureworks.public_.table_with_generated_columns;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
 import static typo.runtime.internal.stringInterpolator.str;
 
+@ApplicationScoped
 public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColumnsRepo {
   public DeleteBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> delete() {
     return DeleteBuilder.of("public.table-with-generated-columns", TableWithGeneratedColumnsFields.structure());
