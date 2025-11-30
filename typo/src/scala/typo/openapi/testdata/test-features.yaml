@@ -1,0 +1,343 @@
+openapi: 3.0.3
+info:
+  title: Test API - OpenAPI Feature Coverage
+  description: A test API spec covering various OpenAPI features for code generation testing
+  version: 1.0.0
+  license:
+    name: MIT
+
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List all pets
+      tags:
+        - pets
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of pets to return
+          schema:
+            type: integer
+            format: int32
+            default: 20
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [available, pending, sold]
+            default: available
+      responses:
+        '200':
+          description: A list of pets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+    post:
+      operationId: createPet
+      summary: Create a pet
+      tags:
+        - pets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetCreate'
+      responses:
+        '201':
+          description: Pet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pets/{petId}:
+    parameters:
+      - name: petId
+        in: path
+        required: true
+        description: The pet ID
+        schema:
+          type: string
+    get:
+      operationId: getPet
+      summary: Get a pet by ID
+      tags:
+        - pets
+      responses:
+        '200':
+          description: Pet found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deletePet
+      summary: Delete a pet
+      tags:
+        - pets
+      responses:
+        '204':
+          description: Pet deleted
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /animals:
+    get:
+      operationId: listAnimals
+      summary: List all animals (polymorphic)
+      tags:
+        - animals
+      responses:
+        '200':
+          description: A list of animals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Animal'
+
+components:
+  schemas:
+    # Simple ID wrapper type
+    PetId:
+      type: string
+      description: Unique pet identifier
+
+    # Enum type
+    PetStatus:
+      type: string
+      enum: [available, pending, sold]
+      description: Pet availability status
+
+    # Base type for allOf composition
+    BaseEntity:
+      type: object
+      required:
+        - id
+        - createdAt
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # allOf composition example
+    Pet:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - status
+          properties:
+            name:
+              type: string
+              description: Pet name
+            status:
+              $ref: '#/components/schemas/PetStatus'
+            tags:
+              type: array
+              items:
+                type: string
+            metadata:
+              type: object
+              additionalProperties:
+                type: string
+
+    PetCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/PetStatus'
+        tags:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          maxItems: 10
+        age:
+          type: integer
+          minimum: 0
+          maximum: 100
+        email:
+          type: string
+          format: email
+        website:
+          type: string
+          pattern: '^https?://.*'
+
+    # Sum type with discriminator (oneOf)
+    Animal:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+        - $ref: '#/components/schemas/Bird'
+      discriminator:
+        propertyName: animal_type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
+          bird: '#/components/schemas/Bird'
+
+    # Sum type variants
+    Cat:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - indoor
+          properties:
+            name:
+              type: string
+            indoor:
+              type: boolean
+              description: Whether the cat is an indoor cat
+            meowVolume:
+              type: integer
+              format: int32
+
+    Dog:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - breed
+          properties:
+            name:
+              type: string
+            breed:
+              type: string
+            barkVolume:
+              type: integer
+              format: int32
+
+    Bird:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - canFly
+          properties:
+            name:
+              type: string
+            canFly:
+              type: boolean
+            wingSpan:
+              type: number
+              format: double
+
+    # Nested object
+    Owner:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          $ref: '#/components/schemas/Address'
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        zipCode:
+          type: string
+        country:
+          type: string
+
+    # Error response
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+    # Wrapper types for type safety
+    Email:
+      type: string
+      format: email
+      description: Email address wrapper
+
+    Currency:
+      type: string
+      description: ISO 4217 currency code
+      pattern: '^[A-Z]{3}$'
+
+    Money:
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          $ref: '#/components/schemas/Currency'
+
+    # Nullable field example
+    OptionalInfo:
+      type: object
+      properties:
+        required_field:
+          type: string
+        optional_field:
+          type: string
+          nullable: true
+        optional_with_default:
+          type: string
+          default: "default_value"

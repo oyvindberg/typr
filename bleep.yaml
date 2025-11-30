@@ -21,6 +21,8 @@ projects:
     - org.postgresql:postgresql:42.7.3
     - com.zaxxer:HikariCP:4.0.3
     - org.slf4j:slf4j-nop:2.0.13
+    - io.swagger.parser.v3:swagger-parser:2.1.24
+    - org.scala-lang.modules::scala-collection-compat:2.12.0
     extends: template-cross
     platform:
       mainClass: com.foo.App
@@ -184,6 +186,9 @@ scripts:
     project: typo-scripts-doc
   generate-frontpage:
     main: scripts.GeneratedFrontpage
+    project: typo-scripts
+  generate-openapi-test:
+    main: scripts.GenerateOpenApiTest
     project: typo-scripts
   generate-sources:
     main: scripts.GeneratedSources
