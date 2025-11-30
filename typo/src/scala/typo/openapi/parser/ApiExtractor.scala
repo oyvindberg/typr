@@ -146,24 +146,54 @@ object ApiExtractor {
     else {
       val content = Option(body.getContent).map(_.asScala.toMap).getOrElse(Map.empty[String, io.swagger.v3.oas.models.media.MediaType])
 
-      // Prefer JSON content type
+      // Prefer JSON content type, but handle multipart specially
+      val multipartEntry = content.find(_._1 == "multipart/form-data")
       val jsonEntry = content.find(_._1.contains("json"))
-      val entry = jsonEntry.orElse(content.headOption)
+      val entry = multipartEntry.orElse(jsonEntry).orElse(content.headOption)
 
       entry.flatMap { case (contentType, mediaType) =>
         val schema = mediaType.getSchema
         if (schema == null) None
-        else
+        else {
+          val formFields = if (contentType == "multipart/form-data") {
+            extractFormFields(schema)
+          } else {
+            Nil
+          }
+
           Some(
             RequestBody(
               description = Option(body.getDescription),
               typeInfo = TypeResolver.resolveBase(schema),
               required = Option(body.getRequired).contains(java.lang.Boolean.TRUE),
-              contentType = contentType
+              contentType = contentType,
+              formFields = formFields
             )
           )
+        }
       }
     }
+  }
+
+  private def extractFormFields(schema: io.swagger.v3.oas.models.media.Schema[_]): List[FormField] = {
+    val properties = Option(schema.getProperties).map(_.asScala.toMap).getOrElse(Map.empty)
+    val requiredFields = Option(schema.getRequired).map(_.asScala.toSet).getOrElse(Set.empty[String])
+
+    properties
+      .map { case (name, propSchema) =>
+        val isBinary = Option(propSchema.getType).contains("string") &&
+          Option(propSchema.getFormat).contains("binary")
+
+        FormField(
+          name = name,
+          description = Option(propSchema.getDescription),
+          typeInfo = TypeResolver.resolveBase(propSchema),
+          required = requiredFields.contains(name),
+          isBinary = isBinary
+        )
+      }
+      .toList
+      .sortBy(_.name)
   }
 
   private def extractResponses(operation: Operation): List[ApiResponse] = {

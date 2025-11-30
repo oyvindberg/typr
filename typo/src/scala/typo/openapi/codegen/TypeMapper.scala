@@ -134,11 +134,35 @@ object Types {
     val RequestHeader = jvm.Type.Qualified("org.springframework.web.bind.annotation.RequestHeader")
     val CookieValue = jvm.Type.Qualified("org.springframework.web.bind.annotation.CookieValue")
     val RequestBody = jvm.Type.Qualified("org.springframework.web.bind.annotation.RequestBody")
+    val RequestPart = jvm.Type.Qualified("org.springframework.web.bind.annotation.RequestPart")
     val ResponseBody = jvm.Type.Qualified("org.springframework.web.bind.annotation.ResponseBody")
     val ResponseStatus = jvm.Type.Qualified("org.springframework.web.bind.annotation.ResponseStatus")
     val HttpStatus = jvm.Type.Qualified("org.springframework.http.HttpStatus")
     val MediaType = jvm.Type.Qualified("org.springframework.http.MediaType")
+    val MultipartFile = jvm.Type.Qualified("org.springframework.web.multipart.MultipartFile")
   }
+
+  // Swagger/OpenAPI annotations for security documentation
+  object OpenApiAnnotations {
+    val SecurityRequirement = jvm.Type.Qualified("io.swagger.v3.oas.annotations.security.SecurityRequirement")
+    val SecurityRequirements = jvm.Type.Qualified("io.swagger.v3.oas.annotations.security.SecurityRequirements")
+    val SecurityScheme = jvm.Type.Qualified("io.swagger.v3.oas.annotations.security.SecurityScheme")
+    val SecuritySchemes = jvm.Type.Qualified("io.swagger.v3.oas.annotations.security.SecuritySchemes")
+    val OAuthFlow = jvm.Type.Qualified("io.swagger.v3.oas.annotations.security.OAuthFlow")
+    val OAuthFlows = jvm.Type.Qualified("io.swagger.v3.oas.annotations.security.OAuthFlows")
+    val OAuthScope = jvm.Type.Qualified("io.swagger.v3.oas.annotations.security.OAuthScope")
+    val SecuritySchemeType = jvm.Type.Qualified("io.swagger.v3.oas.annotations.enums.SecuritySchemeType")
+    val SecuritySchemeIn = jvm.Type.Qualified("io.swagger.v3.oas.annotations.enums.SecuritySchemeIn")
+  }
+
+  // JAX-RS Multipart types
+  object JaxRsMultipart {
+    val FormDataParam = jvm.Type.Qualified("org.glassfish.jersey.media.multipart.FormDataParam")
+    val FormDataContentDisposition = jvm.Type.Qualified("org.glassfish.jersey.media.multipart.FormDataContentDisposition")
+  }
+
+  // File types
+  val InputStream = jvm.Type.Qualified("java.io.InputStream")
 }
 
 /** Scala types for OpenAPI code generation */

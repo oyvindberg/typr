@@ -68,7 +68,20 @@ case class RequestBody(
     description: Option[String],
     typeInfo: TypeInfo,
     required: Boolean,
-    contentType: String // e.g., "application/json"
+    contentType: String, // e.g., "application/json"
+    /** Form fields for multipart/form-data requests */
+    formFields: List[FormField]
+) {
+  def isMultipart: Boolean = contentType == "multipart/form-data"
+}
+
+/** Form field in multipart request */
+case class FormField(
+    name: String,
+    description: Option[String],
+    typeInfo: TypeInfo,
+    required: Boolean,
+    isBinary: Boolean // true for file uploads (type: string, format: binary)
 )
 
 /** API response specification */

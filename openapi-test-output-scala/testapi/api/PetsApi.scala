@@ -1,5 +1,7 @@
 package testapi.api
 
+import io.circe.Json
+import java.io.InputStream
 import java.lang.Void
 import testapi.model.Pet
 import testapi.model.PetCreate
@@ -20,6 +22,12 @@ sealed trait PetsApi {
     petId: String
   ): GetPetResponse
 
+  /** Get pet photo */
+  def getPetPhoto(
+    /** The pet ID */
+    petId: String
+  ): Void
+
   /** List all pets */
   def listPets(
     /** Maximum number of pets to return */
@@ -27,4 +35,14 @@ sealed trait PetsApi {
     /** Filter by status */
     status: Option[String]
   ): List[Pet]
+
+  /** Upload a pet photo */
+  def uploadPetPhoto(
+    /** The pet ID */
+    petId: String,
+    /** Optional caption for the photo */
+    caption: String,
+    /** The photo file to upload */
+    file: InputStream
+  ): Json
 }

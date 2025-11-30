@@ -110,7 +110,7 @@ object OpenApiCodegen {
       new TypeMapper(modelPkg, options.typeOverrides, lang)
     }
     val modelCodegen = new ModelCodegen(modelPkg, typeMapper, lang, jsonLib, validationSupport)
-    val apiCodegen = new ApiCodegen(apiPkg, typeMapper, lang, jsonLib, frameworkSupport, sumTypeNames)
+    val apiCodegen = new ApiCodegen(apiPkg, typeMapper, lang, jsonLib, frameworkSupport, sumTypeNames, spec.securitySchemes)
 
     val files = List.newBuilder[jvm.File]
 

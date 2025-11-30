@@ -6,6 +6,9 @@ info:
   license:
     name: MIT
 
+security:
+  - bearerAuth: []
+
 paths:
   /pets:
     get:
@@ -42,6 +45,9 @@ paths:
       summary: Create a pet
       tags:
         - pets
+      security:
+        - oauth2: [write:pets]
+        - apiKeyHeader: []
       requestBody:
         required: true
         content:
@@ -61,6 +67,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /pets/{petId}/photo:
+    parameters:
+      - name: petId
+        in: path
+        required: true
+        description: The pet ID
+        schema:
+          type: string
+    post:
+      operationId: uploadPetPhoto
+      summary: Upload a pet photo
+      tags:
+        - pets
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The photo file to upload
+                caption:
+                  type: string
+                  description: Optional caption for the photo
+      responses:
+        '200':
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photoUrl:
+                    type: string
+                    format: uri
+    get:
+      operationId: getPetPhoto
+      summary: Get pet photo
+      tags:
+        - pets
+      responses:
+        '200':
+          description: Pet photo
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Attachment filename
+              schema:
+                type: string
+            X-Photo-Size:
+              description: Photo file size in bytes
+              schema:
+                type: integer
 
   /pets/{petId}:
     parameters:
@@ -341,3 +410,27 @@ components:
         optional_with_default:
           type: string
           default: "default_value"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    apiKeyQuery:
+      type: apiKey
+      in: query
+      name: api_key
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read:pets: Read pet information
+            write:pets: Modify pets
+            admin: Full admin access

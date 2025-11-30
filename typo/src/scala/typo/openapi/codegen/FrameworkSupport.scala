@@ -2,42 +2,148 @@ package typo.openapi.codegen
 
 import typo.jvm
 import typo.internal.codegen._
-import typo.openapi.{ApiMethod, ApiParameter, HttpMethod, ParameterIn, RequestBody}
+import typo.openapi.{ApiMethod, ApiParameter, FormField, HttpMethod, ParameterIn, RequestBody, SecurityRequirement, SecurityScheme}
 
 /** Framework-specific annotation generation for API interfaces */
 trait FrameworkSupport {
 
   /** Annotations to add to the API interface itself */
-  def interfaceAnnotations(basePath: Option[String]): List[jvm.Annotation]
+  def interfaceAnnotations(basePath: Option[String], securitySchemes: Map[String, SecurityScheme]): List[jvm.Annotation]
 
   /** Annotations to add to a method (HTTP method, path, produces/consumes) */
   def methodAnnotations(method: ApiMethod): List[jvm.Annotation]
+
+  /** Security annotations for a method based on its security requirements */
+  def securityAnnotations(security: List[SecurityRequirement]): List[jvm.Annotation]
 
   /** Annotations to add to a parameter (@PathParam, @QueryParam, etc) */
   def parameterAnnotations(param: ApiParameter): List[jvm.Annotation]
 
   /** Annotations to add to the request body parameter */
   def bodyAnnotations(body: RequestBody): List[jvm.Annotation]
+
+  /** Check if request body is multipart (file upload) */
+  def isMultipart(body: RequestBody): Boolean = body.contentType == "multipart/form-data"
+
+  /** Type to use for file upload parameters */
+  def fileUploadType: jvm.Type
+
+  /** Annotations to add to form field parameters (for multipart requests) */
+  def formFieldAnnotations(field: FormField): List[jvm.Annotation]
 }
 
 /** No framework annotations - just generate plain interfaces */
 object NoFrameworkSupport extends FrameworkSupport {
-  override def interfaceAnnotations(basePath: Option[String]): List[jvm.Annotation] = Nil
+  override def interfaceAnnotations(basePath: Option[String], securitySchemes: Map[String, SecurityScheme]): List[jvm.Annotation] = Nil
   override def methodAnnotations(method: ApiMethod): List[jvm.Annotation] = Nil
+  override def securityAnnotations(security: List[SecurityRequirement]): List[jvm.Annotation] = Nil
   override def parameterAnnotations(param: ApiParameter): List[jvm.Annotation] = Nil
   override def bodyAnnotations(body: RequestBody): List[jvm.Annotation] = Nil
+  override def fileUploadType: jvm.Type = Types.InputStream
+  override def formFieldAnnotations(field: FormField): List[jvm.Annotation] = Nil
 }
 
 /** JAX-RS (Jakarta EE) framework support */
 object JaxRsSupport extends FrameworkSupport {
 
-  override def interfaceAnnotations(basePath: Option[String]): List[jvm.Annotation] = {
-    basePath.map { path =>
+  override def interfaceAnnotations(basePath: Option[String], securitySchemes: Map[String, SecurityScheme]): List[jvm.Annotation] = {
+    val pathAnnotation = basePath.map { path =>
       jvm.Annotation(
         Types.JaxRs.Path,
         List(jvm.Annotation.Arg.Positional(jvm.StrLit(path).code))
       )
     }.toList
+
+    // Generate @SecurityScheme annotations for each scheme defined
+    val schemeAnnotations = securitySchemes.toList.flatMap { case (name, scheme) =>
+      generateSecuritySchemeAnnotation(name, scheme)
+    }
+
+    pathAnnotation ++ schemeAnnotations
+  }
+
+  def generateSecuritySchemeAnnotation(name: String, scheme: SecurityScheme): Option[jvm.Annotation] = {
+    scheme match {
+      case SecurityScheme.Http(httpScheme, bearerFormat) =>
+        val args = List.newBuilder[jvm.Annotation.Arg]
+        args += jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(name).code)
+        args += jvm.Annotation.Arg.Named(jvm.Ident("type"), code"${Types.OpenApiAnnotations.SecuritySchemeType}.HTTP")
+        args += jvm.Annotation.Arg.Named(jvm.Ident("scheme"), jvm.StrLit(httpScheme).code)
+        bearerFormat.foreach { format =>
+          args += jvm.Annotation.Arg.Named(jvm.Ident("bearerFormat"), jvm.StrLit(format).code)
+        }
+        Some(jvm.Annotation(Types.OpenApiAnnotations.SecurityScheme, args.result()))
+
+      case SecurityScheme.ApiKey(keyName, in) =>
+        val inValue = in match {
+          case ParameterIn.Header => "HEADER"
+          case ParameterIn.Query  => "QUERY"
+          case ParameterIn.Cookie => "COOKIE"
+          case _                  => "HEADER"
+        }
+        Some(
+          jvm.Annotation(
+            Types.OpenApiAnnotations.SecurityScheme,
+            List(
+              jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(name).code),
+              jvm.Annotation.Arg.Named(jvm.Ident("type"), code"${Types.OpenApiAnnotations.SecuritySchemeType}.APIKEY"),
+              jvm.Annotation.Arg.Named(jvm.Ident("in"), code"${Types.OpenApiAnnotations.SecuritySchemeIn}.$inValue"),
+              jvm.Annotation.Arg.Named(jvm.Ident("paramName"), jvm.StrLit(keyName).code)
+            )
+          )
+        )
+
+      case SecurityScheme.OAuth2(_) =>
+        // OAuth2 schemes are complex - generate basic annotation
+        Some(
+          jvm.Annotation(
+            Types.OpenApiAnnotations.SecurityScheme,
+            List(
+              jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(name).code),
+              jvm.Annotation.Arg.Named(jvm.Ident("type"), code"${Types.OpenApiAnnotations.SecuritySchemeType}.OAUTH2")
+            )
+          )
+        )
+
+      case SecurityScheme.OpenIdConnect(url) =>
+        Some(
+          jvm.Annotation(
+            Types.OpenApiAnnotations.SecurityScheme,
+            List(
+              jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(name).code),
+              jvm.Annotation.Arg.Named(jvm.Ident("type"), code"${Types.OpenApiAnnotations.SecuritySchemeType}.OPENIDCONNECT"),
+              jvm.Annotation.Arg.Named(jvm.Ident("openIdConnectUrl"), jvm.StrLit(url).code)
+            )
+          )
+        )
+    }
+  }
+
+  override def securityAnnotations(security: List[SecurityRequirement]): List[jvm.Annotation] = {
+    if (security.isEmpty) Nil
+    else {
+      security.map { req =>
+        val args = List.newBuilder[jvm.Annotation.Arg]
+        args += jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(req.schemeName).code)
+        if (req.scopes.nonEmpty) {
+          val scopesCode = code"{ ${jvm.Code.Combined(req.scopes.map(s => jvm.StrLit(s).code).flatMap(c => List(c, code", ")).dropRight(1))} }"
+          args += jvm.Annotation.Arg.Named(jvm.Ident("scopes"), scopesCode)
+        }
+        jvm.Annotation(Types.OpenApiAnnotations.SecurityRequirement, args.result())
+      }
+    }
+  }
+
+  override def fileUploadType: jvm.Type = Types.InputStream
+
+  override def formFieldAnnotations(field: FormField): List[jvm.Annotation] = {
+    // JAX-RS uses @FormDataParam from Jersey multipart
+    List(
+      jvm.Annotation(
+        Types.JaxRsMultipart.FormDataParam,
+        List(jvm.Annotation.Arg.Positional(jvm.StrLit(field.name).code))
+      )
+    )
   }
 
   override def methodAnnotations(method: ApiMethod): List[jvm.Annotation] = {
@@ -135,7 +241,7 @@ object JaxRsSupport extends FrameworkSupport {
 /** Spring Boot / Spring MVC framework support */
 object SpringBootSupport extends FrameworkSupport {
 
-  override def interfaceAnnotations(basePath: Option[String]): List[jvm.Annotation] = {
+  override def interfaceAnnotations(basePath: Option[String], securitySchemes: Map[String, SecurityScheme]): List[jvm.Annotation] = {
     val restController = jvm.Annotation(Types.Spring.RestController, Nil)
 
     val requestMapping = basePath.map { path =>
@@ -145,13 +251,35 @@ object SpringBootSupport extends FrameworkSupport {
       )
     }
 
-    List(restController) ++ requestMapping.toList
+    // Generate @SecurityScheme annotations (same as JAX-RS, using OpenAPI annotations)
+    val schemeAnnotations = securitySchemes.toList.flatMap { case (name, scheme) =>
+      JaxRsSupport.generateSecuritySchemeAnnotation(name, scheme)
+    }
+
+    List(restController) ++ requestMapping.toList ++ schemeAnnotations
   }
 
   override def methodAnnotations(method: ApiMethod): List[jvm.Annotation] = {
     val mappingAnnotation = httpMethodToMapping(method.httpMethod, method.path, method.requestBody, method.responses.headOption.flatMap(_.contentType))
 
     List(mappingAnnotation)
+  }
+
+  override def securityAnnotations(security: List[SecurityRequirement]): List[jvm.Annotation] = {
+    // Use the same OpenAPI annotations as JAX-RS
+    JaxRsSupport.securityAnnotations(security)
+  }
+
+  override def fileUploadType: jvm.Type = Types.Spring.MultipartFile
+
+  override def formFieldAnnotations(field: FormField): List[jvm.Annotation] = {
+    // Spring uses @RequestPart for multipart form fields
+    val args = List.newBuilder[jvm.Annotation.Arg]
+    args += jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(field.name).code)
+    if (!field.required) {
+      args += jvm.Annotation.Arg.Named(jvm.Ident("required"), code"false")
+    }
+    List(jvm.Annotation(Types.Spring.RequestPart, args.result()))
   }
 
   override def parameterAnnotations(param: ApiParameter): List[jvm.Annotation] = {

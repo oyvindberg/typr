@@ -11,7 +11,8 @@ class ApiCodegen(
     lang: Lang,
     jsonLib: JsonLibSupport,
     frameworkSupport: FrameworkSupport,
-    sumTypeNames: Set[String]
+    sumTypeNames: Set[String],
+    securitySchemes: Map[String, SecurityScheme]
 ) {
 
   /** Generate API interface file and any associated response sum type files */
@@ -32,8 +33,8 @@ class ApiCodegen(
     // Generate methods with paths relative to base path
     val methods = api.methods.map(m => generateMethod(m, basePath))
 
-    // Framework annotations on interface (e.g., @Path for JAX-RS)
-    val interfaceAnnotations = frameworkSupport.interfaceAnnotations(basePath)
+    // Framework annotations on interface (e.g., @Path for JAX-RS, @SecurityScheme)
+    val interfaceAnnotations = frameworkSupport.interfaceAnnotations(basePath, securitySchemes)
 
     val interface = jvm.Adt.Sum(
       annotations = interfaceAnnotations,
@@ -220,6 +221,9 @@ class ApiCodegen(
     // Framework annotations (@GET, @POST, @Path, @Produces, @Consumes)
     val frameworkAnnotations = frameworkSupport.methodAnnotations(methodWithRelativePath)
 
+    // Security annotations (@SecurityRequirement)
+    val securityAnnotations = frameworkSupport.securityAnnotations(method.security)
+
     // Add deprecation annotation if needed
     val deprecationAnnotation = if (method.deprecated) {
       List(jvm.Annotation(jvm.Type.Qualified("java.lang.Deprecated"), Nil))
@@ -228,7 +232,7 @@ class ApiCodegen(
     }
 
     jvm.Method(
-      annotations = frameworkAnnotations ++ deprecationAnnotation,
+      annotations = frameworkAnnotations ++ securityAnnotations ++ deprecationAnnotation,
       comments = comments,
       tparams = Nil,
       name = jvm.Ident(method.name),
@@ -256,20 +260,43 @@ class ApiCodegen(
     }
 
     // Add request body as parameter if present
-    val bodyParam = method.requestBody.toList.map { body =>
-      val bodyType = typeMapper.map(body.typeInfo)
-      val bodyAnnotations = generateBodyAnnotations(body)
+    val bodyParams = method.requestBody.toList.flatMap { body =>
+      if (body.isMultipart && body.formFields.nonEmpty) {
+        // For multipart forms, generate separate parameters for each form field
+        body.formFields.map { field =>
+          val fieldType = if (field.isBinary) {
+            frameworkSupport.fileUploadType
+          } else {
+            typeMapper.map(field.typeInfo)
+          }
+          val annotations = frameworkSupport.formFieldAnnotations(field)
 
-      jvm.Param[jvm.Type](
-        annotations = bodyAnnotations,
-        comments = body.description.map(d => jvm.Comments(List(d))).getOrElse(jvm.Comments.Empty),
-        name = jvm.Ident("body"),
-        tpe = bodyType,
-        default = None
-      )
+          jvm.Param[jvm.Type](
+            annotations = annotations,
+            comments = field.description.map(d => jvm.Comments(List(d))).getOrElse(jvm.Comments.Empty),
+            name = jvm.Ident(field.name),
+            tpe = fieldType,
+            default = None
+          )
+        }
+      } else {
+        // Standard request body
+        val bodyType = typeMapper.map(body.typeInfo)
+        val bodyAnnotations = generateBodyAnnotations(body)
+
+        List(
+          jvm.Param[jvm.Type](
+            annotations = bodyAnnotations,
+            comments = body.description.map(d => jvm.Comments(List(d))).getOrElse(jvm.Comments.Empty),
+            name = jvm.Ident("body"),
+            tpe = bodyType,
+            default = None
+          )
+        )
+      }
     }
 
-    methodParams ++ bodyParam
+    methodParams ++ bodyParams
   }
 
   private def generateParamAnnotations(param: ApiParameter): List[jvm.Annotation] = {
