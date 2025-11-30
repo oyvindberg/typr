@@ -2,7 +2,7 @@ package scripts
 
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typo.*
-import typo.internal.codegen.LangScala
+import typo.internal.codegen.*
 import typo.internal.metadb.OpenEnum
 import typo.internal.sqlfiles.readSqlFileDirectories
 import typo.internal.{FileSync, generate}
@@ -32,29 +32,36 @@ object GeneratedFrontpage {
 
         val sqlScripts = Await.result(readSqlFileDirectories(typoLogger, scriptsPath, ds), Duration.Inf)
 
-        val options = Options(
-          pkg = "frontpage",
-          lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
-          dbLib = Some(DbLibName.Anorm),
-          jsonLibs = List(JsonLibName.PlayJson),
-          typeOverride = TypeOverride.Empty,
-          openEnums = Selector.None,
-          generateMockRepos = Selector.All,
-          enablePrimaryKeyType = Selector.All,
-          enableTestInserts = Selector.All,
-          readonlyRepo = Selector.None,
-          enableDsl = true
+        val variants: Seq[(Lang, DbLibName, Option[JsonLibName], String)] = List(
+          (LangScala(Dialect.Scala3, TypeSupportScala), DbLibName.Anorm, Some(JsonLibName.PlayJson), "scala"),
+          (LangJava, DbLibName.Typo, Some(JsonLibName.Jackson), "java")
         )
-        val targetSources = buildDir.resolve(s"frontpage-generated")
 
-        val newFiles: Generated =
-          generate(options, metadb, ProjectGraph(name = "", targetSources, None, selector, sqlScripts, Nil), relationNameToOpenEnum).head
+        variants.foreach { case (lang, dbLib, jsonLib, langDir) =>
+          val options = Options(
+            pkg = "frontpage",
+            lang = lang,
+            dbLib = Some(dbLib),
+            jsonLibs = jsonLib.toList,
+            typeOverride = TypeOverride.Empty,
+            openEnums = Selector.None,
+            generateMockRepos = Selector.All,
+            enablePrimaryKeyType = Selector.All,
+            enableTestInserts = Selector.All,
+            readonlyRepo = Selector.None,
+            enableDsl = true
+          )
+          val targetSources = buildDir.resolve(s"site/frontpage-generated/$langDir")
 
-        newFiles
-          .overwriteFolder(softWrite = FileSync.SoftWrite.Yes(Set.empty))
-          .filter { case (_, synced) => synced != FileSync.Synced.Unchanged }
-          .foreach { case (path, synced) => logger.withContext("path", path).warn(synced.toString) }
+          val newFiles: Generated =
+            generate(options, metadb, ProjectGraph(name = "", targetSources, None, selector, sqlScripts, Nil), relationNameToOpenEnum).head
 
-        logger.info(s"Generated frontpage code to $targetSources")
+          newFiles
+            .overwriteFolder(softWrite = FileSync.SoftWrite.Yes(Set.empty))
+            .filter { case (_, synced) => synced != FileSync.Synced.Unchanged }
+            .foreach { case (path, synced) => logger.withContext("path", path).warn(synced.toString) }
+
+          logger.info(s"Generated frontpage $langDir code to $targetSources")
+        }
       }
 }

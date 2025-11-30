@@ -37,6 +37,10 @@ const config = {
     locales: ["en"],
   },
 
+  plugins: [
+    require.resolve('./plugins/generated-code-plugin'),
+  ],
+
   presets: [
     [
       "classic",
