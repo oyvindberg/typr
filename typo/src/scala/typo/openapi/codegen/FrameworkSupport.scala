@@ -131,3 +131,109 @@ object JaxRsSupport extends FrameworkSupport {
     }
   }
 }
+
+/** Spring Boot / Spring MVC framework support */
+object SpringBootSupport extends FrameworkSupport {
+
+  override def interfaceAnnotations(basePath: Option[String]): List[jvm.Annotation] = {
+    val restController = jvm.Annotation(Types.Spring.RestController, Nil)
+
+    val requestMapping = basePath.map { path =>
+      jvm.Annotation(
+        Types.Spring.RequestMapping,
+        List(jvm.Annotation.Arg.Positional(jvm.StrLit(path).code))
+      )
+    }
+
+    List(restController) ++ requestMapping.toList
+  }
+
+  override def methodAnnotations(method: ApiMethod): List[jvm.Annotation] = {
+    val mappingAnnotation = httpMethodToMapping(method.httpMethod, method.path, method.requestBody, method.responses.headOption.flatMap(_.contentType))
+
+    List(mappingAnnotation)
+  }
+
+  override def parameterAnnotations(param: ApiParameter): List[jvm.Annotation] = {
+    val paramAnnotation = param.in match {
+      case ParameterIn.Path =>
+        val args = List(jvm.Annotation.Arg.Positional(jvm.StrLit(param.originalName).code)) ++
+          (if (!param.required) List(jvm.Annotation.Arg.Named(jvm.Ident("required"), code"false")) else Nil)
+        jvm.Annotation(Types.Spring.PathVariable, args)
+
+      case ParameterIn.Query =>
+        val args = List.newBuilder[jvm.Annotation.Arg]
+        args += jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(param.originalName).code)
+        if (!param.required) {
+          args += jvm.Annotation.Arg.Named(jvm.Ident("required"), code"false")
+        }
+        param.defaultValue.foreach { value =>
+          args += jvm.Annotation.Arg.Named(jvm.Ident("defaultValue"), jvm.StrLit(value).code)
+        }
+        jvm.Annotation(Types.Spring.RequestParam, args.result())
+
+      case ParameterIn.Header =>
+        val args = List(jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(param.originalName).code)) ++
+          (if (!param.required) List(jvm.Annotation.Arg.Named(jvm.Ident("required"), code"false")) else Nil)
+        jvm.Annotation(Types.Spring.RequestHeader, args)
+
+      case ParameterIn.Cookie =>
+        val args = List(jvm.Annotation.Arg.Named(jvm.Ident("name"), jvm.StrLit(param.originalName).code)) ++
+          (if (!param.required) List(jvm.Annotation.Arg.Named(jvm.Ident("required"), code"false")) else Nil)
+        jvm.Annotation(Types.Spring.CookieValue, args)
+    }
+
+    List(paramAnnotation)
+  }
+
+  override def bodyAnnotations(body: RequestBody): List[jvm.Annotation] = {
+    // Spring requires @RequestBody annotation
+    List(jvm.Annotation(Types.Spring.RequestBody, Nil))
+  }
+
+  private def httpMethodToMapping(
+      method: HttpMethod,
+      path: String,
+      requestBody: Option[RequestBody],
+      responseContentType: Option[String]
+  ): jvm.Annotation = {
+    val mappingType = method match {
+      case HttpMethod.Get     => Types.Spring.GetMapping
+      case HttpMethod.Post    => Types.Spring.PostMapping
+      case HttpMethod.Put     => Types.Spring.PutMapping
+      case HttpMethod.Delete  => Types.Spring.DeleteMapping
+      case HttpMethod.Patch   => Types.Spring.PatchMapping
+      case HttpMethod.Head    => Types.Spring.GetMapping // Spring doesn't have HeadMapping
+      case HttpMethod.Options => Types.Spring.RequestMapping // Use RequestMapping with method
+    }
+
+    val args = List.newBuilder[jvm.Annotation.Arg]
+
+    // Path (using "value" for the path)
+    args += jvm.Annotation.Arg.Named(jvm.Ident("value"), jvm.StrLit(path).code)
+
+    // Consumes
+    requestBody.foreach { body =>
+      args += jvm.Annotation.Arg.Named(jvm.Ident("consumes"), springMediaTypeConstant(body.contentType))
+    }
+
+    // Produces
+    responseContentType.foreach { contentType =>
+      args += jvm.Annotation.Arg.Named(jvm.Ident("produces"), springMediaTypeConstant(contentType))
+    }
+
+    jvm.Annotation(mappingType, args.result())
+  }
+
+  private def springMediaTypeConstant(contentType: String): jvm.Code = {
+    contentType match {
+      case "application/json"                  => code"${Types.Spring.MediaType}.APPLICATION_JSON_VALUE"
+      case "application/xml"                   => code"${Types.Spring.MediaType}.APPLICATION_XML_VALUE"
+      case "text/plain"                        => code"${Types.Spring.MediaType}.TEXT_PLAIN_VALUE"
+      case "application/octet-stream"          => code"${Types.Spring.MediaType}.APPLICATION_OCTET_STREAM_VALUE"
+      case "application/x-www-form-urlencoded" => code"${Types.Spring.MediaType}.APPLICATION_FORM_URLENCODED_VALUE"
+      case "multipart/form-data"               => code"${Types.Spring.MediaType}.MULTIPART_FORM_DATA_VALUE"
+      case other                               => jvm.StrLit(other).code
+    }
+  }
+}

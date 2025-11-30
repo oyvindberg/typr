@@ -14,6 +14,7 @@ import typo.openapi.codegen.{
   NoJsonLibSupport,
   NoValidationSupport,
   ScalaTypeMapper,
+  SpringBootSupport,
   TypeMapper,
   ValidationSupport
 }
@@ -89,9 +90,10 @@ object OpenApiCodegen {
     }
 
     val frameworkSupport: FrameworkSupport = options.framework match {
-      case OpenApiFramework.JaxRs => JaxRsSupport
-      case OpenApiFramework.None  => NoFrameworkSupport
-      case _                      => NoFrameworkSupport // TODO: implement Http4s, Tapir
+      case OpenApiFramework.JaxRs  => JaxRsSupport
+      case OpenApiFramework.Spring => SpringBootSupport
+      case OpenApiFramework.None   => NoFrameworkSupport
+      case _                       => NoFrameworkSupport // TODO: implement Http4s, Tapir
     }
 
     // Scala doesn't use JSR-380 annotations - validation is done differently

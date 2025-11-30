@@ -1,6 +1,6 @@
 package scripts
 
-import typo.openapi.{OpenApiCodegen, OpenApiOptions}
+import typo.openapi.{OpenApiCodegen, OpenApiFramework, OpenApiOptions}
 import typo.jvm
 import typo.internal.codegen.{addPackageAndImports, LangJava, LangScala}
 import typo.{Dialect, Lang, TypeSupportScala}
@@ -12,17 +12,21 @@ object GenerateOpenApiTest {
 
   def main(args: Array[String]): Unit = {
     val specPath = buildDir.resolve("typo/src/scala/typo/openapi/testdata/test-features.yaml")
-    val javaOutputDir = buildDir.resolve("openapi-test-output")
+    val javaJaxRsOutputDir = buildDir.resolve("openapi-test-output")
+    val javaSpringOutputDir = buildDir.resolve("openapi-test-output-spring")
     val scalaOutputDir = buildDir.resolve("openapi-test-output-scala")
 
     println(s"Generating code from: $specPath")
 
-    // Generate Java code
-    generateCode(specPath, javaOutputDir, LangJava, ".java", generateValidation = true)
+    // Generate Java code with JAX-RS
+    generateCode(specPath, javaJaxRsOutputDir, LangJava, ".java", OpenApiFramework.JaxRs, generateValidation = true)
+
+    // Generate Java code with Spring Boot
+    generateCode(specPath, javaSpringOutputDir, LangJava, ".java", OpenApiFramework.Spring, generateValidation = true)
 
     // Generate Scala code
     val langScala = LangScala(Dialect.Scala3, TypeSupportScala)
-    generateCode(specPath, scalaOutputDir, langScala, ".scala", generateValidation = false)
+    generateCode(specPath, scalaOutputDir, langScala, ".scala", OpenApiFramework.None, generateValidation = false)
 
     println("Done!")
   }
@@ -32,6 +36,7 @@ object GenerateOpenApiTest {
       outputDir: Path,
       lang: Lang,
       extension: String,
+      framework: OpenApiFramework,
       generateValidation: Boolean
   ): Unit = {
     println(s"Output directory: $outputDir")
@@ -45,6 +50,7 @@ object GenerateOpenApiTest {
     val options = OpenApiOptions
       .default(jvm.QIdent(List(jvm.Ident("testapi"))))
       .copy(
+        framework = framework,
         generateValidation = generateValidation
       )
 

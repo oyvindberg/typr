@@ -61,6 +61,9 @@ object OpenApiFramework {
   /** JAX-RS annotations (Quarkus, Jersey, etc.) */
   case object JaxRs extends OpenApiFramework
 
+  /** Spring Boot / Spring MVC */
+  case object Spring extends OpenApiFramework
+
   /** http4s client/server */
   case object Http4s extends OpenApiFramework
 

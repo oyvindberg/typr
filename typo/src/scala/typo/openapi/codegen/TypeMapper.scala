@@ -119,6 +119,26 @@ object Types {
     val Produces = jvm.Type.Qualified("jakarta.ws.rs.Produces")
     val MediaType = jvm.Type.Qualified("jakarta.ws.rs.core.MediaType")
   }
+
+  // Spring Boot / Spring MVC annotations
+  object Spring {
+    val RestController = jvm.Type.Qualified("org.springframework.web.bind.annotation.RestController")
+    val RequestMapping = jvm.Type.Qualified("org.springframework.web.bind.annotation.RequestMapping")
+    val GetMapping = jvm.Type.Qualified("org.springframework.web.bind.annotation.GetMapping")
+    val PostMapping = jvm.Type.Qualified("org.springframework.web.bind.annotation.PostMapping")
+    val PutMapping = jvm.Type.Qualified("org.springframework.web.bind.annotation.PutMapping")
+    val DeleteMapping = jvm.Type.Qualified("org.springframework.web.bind.annotation.DeleteMapping")
+    val PatchMapping = jvm.Type.Qualified("org.springframework.web.bind.annotation.PatchMapping")
+    val PathVariable = jvm.Type.Qualified("org.springframework.web.bind.annotation.PathVariable")
+    val RequestParam = jvm.Type.Qualified("org.springframework.web.bind.annotation.RequestParam")
+    val RequestHeader = jvm.Type.Qualified("org.springframework.web.bind.annotation.RequestHeader")
+    val CookieValue = jvm.Type.Qualified("org.springframework.web.bind.annotation.CookieValue")
+    val RequestBody = jvm.Type.Qualified("org.springframework.web.bind.annotation.RequestBody")
+    val ResponseBody = jvm.Type.Qualified("org.springframework.web.bind.annotation.ResponseBody")
+    val ResponseStatus = jvm.Type.Qualified("org.springframework.web.bind.annotation.ResponseStatus")
+    val HttpStatus = jvm.Type.Qualified("org.springframework.http.HttpStatus")
+    val MediaType = jvm.Type.Qualified("org.springframework.http.MediaType")
+  }
 }
 
 /** Scala types for OpenAPI code generation */
