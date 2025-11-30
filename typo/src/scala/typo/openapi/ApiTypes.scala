@@ -118,3 +118,10 @@ case class SecurityRequirement(
     schemeName: String,
     scopes: List[String]
 )
+
+/** Webhook definition (OpenAPI 3.1+) */
+case class Webhook(
+    name: String,
+    description: Option[String],
+    methods: List[ApiMethod]
+)

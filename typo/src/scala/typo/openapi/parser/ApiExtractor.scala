@@ -36,6 +36,25 @@ object ApiExtractor {
       .sortBy(_.name)
   }
 
+  /** Extract webhooks from OpenAPI 3.1+ spec */
+  def extractWebhooks(openApi: OpenAPI): List[Webhook] = {
+    val webhooks = Option(openApi.getWebhooks).map(_.asScala.toMap).getOrElse(Map.empty[String, PathItem])
+
+    webhooks
+      .map { case (name, pathItem) =>
+        val description = Option(pathItem.getDescription)
+        val methods = extractPathMethods(s"/webhook/$name", pathItem)
+
+        Webhook(
+          name = sanitizeClassName(name),
+          description = description,
+          methods = methods
+        )
+      }
+      .toList
+      .sortBy(_.name)
+  }
+
   private def extractPathMethods(path: String, pathItem: PathItem): List[ApiMethod] = {
     val methods = List.newBuilder[ApiMethod]
 

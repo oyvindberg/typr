@@ -11,10 +11,17 @@ object TypeResolver {
   /** Convert an OpenAPI Schema to TypeInfo */
   def resolve(schema: Schema[_], required: Boolean): TypeInfo = {
     val baseType = resolveBase(schema)
-    val nullable = Option(schema.getNullable).contains(java.lang.Boolean.TRUE)
+    // OpenAPI 3.0 uses nullable: true, OpenAPI 3.1 uses type: ["string", "null"]
+    val nullable = Option(schema.getNullable).contains(java.lang.Boolean.TRUE) ||
+      hasNullType(schema)
 
     if (!required || nullable) TypeInfo.Optional(baseType)
     else baseType
+  }
+
+  /** Check if schema has null in its type array (OpenAPI 3.1 style) */
+  private def hasNullType(schema: Schema[_]): Boolean = {
+    Option(schema.getTypes).exists(_.asScala.contains("null"))
   }
 
   /** Convert an OpenAPI Schema to TypeInfo without wrapping in Optional */
@@ -33,7 +40,11 @@ object TypeResolver {
       return TypeInfo.InlineEnum(enumValues.get)
     }
 
-    val schemaType = Option(schema.getType).orElse(Option(schema.getTypes).flatMap(_.asScala.headOption))
+    // OpenAPI 3.0 uses getType(), OpenAPI 3.1 uses getTypes() array
+    // For type arrays like ["string", "null"], filter out "null" to get the actual type
+    val schemaType = Option(schema.getType).orElse(
+      Option(schema.getTypes).flatMap(_.asScala.filterNot(_ == "null").headOption)
+    )
 
     schemaType match {
       case Some("string")  => resolveStringType(schema)
