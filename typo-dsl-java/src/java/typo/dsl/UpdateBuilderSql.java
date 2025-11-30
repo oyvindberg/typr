@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -90,7 +91,7 @@ public class UpdateBuilderSql<Fields, Row> implements UpdateBuilder<Fields, Row>
     
     @Override
     public int execute(Connection connection) {
-        Fragment query = sql();
+        Fragment query = mkSql();
         try (PreparedStatement ps = connection.prepareStatement(query.render())) {
             query.set(ps);
             return ps.executeUpdate();
@@ -98,10 +99,10 @@ public class UpdateBuilderSql<Fields, Row> implements UpdateBuilder<Fields, Row>
             throw new RuntimeException("Failed to execute update: " + query.render(), e);
         }
     }
-    
+
     @Override
     public List<Row> executeReturning(Connection connection) {
-        Fragment query = sql().append(Fragment.lit(" RETURNING *"));
+        Fragment query = mkSql().append(Fragment.lit(" RETURNING *"));
         try (PreparedStatement ps = connection.prepareStatement(query.render())) {
             query.set(ps);
             try (ResultSet rs = ps.executeQuery()) {
@@ -112,9 +113,13 @@ public class UpdateBuilderSql<Fields, Row> implements UpdateBuilder<Fields, Row>
             throw new RuntimeException("Failed to execute update returning: " + query.render(), e);
         }
     }
-    
+
     @Override
-    public Fragment sql() {
+    public Optional<Fragment> sql() {
+        return Optional.of(mkSql());
+    }
+
+    private Fragment mkSql() {
         if (params.setters().isEmpty()) {
             throw new IllegalStateException("Cannot update without any SET clauses");
         }

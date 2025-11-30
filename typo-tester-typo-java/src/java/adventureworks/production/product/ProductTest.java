@@ -158,7 +158,7 @@ public class ProductTest extends SnapshotTest {
                         .setComputedValue(p -> p.sellstartdate(), p -> new SqlExpr.ConstReq<>(sellStartDate, TypoLocalDateTime.pgType))
                         .where(p -> p.productid().isEqual(saved1.productid()));
 
-                compareFragment("updateReturning", Optional.of(update.sql()));
+                compareFragment("updateReturning", update.sql());
                 var updatedRows = update.executeReturning(c);
                 assertEquals(1, updatedRows.size());
                 var updated = updatedRows.get(0);
@@ -212,7 +212,7 @@ public class ProductTest extends SnapshotTest {
 
             // delete
             var delete = productRepo.delete().where(p -> p.productid().isEqual(saved1.productid()));
-            compareFragment("delete", Optional.of(delete.sql()));
+            compareFragment("delete", delete.sql());
 
             delete.execute(c);
 

@@ -6,6 +6,7 @@ import typo.runtime.ResultSetParser;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -41,9 +42,9 @@ public interface DeleteBuilder<Fields, Row> {
     List<Row> executeReturning(Connection connection, ResultSetParser<List<Row>> parser);
 
     /**
-     * Get the SQL for debugging purposes.
+     * Get the SQL for debugging purposes. Returns empty if backed by a mock repository.
      */
-    Fragment sql();
+    Optional<Fragment> sql();
 
     /**
      * Mock implementation of DeleteBuilder for testing without a database.
@@ -111,8 +112,8 @@ public interface DeleteBuilder<Fields, Row> {
         }
 
         @Override
-        public Fragment sql() {
-            return Fragment.EMPTY; // Mock doesn't generate SQL
+        public Optional<Fragment> sql() {
+            return Optional.empty(); // Mock doesn't generate SQL
         }
     }
 }
