@@ -25,7 +25,7 @@ case class TypoInstant(value: Instant)
 object TypoInstant {
   def apply(value: Instant): TypoInstant = new TypoInstant(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoInstant = new TypoInstant(OffsetDateTime.parse(str, parser).toInstant())
+  def apply(str: String): TypoInstant = TypoInstant.apply(OffsetDateTime.parse(str, parser).toInstant())
 
   given arrayGet: Get[Array[TypoInstant]] = {
     Get.Advanced.array[AnyRef](NonEmptyList.one("timestamptz[]"))
@@ -48,7 +48,7 @@ object TypoInstant {
       .map(v => apply(v))
   }
 
-  def now: TypoInstant = new TypoInstant(Instant.now())
+  def now: TypoInstant = TypoInstant.apply(Instant.now())
 
   val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
 

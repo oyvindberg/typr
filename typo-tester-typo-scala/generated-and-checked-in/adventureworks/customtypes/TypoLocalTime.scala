@@ -20,11 +20,11 @@ case class TypoLocalTime(value: LocalTime)
 object TypoLocalTime {
   def apply(value: LocalTime): TypoLocalTime = new TypoLocalTime(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoLocalTime = new TypoLocalTime(LocalTime.parse(str))
+  def apply(str: String): TypoLocalTime = TypoLocalTime.apply(LocalTime.parse(str))
 
   given bijection: Bijection[TypoLocalTime, LocalTime] = Bijection.apply[TypoLocalTime, LocalTime](_.value)(TypoLocalTime.apply)
 
-  def now: TypoLocalTime = new TypoLocalTime(LocalTime.now())
+  def now: TypoLocalTime = TypoLocalTime.apply(LocalTime.now())
 
   given pgText: PgText[TypoLocalTime] = PgText.textString.contramap(v => v.value.toString)
 

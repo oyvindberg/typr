@@ -30,14 +30,14 @@ public record TypoInstant(Instant value) {
   };
 
   static public TypoInstant apply(String str) {
-    return new TypoInstant(OffsetDateTime.parse(str, parser).toInstant());
+    return TypoInstant.apply(OffsetDateTime.parse(str, parser).toInstant());
   };
 
   static public Bijection<TypoInstant, Instant> bijection =
     Bijection.of(TypoInstant::value, TypoInstant::new);
 
   static public TypoInstant now() {
-    return new TypoInstant(Instant.now());
+    return TypoInstant.apply(Instant.now());
   };
 
   static DateTimeFormatter parser = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter();;

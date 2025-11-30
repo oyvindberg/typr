@@ -24,7 +24,7 @@ case class TypoLocalTime(value: LocalTime)
 object TypoLocalTime {
   def apply(value: LocalTime): TypoLocalTime = new TypoLocalTime(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoLocalTime = new TypoLocalTime(LocalTime.parse(str))
+  def apply(str: String): TypoLocalTime = TypoLocalTime.apply(LocalTime.parse(str))
 
   given arrayJdbcDecoder: JdbcDecoder[Array[TypoLocalTime]] = {
     JdbcDecoder[Array[TypoLocalTime]]((rs: ResultSet) => (i: Int) =>
@@ -71,7 +71,7 @@ object TypoLocalTime {
 
   given jsonEncoder: JsonEncoder[TypoLocalTime] = JsonEncoder.localTime.contramap(_.value)
 
-  def now: TypoLocalTime = new TypoLocalTime(LocalTime.now())
+  def now: TypoLocalTime = TypoLocalTime.apply(LocalTime.now())
 
   given pgText: Text[TypoLocalTime] = {
     new Text[TypoLocalTime] {

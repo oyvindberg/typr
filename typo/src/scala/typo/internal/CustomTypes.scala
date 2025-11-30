@@ -167,7 +167,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = List(jvm.Param(jvm.Ident("str"), TypesJava.String)),
           implicitParams = Nil,
           tpe = target,
-          body = List(target.construct(TypesJava.LocalTime.code.invoke("parse", code"str")))
+          body = List(target.code.invoke("apply", TypesJava.LocalTime.code.invoke("parse", code"str")))
         ),
         jvm.Method(
           comments = jvm.Comments.Empty,
@@ -176,7 +176,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = Nil,
           implicitParams = Nil,
           tpe = target,
-          body = List(code"new $target(${TypesJava.LocalTime}.now())")
+          body = List(code"$target.apply(${TypesJava.LocalTime}.now())")
         )
       )
   )
@@ -220,7 +220,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = List(jvm.Param(jvm.Ident("str"), TypesJava.String)),
           implicitParams = Nil,
           tpe = target,
-          body = List(code"apply(${TypesJava.LocalDateTime}.parse(str, parser))")
+          body = List(code"$target.apply(${TypesJava.LocalDateTime}.parse(str, parser))")
         ),
         jvm.Method(
           comments = jvm.Comments.Empty,
@@ -229,7 +229,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = Nil,
           implicitParams = Nil,
           tpe = target,
-          body = List(code"new $target(${TypesJava.LocalDateTime}.now())")
+          body = List(code"$target.apply(${TypesJava.LocalDateTime}.now())")
         )
       )
   )
@@ -275,7 +275,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = List(jvm.Param(jvm.Ident("str"), TypesJava.String)),
           implicitParams = Nil,
           tpe = target,
-          body = List(code"new $target(${TypesJava.OffsetDateTime}.parse(str, parser).toInstant())")
+          body = List(code"$target.apply(${TypesJava.OffsetDateTime}.parse(str, parser).toInstant())")
         ),
         jvm.Method(
           comments = jvm.Comments.Empty,
@@ -284,7 +284,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = Nil,
           implicitParams = Nil,
           tpe = target,
-          body = List(code"new $target(${TypesJava.Instant}.now())")
+          body = List(code"$target.apply(${TypesJava.Instant}.now())")
         )
       )
   )
@@ -329,7 +329,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = List(jvm.Param(jvm.Ident("str"), TypesJava.String)),
           implicitParams = Nil,
           tpe = target,
-          body = List(code"new $target(${TypesJava.OffsetTime}.parse(str, parser))")
+          body = List(code"$target.apply(${TypesJava.OffsetTime}.parse(str, parser))")
         ),
         jvm.Method(
           comments = jvm.Comments.Empty,
@@ -338,7 +338,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           params = Nil,
           implicitParams = Nil,
           tpe = target,
-          body = List(code"new $target(${TypesJava.OffsetTime}.now())")
+          body = List(code"$target.apply(${TypesJava.OffsetTime}.now())")
         )
       )
   )

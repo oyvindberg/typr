@@ -148,7 +148,7 @@ val unsaved1 = ProductRowUnsaved(
   sellstartdate = TypoLocalDateTime(LocalDateTime.now().plusDays(1)),
   sellenddate = Some(TypoLocalDateTime(LocalDateTime.now().plusDays(10))),
   discontinueddate = Some(TypoLocalDateTime(LocalDateTime.now().plusDays(100))),
-  productid = Defaulted.UseDefault,
+  productid = Defaulted.UseDefault(),
   makeflag = Defaulted.Provided(Flag(true)),
   finishedgoodsflag = Defaulted.Provided(Flag(true)),
   rowguid = Defaulted.Provided(TypoUUID.randomUUID),
@@ -167,9 +167,9 @@ productRepo.select
   .on { case (p, um) => p.sizeunitmeasurecode === um.unitmeasurecode }
   .join(projectModelRepo.select)
   .leftOn { case ((product, _), productModel) => product.productmodelid === productModel.productmodelid }
-  .where { case ((product, _), productModel) => product.productmodelid === productModel(_.productmodelid) }
+  .where { case ((product, _), productModel) => product.productmodelid === productModel.productmodelid }
   .orderBy { case ((product, _), _) => product.productmodelid.asc }
-  .orderBy { case ((_, _), productModel) => productModel(_.name).desc.withNullsFirst }
+  .orderBy { case ((_, _), productModel) => productModel.name.desc.withNullsFirst }
   .toList
 
 ```

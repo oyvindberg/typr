@@ -27,7 +27,7 @@ case class TypoOffsetTime(value: OffsetTime)
 object TypoOffsetTime {
   def apply(value: OffsetTime): TypoOffsetTime = new TypoOffsetTime(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoOffsetTime = new TypoOffsetTime(OffsetTime.parse(str, parser))
+  def apply(str: String): TypoOffsetTime = TypoOffsetTime.apply(OffsetTime.parse(str, parser))
 
   implicit lazy val arrayColumn: Column[Array[TypoOffsetTime]] = {
     Column.nonNull[Array[TypoOffsetTime]]((v1: Any, _) =>
@@ -56,7 +56,7 @@ object TypoOffsetTime {
     )
   }
 
-  def now: TypoOffsetTime = new TypoOffsetTime(OffsetTime.now())
+  def now: TypoOffsetTime = TypoOffsetTime.apply(OffsetTime.now())
 
   implicit lazy val parameterMetadata: ParameterMetaData[TypoOffsetTime] = {
     new ParameterMetaData[TypoOffsetTime] {

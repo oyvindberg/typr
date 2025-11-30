@@ -12,12 +12,16 @@ This is how it can be prettified in the generated scala code
 
 ```scala mdoc:silent
 import typo.*
+import typo.internal.codegen.LangScala
+
+val lang = LangScala(Dialect.Scala3, TypeSupportScala)
 
 val optsCustomId = Options(
   pkg = "org.foo",
+  lang = lang,
   dbLib = None,
-  naming = pkg => new Naming(pkg) {
-    override def field(name: db.ColName): sc.Ident = {
+  naming = (pkg, lang) => new Naming(pkg, lang) {
+    override def field(name: db.ColName): jvm.Ident = {
       val newName = if (name.value.startsWith("id_")) db.ColName(name.value.drop(3) + "_id") else name
       super.field(newName)
     }
@@ -26,7 +30,7 @@ val optsCustomId = Options(
 ```
 ```scala mdoc
 // this incantation demos the effect, you don't have to write this in your code
-sc.renderTree(optsCustomId.naming(sc.QIdent(optsCustomId.pkg)).field(db.ColName("id_flaff")), Dialect.Scala3)
+lang.renderTree(optsCustomId.naming(jvm.QIdent(optsCustomId.pkg), lang).field(db.ColName("id_flaff")), lang.Ctx.Empty)
 ```
 
 ### Customize enum field names
@@ -37,16 +41,17 @@ This is something which can happen currently
 ```scala mdoc:silent
 val optsCustomEnum = Options(
   pkg = "org.foo",
+  lang = lang,
   dbLib = None,
-  naming = pkg => new Naming(pkg) {
-    override def enumValue(name: String): sc.Ident =
-      sc.Ident(if (name == "writes") "Writes" else name)
+  naming = (pkg, lang) => new Naming(pkg, lang) {
+    override def enumValue(name: String): jvm.Ident =
+      jvm.Ident(if (name == "writes") "Writes" else name)
   }
 )
 ```
 
 ```scala mdoc
 // this incantation demos the effect, you don't have to write this in your code
-sc.renderTree(optsCustomEnum.naming(sc.QIdent(optsCustomEnum.pkg)).enumValue("writes"), Dialect.Scala3)
+lang.renderTree(optsCustomEnum.naming(jvm.QIdent(optsCustomEnum.pkg), lang).enumValue("writes"), lang.Ctx.Empty)
 ```
 

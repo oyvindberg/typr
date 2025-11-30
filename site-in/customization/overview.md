@@ -6,9 +6,11 @@ All customizations are done through the `typo.Options` object passed to typo:
 
 ```scala mdoc:silent
 import typo.*
+import typo.internal.codegen.LangScala
 
 val options = Options(
   pkg = "org.foo",
+  lang = LangScala(Dialect.Scala3, TypeSupportScala),
   jsonLibs = List(JsonLibName.PlayJson),
   dbLib = Some(DbLibName.Anorm),
   // .. more options here

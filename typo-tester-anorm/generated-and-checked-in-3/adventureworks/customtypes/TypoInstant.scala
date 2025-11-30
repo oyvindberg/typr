@@ -28,7 +28,7 @@ case class TypoInstant(value: Instant)
 object TypoInstant {
   def apply(value: Instant): TypoInstant = new TypoInstant(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoInstant = new TypoInstant(OffsetDateTime.parse(str, parser).toInstant())
+  def apply(str: String): TypoInstant = TypoInstant.apply(OffsetDateTime.parse(str, parser).toInstant())
 
   given arrayColumn: Column[Array[TypoInstant]] = {
     Column.nonNull[Array[TypoInstant]]((v1: Any, _) =>
@@ -57,7 +57,7 @@ object TypoInstant {
     )
   }
 
-  def now: TypoInstant = new TypoInstant(Instant.now())
+  def now: TypoInstant = TypoInstant.apply(Instant.now())
 
   given parameterMetadata: ParameterMetaData[TypoInstant] = {
     new ParameterMetaData[TypoInstant] {

@@ -27,7 +27,7 @@ case class TypoLocalDateTime(value: LocalDateTime)
 object TypoLocalDateTime {
   def apply(value: LocalDateTime): TypoLocalDateTime = new TypoLocalDateTime(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoLocalDateTime = apply(LocalDateTime.parse(str, parser))
+  def apply(str: String): TypoLocalDateTime = TypoLocalDateTime.apply(LocalDateTime.parse(str, parser))
 
   given arrayJdbcDecoder: JdbcDecoder[Array[TypoLocalDateTime]] = {
     JdbcDecoder[Array[TypoLocalDateTime]]((rs: ResultSet) => (i: Int) =>
@@ -74,7 +74,7 @@ object TypoLocalDateTime {
 
   given jsonEncoder: JsonEncoder[TypoLocalDateTime] = JsonEncoder.localDateTime.contramap(_.value)
 
-  def now: TypoLocalDateTime = new TypoLocalDateTime(LocalDateTime.now())
+  def now: TypoLocalDateTime = TypoLocalDateTime.apply(LocalDateTime.now())
 
   val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).toFormatter()
 

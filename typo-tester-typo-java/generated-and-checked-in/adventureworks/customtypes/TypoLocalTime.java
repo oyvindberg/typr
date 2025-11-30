@@ -26,14 +26,14 @@ public record TypoLocalTime(LocalTime value) {
   };
 
   static public TypoLocalTime apply(String str) {
-    return new TypoLocalTime(LocalTime.parse(str));
+    return TypoLocalTime.apply(LocalTime.parse(str));
   };
 
   static public Bijection<TypoLocalTime, LocalTime> bijection =
     Bijection.of(TypoLocalTime::value, TypoLocalTime::new);
 
   static public TypoLocalTime now() {
-    return new TypoLocalTime(LocalTime.now());
+    return TypoLocalTime.apply(LocalTime.now());
   };
 
   static public PgText<TypoLocalTime> pgText =

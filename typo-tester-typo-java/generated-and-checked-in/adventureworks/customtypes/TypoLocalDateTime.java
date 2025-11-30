@@ -29,14 +29,14 @@ public record TypoLocalDateTime(LocalDateTime value) {
   };
 
   static public TypoLocalDateTime apply(String str) {
-    return apply(LocalDateTime.parse(str, parser));
+    return TypoLocalDateTime.apply(LocalDateTime.parse(str, parser));
   };
 
   static public Bijection<TypoLocalDateTime, LocalDateTime> bijection =
     Bijection.of(TypoLocalDateTime::value, TypoLocalDateTime::new);
 
   static public TypoLocalDateTime now() {
-    return new TypoLocalDateTime(LocalDateTime.now());
+    return TypoLocalDateTime.apply(LocalDateTime.now());
   };
 
   static DateTimeFormatter parser = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).toFormatter();;

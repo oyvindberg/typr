@@ -156,11 +156,11 @@ case class AddressRowUnsaved(
   spatiallocation: Option[TypoBytea],
   /** Default: nextval('person.address_addressid_seq'::regclass)
       Primary key for Address records. */
-  addressid: Defaulted[AddressId] = Defaulted.UseDefault,
+  addressid: Defaulted[AddressId] = Defaulted.UseDefault(),
   /** Default: uuid_generate_v1() */
-  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault,
+  rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault(),
   /** Default: now() */
-  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault
+  modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
 )
 ```
 

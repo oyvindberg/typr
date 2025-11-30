@@ -40,10 +40,12 @@ code generation by tweaking `Options#enablePrimaryKeyType`:
 
 ```scala mdoc:silent
 import typo.*
+import typo.internal.codegen.LangScala
 
 val options = Options(
   pkg = "mypkg",
-  Some(DbLibName.Doobie),
+  lang = LangScala(Dialect.Scala3, TypeSupportScala),
+  dbLib = Some(DbLibName.Doobie),
   enablePrimaryKeyType = Selector.relationNames("myrelationname"),
 )
 ```

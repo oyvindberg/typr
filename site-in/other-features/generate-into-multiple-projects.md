@@ -16,6 +16,7 @@ If multiple downstream projects want to generate the same code, it'll be pulled 
 sample:
 ```scala mdoc:silent
 import typo.*
+import typo.internal.codegen.LangScala
 import java.nio.file.Path
 import java.sql.Connection
 
@@ -24,10 +25,11 @@ def generate(ds: TypoDataSource): String = {
 
   val options = Options(
       pkg = "org.mypkg",
+      lang = LangScala(Dialect.Scala3, TypeSupportScala),
       jsonLibs = Nil,
       dbLib = Some(DbLibName.ZioJdbc)
     )
-  
+
   val generated = generateFromDb(
     ds,
     options,
@@ -68,7 +70,7 @@ def generate(ds: TypoDataSource): String = {
     )
   )
 
-  generated.foreach(_.overwriteFolder(options.dialect))
+  generated.foreach(_.overwriteFolder())
 
   import scala.sys.process.*
 

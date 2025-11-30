@@ -27,7 +27,7 @@ case class TypoLocalDateTime(value: LocalDateTime)
 object TypoLocalDateTime {
   def apply(value: LocalDateTime): TypoLocalDateTime = new TypoLocalDateTime(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoLocalDateTime = apply(LocalDateTime.parse(str, parser))
+  def apply(str: String): TypoLocalDateTime = TypoLocalDateTime.apply(LocalDateTime.parse(str, parser))
 
   given arrayColumn: Column[Array[TypoLocalDateTime]] = {
     Column.nonNull[Array[TypoLocalDateTime]]((v1: Any, _) =>
@@ -56,7 +56,7 @@ object TypoLocalDateTime {
     )
   }
 
-  def now: TypoLocalDateTime = new TypoLocalDateTime(LocalDateTime.now())
+  def now: TypoLocalDateTime = TypoLocalDateTime.apply(LocalDateTime.now())
 
   given parameterMetadata: ParameterMetaData[TypoLocalDateTime] = {
     new ParameterMetaData[TypoLocalDateTime] {

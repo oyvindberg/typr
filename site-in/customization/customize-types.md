@@ -12,7 +12,8 @@ This is referred to within Typo as a [user-selected type](../type-safety/user-se
 
 
 ```scala mdoc:silent
-import typo.{Options, TypeOverride}
+import typo.{Options, TypeOverride, Dialect, TypeSupportScala}
+import typo.internal.codegen.LangScala
 
 val rewriteColumnTypes = TypeOverride.relation {
   case ("schema.table", "column") => "org.foo.ColumnId"
@@ -20,6 +21,7 @@ val rewriteColumnTypes = TypeOverride.relation {
 
 Options(
   pkg = "org.foo",
+  lang = LangScala(Dialect.Scala3, TypeSupportScala),
   dbLib = None,
   typeOverride = rewriteColumnTypes
 )

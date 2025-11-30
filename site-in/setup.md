@@ -11,9 +11,11 @@ and you need to have that added to your build as well.
 If you want to use the [SQL DSL](what-is/dsl.md), you enable it by [customizing](customization/overview.md) Typo by setting `enableDsl = true`.
 
 ```scala mdoc:silent
-import typo.Options
+import typo.{Options, Dialect, TypeSupportScala}
+import typo.internal.codegen.LangScala
 Options(
   pkg = "mypkg",
+  lang = LangScala(Dialect.Scala3, TypeSupportScala),
   dbLib = None,
   enableDsl = true
 )
@@ -38,19 +40,22 @@ put it in `gen-db.sc` and run `scala-cli gen-db.sc`
 //> using scala "3.4.2"
 
 import typo.*
+import typo.internal.codegen.LangScala
 
 // adapt to your instance and credentials
 val ds = TypoDataSource.hikari(
-  server = "localhost", 
-  port = 6432, 
-  databaseName = "Adventureworks", 
-  username = "postgres", 
+  server = "localhost",
+  port = 6432,
+  databaseName = "Adventureworks",
+  username = "postgres",
   password = "password"
 )
 
 val options = Options(
   // customize package name for generated code
   pkg = "org.foo.generated",
+  // choose language and dialect for generated code
+  lang = LangScala(Dialect.Scala3, TypeSupportScala),
   // pick your database library
   dbLib = Some(DbLibName.Anorm),
   jsonLibs = Nil,
@@ -73,12 +78,12 @@ val selector = Selector.ExcludePostgresInternal
 
 generateFromDb(
   ds,
-  options, 
+  options,
   targetFolder = targetDir,
   testTargetFolder = Some(testTargetDir),
-  selector = selector, 
+  selector = selector,
   scriptsPaths = List(scriptsFolder)
-).foreach(_.overwriteFolder(options.dialect))
+).foreach(_.overwriteFolder())
 
 // add changed files to git, so you can keep them under control
 //scala.sys.process.Process(List("git", "add", targetDir.toString)).!!

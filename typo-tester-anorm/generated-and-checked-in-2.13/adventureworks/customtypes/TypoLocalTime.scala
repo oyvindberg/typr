@@ -24,7 +24,7 @@ case class TypoLocalTime(value: LocalTime)
 object TypoLocalTime {
   def apply(value: LocalTime): TypoLocalTime = new TypoLocalTime(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoLocalTime = new TypoLocalTime(LocalTime.parse(str))
+  def apply(str: String): TypoLocalTime = TypoLocalTime.apply(LocalTime.parse(str))
 
   implicit lazy val arrayColumn: Column[Array[TypoLocalTime]] = {
     Column.nonNull[Array[TypoLocalTime]]((v1: Any, _) =>
@@ -53,7 +53,7 @@ object TypoLocalTime {
     )
   }
 
-  def now: TypoLocalTime = new TypoLocalTime(LocalTime.now())
+  def now: TypoLocalTime = TypoLocalTime.apply(LocalTime.now())
 
   implicit lazy val parameterMetadata: ParameterMetaData[TypoLocalTime] = {
     new ParameterMetaData[TypoLocalTime] {

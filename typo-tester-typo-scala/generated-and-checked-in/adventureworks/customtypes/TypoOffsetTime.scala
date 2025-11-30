@@ -23,11 +23,11 @@ case class TypoOffsetTime(value: OffsetTime)
 object TypoOffsetTime {
   def apply(value: OffsetTime): TypoOffsetTime = new TypoOffsetTime(value.truncatedTo(ChronoUnit.MICROS))
 
-  def apply(str: String): TypoOffsetTime = new TypoOffsetTime(OffsetTime.parse(str, parser))
+  def apply(str: String): TypoOffsetTime = TypoOffsetTime.apply(OffsetTime.parse(str, parser))
 
   given bijection: Bijection[TypoOffsetTime, OffsetTime] = Bijection.apply[TypoOffsetTime, OffsetTime](_.value)(TypoOffsetTime.apply)
 
-  def now: TypoOffsetTime = new TypoOffsetTime(OffsetTime.now())
+  def now: TypoOffsetTime = TypoOffsetTime.apply(OffsetTime.now())
 
   val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
 

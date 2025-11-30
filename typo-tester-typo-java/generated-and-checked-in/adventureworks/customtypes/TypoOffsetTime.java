@@ -29,14 +29,14 @@ public record TypoOffsetTime(OffsetTime value) {
   };
 
   static public TypoOffsetTime apply(String str) {
-    return new TypoOffsetTime(OffsetTime.parse(str, parser));
+    return TypoOffsetTime.apply(OffsetTime.parse(str, parser));
   };
 
   static public Bijection<TypoOffsetTime, OffsetTime> bijection =
     Bijection.of(TypoOffsetTime::value, TypoOffsetTime::new);
 
   static public TypoOffsetTime now() {
-    return new TypoOffsetTime(OffsetTime.now());
+    return TypoOffsetTime.apply(OffsetTime.now());
   };
 
   static DateTimeFormatter parser = new DateTimeFormatterBuilder().appendPattern("HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter();;

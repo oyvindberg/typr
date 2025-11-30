@@ -94,14 +94,14 @@ productRepo.select
 
 // Multiple conditions (implicitly ANDed)
 productRepo.select
-  .where(_.color === Some("Red"))
+  .where(_.color === "Red")
   .where(_.listprice > BigDecimal(1000))
   .where(_.daystomanufacture >= 5)
   .toList
 
 // OR conditions
 productRepo.select
-  .where(p => (p.color === Some("Red")).or(p.color === Some("Blue")))
+  .where(p => (p.color === "Red").or(p.color === "Blue"))
   .toList
 
 // Complex predicates
@@ -254,19 +254,19 @@ val fkJoined = productRepo.select
 
 ### Handling Optionality in Left Joins
 
-When working with left joins, you can access fields from the optional side using a special syntax:
+When working with left joins, you access fields from the optional side directly. The fields are still accessible even though the row result will be optional:
 
 ```scala mdoc:compile-only
 val leftJoinWithFilter = productRepo.select
   .join(productmodelRepo.select)
   .leftOn { case (p, pm) => p.productmodelid === pm.productmodelid }
-  .where { case (product, productModel) => 
-    // Use the apply method to safely access optional fields
-    productModel(_.productmodelid) === product.productmodelid
+  .where { case (product, productModel) =>
+    // Access fields directly from the fields object
+    productModel.productmodelid === product.productmodelid
   }
-  .orderBy { case (_, productModel) => 
-    // Optional ordering
-    productModel(_.name).desc.withNullsFirst 
+  .orderBy { case (_, productModel) =>
+    // Ordering on nullable field from left join
+    productModel.name.desc.withNullsFirst
   }
   .toList
 ```
@@ -351,7 +351,7 @@ val updated = productRepo.update
 productRepo.update
   .setComputedValue(_.listprice)(price => price * BigDecimal(1.1)) // 10% increase
   .setComputedValue(_.reorderpoint)(_ + TypoShort(22))
-  .where(_.productsubcategoryid === Some(ProductsubcategoryId(1)))
+  .where(_.productsubcategoryid === ProductsubcategoryId(1))
   .execute()
 
 // Complex computed values with string operations
@@ -359,7 +359,7 @@ val update = productRepo.update
   .setComputedValue(_.name)(p => (p.reverse.upper || Name("flaff")).substring(2, 4))
   .setValue(_.listprice)(BigDecimal(2))
   .setComputedValue(_.reorderpoint)(_ + TypoShort(22))
-  .setComputedValue(_.sizeunitmeasurecode)(_ => Some(testUnitmeasure.unitmeasurecode))
+  .setComputedValue(_.sizeunitmeasurecode)(_ => testUnitmeasure.unitmeasurecode)
   .where(_.productid === testProduct.productid)
 
 // Return updated rows

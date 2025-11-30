@@ -74,7 +74,7 @@ jobs:
         with:
           extraFiles: bleep.yaml
 
-      - name: Compile for 2.12
+      - name: Compile for Java
         run: bleep test typo-tester-typo-java
 
   build-docs:
