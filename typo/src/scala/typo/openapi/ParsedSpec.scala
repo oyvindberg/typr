@@ -6,7 +6,8 @@ case class ParsedSpec(
     models: List[ModelClass],
     sumTypes: List[SumType],
     apis: List[ApiInterface],
-    securitySchemes: Map[String, SecurityScheme]
+    securitySchemes: Map[String, SecurityScheme],
+    warnings: List[OpenApiError]
 )
 
 /** OpenAPI spec metadata */

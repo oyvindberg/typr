@@ -10,13 +10,27 @@ import scala.jdk.CollectionConverters._
 /** Main parser for OpenAPI specifications */
 object OpenApiParser {
 
+  /** Configuration for spec validation */
+  case class ParseConfig(
+      validateSpec: Boolean
+  )
+
+  object ParseConfig {
+    val default: ParseConfig = ParseConfig(validateSpec = true)
+  }
+
   /** Parse an OpenAPI spec from a file path */
+  def parseFile(path: Path, config: ParseConfig): Either[List[String], ParsedSpec] = {
+    parse(path.toString, config)
+  }
+
+  /** Parse an OpenAPI spec from a file path with default config */
   def parseFile(path: Path): Either[List[String], ParsedSpec] = {
-    parse(path.toString)
+    parseFile(path, ParseConfig.default)
   }
 
   /** Parse an OpenAPI spec from a URL or file path string */
-  def parse(location: String): Either[List[String], ParsedSpec] = {
+  def parse(location: String, config: ParseConfig): Either[List[String], ParsedSpec] = {
     val parseOptions = new ParseOptions()
     parseOptions.setResolve(true)
     // Don't fully resolve - we need to preserve $ref info for type names
@@ -30,12 +44,17 @@ object OpenApiParser {
     if (openApi == null) {
       Left(if (messages.isEmpty) List("Failed to parse OpenAPI spec") else messages)
     } else {
-      Right(extractSpec(openApi))
+      Right(extractSpec(openApi, config))
     }
   }
 
+  /** Parse an OpenAPI spec from a URL or file path string with default config */
+  def parse(location: String): Either[List[String], ParsedSpec] = {
+    parse(location, ParseConfig.default)
+  }
+
   /** Parse an OpenAPI spec from YAML/JSON content string */
-  def parseContent(content: String): Either[List[String], ParsedSpec] = {
+  def parseContent(content: String, config: ParseConfig): Either[List[String], ParsedSpec] = {
     val parseOptions = new ParseOptions()
     parseOptions.setResolve(true)
     parseOptions.setResolveFully(true)
@@ -48,15 +67,27 @@ object OpenApiParser {
     if (openApi == null) {
       Left(if (messages.isEmpty) List("Failed to parse OpenAPI spec") else messages)
     } else {
-      Right(extractSpec(openApi))
+      Right(extractSpec(openApi, config))
     }
   }
 
-  private def extractSpec(openApi: io.swagger.v3.oas.models.OpenAPI): ParsedSpec = {
+  /** Parse an OpenAPI spec from YAML/JSON content string with default config */
+  def parseContent(content: String): Either[List[String], ParsedSpec] = {
+    parseContent(content, ParseConfig.default)
+  }
+
+  private def extractSpec(openApi: io.swagger.v3.oas.models.OpenAPI, config: ParseConfig): ParsedSpec = {
     val info = extractInfo(openApi)
     val extracted = ModelExtractor.extract(openApi)
     val apis = ApiExtractor.extract(openApi)
     val securitySchemes = extractSecuritySchemes(openApi)
+
+    // Run validation if enabled
+    val warnings = if (config.validateSpec) {
+      SpecValidator.validate(openApi)
+    } else {
+      Nil
+    }
 
     // Link sum types to their subtypes
     val linkedModels = linkSumTypeParents(extracted.models, extracted.sumTypes)
@@ -66,7 +97,8 @@ object OpenApiParser {
       models = linkedModels,
       sumTypes = extracted.sumTypes,
       apis = apis,
-      securitySchemes = securitySchemes
+      securitySchemes = securitySchemes,
+      warnings = warnings
     )
   }
 
