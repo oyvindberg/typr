@@ -60,8 +60,9 @@ object minimize {
             case jvm.New(target, args) =>
               go(target)
               args.foreach(goTree)
-            case jvm.NewWithBody(tpe, members) =>
-              goTree(tpe)
+            case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+              extendsClass.foreach(goTree)
+              implementsInterface.foreach(goTree)
               members.foreach(goTree)
             case jvm.InferredTargs(target) =>
               go(target)

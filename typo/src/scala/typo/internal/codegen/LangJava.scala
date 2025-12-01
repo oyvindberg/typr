@@ -512,7 +512,12 @@ case object LangJava extends Lang {
         code"{ ${elements.mkCode(", ")} }"
 
       // Anonymous class: new Interface() { members }
-      case jvm.NewWithBody(tpe, members) =>
+      // In Java, anonymous classes can only extend one class OR implement one interface
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        val tpe: jvm.Code = extendsClass.orElse(implementsInterface) match {
+          case Some(t) => t.code
+          case None    => jvm.Code.Empty
+        }
         if (members.isEmpty) code"new $tpe() {}"
         else {
           val memberCtx = Ctx.Empty // Inside anonymous class, public is required

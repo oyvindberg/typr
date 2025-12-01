@@ -170,7 +170,7 @@ class ModelCodegen(
     val commonMethods = sumType.commonProperties.map { prop =>
       val propType = typeMapper.map(prop.typeInfo)
       jvm.Method(
-        annotations = jsonLib.propertyAnnotations(prop.originalName),
+        annotations = jsonLib.methodPropertyAnnotations(prop.originalName),
         comments = prop.description.map(d => jvm.Comments(List(d))).getOrElse(jvm.Comments.Empty),
         tparams = Nil,
         name = jvm.Ident(prop.name),
@@ -186,7 +186,7 @@ class ModelCodegen(
 
     // Add discriminator property method
     val discriminatorMethod = jvm.Method(
-      annotations = jsonLib.propertyAnnotations(sumType.discriminator.propertyName),
+      annotations = jsonLib.methodPropertyAnnotations(sumType.discriminator.propertyName),
       comments = jvm.Comments.Empty,
       tparams = Nil,
       name = jvm.Ident(sanitizePropertyName(sumType.discriminator.propertyName)),

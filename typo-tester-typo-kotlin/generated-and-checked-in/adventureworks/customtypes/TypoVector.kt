@@ -16,19 +16,19 @@ import typo.runtime.PgType
 import typo.runtime.PgWrite
 
 /** extension: https://github.com/pgvector/pgvector */
-data class TypoVector(@JsonValue val value: Array<java.lang.Float>) {
+data class TypoVector(@JsonValue val value: Array<Float>) {
   companion object {
-    val bijection: Bijection<TypoVector, Array<java.lang.Float>> =
+    val bijection: Bijection<TypoVector, Array<Float>> =
       Bijection.of(TypoVector::value, ::TypoVector)
 
     val pgText: PgText<TypoVector> =
-      PgText.textString.contramap({ v -> "[" + Arrays.stream(v.value).map(java.lang.String::valueOf).collect(Collectors.joining(",")) + "]" })
+      PgText.textString.contramap({ v -> "[" + Arrays.stream(v.value).map(String::valueOf).collect(Collectors.joining(",")) + "]" })
 
     val pgType: PgType<TypoVector> =
       PgType.of<TypoVector>(
         "vector",
-        PgRead.castJdbcObjectTo(PgArray::class.java).map({ v: PgArray -> TypoVector(v.getArray() as Array<java.lang.Float>) }),
-        PgWrite.passObjectToJdbc<Array<java.lang.Float>>().contramap({ v: TypoVector -> v.value }),
+        PgRead.castJdbcObjectTo(PgArray::class.java).map({ v: PgArray -> TypoVector(v.getArray() as Array<Float>) }),
+        PgWrite.passObjectToJdbc<Array<Float>>().contramap({ v: TypoVector -> v.value }),
         TypoVector.pgText
       )
   }

@@ -294,7 +294,7 @@ object JaxRsSupport extends FrameworkSupport {
       // Java: new GenericType<List<Animal>>() {}
       // Kotlin: object : GenericType<List<Animal>>() {}
       val genericTypeTpe = jvm.Type.TApply(Types.JaxRs.GenericType, List(entityType))
-      val genericTypeExpr = jvm.NewWithBody(genericTypeTpe, Nil).code
+      val genericTypeExpr = jvm.NewWithBody(extendsClass = Some(genericTypeTpe), implementsInterface = None, Nil).code
       code"$response.readEntity($genericTypeExpr)"
     case _ =>
       val classLiteral = jvm.JavaClassOf(entityType).code

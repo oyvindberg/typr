@@ -468,7 +468,7 @@ case class FilesRelation(
       Nil,
       jvm.Ident("fields"),
       fieldsName,
-      Some(jvm.NewWithBody(fieldsName, fieldImplMethods).code),
+      Some(jvm.NewWithBody(extendsClass = None, implementsInterface = Some(fieldsName), fieldImplMethods).code),
       isLazy = true,
       isOverride = true
     )

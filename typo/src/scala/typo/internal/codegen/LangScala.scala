@@ -453,7 +453,13 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
         code"Array(${elements.mkCode(", ")})"
 
       // Anonymous class: new Trait { members }
-      case jvm.NewWithBody(tpe, members) =>
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        val tpe = (extendsClass, implementsInterface) match {
+          case (Some(cls), Some(iface)) => code"$cls with $iface"
+          case (Some(cls), None)        => code"$cls"
+          case (None, Some(iface))      => code"$iface"
+          case (None, None)             => jvm.Code.Empty
+        }
         if (members.isEmpty) code"new $tpe {}"
         else
           code"""|new $tpe {

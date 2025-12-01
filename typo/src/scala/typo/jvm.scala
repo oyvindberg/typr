@@ -179,8 +179,13 @@ object jvm {
 
   case class New(target: Code, args: List[Arg]) extends Tree
 
-  /** Anonymous class instantiation with body members: Scala: `new Trait { members }`, Java: `new Trait() { members }` */
-  case class NewWithBody(tpe: Type, members: List[ClassMember]) extends Tree
+  /** Anonymous class instantiation with body members: Scala: `new Trait { members }`, Java: `new Trait() { members }`
+    * @param extendsClass
+    *   Optional class to extend (needs constructor call in Kotlin)
+    * @param implementsInterface
+    *   Optional interface to implement (no constructor in Kotlin)
+    */
+  case class NewWithBody(extendsClass: Option[Type], implementsInterface: Option[Type], members: List[ClassMember]) extends Tree
 
   /** Diamond operator in Java: `new Foo<>()`. Renders as empty in Scala. */
   case class InferredTargs(target: Code) extends Tree

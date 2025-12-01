@@ -285,7 +285,7 @@ class ApiCodegen(
 
     // Abstract status method in the sealed interface
     val statusMethod = jvm.Method(
-      annotations = jsonLib.propertyAnnotations("status"),
+      annotations = jsonLib.methodPropertyAnnotations("status"),
       comments = jvm.Comments.Empty,
       tparams = Nil,
       name = jvm.Ident("status"),

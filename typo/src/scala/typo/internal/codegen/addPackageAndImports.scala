@@ -140,8 +140,12 @@ object addPackageAndImports {
         )
       case jvm.MethodRef(tpe, name) => jvm.MethodRef(shortenNamesType(tpe, typeImport), name)
       case jvm.New(target, args)    => jvm.New(target.mapTrees(t => shortenNames(t, typeImport, staticImport)), args.map(shortenNamesArg(_, typeImport, staticImport)))
-      case jvm.NewWithBody(tpe, members) =>
-        jvm.NewWithBody(shortenNamesType(tpe, typeImport), members.map(shortenNamesClassMember(_, typeImport, staticImport)))
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        jvm.NewWithBody(
+          extendsClass.map(shortenNamesType(_, typeImport)),
+          implementsInterface.map(shortenNamesType(_, typeImport)),
+          members.map(shortenNamesClassMember(_, typeImport, staticImport))
+        )
       case jvm.InferredTargs(target) => jvm.InferredTargs(target.mapTrees(t => shortenNames(t, typeImport, staticImport)))
       case jvm.GenericMethodCall(target, methodName, typeArgs, args) =>
         jvm.GenericMethodCall(

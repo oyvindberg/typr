@@ -616,13 +616,19 @@ case object LangKotlin extends Lang {
         }
         code"[${renderedElements.mkCode(", ")}]"
 
-      // Anonymous class: object : Type() { members }
-      // Note: In Kotlin, both classes and interfaces need () when creating anonymous objects
-      case jvm.NewWithBody(tpe, members) =>
-        if (members.isEmpty) code"object : $tpe() {}"
+      // Anonymous class: object : Type { members }
+      // In Kotlin: classes need (), interfaces don't
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        val typeClause = (extendsClass, implementsInterface) match {
+          case (Some(cls), Some(iface)) => code"$cls(), $iface"
+          case (Some(cls), None)        => code"$cls()"
+          case (None, Some(iface))      => code"$iface"
+          case (None, None)             => jvm.Code.Empty
+        }
+        if (members.isEmpty) code"object : $typeClause {}"
         else {
           val memberCtx = Ctx.Empty
-          code"""|object : $tpe() {
+          code"""|object : $typeClause {
                  |  ${members.map(m => renderTree(m, memberCtx)).mkCode("\n")}
                  |}""".stripMargin
         }

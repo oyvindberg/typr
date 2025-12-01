@@ -11,8 +11,11 @@ trait JsonLibSupport {
   /** Annotations for a model class */
   def modelAnnotations: List[jvm.Annotation]
 
-  /** Annotations for a property */
+  /** Annotations for a data class field property (uses @field: target in Kotlin) */
   def propertyAnnotations(originalName: String): List[jvm.Annotation]
+
+  /** Annotations for a method property (no use-site target) */
+  def methodPropertyAnnotations(originalName: String): List[jvm.Annotation]
 
   /** Annotations for a value field (in wrapper types) - placed on parameter */
   def valueAnnotations: List[jvm.Annotation]
@@ -31,6 +34,7 @@ trait JsonLibSupport {
 object NoJsonLibSupport extends JsonLibSupport {
   override def modelAnnotations: List[jvm.Annotation] = Nil
   override def propertyAnnotations(originalName: String): List[jvm.Annotation] = Nil
+  override def methodPropertyAnnotations(originalName: String): List[jvm.Annotation] = Nil
   override def valueAnnotations: List[jvm.Annotation] = Nil
   override def constructorAnnotations: List[jvm.Annotation] = Nil
   override def wrapperAnnotations(tpe: jvm.Type.Qualified): List[jvm.Annotation] = Nil
@@ -49,6 +53,16 @@ object JacksonSupport extends JsonLibSupport {
   override def modelAnnotations: List[jvm.Annotation] = Nil
 
   override def propertyAnnotations(originalName: String): List[jvm.Annotation] = {
+    List(
+      jvm.Annotation(
+        Types.Jackson.JsonProperty,
+        List(jvm.Annotation.Arg.Positional(jvm.StrLit(originalName).code)),
+        useTarget = Some(jvm.Annotation.UseTarget.Field)
+      )
+    )
+  }
+
+  override def methodPropertyAnnotations(originalName: String): List[jvm.Annotation] = {
     List(
       jvm.Annotation(
         Types.Jackson.JsonProperty,
