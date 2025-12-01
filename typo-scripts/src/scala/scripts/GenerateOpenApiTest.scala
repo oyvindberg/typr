@@ -1,11 +1,12 @@
 package scripts
 
 import typo.openapi.{OpenApiCodegen, OpenApiClientLib, OpenApiOptions, OpenApiServerLib}
+import typo.internal.FileSync
 import typo.jvm
-import typo.internal.codegen.{addPackageAndImports, LangJava, LangScala}
-import typo.{Dialect, Lang, TypeSupportScala}
+import typo.internal.codegen.{addPackageAndImports, LangJava, LangKotlin, LangScala}
+import typo.{Dialect, Lang, RelPath, TypeSupportScala}
 
-import java.nio.file.{Files, Path}
+import java.nio.file.Path
 
 object GenerateOpenApiTest {
   val buildDir: Path = Path.of(sys.props("user.dir"))
@@ -22,7 +23,6 @@ object GenerateOpenApiTest {
       serverLib = Some(OpenApiServerLib.JaxRsSync),
       clientLib = None,
       lang = LangJava,
-      extension = ".java",
       generateValidation = true
     )
 
@@ -33,7 +33,6 @@ object GenerateOpenApiTest {
       serverLib = Some(OpenApiServerLib.SpringMvc),
       clientLib = None,
       lang = LangJava,
-      extension = ".java",
       generateValidation = true
     )
 
@@ -44,7 +43,6 @@ object GenerateOpenApiTest {
       serverLib = Some(OpenApiServerLib.QuarkusReactive),
       clientLib = Some(OpenApiClientLib.MicroProfileReactive),
       lang = LangJava,
-      extension = ".java",
       generateValidation = true
     )
 
@@ -55,7 +53,6 @@ object GenerateOpenApiTest {
       serverLib = None,
       clientLib = Some(OpenApiClientLib.MicroProfileBlocking),
       lang = LangJava,
-      extension = ".java",
       generateValidation = true
     )
 
@@ -67,7 +64,6 @@ object GenerateOpenApiTest {
       serverLib = None,
       clientLib = None,
       lang = langScala,
-      extension = ".scala",
       generateValidation = false
     )
 
@@ -78,8 +74,37 @@ object GenerateOpenApiTest {
       serverLib = Some(OpenApiServerLib.Http4s),
       clientLib = Some(OpenApiClientLib.Http4s),
       lang = langScala,
-      extension = ".scala",
       generateValidation = false
+    )
+
+    // Kotlin with JAX-RS server only (blocking)
+    generateCode(
+      specPath = specPath,
+      language = "kotlin",
+      serverLib = Some(OpenApiServerLib.JaxRsSync),
+      clientLib = None,
+      lang = LangKotlin,
+      generateValidation = true
+    )
+
+    // Kotlin with Spring server only (blocking)
+    generateCode(
+      specPath = specPath,
+      language = "kotlin",
+      serverLib = Some(OpenApiServerLib.SpringMvc),
+      clientLib = None,
+      lang = LangKotlin,
+      generateValidation = true
+    )
+
+    // Kotlin with Quarkus server + MicroProfile client (reactive)
+    generateCode(
+      specPath = specPath,
+      language = "kotlin",
+      serverLib = Some(OpenApiServerLib.QuarkusReactive),
+      clientLib = Some(OpenApiClientLib.MicroProfileReactive),
+      lang = LangKotlin,
+      generateValidation = true
     )
 
     println("Done!")
@@ -128,19 +153,14 @@ object GenerateOpenApiTest {
       serverLib: Option[OpenApiServerLib],
       clientLib: Option[OpenApiClientLib],
       lang: Lang,
-      extension: String,
       generateValidation: Boolean
   ): Unit = {
     val outputDirName = buildOutputDirName(language, serverLib, clientLib)
-    val outputDir = buildDir.resolve(outputDirName)
+    val projectDir = buildDir.resolve(outputDirName)
+    // Use the package name as source directory - FileSync will manage only this folder
+    val sourceDir = projectDir.resolve("testapi")
 
-    println(s"Output directory: $outputDir")
-
-    // Clean output directory
-    if (Files.exists(outputDir)) {
-      Files.walk(outputDir).sorted(java.util.Comparator.reverseOrder()).forEach(Files.delete)
-    }
-    Files.createDirectories(outputDir)
+    println(s"Output directory: $sourceDir")
 
     val options = OpenApiOptions
       .default(jvm.QIdent(List(jvm.Ident("testapi"))))
@@ -167,14 +187,27 @@ object GenerateOpenApiTest {
         }.toMap
       }
 
-    println(s"Generated ${result.files.size} files:")
-    result.files.foreach { file =>
-      val relativePath = file.tpe.value.idents.map(_.value).mkString("/") + extension
-      val fullPath = outputDir.resolve(relativePath)
-      Files.createDirectories(fullPath.getParent)
+    // Convert files to RelPath -> String map for FileSync
+    val fileMap: Map[RelPath, String] = result.files.map { file =>
+      // Remove the "testapi" prefix from the path since we're already in that directory
+      val pathParts = file.tpe.value.idents.drop(1).map(_.value)
+      val relativePath = RelPath(pathParts.init :+ s"${pathParts.last}.${lang.extension}")
       val fileWithImports = addPackageAndImports(lang, knownNamesByPkg, file)
-      Files.writeString(fullPath, fileWithImports.contents.render(lang).asString)
-      println(s"  - $relativePath")
+      relativePath -> fileWithImports.contents.render(lang).asString
+    }.toMap
+
+    // Use FileSync to write files - this only touches the sourceDir, not project root
+    val synced = FileSync.syncStrings(
+      folder = sourceDir,
+      fileRelMap = fileMap,
+      deleteUnknowns = FileSync.DeleteUnknowns.Yes(maxDepth = None),
+      softWrite = FileSync.SoftWrite.Yes(Set.empty)
+    )
+
+    val changed = synced.filter { case (_, status) => status != FileSync.Synced.Unchanged }
+    println(s"Generated ${result.files.size} files (${changed.size} changed):")
+    changed.foreach { case (path, status) =>
+      println(s"  - $status: ${sourceDir.relativize(path)}")
     }
   }
 }

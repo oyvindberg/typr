@@ -1,0 +1,36 @@
+package testapi.api
+
+import io.smallrye.mutiny.Uni
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
+import io.swagger.v3.oas.annotations.security.SecurityScheme
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import java.lang.IllegalStateException
+import testapi.api.ListAnimalsResponse.Status200
+import testapi.api.ListAnimalsResponse.Status4XX
+import testapi.api.ListAnimalsResponse.Status5XX
+
+@Path("/animals")
+@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
+@SecurityScheme(name = "apiKeyHeader", type = SecuritySchemeType.APIKEY, `in` = SecuritySchemeIn.HEADER, paramName = "X-API-Key")
+@SecurityScheme(name = "apiKeyQuery", type = SecuritySchemeType.APIKEY, `in` = SecuritySchemeIn.QUERY, paramName = "api_key")
+@SecurityScheme(name = "oauth2", type = SecuritySchemeType.OAUTH2)
+sealed interface AnimalsApiServer : AnimalsApi {
+  /** List all animals (polymorphic) */
+  override fun listAnimals(): Uni<ListAnimalsResponse>
+
+  /** Endpoint wrapper for listAnimals - handles response status codes */
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  fun listAnimalsEndpoint(): Uni<Response> = listAnimals().map({ response: ListAnimalsResponse -> when (val __r = response) {
+    is Status200 -> { val r = __r as Status200; Response.ok(r.value).build() }
+    is Status4XX -> { val r = __r as Status4XX; Response.status(r.statusCode).entity(r.value).build() }
+    is Status5XX -> { val r = __r as Status5XX; Response.status(r.statusCode).entity(r.value).build() }
+    else -> throw IllegalStateException("Unexpected response type")
+  } })
+}

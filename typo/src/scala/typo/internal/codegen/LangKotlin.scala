@@ -239,6 +239,12 @@ case object LangKotlin extends Lang {
           code"$stripped::class.javaObjectType"
         else
           code"$stripped::class.java"
+      case jvm.JavaClassOf(tpe) =>
+        def stripTypeParams(t: jvm.Type): jvm.Type = t match {
+          case jvm.Type.TApply(underlying, _) => stripTypeParams(underlying)
+          case other                          => other
+        }
+        code"${stripTypeParams(tpe)}::class.java"
       case jvm.Call(target, argGroups) =>
         val allArgs = argGroups.flatMap(_.args)
         code"$target(${allArgs.map(a => renderTree(a, ctx)).mkCode(", ")})"
@@ -293,7 +299,7 @@ case object LangKotlin extends Lang {
       case jvm.Type.Function2(targ1, targ2, ret)           => code"($targ1, $targ2) -> $ret"
       case jvm.Type.Qualified(value)                       =>
         // Map Java types to Kotlin equivalents
-        value.idents.mkString(".") match {
+        value.dotName match {
           case "java.lang.String"    => code"String"
           case "java.lang.Boolean"   => code"Boolean"
           case "java.lang.Integer"   => code"Int"
@@ -315,6 +321,8 @@ case object LangKotlin extends Lang {
       case jvm.IfExpr(pred, thenp, elsep) =>
         code"if ($pred) $thenp else $elsep"
       case jvm.TypeSwitch(value, cases, nullCase, defaultCase) =>
+        // Use `when (val __r = value)` to bind value once and avoid double evaluation
+        val boundIdent = jvm.Ident("__r")
         val nullCaseCode = nullCase.map(body => code"null -> $body").toList
         val typeCases = cases.map { case jvm.TypeSwitch.Case(pat, ident, body) =>
           // If body starts with {, unwrap it and merge with cast assignment
@@ -322,16 +330,16 @@ case object LangKotlin extends Lang {
           if (bodyStr.startsWith("{") && bodyStr.endsWith("}")) {
             val innerBody = bodyStr.drop(1).dropRight(1).trim
             code"""|is $pat -> {
-                   |  val $ident = $value as $pat
+                   |  val $ident = $boundIdent as $pat
                    |  $innerBody
                    |}""".stripMargin
           } else {
-            code"is $pat -> { val $ident = $value as $pat; $body }"
+            code"is $pat -> { val $ident = $boundIdent as $pat; $body }"
           }
         }
         val defaultCaseCode = defaultCase.map(body => code"else -> $body").toList
         val allCases = nullCaseCode ++ typeCases ++ defaultCaseCode
-        code"""|when ($value) {
+        code"""|when (val $boundIdent = $value) {
                |  ${allCases.mkCode("\n")}
                |}""".stripMargin
       case jvm.StringInterpolate(_, prefix, content) =>
@@ -507,6 +515,11 @@ case object LangKotlin extends Lang {
 
           val allBody = body ++ companionBody.toList
 
+          // Constructor annotations render as: data class Name @Annotation constructor(params)
+          val constructorAnnotationsCode = if (cls.constructorAnnotations.nonEmpty) {
+            Some(code" ${cls.constructorAnnotations.map(renderAnnotation).mkCode(" ")} constructor")
+          } else None
+
           List[Option[jvm.Code]](
             Some(renderAnnotations(cls.annotations)),
             renderComments(cls.comments),
@@ -516,6 +529,7 @@ case object LangKotlin extends Lang {
               case Nil      => None
               case nonEmpty => Some(renderTparams(nonEmpty))
             },
+            constructorAnnotationsCode,
             Some(renderDataClassParams(cls.params, ctx)),
             cls.implements match {
               case Nil      => None
@@ -568,12 +582,22 @@ case object LangKotlin extends Lang {
       // Annotation: @Annotation(args)
       case ann: jvm.Annotation => renderAnnotation(ann)
 
-      // Anonymous class: object : Type { members }
+      // Annotation array: Kotlin uses [ a, b ]
+      // Nested annotations don't have @ prefix
+      case jvm.AnnotationArray(elements) =>
+        val renderedElements = elements.map {
+          case jvm.Code.Tree(ann: jvm.Annotation) => renderNestedAnnotation(ann)
+          case other                              => other
+        }
+        code"[${renderedElements.mkCode(", ")}]"
+
+      // Anonymous class: object : Type() { members }
+      // Note: In Kotlin, both classes and interfaces need () when creating anonymous objects
       case jvm.NewWithBody(tpe, members) =>
-        if (members.isEmpty) code"object : $tpe {}"
+        if (members.isEmpty) code"object : $tpe() {}"
         else {
           val memberCtx = Ctx.Empty
-          code"""|object : $tpe {
+          code"""|object : $tpe() {
                  |  ${members.map(m => renderTree(m, memberCtx)).mkCode("\n")}
                  |}""".stripMargin
         }
@@ -659,6 +683,29 @@ case object LangKotlin extends Lang {
                       |  ${body.mkCode("\n\n")}
                       |}""".stripMargin)
         ).flatten.mkCode("")
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        val tryCode = code"""|try {
+                             |  ${tryBlock.mkCode("\n")}
+                             |}""".stripMargin
+        val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
+          code"""|catch ($ident: $exType) {
+                 |  ${body.mkCode("\n")}
+                 |}""".stripMargin
+        }
+        val finallyCode =
+          if (finallyBlock.isEmpty) jvm.Code.Str("")
+          else
+            code"""|finally {
+                   |  ${finallyBlock.mkCode("\n")}
+                   |}""".stripMargin
+        code"$tryCode ${catchCodes.mkCode(" ")} $finallyCode"
+      case jvm.IfElseChain(cases, elseCase) =>
+        val ifCases = cases.zipWithIndex.map { case ((cond, body), idx) =>
+          if (idx == 0) code"if ($cond) { $body }"
+          else code"else if ($cond) { $body }"
+        }
+        val elseCode = code"else { $elseCase }"
+        (ifCases :+ elseCode).mkCode("\n")
     }
 
   override def escapedIdent(value: String): String = {
@@ -672,9 +719,15 @@ case object LangKotlin extends Lang {
   }
 
   def renderParams(params: List[jvm.Param[jvm.Type]], ctx: Ctx): jvm.Code = {
+    val hasComments = params.exists(_.comments.lines.nonEmpty)
     params match {
-      case Nil       => code"()"
-      case List(one) => code"(${renderTree(one, ctx)})"
+      case Nil                       => code"()"
+      case List(one) if !hasComments => code"(${renderTree(one, ctx)})"
+      case List(one)                 =>
+        // Single param with comment - no empty init line
+        code"""|(
+               |  ${renderTree(one, ctx)}
+               |)""".stripMargin
       case more =>
         code"""|(
                |  ${more.init.map(p => code"${renderTree(p, ctx)},").mkCode("\n")}
@@ -731,19 +784,41 @@ case object LangKotlin extends Lang {
   }
 
   def renderAnnotation(ann: jvm.Annotation): jvm.Code = {
-    val argsCode = ann.args match {
-      case Nil                                        => jvm.Code.Empty
-      case List(jvm.Annotation.Arg.Positional(value)) => code"($value)"
-      case args =>
-        val rendered = args
-          .map {
-            case jvm.Annotation.Arg.Named(name, value) => code"$name = $value"
-            case jvm.Annotation.Arg.Positional(value)  => value
-          }
-          .mkCode(", ")
-        code"($rendered)"
-    }
-    code"@${ann.tpe}$argsCode"
+    val argsCode = renderAnnotationArgs(ann.args)
+    // Kotlin use-site targets: @get:JsonValue, @field:JsonCreator etc
+    val useTargetPrefix = ann.useTarget.map(t => code"${t.name}:").getOrElse(jvm.Code.Empty)
+    code"@$useTargetPrefix${ann.tpe}$argsCode"
+  }
+
+  /** Render a nested annotation (inside another annotation) - no @ prefix */
+  def renderNestedAnnotation(ann: jvm.Annotation): jvm.Code = {
+    val argsCode = renderAnnotationArgs(ann.args)
+    code"${ann.tpe}$argsCode"
+  }
+
+  /** Render annotation arguments, converting ClassOf to KClass for Kotlin */
+  private def renderAnnotationArgs(args: List[jvm.Annotation.Arg]): jvm.Code = args match {
+    case Nil                                        => jvm.Code.Empty
+    case List(jvm.Annotation.Arg.Positional(value)) => code"(${renderAnnotationValue(value)})"
+    case args =>
+      val rendered = args
+        .map {
+          case jvm.Annotation.Arg.Named(name, value) => code"$name = ${renderAnnotationValue(value)}"
+          case jvm.Annotation.Arg.Positional(value)  => renderAnnotationValue(value)
+        }
+        .mkCode(", ")
+      code"($rendered)"
+  }
+
+  /** Render annotation argument value, converting ClassOf to KClass and JavaClassOf to Java Class */
+  private def renderAnnotationValue(value: jvm.Code): jvm.Code = value match {
+    case jvm.Code.Tree(jvm.ClassOf(tpe)) =>
+      // For Kotlin annotations, use KClass (::class) not Java Class (::class.java)
+      code"$tpe::class"
+    case jvm.Code.Tree(jvm.JavaClassOf(tpe)) =>
+      // Explicit Java Class reference - use ::class.java
+      code"$tpe::class.java"
+    case other => other
   }
 
   def renderAnnotations(annotations: List[jvm.Annotation]): jvm.Code = {
