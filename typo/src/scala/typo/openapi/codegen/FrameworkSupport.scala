@@ -39,6 +39,20 @@ trait FrameworkSupport {
 
   /** Build a response with a specific status code */
   def buildStatusResponse(statusCode: jvm.Code, value: jvm.Code): jvm.Code
+
+  // Client-side response handling methods
+
+  /** Get the status code from a response object */
+  def getStatusCode(response: jvm.Code): jvm.Code
+
+  /** Read entity from response with the given type */
+  def readEntity(response: jvm.Code, entityType: jvm.Type): jvm.Code
+
+  /** The exception type thrown when HTTP request fails (e.g., WebApplicationException) */
+  def clientExceptionType: jvm.Type.Qualified
+
+  /** Extract response from the exception */
+  def getResponseFromException(exception: jvm.Code): jvm.Code
 }
 
 /** No framework annotations - just generate plain interfaces */
@@ -53,6 +67,10 @@ object NoFrameworkSupport extends FrameworkSupport {
   override def responseType: jvm.Type.Qualified = Types.JaxRs.Response // Default to JAX-RS Response
   override def buildOkResponse(value: jvm.Code): jvm.Code = code"${Types.JaxRs.Response}.ok($value).build()"
   override def buildStatusResponse(statusCode: jvm.Code, value: jvm.Code): jvm.Code = code"${Types.JaxRs.Response}.status($statusCode).entity($value).build()"
+  override def getStatusCode(response: jvm.Code): jvm.Code = code"$response.getStatus()"
+  override def readEntity(response: jvm.Code, entityType: jvm.Type): jvm.Code = code"$response.readEntity($entityType.class)"
+  override def clientExceptionType: jvm.Type.Qualified = Types.JaxRs.WebApplicationException
+  override def getResponseFromException(exception: jvm.Code): jvm.Code = code"$exception.getResponse()"
 }
 
 /** JAX-RS (Jakarta EE) framework support */
@@ -252,6 +270,10 @@ object JaxRsSupport extends FrameworkSupport {
   override def responseType: jvm.Type.Qualified = Types.JaxRs.Response
   override def buildOkResponse(value: jvm.Code): jvm.Code = code"${Types.JaxRs.Response}.ok($value).build()"
   override def buildStatusResponse(statusCode: jvm.Code, value: jvm.Code): jvm.Code = code"${Types.JaxRs.Response}.status($statusCode).entity($value).build()"
+  override def getStatusCode(response: jvm.Code): jvm.Code = code"$response.getStatus()"
+  override def readEntity(response: jvm.Code, entityType: jvm.Type): jvm.Code = code"$response.readEntity($entityType.class)"
+  override def clientExceptionType: jvm.Type.Qualified = Types.JaxRs.WebApplicationException
+  override def getResponseFromException(exception: jvm.Code): jvm.Code = code"$exception.getResponse()"
 }
 
 /** Spring Boot / Spring MVC framework support */
@@ -384,6 +406,11 @@ object SpringBootSupport extends FrameworkSupport {
   override def responseType: jvm.Type.Qualified = Types.Spring.ResponseEntity
   override def buildOkResponse(value: jvm.Code): jvm.Code = code"${Types.Spring.ResponseEntity}.ok($value)"
   override def buildStatusResponse(statusCode: jvm.Code, value: jvm.Code): jvm.Code = code"${Types.Spring.ResponseEntity}.status($statusCode).body($value)"
+  // For Spring, use HttpStatusCodeException (RestTemplate) - getStatusCode() returns HttpStatusCode
+  override def getStatusCode(response: jvm.Code): jvm.Code = code"$response.getStatusCode().value()"
+  override def readEntity(response: jvm.Code, entityType: jvm.Type): jvm.Code = code"$response.getBody()"
+  override def clientExceptionType: jvm.Type.Qualified = Types.Spring.HttpStatusCodeException
+  override def getResponseFromException(exception: jvm.Code): jvm.Code = code"$exception" // Exception itself has the response data
 }
 
 /** Quarkus with RESTEasy Reactive - uses JAX-RS annotations with Mutiny Uni return types. The effect type wrapping (Uni<T>) is handled by ApiCodegen via the effectType parameter.
@@ -414,6 +441,10 @@ object QuarkusReactiveServerSupport extends FrameworkSupport {
   override def responseType: jvm.Type.Qualified = JaxRsSupport.responseType
   override def buildOkResponse(value: jvm.Code): jvm.Code = JaxRsSupport.buildOkResponse(value)
   override def buildStatusResponse(statusCode: jvm.Code, value: jvm.Code): jvm.Code = JaxRsSupport.buildStatusResponse(statusCode, value)
+  override def getStatusCode(response: jvm.Code): jvm.Code = JaxRsSupport.getStatusCode(response)
+  override def readEntity(response: jvm.Code, entityType: jvm.Type): jvm.Code = JaxRsSupport.readEntity(response, entityType)
+  override def clientExceptionType: jvm.Type.Qualified = JaxRsSupport.clientExceptionType
+  override def getResponseFromException(exception: jvm.Code): jvm.Code = JaxRsSupport.getResponseFromException(exception)
 }
 
 /** MicroProfile Rest Client - generates client interface with JAX-RS annotations that can be used with the MicroProfile Rest Client to make HTTP calls.
@@ -459,4 +490,8 @@ object MicroProfileRestClientSupport extends FrameworkSupport {
   override def responseType: jvm.Type.Qualified = JaxRsSupport.responseType
   override def buildOkResponse(value: jvm.Code): jvm.Code = JaxRsSupport.buildOkResponse(value)
   override def buildStatusResponse(statusCode: jvm.Code, value: jvm.Code): jvm.Code = JaxRsSupport.buildStatusResponse(statusCode, value)
+  override def getStatusCode(response: jvm.Code): jvm.Code = JaxRsSupport.getStatusCode(response)
+  override def readEntity(response: jvm.Code, entityType: jvm.Type): jvm.Code = JaxRsSupport.readEntity(response, entityType)
+  override def clientExceptionType: jvm.Type.Qualified = JaxRsSupport.clientExceptionType
+  override def getResponseFromException(exception: jvm.Code): jvm.Code = JaxRsSupport.getResponseFromException(exception)
 }

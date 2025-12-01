@@ -158,6 +158,30 @@ case object LangJava extends Lang {
         code"""|switch ($value) {
                |  ${allCases.mkCode("\n")}
                |}""".stripMargin
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        val tryCode = code"""|try {
+                             |  ${tryBlock.mkCode("\n")}
+                             |}""".stripMargin
+        val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
+          code"""|catch ($exType $ident) {
+                 |  ${body.mkCode("\n")}
+                 |}""".stripMargin
+        }
+        val finallyCode =
+          if (finallyBlock.isEmpty) jvm.Code.Str("")
+          else
+            code"""|finally {
+                 |  ${finallyBlock.mkCode("\n")}
+                 |}""".stripMargin
+        code"$tryCode ${catchCodes.mkCode(" ")} $finallyCode"
+      case jvm.IfElseChain(cases, elseCase) =>
+        // IfElseChain bodies should include their own return/throw statements
+        val ifCases = cases.zipWithIndex.map { case ((cond, body), idx) =>
+          if (idx == 0) code"if ($cond) { $body }"
+          else code"else if ($cond) { $body }"
+        }
+        val elseCode = code"else { $elseCase }"
+        (ifCases :+ elseCode).mkCode("\n")
       case jvm.StringInterpolate(_, prefix, content) =>
         // For Java, determine if we need Fragment.lit() wrapping
         // - interpolate() needs Fragment.lit() for string parts (it expects Fragment varargs)
@@ -249,7 +273,11 @@ case object LangJava extends Lang {
           case jvm.Body.Abstract =>
             signature
           case jvm.Body.Expr(expr) =>
-            val bodyCode = if (tpe == jvm.Type.Void) code"$expr;" else code"return $expr;"
+            // TryCatch has internal returns, so don't add outer return
+            val bodyCode =
+              if (tpe == jvm.Type.Void) code"$expr;"
+              else if (isTryCatch(one)) code"$one"
+              else code"return $expr;"
             signature ++ code"""| {
                   |  $bodyCode
                   |}""".stripMargin

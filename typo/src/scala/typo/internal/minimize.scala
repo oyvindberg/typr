@@ -24,6 +24,20 @@ object minimize {
               }
               nullCase.foreach(go)
               defaultCase.foreach(go)
+            case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+              tryBlock.foreach(go)
+              catches.foreach { c =>
+                goTree(c.exceptionType)
+                goTree(c.ident)
+                c.body.foreach(go)
+              }
+              finallyBlock.foreach(go)
+            case jvm.IfElseChain(cases, elseCase) =>
+              cases.foreach { case (cond, body) =>
+                go(cond)
+                go(body)
+              }
+              go(elseCase)
             case jvm.IfExpr(pred, thenp, elsep) =>
               go(pred)
               go(thenp)

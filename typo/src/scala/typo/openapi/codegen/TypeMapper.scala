@@ -119,6 +119,7 @@ object Types {
     val Produces = jvm.Type.Qualified("jakarta.ws.rs.Produces")
     val MediaType = jvm.Type.Qualified("jakarta.ws.rs.core.MediaType")
     val Response = jvm.Type.Qualified("jakarta.ws.rs.core.Response")
+    val WebApplicationException = jvm.Type.Qualified("jakarta.ws.rs.WebApplicationException")
   }
 
   // Spring Boot / Spring MVC annotations
@@ -142,6 +143,8 @@ object Types {
     val MediaType = jvm.Type.Qualified("org.springframework.http.MediaType")
     val MultipartFile = jvm.Type.Qualified("org.springframework.web.multipart.MultipartFile")
     val ResponseEntity = jvm.Type.Qualified("org.springframework.http.ResponseEntity")
+    val WebClientResponseException = jvm.Type.Qualified("org.springframework.web.reactive.function.client.WebClientResponseException")
+    val HttpStatusCodeException = jvm.Type.Qualified("org.springframework.web.client.HttpStatusCodeException")
   }
 
   // Swagger/OpenAPI annotations for security documentation

@@ -131,6 +131,33 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
         code"""|$value match {
                |  ${allCases.mkCode("\n")}
                |}""".stripMargin
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        val tryCode = code"""|try {
+                             |  ${tryBlock.mkCode("\n")}
+                             |}""".stripMargin
+        val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
+          code"case $ident: $exType => ${body.mkCode("\n")}"
+        }
+        val catchCode =
+          if (catches.isEmpty) jvm.Code.Str("")
+          else
+            code"""|catch {
+                 |  ${catchCodes.mkCode("\n")}
+                 |}""".stripMargin
+        val finallyCode =
+          if (finallyBlock.isEmpty) jvm.Code.Str("")
+          else
+            code"""|finally {
+                 |  ${finallyBlock.mkCode("\n")}
+                 |}""".stripMargin
+        code"$tryCode $catchCode $finallyCode"
+      case jvm.IfElseChain(cases, elseCase) =>
+        val ifCases = cases.zipWithIndex.map { case ((cond, body), idx) =>
+          if (idx == 0) code"if ($cond) $body"
+          else code"else if ($cond) $body"
+        }
+        val elseCode = code"else $elseCase"
+        (ifCases :+ elseCode).mkCode("\n")
       case jvm.New(target, args) =>
         if (args.length > breakAfter)
           code"""|new $target(

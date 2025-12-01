@@ -244,6 +244,15 @@ object jvm {
     case class Case(tpe: Type, ident: Ident, body: Code)
   }
 
+  /** Try-catch block */
+  case class TryCatch(tryBlock: List[Code], catches: List[TryCatch.Catch], finallyBlock: List[Code]) extends Tree
+  object TryCatch {
+    case class Catch(exceptionType: Type.Qualified, ident: Ident, body: List[Code])
+  }
+
+  /** If-else chain */
+  case class IfElseChain(cases: List[(Code, Code)], elseCase: Code) extends Tree
+
   sealed trait Adt extends Tree {
     def name: Type.Qualified
   }

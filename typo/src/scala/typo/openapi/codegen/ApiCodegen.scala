@@ -122,8 +122,22 @@ class ApiCodegen(
     // Framework annotations on interface (e.g., @RegisterRestClient, @Path)
     val interfaceAnnotations = clientSupport.interfaceAnnotations(basePath, securitySchemes)
 
-    // Generate methods with framework annotations
-    val methods = api.methods.map(m => generateClientMethod(m, basePath, clientSupport))
+    // Generate methods: for methods with response variants, generate both raw method
+    // (returning Response, with annotations) and a wrapper method that handles response mapping
+    val methods = api.methods.flatMap { m =>
+      m.responseVariants match {
+        case Some(variants) =>
+          // Raw method that returns Response (with framework annotations)
+          val rawMethod = generateClientRawMethod(m, basePath, clientSupport)
+          // Wrapper method that handles response parsing and error recovery
+          val wrapperMethod = generateClientWrapperMethod(m, clientSupport, variants)
+          List(rawMethod, wrapperMethod)
+        case None =>
+          // Normal method with annotations
+          val annotatedMethod = generateClientMethod(m, basePath, clientSupport)
+          List(annotatedMethod)
+      }
+    }
 
     val clientInterface = jvm.Adt.Sum(
       annotations = interfaceAnnotations,
@@ -385,6 +399,225 @@ class ApiCodegen(
   private def generateClientMethod(method: ApiMethod, basePath: Option[String], clientSupport: FrameworkSupport): jvm.Method = {
     // Client methods have the same structure as server methods
     generateServerMethod(method, basePath, clientSupport)
+  }
+
+  /** Generate a raw client method that returns Response (for methods with multiple status codes) */
+  private def generateClientRawMethod(method: ApiMethod, basePath: Option[String], clientSupport: FrameworkSupport): jvm.Method = {
+    val comments = method.description.map(d => jvm.Comments(List(d))).getOrElse(jvm.Comments.Empty)
+
+    // Generate parameters with framework annotations
+    val params = generateParams(method, clientSupport)
+
+    // Return type is Response (or Effect<Response> for async)
+    val responseType = clientSupport.responseType
+    val returnType = effectOps match {
+      case Some(ops) => jvm.Type.TApply(ops.tpe, List(responseType))
+      case None      => responseType
+    }
+
+    // Create method with relative path for framework annotations
+    val methodWithRelativePath = method.copy(path = relativePath(method.path, basePath))
+
+    // Framework annotations (@GET, @POST, @Path, @Produces, @Consumes)
+    val frameworkAnnotations = clientSupport.methodAnnotations(methodWithRelativePath)
+
+    // Security annotations (@SecurityRequirement)
+    val securityAnnotations = clientSupport.securityAnnotations(method.security)
+
+    jvm.Method(
+      annotations = frameworkAnnotations ++ securityAnnotations,
+      comments = comments,
+      tparams = Nil,
+      name = jvm.Ident(method.name + "Raw"),
+      params = params,
+      implicitParams = Nil,
+      tpe = returnType,
+      throws = Nil,
+      body = Nil // Interface method - no body
+    )
+  }
+
+  /** Generate a client wrapper method that handles response parsing and error recovery */
+  private def generateClientWrapperMethod(
+      method: ApiMethod,
+      clientSupport: FrameworkSupport,
+      variants: List[ResponseVariant]
+  ): jvm.Method = {
+    val comments = jvm.Comments(List(s"${method.description.getOrElse(capitalize(method.name))} - handles response status codes"))
+
+    // Generate parameters without framework annotations (these go on the raw method)
+    val params = generateBaseParams(method)
+
+    // Return type is the response sum type (or Effect<ResponseSumType> for async)
+    val responseName = capitalize(method.name) + "Response"
+    val responseTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(responseName))
+    val returnType = effectOps match {
+      case Some(ops) => jvm.Type.TApply(ops.tpe, List(responseTpe))
+      case None      => responseTpe
+    }
+
+    // Build the method body
+    val body = generateClientWrapperBody(method, clientSupport, variants)
+
+    jvm.Method(
+      annotations = Nil,
+      comments = comments,
+      tparams = Nil,
+      name = jvm.Ident(method.name),
+      params = params,
+      implicitParams = Nil,
+      tpe = returnType,
+      throws = Nil,
+      body = body
+    )
+  }
+
+  /** Generate the body of the client wrapper method */
+  private def generateClientWrapperBody(
+      method: ApiMethod,
+      clientSupport: FrameworkSupport,
+      variants: List[ResponseVariant]
+  ): List[jvm.Code] = {
+    // Build argument list from method parameters
+    val argNames = method.parameters.map(p => jvm.Ident(p.name).code) ++
+      method.requestBody.toList.flatMap { body =>
+        if (body.isMultipart && body.formFields.nonEmpty) {
+          body.formFields.map(f => jvm.Ident(f.name).code)
+        } else {
+          List(jvm.Ident("body").code)
+        }
+      }
+
+    val argsCode = argNames.mkCode(", ")
+    val rawMethodCall = code"${jvm.Ident(method.name + "Raw")}($argsCode)"
+
+    val responseIdent = jvm.Ident("response")
+    val responseName = capitalize(method.name) + "Response"
+
+    // Generate status code handling - an if-else chain matching on status codes
+    val statusCodeHandlingCode = generateStatusCodeHandling(responseIdent, responseName, variants, clientSupport)
+
+    effectOps match {
+      case Some(ops) =>
+        // Async: we need to handle the effect and recover from errors
+        // Pattern: rawMethodCall.onFailure().recoverWithItem(e -> handleException(e)).map(response -> handleResponse(response))
+        // For simplicity, we'll use a try-catch pattern inside a map
+        val exceptionIdent = jvm.Ident("e")
+        val exceptionType = clientSupport.clientExceptionType
+
+        // Build the exception handling code
+        val exceptionResponseCode = clientSupport.getResponseFromException(exceptionIdent.code)
+        val exceptionHandlingCode = generateStatusCodeHandlingFromResponse(exceptionResponseCode, responseName, variants, clientSupport)
+
+        // For async, we map the response and use onFailure to recover
+        // Generate: rawMethodCall.map(response -> handleResponse(response)).onFailure(ExceptionType.class).recoverWithItem(e -> handleException(e))
+        val mapLambda = jvm.TypedLambda1(clientSupport.responseType, responseIdent, statusCodeHandlingCode)
+        val mappedCall = ops.map(rawMethodCall, mapLambda.code)
+
+        // For Mutiny, we use: .onFailure(ExceptionType.class).recoverWithItem(e -> ...)
+        val recoverLambda = jvm.TypedLambda1(exceptionType, exceptionIdent, exceptionHandlingCode)
+        val recoveredCall = code"$mappedCall.onFailure($exceptionType.class).recoverWithItem($recoverLambda)"
+
+        List(recoveredCall)
+
+      case None =>
+        // Sync: wrap in try-catch
+        val exceptionIdent = jvm.Ident("e")
+        val exceptionType = clientSupport.clientExceptionType
+        val rawResponseType = clientSupport.responseType
+
+        // Build the exception handling code
+        val exceptionResponseCode = clientSupport.getResponseFromException(exceptionIdent.code)
+        val exceptionHandlingCode = generateStatusCodeHandlingFromResponse(exceptionResponseCode, responseName, variants, clientSupport)
+
+        // Generate try-catch block
+        val tryCatch = jvm.TryCatch(
+          tryBlock = List(
+            code"$rawResponseType ${responseIdent.code} = $rawMethodCall;",
+            statusCodeHandlingCode
+          ),
+          catches = List(
+            jvm.TryCatch.Catch(exceptionType, exceptionIdent, List(exceptionHandlingCode))
+          ),
+          finallyBlock = Nil
+        )
+        // Add null at the end so the method generates "return null;" (unreachable but satisfies compiler)
+        List(tryCatch.code, code"null")
+    }
+  }
+
+  /** Generate if-else chain for handling different status codes from a response variable */
+  private def generateStatusCodeHandling(
+      responseIdent: jvm.Ident,
+      responseName: String,
+      variants: List[ResponseVariant],
+      clientSupport: FrameworkSupport
+  ): jvm.Code = {
+    generateStatusCodeHandlingFromResponse(responseIdent.code, responseName, variants, clientSupport)
+  }
+
+  /** Generate if-else chain for handling different status codes from a response expression */
+  private def generateStatusCodeHandlingFromResponse(
+      responseExpr: jvm.Code,
+      responseName: String,
+      variants: List[ResponseVariant],
+      clientSupport: FrameworkSupport
+  ): jvm.Code = {
+    val statusCodeExpr = clientSupport.getStatusCode(responseExpr)
+
+    // Build if-else chain for each variant
+    val ifElseCases = variants.map { variant =>
+      val statusName = "Status" + normalizeStatusCode(variant.statusCode)
+      val subtypeTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(responseName) / jvm.Ident(statusName))
+      val bodyType = typeMapper.map(variant.typeInfo)
+      val readEntityCode = clientSupport.readEntity(responseExpr, bodyType)
+
+      // Check if this is a range status code (has statusCode field)
+      val isRangeStatus = variant.statusCode.toLowerCase match {
+        case "4xx" | "5xx" | "default" | "2xx" => true
+        case _                                 => false
+      }
+
+      val condition = variant.statusCode.toLowerCase match {
+        case "2xx"     => code"$statusCodeExpr >= 200 && $statusCodeExpr < 300"
+        case "4xx"     => code"$statusCodeExpr >= 400 && $statusCodeExpr < 500"
+        case "5xx"     => code"$statusCodeExpr >= 500 && $statusCodeExpr < 600"
+        case "default" => code"true" // default case matches everything
+        case s =>
+          val statusInt = scala.util.Try(s.toInt).getOrElse(500)
+          code"$statusCodeExpr == $statusInt"
+      }
+
+      val constructorCall = if (isRangeStatus) {
+        code"return new $subtypeTpe($statusCodeExpr, $readEntityCode);"
+      } else {
+        code"return new $subtypeTpe($readEntityCode);"
+      }
+
+      (condition, constructorCall, variant.statusCode.toLowerCase == "default")
+    }
+
+    // Generate if-else chain, putting default case last
+    val (defaultCases, specificCases) = ifElseCases.partition(_._3)
+
+    if (specificCases.isEmpty && defaultCases.nonEmpty) {
+      // Only default case
+      defaultCases.head._2
+    } else if (specificCases.isEmpty) {
+      // No cases - throw error
+      code"throw new IllegalStateException(${jvm.StrLit("No response handler for status code")});"
+    } else {
+      // Build if-else chain
+      val ifElse = jvm.IfElseChain(
+        cases = specificCases.map { case (cond, result, _) => (cond, result) },
+        elseCase = defaultCases.headOption
+          .map(_._2)
+          .getOrElse(
+            code"throw new IllegalStateException(${jvm.StrLit("Unexpected status code: ").code} + $statusCodeExpr);"
+          )
+      )
+      ifElse.code
+    }
   }
 
   /** Generate base parameters without framework annotations */

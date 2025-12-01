@@ -157,6 +157,25 @@ object addPackageAndImports {
           nullCase.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))),
           defaultCase.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport)))
         )
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        jvm.TryCatch(
+          tryBlock.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))),
+          catches.map { c =>
+            jvm.TryCatch.Catch(
+              typeImport(c.exceptionType),
+              c.ident,
+              c.body.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+            )
+          },
+          finallyBlock.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+        )
+      case jvm.IfElseChain(cases, elseCase) =>
+        jvm.IfElseChain(
+          cases.map { case (cond, body) =>
+            (cond.mapTrees(t => shortenNames(t, typeImport, staticImport)), body.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+          },
+          elseCase.mapTrees(t => shortenNames(t, typeImport, staticImport))
+        )
       case jvm.Annotation(tpe, args) =>
         jvm.Annotation(
           typeImport(tpe),

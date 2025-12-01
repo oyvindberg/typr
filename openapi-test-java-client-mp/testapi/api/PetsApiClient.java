@@ -11,18 +11,40 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.lang.Void;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import testapi.api.CreatePetResponse.Status201;
+import testapi.api.CreatePetResponse.Status400;
+import testapi.api.GetPetResponse.Status200;
+import testapi.api.GetPetResponse.Status404;
+import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
 
 @RegisterRestClient
 @Path("/pets")
 public sealed interface PetsApiClient extends PetsApi {
+  /** Create a pet - handles response status codes */
+  default CreatePetResponse createPet(PetCreate body) {
+    try {
+        Response response = createPetRaw(body);
+        if (response.getStatus() == 201) { return new Status201(response.readEntity(Pet.class)); }
+        else if (response.getStatus() == 400) { return new Status400(response.readEntity(Error.class)); }
+        else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()); }
+      } catch (WebApplicationException e) {
+        if (e.getResponse().getStatus() == 201) { return new Status201(e.getResponse().readEntity(Pet.class)); }
+        else if (e.getResponse().getStatus() == 400) { return new Status400(e.getResponse().readEntity(Error.class)); }
+        else { throw new IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()); }
+      } ;
+    return null;
+  };
+
   @POST
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -30,7 +52,7 @@ public sealed interface PetsApiClient extends PetsApi {
   @SecurityRequirement(name = "oauth2", scopes = { "write:pets" })
   @SecurityRequirement(name = "apiKeyHeader")
   /** Create a pet */
-  CreatePetResponse createPet(PetCreate body);
+  Response createPetRaw(PetCreate body);
 
   @DELETE
   @Path("/{petId}")
@@ -41,21 +63,40 @@ public sealed interface PetsApiClient extends PetsApi {
     @PathParam("petId") String petId
   );
 
-  @GET
-  @Path("/{petId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  /** Get a pet by ID */
-  GetPetResponse getPet(
+  /** Get a pet by ID - handles response status codes */
+  default GetPetResponse getPet(
   
     /** The pet ID */
-    @PathParam("petId") String petId
-  );
+    String petId
+  ) {
+    try {
+        Response response = getPetRaw(petId);
+        if (response.getStatus() == 200) { return new Status200(response.readEntity(Pet.class)); }
+        else if (response.getStatus() == 404) { return new Status404(response.readEntity(Error.class)); }
+        else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()); }
+      } catch (WebApplicationException e) {
+        if (e.getResponse().getStatus() == 200) { return new Status200(e.getResponse().readEntity(Pet.class)); }
+        else if (e.getResponse().getStatus() == 404) { return new Status404(e.getResponse().readEntity(Error.class)); }
+        else { throw new IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()); }
+      } ;
+    return null;
+  };
 
   @GET
   @Path("/{petId}/photo")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   /** Get pet photo */
   Void getPetPhoto(
+  
+    /** The pet ID */
+    @PathParam("petId") String petId
+  );
+
+  @GET
+  @Path("/{petId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  /** Get a pet by ID */
+  Response getPetRaw(
   
     /** The pet ID */
     @PathParam("petId") String petId
