@@ -2,24 +2,25 @@ package testapi.api
 
 import io.circe.Json
 import java.lang.Void
+import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 
 trait PetsApi {
   /** Create a pet */
-  def createPet(body: PetCreate): CreatePetResponse
+  def createPet(body: PetCreate): Response201400[Pet, Error]
 
   /** Delete a pet */
   def deletePet(
     /** The pet ID */
     petId: String
-  ): DeletePetResponse
+  ): Response404Default[Error]
 
   /** Get a pet by ID */
   def getPet(
     /** The pet ID */
     petId: String
-  ): GetPetResponse
+  ): Response200404[Pet, Error]
 
   /** Get pet photo */
   def getPetPhoto(

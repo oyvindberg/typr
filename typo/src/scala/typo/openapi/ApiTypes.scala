@@ -137,3 +137,67 @@ case class Callback(
     /** The operations that will be called on the callback URL */
     methods: List[ApiMethod]
 )
+
+/** Represents a unique response shape defined by status codes.
+  * Used for deduplicating response types that have the same status code pattern.
+  * For example, all methods returning 200+default can share a generic Response200Default[T] type.
+  */
+case class ResponseShape(
+    /** Status codes sorted numerically, "default" comes last. e.g., List("200", "default") */
+    statusCodes: List[String],
+    /** Whether any status uses a range (4xx, 5xx, default) that requires statusCode field */
+    hasRangeStatuses: List[String]
+) {
+
+  /** Unique identifier for this shape, e.g., "200_Default" */
+  def shapeId: String = statusCodes.map(ResponseShape.normalizeStatusCode).mkString("_")
+
+  /** The generated type name for this shape, e.g., "Response200Default" */
+  def typeName: String = "Response" + statusCodes.map(ResponseShape.normalizeStatusCode).mkString("")
+}
+
+object ResponseShape {
+
+  /** Normalize a status code for use in type names */
+  def normalizeStatusCode(statusCode: String): String = statusCode.toLowerCase match {
+    case "default" => "Default"
+    case "2xx"     => "2XX"
+    case "4xx"     => "4XX"
+    case "5xx"     => "5XX"
+    case s         => s
+  }
+
+  /** Check if a status code is a range status (needs statusCode field) */
+  def isRangeStatus(statusCode: String): Boolean = statusCode.toLowerCase match {
+    case "4xx" | "5xx" | "default" | "2xx" => true
+    case _                                 => false
+  }
+
+  /** Extract shape from response variants */
+  def fromVariants(variants: List[ResponseVariant]): ResponseShape = {
+    val statusCodes = variants.map(_.statusCode).sortWith(statusCodeOrder)
+    val rangeStatuses = statusCodes.filter(isRangeStatus)
+    ResponseShape(statusCodes, rangeStatuses)
+  }
+
+  /** Sort status codes: numeric first (ascending), then wildcards, then "default" last */
+  private def statusCodeOrder(a: String, b: String): Boolean = {
+    val aLower = a.toLowerCase
+    val bLower = b.toLowerCase
+
+    (aLower, bLower) match {
+      case ("default", _) => false // default always last
+      case (_, "default") => true
+      case _ =>
+        // Try to parse as numbers for sorting
+        val aNum = scala.util.Try(a.toInt).toOption
+        val bNum = scala.util.Try(b.toInt).toOption
+        (aNum, bNum) match {
+          case (Some(an), Some(bn)) => an < bn
+          case (Some(_), None)      => true // numbers before wildcards
+          case (None, Some(_))      => false
+          case (None, None)         => a < b // alphabetical for wildcards
+        }
+    }
+  }
+}

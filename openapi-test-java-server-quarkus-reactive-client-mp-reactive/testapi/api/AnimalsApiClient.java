@@ -12,15 +12,22 @@ import java.lang.IllegalStateException;
 import java.util.List;
 import java.util.function.Function;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import testapi.api.ListAnimalsResponse.Status200;
-import testapi.api.ListAnimalsResponse.Status4XX;
-import testapi.api.ListAnimalsResponse.Status5XX;
+import testapi.api.ListAnimalsResponse;
+import testapi.api.Response2004XX5XX.Status200;
+import testapi.api.Response2004XX5XX.Status4XX;
+import testapi.api.Response2004XX5XX.Status5XX;
 import testapi.model.Animal;
 import testapi.model.Error;
 
 @RegisterRestClient
 @Path("/animals")
-public sealed interface AnimalsApiClient extends AnimalsApi {
+public interface AnimalsApiClient extends AnimalsApi {
+  /** List all animals (polymorphic) */
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  Uni<Response> listAnimalsRaw();
+
   /** List all animals (polymorphic) - handles response status codes */
   @Override
   default Uni<ListAnimalsResponse> listAnimals() {
@@ -29,10 +36,4 @@ public sealed interface AnimalsApiClient extends AnimalsApi {
     else if (response.getStatus() >= 500 && response.getStatus() < 600) { new Status5XX(response.getStatus(), response.readEntity(Error.class)) }
     else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()) });
   };
-
-  /** List all animals (polymorphic) */
-  @GET
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
-  Uni<Response> listAnimalsRaw();
 }

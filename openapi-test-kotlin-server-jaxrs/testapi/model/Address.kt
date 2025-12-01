@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Optional
 
 data class Address(
-  @JsonProperty("city") val city: Optional<String>,
-  @JsonProperty("country") val country: Optional<String>,
-  @JsonProperty("street") val street: Optional<String>,
-  @JsonProperty("zipCode") val zipCode: Optional<String>
+  @field:JsonProperty("city") val city: Optional<String>,
+  @field:JsonProperty("country") val country: Optional<String>,
+  @field:JsonProperty("street") val street: Optional<String>,
+  @field:JsonProperty("zipCode") val zipCode: Optional<String>
 )

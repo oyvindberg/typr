@@ -1,8 +1,10 @@
 package testapi.api;
 
 import io.smallrye.mutiny.Uni;
+import java.util.List;
+import testapi.model.Animal;
 
-public sealed interface AnimalsApi {
+public interface AnimalsApi {
   /** List all animals (polymorphic) */
-  Uni<ListAnimalsResponse> listAnimals();
+  Uni<Response2004XX5XX<List<Animal>>> listAnimals();
 }

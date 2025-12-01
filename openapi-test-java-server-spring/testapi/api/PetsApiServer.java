@@ -20,11 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import testapi.api.CreatePetResponse.Status201;
-import testapi.api.CreatePetResponse.Status400;
-import testapi.api.DeletePetResponse.Status404;
-import testapi.api.DeletePetResponse.StatusDefault;
-import testapi.api.GetPetResponse.Status200;
+import testapi.api.Response200404.Status200;
+import testapi.api.Response201400.Status201;
+import testapi.api.Response201400.Status400;
+import testapi.api.Response404Default.Status404;
+import testapi.api.Response404Default.StatusDefault;
+import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
 
@@ -34,10 +35,10 @@ import testapi.model.PetCreate;
 @SecurityScheme(name = "apiKeyHeader", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, paramName = "X-API-Key")
 @SecurityScheme(name = "apiKeyQuery", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, paramName = "api_key")
 @SecurityScheme(name = "oauth2", type = SecuritySchemeType.OAUTH2)
-public sealed interface PetsApiServer extends PetsApi {
+public interface PetsApiServer extends PetsApi {
   /** Create a pet */
   @Override
-  CreatePetResponse createPet(PetCreate body);
+  Response201400<Pet, Error> createPet(PetCreate body);
 
   /** Endpoint wrapper for createPet - handles response status codes */
   @PostMapping(value = { "/" }, consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -53,7 +54,7 @@ public sealed interface PetsApiServer extends PetsApi {
 
   /** Delete a pet */
   @Override
-  DeletePetResponse deletePet(
+  Response404Default<Error> deletePet(
   
     /** The pet ID */
     String petId
@@ -75,7 +76,7 @@ public sealed interface PetsApiServer extends PetsApi {
 
   /** Get a pet by ID */
   @Override
-  GetPetResponse getPet(
+  Response200404<Pet, Error> getPet(
   
     /** The pet ID */
     String petId
@@ -90,7 +91,7 @@ public sealed interface PetsApiServer extends PetsApi {
   ) {
     return switch (getPet(petId)) {
       case Status200 r -> ResponseEntity.ok(r.value());
-      case testapi.api.GetPetResponse.Status404 r -> ResponseEntity.status(404).body(r.value());
+      case testapi.api.Response200404.Status404 r -> ResponseEntity.status(404).body(r.value());
       default -> throw new IllegalStateException("Unexpected response type");
     };
   };

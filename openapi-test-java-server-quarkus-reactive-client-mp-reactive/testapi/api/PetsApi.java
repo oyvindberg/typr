@@ -5,22 +5,23 @@ import io.smallrye.mutiny.Uni;
 import java.lang.Void;
 import java.util.List;
 import java.util.Optional;
+import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
 
-public sealed interface PetsApi {
+public interface PetsApi {
   /** Create a pet */
-  Uni<CreatePetResponse> createPet(PetCreate body);
+  Uni<Response201400<Pet, Error>> createPet(PetCreate body);
 
   /** Delete a pet */
-  Uni<DeletePetResponse> deletePet(
+  Uni<Response404Default<Error>> deletePet(
   
     /** The pet ID */
     String petId
   );
 
   /** Get a pet by ID */
-  Uni<GetPetResponse> getPet(
+  Uni<Response200404<Pet, Error>> getPet(
   
     /** The pet ID */
     String petId

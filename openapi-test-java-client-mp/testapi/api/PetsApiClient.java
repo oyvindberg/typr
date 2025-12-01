@@ -21,18 +21,30 @@ import java.util.Optional;
 import java.util.UUID;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import testapi.api.CreatePetResponse.Status201;
-import testapi.api.CreatePetResponse.Status400;
-import testapi.api.DeletePetResponse.Status404;
-import testapi.api.DeletePetResponse.StatusDefault;
-import testapi.api.GetPetResponse.Status200;
+import testapi.api.CreatePetResponse;
+import testapi.api.DeletePetResponse;
+import testapi.api.GetPetResponse;
+import testapi.api.Response200404.Status200;
+import testapi.api.Response201400.Status201;
+import testapi.api.Response201400.Status400;
+import testapi.api.Response404Default.Status404;
+import testapi.api.Response404Default.StatusDefault;
 import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
 
 @RegisterRestClient
 @Path("/pets")
-public sealed interface PetsApiClient extends PetsApi {
+public interface PetsApiClient extends PetsApi {
+  /** Create a pet */
+  @POST
+  @Path("/")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @SecurityRequirement(name = "oauth2", scopes = { "write:pets" })
+  @SecurityRequirement(name = "apiKeyHeader")
+  Response createPetRaw(PetCreate body);
+
   /** Create a pet - handles response status codes */
   @Override
   default CreatePetResponse createPet(PetCreate body) {
@@ -49,14 +61,14 @@ public sealed interface PetsApiClient extends PetsApi {
     null;
   };
 
-  /** Create a pet */
-  @POST
-  @Path("/")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @SecurityRequirement(name = "oauth2", scopes = { "write:pets" })
-  @SecurityRequirement(name = "apiKeyHeader")
-  Response createPetRaw(PetCreate body);
+  /** Delete a pet */
+  @DELETE
+  @Path("/{petId}")
+  Response deletePetRaw(
+  
+    /** The pet ID */
+    @PathParam("petId") String petId
+  );
 
   /** Delete a pet - handles response status codes */
   @Override
@@ -76,10 +88,11 @@ public sealed interface PetsApiClient extends PetsApi {
     null;
   };
 
-  /** Delete a pet */
-  @DELETE
+  /** Get a pet by ID */
+  @GET
   @Path("/{petId}")
-  Response deletePetRaw(
+  @Produces(MediaType.APPLICATION_JSON)
+  Response getPetRaw(
   
     /** The pet ID */
     @PathParam("petId") String petId
@@ -95,11 +108,11 @@ public sealed interface PetsApiClient extends PetsApi {
     try {
       Response response = getPetRaw(petId);
       if (response.getStatus() == 200) { new Status200(response.readEntity(Pet.class), Optional.ofNullable(response.getHeaderString("X-Cache-Status")), UUID.fromString(response.getHeaderString("X-Request-Id"))) }
-      else if (response.getStatus() == 404) { new testapi.api.GetPetResponse.Status404(response.readEntity(Error.class), UUID.fromString(response.getHeaderString("X-Request-Id"))) }
+      else if (response.getStatus() == 404) { new testapi.api.Response200404.Status404(response.readEntity(Error.class), UUID.fromString(response.getHeaderString("X-Request-Id"))) }
       else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()) }
     } catch (WebApplicationException e) {
       if (e.getResponse().getStatus() == 200) { new Status200(e.getResponse().readEntity(Pet.class), Optional.ofNullable(e.getResponse().getHeaderString("X-Cache-Status")), UUID.fromString(e.getResponse().getHeaderString("X-Request-Id"))) }
-      else if (e.getResponse().getStatus() == 404) { new testapi.api.GetPetResponse.Status404(e.getResponse().readEntity(Error.class), UUID.fromString(e.getResponse().getHeaderString("X-Request-Id"))) }
+      else if (e.getResponse().getStatus() == 404) { new testapi.api.Response200404.Status404(e.getResponse().readEntity(Error.class), UUID.fromString(e.getResponse().getHeaderString("X-Request-Id"))) }
       else { throw new IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()) }
     } ;
     null;
@@ -111,16 +124,6 @@ public sealed interface PetsApiClient extends PetsApi {
   @Path("/{petId}/photo")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   Void getPetPhoto(
-  
-    /** The pet ID */
-    @PathParam("petId") String petId
-  );
-
-  /** Get a pet by ID */
-  @GET
-  @Path("/{petId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  Response getPetRaw(
   
     /** The pet ID */
     @PathParam("petId") String petId

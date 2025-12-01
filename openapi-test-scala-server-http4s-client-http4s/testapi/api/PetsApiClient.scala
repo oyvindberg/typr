@@ -4,6 +4,9 @@ import cats.effect.IO
 import io.circe.Json
 import java.lang.Void
 import org.http4s.Response
+import testapi.api.CreatePetResponse
+import testapi.api.DeletePetResponse
+import testapi.api.GetPetResponse
 import testapi.model.Pet
 import testapi.model.PetCreate
 
@@ -15,8 +18,8 @@ trait PetsApiClient extends PetsApi {
   override def createPet(body: PetCreate): IO[CreatePetResponse] = {
     createPetRaw(body).flatMap { response => {
       val statusCode = response.status.code
-      if (statusCode == 201) response.as[testapi.model.Pet].map(v => testapi.api.CreatePetResponse.Status201(v))
-    else if (statusCode == 400) response.as[testapi.model.Error].map(v => testapi.api.CreatePetResponse.Status400(v))
+      if (statusCode == 201) response.as[testapi.model.Pet].map(v => testapi.api.Response201400.Status201(v))
+    else if (statusCode == 400) response.as[testapi.model.Error].map(v => testapi.api.Response201400.Status400(v))
     else cats.effect.IO.raiseError(new java.lang.IllegalStateException(s"Unexpected status code: statusCode"))
     } }
   }
@@ -34,8 +37,8 @@ trait PetsApiClient extends PetsApi {
   ): IO[DeletePetResponse] = {
     deletePetRaw(petId).flatMap { response => {
       val statusCode = response.status.code
-      if (statusCode == 404) response.as[testapi.model.Error].map(v => testapi.api.DeletePetResponse.Status404(v))
-    else response.as[testapi.model.Error].map(v => testapi.api.DeletePetResponse.StatusDefault(statusCode, v))
+      if (statusCode == 404) response.as[testapi.model.Error].map(v => testapi.api.Response404Default.Status404(v))
+    else response.as[testapi.model.Error].map(v => testapi.api.Response404Default.StatusDefault(statusCode, v))
     } }
   }
 
@@ -52,8 +55,8 @@ trait PetsApiClient extends PetsApi {
   ): IO[GetPetResponse] = {
     getPetRaw(petId).flatMap { response => {
       val statusCode = response.status.code
-      if (statusCode == 200) response.as[testapi.model.Pet].map(v => testapi.api.GetPetResponse.Status200(v))
-    else if (statusCode == 404) response.as[testapi.model.Error].map(v => testapi.api.GetPetResponse.Status404(v))
+      if (statusCode == 200) response.as[testapi.model.Pet].map(v => testapi.api.Response200404.Status200(v))
+    else if (statusCode == 404) response.as[testapi.model.Error].map(v => testapi.api.Response200404.Status404(v))
     else cats.effect.IO.raiseError(new java.lang.IllegalStateException(s"Unexpected status code: statusCode"))
     } }
   }

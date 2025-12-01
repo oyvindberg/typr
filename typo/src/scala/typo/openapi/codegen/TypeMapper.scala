@@ -188,6 +188,14 @@ object Types {
   // File types
   val InputStream = jvm.Type.Qualified("java.io.InputStream")
 
+  /** Error type - typically in the model package. Used for default/error response types. */
+  def Error(apiPkg: jvm.QIdent): jvm.Type.Qualified = {
+    // Error is typically in sibling model package, go up to parent and then to model
+    val parentPkg = apiPkg.idents.init // Remove "api" segment
+    val modelPkg = jvm.QIdent(parentPkg :+ jvm.Ident("model"))
+    jvm.Type.Qualified(modelPkg / jvm.Ident("Error"))
+  }
+
   // HTTP4s types
   object Http4s {
     val Response = jvm.Type.Qualified("org.http4s.Response")

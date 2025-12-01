@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 import java.util.Optional
 
 data class BaseEntity(
-  @JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
-  @JsonProperty("id") @NotNull val id: String,
-  @JsonProperty("updatedAt") val updatedAt: Optional<OffsetDateTime>
+  @field:JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
+  @field:JsonProperty("id") @NotNull val id: String,
+  @field:JsonProperty("updatedAt") val updatedAt: Optional<OffsetDateTime>
 )

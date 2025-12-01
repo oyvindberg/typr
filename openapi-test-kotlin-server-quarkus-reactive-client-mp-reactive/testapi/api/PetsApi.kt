@@ -5,24 +5,25 @@ import io.smallrye.mutiny.Uni
 import java.lang.Void
 import java.util.Optional
 import kotlin.collections.List
+import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 
-sealed interface PetsApi {
+interface PetsApi {
   /** Create a pet */
-  fun createPet(body: PetCreate): Uni<CreatePetResponse>
+  fun createPet(body: PetCreate): Uni<Response201400<Pet, Error>>
 
   /** Delete a pet */
   fun deletePet(
     /** The pet ID */
     petId: String
-  ): Uni<DeletePetResponse>
+  ): Uni<Response404Default<Error>>
 
   /** Get a pet by ID */
   fun getPet(
     /** The pet ID */
     petId: String
-  ): Uni<GetPetResponse>
+  ): Uni<Response200404<Pet, Error>>
 
   /** Get pet photo */
   fun getPetPhoto(

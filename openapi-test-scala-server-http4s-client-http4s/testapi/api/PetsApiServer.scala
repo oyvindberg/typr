@@ -4,18 +4,19 @@ import cats.effect.IO
 import io.circe.Json
 import java.lang.Void
 import org.http4s.Response
+import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 
 trait PetsApiServer extends PetsApi {
   /** Create a pet */
-  override def createPet(body: PetCreate): IO[CreatePetResponse]
+  override def createPet(body: PetCreate): IO[Response201400[Pet, Error]]
 
   /** Endpoint wrapper for createPet - handles response status codes */
   def createPetEndpoint(body: PetCreate): IO[Response] = {
-    createPet(body).map((response: testapi.api.CreatePetResponse) => response match {
-      case r: testapi.api.CreatePetResponse.Status201 => org.http4s.Response.apply(org.http4s.Status.Ok).withEntity(r.value)
-      case r: testapi.api.CreatePetResponse.Status400 => org.http4s.Response.apply(org.http4s.Status.fromInt(400).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
+    createPet(body).map((response: testapi.api.Response201400) => response match {
+      case r: testapi.api.Response201400.Status201 => org.http4s.Response.apply(org.http4s.Status.Ok).withEntity(r.value)
+      case r: testapi.api.Response201400.Status400 => org.http4s.Response.apply(org.http4s.Status.fromInt(400).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
     })
   }
 
@@ -23,16 +24,16 @@ trait PetsApiServer extends PetsApi {
   override def deletePet(
     /** The pet ID */
     petId: String
-  ): IO[DeletePetResponse]
+  ): IO[Response404Default[Error]]
 
   /** Endpoint wrapper for deletePet - handles response status codes */
   def deletePetEndpoint(
     /** The pet ID */
     petId: String
   ): IO[Response] = {
-    deletePet(petId).map((response: testapi.api.DeletePetResponse) => response match {
-      case r: testapi.api.DeletePetResponse.Status404 => org.http4s.Response.apply(org.http4s.Status.fromInt(404).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
-      case r: testapi.api.DeletePetResponse.StatusDefault => org.http4s.Response.apply(org.http4s.Status.fromInt(r.statusCode).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
+    deletePet(petId).map((response: testapi.api.Response404Default) => response match {
+      case r: testapi.api.Response404Default.Status404 => org.http4s.Response.apply(org.http4s.Status.fromInt(404).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
+      case r: testapi.api.Response404Default.StatusDefault => org.http4s.Response.apply(org.http4s.Status.fromInt(r.statusCode).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
     })
   }
 
@@ -40,16 +41,16 @@ trait PetsApiServer extends PetsApi {
   override def getPet(
     /** The pet ID */
     petId: String
-  ): IO[GetPetResponse]
+  ): IO[Response200404[Pet, Error]]
 
   /** Endpoint wrapper for getPet - handles response status codes */
   def getPetEndpoint(
     /** The pet ID */
     petId: String
   ): IO[Response] = {
-    getPet(petId).map((response: testapi.api.GetPetResponse) => response match {
-      case r: testapi.api.GetPetResponse.Status200 => org.http4s.Response.apply(org.http4s.Status.Ok).withEntity(r.value)
-      case r: testapi.api.GetPetResponse.Status404 => org.http4s.Response.apply(org.http4s.Status.fromInt(404).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
+    getPet(petId).map((response: testapi.api.Response200404) => response match {
+      case r: testapi.api.Response200404.Status200 => org.http4s.Response.apply(org.http4s.Status.Ok).withEntity(r.value)
+      case r: testapi.api.Response200404.Status404 => org.http4s.Response.apply(org.http4s.Status.fromInt(404).getOrElse(org.http4s.Status.InternalServerError)).withEntity(r.value)
     })
   }
 

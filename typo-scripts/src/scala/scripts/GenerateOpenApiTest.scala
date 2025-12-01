@@ -167,7 +167,8 @@ object GenerateOpenApiTest {
       .copy(
         serverLib = serverLib,
         clientLib = clientLib,
-        generateValidation = generateValidation
+        generateValidation = generateValidation,
+        useGenericResponseTypes = true
       )
 
     val result = OpenApiCodegen.generate(specPath, options, lang)

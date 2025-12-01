@@ -15,7 +15,8 @@ class ApiCodegen(
     clientFrameworkSupport: Option[FrameworkSupport],
     sumTypeNames: Set[String],
     securitySchemes: Map[String, SecurityScheme],
-    effectTypeWithOps: Option[(jvm.Type.Qualified, EffectTypeOps)]
+    effectTypeWithOps: Option[(jvm.Type.Qualified, EffectTypeOps)],
+    useGenericResponseTypes: Boolean
 ) {
   private val effectType: Option[jvm.Type.Qualified] = effectTypeWithOps.map(_._1)
   private val effectOps: Option[EffectTypeOps] = effectTypeWithOps.map(_._2)
@@ -26,9 +27,14 @@ class ApiCodegen(
     val comments = api.description.map(d => jvm.Comments(List(d))).getOrElse(jvm.Comments.Empty)
 
     // Generate response sum types for methods that have multiple response variants
-    val responseSumTypeFiles = api.methods.flatMap { method =>
-      method.responseVariants.map { variants =>
-        generateResponseSumType(method.name, variants)
+    // Skip when using generic response types (they are generated separately)
+    val responseSumTypeFiles = if (useGenericResponseTypes) {
+      Nil
+    } else {
+      api.methods.flatMap { method =>
+        method.responseVariants.map { variants =>
+          generateResponseSumType(method.name, variants)
+        }
       }
     }
 
@@ -352,6 +358,130 @@ class ApiCodegen(
     List(typeInfoAnnotation, subTypesAnnotation)
   }
 
+  /** Generate a generic response type for a given shape.
+    * For example, shape with status codes ["200", "default"] generates:
+    * ```
+    * sealed interface Response200Default<T200> {
+    *   data class Status200<T200>(val value: T200) : Response200Default<T200>
+    *   data class StatusDefault<T200>(val statusCode: Int, val value: Error) : Response200Default<T200>
+    *   fun status(): String
+    * }
+    * ```
+    */
+  def generateGenericResponseType(shape: ResponseShape): jvm.File = {
+    val typeName = shape.typeName
+    val tpe = jvm.Type.Qualified(apiPkg / jvm.Ident(typeName))
+
+    // Create type parameters for non-range status codes (each gets its own T)
+    // Range statuses (default, 4xx, 5xx) use Error type by convention
+    val nonRangeStatuses = shape.statusCodes.filterNot(ResponseShape.isRangeStatus)
+    val typeParamNames = nonRangeStatuses.map(s => "T" + normalizeStatusCode(s))
+    val tparams = typeParamNames.map(name => jvm.Type.Abstract(jvm.Ident(name)))
+
+    // Build subtypes for each status code
+    val subtypes = shape.statusCodes.map { statusCode =>
+      val statusName = "Status" + normalizeStatusCode(statusCode)
+      val subtypeTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(typeName) / jvm.Ident(statusName))
+
+      val isRangeStatus = ResponseShape.isRangeStatus(statusCode)
+
+      // Determine the value type for this status
+      // Non-range statuses use type parameter, range statuses use Error
+      val valueType: jvm.Type = if (isRangeStatus) {
+        // Range statuses (default, 4xx, 5xx) use Error type from model package
+        Types.Error(apiPkg)
+      } else {
+        // Non-range statuses use their corresponding type parameter
+        val tparamName = "T" + normalizeStatusCode(statusCode)
+        jvm.Type.Abstract(jvm.Ident(tparamName))
+      }
+
+      val valueParam = jvm.Param[jvm.Type](
+        annotations = jsonLib.propertyAnnotations("value"),
+        comments = jvm.Comments.Empty,
+        name = jvm.Ident("value"),
+        tpe = valueType,
+        default = None
+      )
+
+      // For range status codes, include statusCode field
+      val params = if (isRangeStatus) {
+        val statusCodeParam = jvm.Param[jvm.Type](
+          annotations = jsonLib.propertyAnnotations("statusCode"),
+          comments = jvm.Comments(List("HTTP status code")),
+          name = jvm.Ident("statusCode"),
+          tpe = lang.Int,
+          default = None
+        )
+        List(statusCodeParam, valueParam)
+      } else {
+        List(valueParam)
+      }
+
+      // Override status() method
+      val statusOverride = jvm.Value(
+        annotations = Nil,
+        name = jvm.Ident("status"),
+        tpe = Types.String,
+        body = Some(jvm.StrLit(statusCode).code),
+        isLazy = true,
+        isOverride = true
+      )
+
+      // Subtype implements the parent type with its own type params
+      val implementsType: jvm.Type = if (tparams.nonEmpty) {
+        jvm.Type.TApply(tpe, tparams)
+      } else {
+        tpe
+      }
+
+      jvm.Adt.Record(
+        annotations = Nil,
+        constructorAnnotations = Nil,
+        isWrapper = false,
+        comments = jvm.Comments.Empty,
+        name = subtypeTpe,
+        tparams = tparams, // Subtypes also have the type params
+        params = params,
+        implicitParams = Nil,
+        `extends` = None,
+        implements = List(implementsType),
+        members = List(statusOverride),
+        staticMembers = Nil
+      )
+    }
+
+    // Abstract status method in the sealed interface
+    val statusMethod = jvm.Method(
+      annotations = jsonLib.methodPropertyAnnotations("status"),
+      comments = jvm.Comments.Empty,
+      tparams = Nil,
+      name = jvm.Ident("status"),
+      params = Nil,
+      implicitParams = Nil,
+      tpe = Types.String,
+      throws = Nil,
+      body = jvm.Body.Abstract,
+      isOverride = false,
+      isDefault = false
+    )
+
+    // No Jackson annotations for generic types - they can't use @JsonSubTypes with generics
+    val sumAdt = jvm.Adt.Sum(
+      annotations = Nil,
+      comments = jvm.Comments(List(s"Generic response type for shape: ${shape.statusCodes.mkString(", ")}")),
+      name = tpe,
+      tparams = tparams,
+      members = List(statusMethod),
+      implements = Nil,
+      subtypes = subtypes,
+      staticMembers = Nil
+    )
+
+    val generatedCode = lang.renderTree(sumAdt, lang.Ctx.Empty)
+    jvm.File(tpe, generatedCode, secondaryTypes = Nil, scope = Scope.Main)
+  }
+
   private def normalizeStatusCode(statusCode: String): String = {
     // Convert status codes like "2XX", "default" to valid identifiers
     statusCode.toLowerCase match {
@@ -608,7 +738,14 @@ class ApiCodegen(
     val rawMethodCall = code"${jvm.Ident(method.name + "Raw")}($argsCode)"
 
     val responseIdent = jvm.Ident("response")
-    val responseName = capitalize(method.name) + "Response"
+
+    // Determine the response type name - either per-method or generic
+    val responseName = if (useGenericResponseTypes) {
+      val shape = ResponseShape.fromVariants(variants)
+      shape.typeName
+    } else {
+      capitalize(method.name) + "Response"
+    }
 
     // For async entity reading (e.g., Cats Effect/HTTP4s), generate flatMap-based code
     if (clientSupport.isAsyncEntityRead) {
@@ -984,6 +1121,22 @@ class ApiCodegen(
   private def inferReturnType(method: ApiMethod): jvm.Type = {
     // If there are response variants, return the response sum type
     val baseType: jvm.Type = method.responseVariants match {
+      case Some(variants) if useGenericResponseTypes =>
+        // Use generic response type with type arguments based on variant types
+        val shape = ResponseShape.fromVariants(variants)
+        val genericTypeName = shape.typeName
+        val genericType = jvm.Type.Qualified(apiPkg / jvm.Ident(genericTypeName))
+
+        // Get type arguments for non-range status codes
+        val nonRangeVariants = variants.filterNot(v => ResponseShape.isRangeStatus(v.statusCode))
+        val typeArgs = nonRangeVariants.map(v => typeMapper.map(v.typeInfo))
+
+        if (typeArgs.nonEmpty) {
+          jvm.Type.TApply(genericType, typeArgs)
+        } else {
+          genericType
+        }
+
       case Some(_) =>
         val responseName = capitalize(method.name) + "Response"
         jvm.Type.Qualified(apiPkg / jvm.Ident(responseName))
@@ -1080,8 +1233,13 @@ class ApiCodegen(
     val argsCode = argNames.mkCode(", ")
     val methodCall = code"${jvm.Ident(method.name)}($argsCode)"
 
-    // Build the response sum type name
-    val responseName = capitalize(method.name) + "Response"
+    // Build the response sum type name - either per-method or generic
+    val responseName = if (useGenericResponseTypes) {
+      val shape = ResponseShape.fromVariants(variants)
+      shape.typeName
+    } else {
+      capitalize(method.name) + "Response"
+    }
     val responseTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(responseName))
 
     val responseIdent = jvm.Ident("response")

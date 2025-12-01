@@ -22,11 +22,12 @@ import java.lang.Void;
 import java.util.List;
 import java.util.Optional;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import testapi.api.CreatePetResponse.Status201;
-import testapi.api.CreatePetResponse.Status400;
-import testapi.api.DeletePetResponse.Status404;
-import testapi.api.DeletePetResponse.StatusDefault;
-import testapi.api.GetPetResponse.Status200;
+import testapi.api.Response200404.Status200;
+import testapi.api.Response201400.Status201;
+import testapi.api.Response201400.Status400;
+import testapi.api.Response404Default.Status404;
+import testapi.api.Response404Default.StatusDefault;
+import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
 
@@ -35,10 +36,10 @@ import testapi.model.PetCreate;
 @SecurityScheme(name = "apiKeyHeader", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, paramName = "X-API-Key")
 @SecurityScheme(name = "apiKeyQuery", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, paramName = "api_key")
 @SecurityScheme(name = "oauth2", type = SecuritySchemeType.OAUTH2)
-public sealed interface PetsApiServer extends PetsApi {
+public interface PetsApiServer extends PetsApi {
   /** Create a pet */
   @Override
-  Uni<CreatePetResponse> createPet(PetCreate body);
+  Uni<Response201400<Pet, Error>> createPet(PetCreate body);
 
   /** Endpoint wrapper for createPet - handles response status codes */
   @POST
@@ -48,7 +49,7 @@ public sealed interface PetsApiServer extends PetsApi {
   @SecurityRequirement(name = "oauth2", scopes = { "write:pets" })
   @SecurityRequirement(name = "apiKeyHeader")
   default Uni<Response> createPetEndpoint(PetCreate body) {
-    return createPet(body).map((CreatePetResponse response) -> switch (response) {
+    return createPet(body).map((Response201400 response) -> switch (response) {
       case Status201 r -> Response.ok(r.value()).build();
       case Status400 r -> Response.status(400).entity(r.value()).build();
       default -> throw new IllegalStateException("Unexpected response type");
@@ -57,7 +58,7 @@ public sealed interface PetsApiServer extends PetsApi {
 
   /** Delete a pet */
   @Override
-  Uni<DeletePetResponse> deletePet(
+  Uni<Response404Default<Error>> deletePet(
   
     /** The pet ID */
     String petId
@@ -71,7 +72,7 @@ public sealed interface PetsApiServer extends PetsApi {
     /** The pet ID */
     @PathParam("petId") String petId
   ) {
-    return deletePet(petId).map((DeletePetResponse response) -> switch (response) {
+    return deletePet(petId).map((Response404Default response) -> switch (response) {
       case Status404 r -> Response.status(404).entity(r.value()).build();
       case StatusDefault r -> Response.status(r.statusCode()).entity(r.value()).build();
       default -> throw new IllegalStateException("Unexpected response type");
@@ -80,7 +81,7 @@ public sealed interface PetsApiServer extends PetsApi {
 
   /** Get a pet by ID */
   @Override
-  Uni<GetPetResponse> getPet(
+  Uni<Response200404<Pet, Error>> getPet(
   
     /** The pet ID */
     String petId
@@ -95,9 +96,9 @@ public sealed interface PetsApiServer extends PetsApi {
     /** The pet ID */
     @PathParam("petId") String petId
   ) {
-    return getPet(petId).map((GetPetResponse response) -> switch (response) {
+    return getPet(petId).map((Response200404 response) -> switch (response) {
       case Status200 r -> Response.ok(r.value()).build();
-      case testapi.api.GetPetResponse.Status404 r -> Response.status(404).entity(r.value()).build();
+      case testapi.api.Response200404.Status404 r -> Response.status(404).entity(r.value()).build();
       default -> throw new IllegalStateException("Unexpected response type");
     });
   };

@@ -18,19 +18,19 @@ import java.util.Optional
 import java.util.UUID
 import java.util.function.Function
 import kotlin.collections.List
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import testapi.api.CreatePetResponse.Status201
-import testapi.api.CreatePetResponse.Status400
-import testapi.api.DeletePetResponse.Status404
-import testapi.api.DeletePetResponse.StatusDefault
-import testapi.api.GetPetResponse.Status200
+import testapi.api.CreatePetResponse
+import testapi.api.DeletePetResponse
+import testapi.api.GetPetResponse
+import testapi.api.Response200404.Status200
+import testapi.api.Response201400.Status201
+import testapi.api.Response201400.Status400
+import testapi.api.Response404Default.Status404
+import testapi.api.Response404Default.StatusDefault
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 
-@RegisterRestClient
-@Path("/pets")
-sealed interface PetsApiClient : PetsApi {
+interface PetsApiClient : PetsApi {
   /** Create a pet - handles response status codes */
   override fun createPet(body: PetCreate): Uni<CreatePetResponse> = createPetRaw(body).onFailure(WebApplicationException::class.java).recoverWithItem(object : Function<Throwable, Response> { override fun apply(e: Throwable): Response = (e as WebApplicationException).getResponse() }).map({ response: Response -> if (response.getStatus() == 201) { Status201(response.readEntity(Pet::class.java)) }
   else if (response.getStatus() == 400) { Status400(response.readEntity(Error::class.java)) }
@@ -65,7 +65,7 @@ sealed interface PetsApiClient : PetsApi {
     /** The pet ID */
     petId: String
   ): Uni<GetPetResponse> = getPetRaw(petId).onFailure(WebApplicationException::class.java).recoverWithItem(object : Function<Throwable, Response> { override fun apply(e: Throwable): Response = (e as WebApplicationException).getResponse() }).map({ response: Response -> if (response.getStatus() == 200) { Status200(response.readEntity(Pet::class.java), Optional.ofNullable(response.getHeaderString("X-Cache-Status")), UUID.fromString(response.getHeaderString("X-Request-Id"))) }
-  else if (response.getStatus() == 404) { testapi.api.GetPetResponse.Status404(response.readEntity(Error::class.java), UUID.fromString(response.getHeaderString("X-Request-Id"))) }
+  else if (response.getStatus() == 404) { testapi.api.Response200404.Status404(response.readEntity(Error::class.java), UUID.fromString(response.getHeaderString("X-Request-Id"))) }
   else { throw IllegalStateException("Unexpected status code: " + response.getStatus()) } })
 
   /** Get pet photo */

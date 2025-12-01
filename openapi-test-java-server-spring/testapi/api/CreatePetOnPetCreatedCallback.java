@@ -6,7 +6,7 @@ import testapi.model.Pet;
 /** Callback handler for createPet - OnPetCreated
   * Runtime expression: {$request.body#/callbackUrl}
   */
-public sealed interface CreatePetOnPetCreatedCallback {
+public interface CreatePetOnPetCreatedCallback {
   /** Called when pet is created */
   Void onPetCreatedCallback(Pet body);
 }

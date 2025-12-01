@@ -1,8 +1,9 @@
 package testapi.api;
 
+import java.util.List;
+import testapi.model.Animal;
 
-
-public sealed interface AnimalsApi {
+public interface AnimalsApi {
   /** List all animals (polymorphic) */
-  ListAnimalsResponse listAnimals();
+  Response2004XX5XX<List<Animal>> listAnimals();
 }

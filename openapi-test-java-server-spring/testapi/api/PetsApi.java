@@ -4,22 +4,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.lang.Void;
 import java.util.List;
 import java.util.Optional;
+import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
 
-public sealed interface PetsApi {
+public interface PetsApi {
   /** Create a pet */
-  CreatePetResponse createPet(PetCreate body);
+  Response201400<Pet, Error> createPet(PetCreate body);
 
   /** Delete a pet */
-  DeletePetResponse deletePet(
+  Response404Default<Error> deletePet(
   
     /** The pet ID */
     String petId
   );
 
   /** Get a pet by ID */
-  GetPetResponse getPet(
+  Response200404<Pet, Error> getPet(
   
     /** The pet ID */
     String petId

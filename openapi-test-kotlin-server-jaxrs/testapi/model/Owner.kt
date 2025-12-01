@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull
 import java.util.Optional
 
 data class Owner(
-  @JsonProperty("address") val address: Optional<Address>,
-  @JsonProperty("email") @jakarta.validation.constraints.Email val email: Optional<String>,
-  @JsonProperty("id") @NotNull val id: String,
-  @JsonProperty("name") @NotNull val name: String
+  @field:JsonProperty("address") val address: Optional<Address>,
+  @field:JsonProperty("email") @jakarta.validation.constraints.Email val email: Optional<String>,
+  @field:JsonProperty("id") @NotNull val id: String,
+  @field:JsonProperty("name") @NotNull val name: String
 )

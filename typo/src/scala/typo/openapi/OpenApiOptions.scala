@@ -31,7 +31,12 @@ case class OpenApiOptions(
     /** Whether to generate webhook handler interfaces (OpenAPI 3.1+) */
     generateWebhooks: Boolean,
     /** Whether to generate callback handler interfaces */
-    generateCallbacks: Boolean
+    generateCallbacks: Boolean,
+    /** Whether to use generic response types to deduplicate response classes with the same shape.
+      * When true, generates types like Response200Default[T] instead of per-method response types.
+      * This reduces generated code when many methods have the same response status codes.
+      */
+    useGenericResponseTypes: Boolean
 )
 
 object OpenApiOptions {
@@ -50,7 +55,8 @@ object OpenApiOptions {
       generateValidation = false,
       generateApiInterfaces = true,
       generateWebhooks = true,
-      generateCallbacks = true
+      generateCallbacks = true,
+      useGenericResponseTypes = false
     )
 }
 

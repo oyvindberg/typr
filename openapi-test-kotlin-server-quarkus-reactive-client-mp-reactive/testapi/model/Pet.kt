@@ -8,12 +8,12 @@ import kotlin.collections.List
 import kotlin.collections.Map
 
 data class Pet(
-  @JsonProperty("tags") val tags: Optional<List<String>>,
-  @JsonProperty("id") @NotNull val id: String,
-  @JsonProperty("status") @NotNull val status: PetStatus,
-  @JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
-  @JsonProperty("metadata") val metadata: Optional<Map<String, String>>,
+  @field:JsonProperty("tags") val tags: Optional<List<String>>,
+  @field:JsonProperty("id") @NotNull val id: String,
+  @field:JsonProperty("status") @NotNull val status: PetStatus,
+  @field:JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
+  @field:JsonProperty("metadata") val metadata: Optional<Map<String, String>>,
   /** Pet name */
-  @JsonProperty("name") @NotNull val name: String,
-  @JsonProperty("updatedAt") val updatedAt: Optional<OffsetDateTime>
+  @field:JsonProperty("name") @NotNull val name: String,
+  @field:JsonProperty("updatedAt") val updatedAt: Optional<OffsetDateTime>
 )

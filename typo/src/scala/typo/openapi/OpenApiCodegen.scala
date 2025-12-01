@@ -137,6 +137,13 @@ object OpenApiCodegen {
         .orElse(options.clientLib.flatMap(lib => extractEffectTypeWithOps(lib.effectType)))
     }
 
+    // Collect all unique response shapes if using generic response types
+    val responseShapes: Map[String, ResponseShape] = if (options.useGenericResponseTypes) {
+      collectAllResponseShapes(spec)
+    } else {
+      Map.empty
+    }
+
     val typeMapper: TypeMapper = if (isScala) {
       new ScalaTypeMapper(modelPkg, options.typeOverrides, lang)
     } else {
@@ -152,7 +159,8 @@ object OpenApiCodegen {
       clientFrameworkSupport,
       sumTypeNames,
       spec.securitySchemes,
-      effectTypeWithOps
+      effectTypeWithOps,
+      options.useGenericResponseTypes
     )
 
     val files = List.newBuilder[jvm.File]
@@ -165,6 +173,13 @@ object OpenApiCodegen {
     // Generate sum types
     spec.sumTypes.foreach { sumType =>
       files += modelCodegen.generateSumType(sumType)
+    }
+
+    // Generate generic response types if enabled
+    if (options.useGenericResponseTypes) {
+      responseShapes.values.foreach { shape =>
+        files += apiCodegen.generateGenericResponseType(shape)
+      }
     }
 
     // Generate API interfaces (base, server, client, and response sum types)
@@ -193,5 +208,19 @@ object OpenApiCodegen {
     }
 
     Result(files.result(), Nil)
+  }
+
+  /** Collect all unique response shapes from the spec */
+  private def collectAllResponseShapes(spec: ParsedSpec): Map[String, ResponseShape] = {
+    val allVariants: List[List[ResponseVariant]] = {
+      val apiVariants = spec.apis.flatMap(_.methods).flatMap(_.responseVariants)
+      val webhookVariants = spec.webhooks.flatMap(_.methods).flatMap(_.responseVariants)
+      apiVariants ++ webhookVariants
+    }
+
+    allVariants
+      .map(ResponseShape.fromVariants)
+      .groupBy(_.shapeId)
+      .map { case (k, v) => (k, v.head) }
   }
 }

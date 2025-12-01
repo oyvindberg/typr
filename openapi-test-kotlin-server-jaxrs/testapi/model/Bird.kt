@@ -6,12 +6,12 @@ import java.time.OffsetDateTime
 import java.util.Optional
 
 data class Bird(
-  @JsonProperty("id") @NotNull val id: String,
-  @JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
-  @JsonProperty("name") @NotNull val name: String,
-  @JsonProperty("updatedAt") val updatedAt: Optional<OffsetDateTime>,
-  @JsonProperty("wingSpan") val wingSpan: Optional<Double>,
-  @JsonProperty("canFly") @NotNull val canFly: Boolean
+  @field:JsonProperty("id") @NotNull val id: String,
+  @field:JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
+  @field:JsonProperty("name") @NotNull val name: String,
+  @field:JsonProperty("updatedAt") val updatedAt: Optional<OffsetDateTime>,
+  @field:JsonProperty("wingSpan") val wingSpan: Optional<Double>,
+  @field:JsonProperty("canFly") @NotNull val canFly: Boolean
 ) : Animal {
   override fun animal_type(): String = "bird"
 }

@@ -1,8 +1,9 @@
 package testapi.api
 
+import kotlin.collections.List
+import testapi.model.Animal
 
-
-sealed interface AnimalsApi {
+interface AnimalsApi {
   /** List all animals (polymorphic) */
-  fun listAnimals(): ListAnimalsResponse
+  fun listAnimals(): Response2004XX5XX<List<Animal>>
 }

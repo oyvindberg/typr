@@ -1,26 +1,20 @@
 package testapi.api
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
-import io.swagger.v3.oas.annotations.security.SecurityScheme
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import java.lang.IllegalStateException
-import testapi.api.ListAnimalsResponse.Status200
-import testapi.api.ListAnimalsResponse.Status4XX
-import testapi.api.ListAnimalsResponse.Status5XX
+import kotlin.collections.List
+import testapi.api.Response2004XX5XX.Status200
+import testapi.api.Response2004XX5XX.Status4XX
+import testapi.api.Response2004XX5XX.Status5XX
+import testapi.model.Animal
 
-@Path("/animals")
-@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
-@SecurityScheme(name = "apiKeyHeader", type = SecuritySchemeType.APIKEY, `in` = SecuritySchemeIn.HEADER, paramName = "X-API-Key")
-@SecurityScheme(name = "apiKeyQuery", type = SecuritySchemeType.APIKEY, `in` = SecuritySchemeIn.QUERY, paramName = "api_key")
-@SecurityScheme(name = "oauth2", type = SecuritySchemeType.OAUTH2)
-sealed interface AnimalsApiServer : AnimalsApi {
+interface AnimalsApiServer : AnimalsApi {
   /** List all animals (polymorphic) */
-  override fun listAnimals(): ListAnimalsResponse
+  override fun listAnimals(): Response2004XX5XX<List<Animal>>
 
   /** Endpoint wrapper for listAnimals - handles response status codes */
   @GET

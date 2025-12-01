@@ -2,10 +2,7 @@ package testapi.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.smallrye.mutiny.Uni
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import io.swagger.v3.oas.annotations.security.SecurityScheme
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.DELETE
 import jakarta.ws.rs.GET
@@ -18,22 +15,18 @@ import java.lang.IllegalStateException
 import java.lang.Void
 import java.util.Optional
 import kotlin.collections.List
-import testapi.api.CreatePetResponse.Status201
-import testapi.api.CreatePetResponse.Status400
-import testapi.api.DeletePetResponse.Status404
-import testapi.api.DeletePetResponse.StatusDefault
-import testapi.api.GetPetResponse.Status200
+import testapi.api.Response200404.Status200
+import testapi.api.Response201400.Status201
+import testapi.api.Response201400.Status400
+import testapi.api.Response404Default.Status404
+import testapi.api.Response404Default.StatusDefault
+import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 
-@Path("/pets")
-@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
-@SecurityScheme(name = "apiKeyHeader", type = SecuritySchemeType.APIKEY, `in` = SecuritySchemeIn.HEADER, paramName = "X-API-Key")
-@SecurityScheme(name = "apiKeyQuery", type = SecuritySchemeType.APIKEY, `in` = SecuritySchemeIn.QUERY, paramName = "api_key")
-@SecurityScheme(name = "oauth2", type = SecuritySchemeType.OAUTH2)
-sealed interface PetsApiServer : PetsApi {
+interface PetsApiServer : PetsApi {
   /** Create a pet */
-  override fun createPet(body: PetCreate): Uni<CreatePetResponse>
+  override fun createPet(body: PetCreate): Uni<Response201400<Pet, Error>>
 
   /** Endpoint wrapper for createPet - handles response status codes */
   @POST
@@ -42,7 +35,7 @@ sealed interface PetsApiServer : PetsApi {
   @Produces(MediaType.APPLICATION_JSON)
   @SecurityRequirement(name = "oauth2", scopes = ["write:pets"])
   @SecurityRequirement(name = "apiKeyHeader")
-  fun createPetEndpoint(body: PetCreate): Uni<Response> = createPet(body).map({ response: CreatePetResponse -> when (val __r = response) {
+  fun createPetEndpoint(body: PetCreate): Uni<Response> = createPet(body).map({ response: Response201400 -> when (val __r = response) {
     is Status201 -> { val r = __r as Status201; Response.ok(r.value).build() }
     is Status400 -> { val r = __r as Status400; Response.status(400).entity(r.value).build() }
     else -> throw IllegalStateException("Unexpected response type")
@@ -52,7 +45,7 @@ sealed interface PetsApiServer : PetsApi {
   override fun deletePet(
     /** The pet ID */
     petId: String
-  ): Uni<DeletePetResponse>
+  ): Uni<Response404Default<Error>>
 
   /** Endpoint wrapper for deletePet - handles response status codes */
   @DELETE
@@ -60,7 +53,7 @@ sealed interface PetsApiServer : PetsApi {
   fun deletePetEndpoint(
     /** The pet ID */
     petId: String
-  ): Uni<Response> = deletePet(petId).map({ response: DeletePetResponse -> when (val __r = response) {
+  ): Uni<Response> = deletePet(petId).map({ response: Response404Default -> when (val __r = response) {
     is Status404 -> { val r = __r as Status404; Response.status(404).entity(r.value).build() }
     is StatusDefault -> { val r = __r as StatusDefault; Response.status(r.statusCode).entity(r.value).build() }
     else -> throw IllegalStateException("Unexpected response type")
@@ -70,7 +63,7 @@ sealed interface PetsApiServer : PetsApi {
   override fun getPet(
     /** The pet ID */
     petId: String
-  ): Uni<GetPetResponse>
+  ): Uni<Response200404<Pet, Error>>
 
   /** Endpoint wrapper for getPet - handles response status codes */
   @GET
@@ -79,9 +72,9 @@ sealed interface PetsApiServer : PetsApi {
   fun getPetEndpoint(
     /** The pet ID */
     petId: String
-  ): Uni<Response> = getPet(petId).map({ response: GetPetResponse -> when (val __r = response) {
+  ): Uni<Response> = getPet(petId).map({ response: Response200404 -> when (val __r = response) {
     is Status200 -> { val r = __r as Status200; Response.ok(r.value).build() }
-    is testapi.api.GetPetResponse.Status404 -> { val r = __r as testapi.api.GetPetResponse.Status404; Response.status(404).entity(r.value).build() }
+    is testapi.api.Response200404.Status404 -> { val r = __r as testapi.api.Response200404.Status404; Response.status(404).entity(r.value).build() }
     else -> throw IllegalStateException("Unexpected response type")
   } })
 

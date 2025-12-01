@@ -4,24 +4,25 @@ import com.fasterxml.jackson.databind.JsonNode
 import java.lang.Void
 import java.util.Optional
 import kotlin.collections.List
+import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 
-sealed interface PetsApi {
+interface PetsApi {
   /** Create a pet */
-  fun createPet(body: PetCreate): CreatePetResponse
+  fun createPet(body: PetCreate): Response201400<Pet, Error>
 
   /** Delete a pet */
   fun deletePet(
     /** The pet ID */
     petId: String
-  ): DeletePetResponse
+  ): Response404Default<Error>
 
   /** Get a pet by ID */
   fun getPet(
     /** The pet ID */
     petId: String
-  ): GetPetResponse
+  ): Response200404<Pet, Error>
 
   /** Get pet photo */
   fun getPetPhoto(

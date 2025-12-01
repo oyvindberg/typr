@@ -10,15 +10,22 @@ import jakarta.ws.rs.core.Response;
 import java.lang.IllegalStateException;
 import java.util.List;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import testapi.api.ListAnimalsResponse.Status200;
-import testapi.api.ListAnimalsResponse.Status4XX;
-import testapi.api.ListAnimalsResponse.Status5XX;
+import testapi.api.ListAnimalsResponse;
+import testapi.api.Response2004XX5XX.Status200;
+import testapi.api.Response2004XX5XX.Status4XX;
+import testapi.api.Response2004XX5XX.Status5XX;
 import testapi.model.Animal;
 import testapi.model.Error;
 
 @RegisterRestClient
 @Path("/animals")
-public sealed interface AnimalsApiClient extends AnimalsApi {
+public interface AnimalsApiClient extends AnimalsApi {
+  /** List all animals (polymorphic) */
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  Response listAnimalsRaw();
+
   /** List all animals (polymorphic) - handles response status codes */
   @Override
   default ListAnimalsResponse listAnimals() {
@@ -36,10 +43,4 @@ public sealed interface AnimalsApiClient extends AnimalsApi {
     } ;
     null;
   };
-
-  /** List all animals (polymorphic) */
-  @GET
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
-  Response listAnimalsRaw();
 }

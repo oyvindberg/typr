@@ -44,7 +44,8 @@ object GenerateStripeTest {
       .copy(
         serverLib = Some(OpenApiServerLib.JaxRsSync),
         clientLib = None,
-        generateValidation = false // Start without validation to reduce complexity
+        generateValidation = false, // Start without validation to reduce complexity
+        useGenericResponseTypes = true // Use generic response types to deduplicate
       )
 
     val result = OpenApiCodegen.generate(specPath, options, lang)
