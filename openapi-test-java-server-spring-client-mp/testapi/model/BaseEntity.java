@@ -7,14 +7,14 @@ import java.util.Optional;
 
 public record BaseEntity(
   @JsonProperty("createdAt") @NotNull OffsetDateTime createdAt,
-  @JsonProperty("id") @NotNull String id,
+  @JsonProperty("id") @NotNull PetId id,
   @JsonProperty("updatedAt") Optional<OffsetDateTime> updatedAt
 ) {
   public BaseEntity withCreatedAt(OffsetDateTime createdAt) {
     return new BaseEntity(createdAt, id, updatedAt);
   };
 
-  public BaseEntity withId(String id) {
+  public BaseEntity withId(PetId id) {
     return new BaseEntity(createdAt, id, updatedAt);
   };
 

@@ -157,7 +157,7 @@ object OpenApiCodegen {
     } else {
       new TypeMapper(modelPkg, options.typeOverrides, lang)
     }
-    val modelCodegen = new ModelCodegen(modelPkg, typeMapper, lang, jsonLib, validationSupport)
+    val modelCodegen = new ModelCodegen(modelPkg, typeMapper, lang, jsonLib, validationSupport, serverFrameworkSupport.getOrElse(NoFrameworkSupport))
     val apiCodegen = new ApiCodegen(
       apiPkg,
       typeMapper,

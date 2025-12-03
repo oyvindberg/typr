@@ -9,7 +9,7 @@ import kotlin.collections.Map
 
 data class Pet(
   @field:JsonProperty("tags") val tags: Optional<List<String>>,
-  @field:JsonProperty("id") @NotNull val id: String,
+  @field:JsonProperty("id") @NotNull val id: PetId,
   @field:JsonProperty("status") @NotNull val status: PetStatus,
   @field:JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
   @field:JsonProperty("metadata") val metadata: Optional<Map<String, String>>,

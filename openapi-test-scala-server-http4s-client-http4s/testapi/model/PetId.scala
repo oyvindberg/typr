@@ -10,4 +10,7 @@ object PetId {
   implicit val decoder: Decoder[PetId] = io.circe.Decoder[java.lang.String].map(PetId.apply)
 
   implicit val encoder: Encoder[PetId] = io.circe.Encoder[java.lang.String].contramap(_.value)
+
+  /** Path extractor for Http4s routes */
+  def unapply(str: String): Option[PetId] = scala.Some(new testapi.model.PetId(str))
 }

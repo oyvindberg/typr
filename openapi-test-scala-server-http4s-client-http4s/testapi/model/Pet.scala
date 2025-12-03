@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 
 case class Pet(
   tags: Option[List[String]],
-  id: String,
+  id: PetId,
   status: PetStatus,
   createdAt: OffsetDateTime,
   metadata: Option[Map[String, String]],

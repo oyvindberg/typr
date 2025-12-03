@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
+import testapi.model.PetId;
 
 @RestController
 @RequestMapping("/pets")
@@ -52,7 +53,7 @@ public interface PetsApiServer extends PetsApi {
   Response404Default<Error> deletePet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   );
 
   /** Endpoint wrapper for deletePet - handles response status codes */
@@ -60,7 +61,7 @@ public interface PetsApiServer extends PetsApi {
   default ResponseEntity<?> deletePetEndpoint(
   
     /** The pet ID */
-    @PathVariable("petId") String petId
+    @PathVariable("petId") PetId petId
   ) {
     return switch (deletePet(petId)) {
       case NotFound r -> ResponseEntity.status(404).body(r.value());
@@ -74,7 +75,7 @@ public interface PetsApiServer extends PetsApi {
   Response200404<Pet, Error> getPet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   );
 
   /** Endpoint wrapper for getPet - handles response status codes */
@@ -82,7 +83,7 @@ public interface PetsApiServer extends PetsApi {
   default ResponseEntity<?> getPetEndpoint(
   
     /** The pet ID */
-    @PathVariable("petId") String petId
+    @PathVariable("petId") PetId petId
   ) {
     return switch (getPet(petId)) {
       case Ok r -> ResponseEntity.ok(r.value());
@@ -97,7 +98,7 @@ public interface PetsApiServer extends PetsApi {
   Void getPetPhoto(
   
     /** The pet ID */
-    @PathVariable("petId") String petId
+    @PathVariable("petId") PetId petId
   );
 
   /** List all pets */
@@ -115,7 +116,7 @@ public interface PetsApiServer extends PetsApi {
   @PostMapping(value = { "/{petId}/photo" }, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
   JsonNode uploadPetPhoto(
     /** The pet ID */
-    @PathVariable("petId") String petId,
+    @PathVariable("petId") PetId petId,
     /** Optional caption for the photo */
     @RequestPart(name = "caption", required = false) String caption,
     /** The photo file to upload */

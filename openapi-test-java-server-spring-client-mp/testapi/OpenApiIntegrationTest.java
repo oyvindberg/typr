@@ -6,6 +6,7 @@ import testapi.api.*;
 import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
+import testapi.model.PetId;
 import testapi.model.PetStatus;
 
 import java.time.OffsetDateTime;
@@ -30,12 +31,12 @@ public class OpenApiIntegrationTest {
     private static final OffsetDateTime TEST_TIME = OffsetDateTime.parse("2024-01-01T12:00:00Z");
 
     static class TestPetsApiServer implements PetsApiServer {
-        private final Map<String, Pet> pets = new HashMap<>();
+        private final Map<PetId, Pet> pets = new HashMap<>();
 
         {
-            pets.put("pet-123", new Pet(
+            pets.put(new PetId("pet-123"), new Pet(
                 Optional.of(List.of("friendly", "cute")),
-                "pet-123",
+                new PetId("pet-123"),
                 PetStatus.available,
                 TEST_TIME,
                 Optional.of(Map.of("color", "brown")),
@@ -48,7 +49,7 @@ public class OpenApiIntegrationTest {
         public Response201400<Pet, Error> createPet(PetCreate body) {
             var newPet = new Pet(
                 body.tags(),
-                "pet-" + System.nanoTime(),
+                new PetId("pet-" + System.nanoTime()),
                 body.status().orElse(PetStatus.available),
                 TEST_TIME,
                 Optional.empty(),
@@ -60,7 +61,7 @@ public class OpenApiIntegrationTest {
         }
 
         @Override
-        public Response404Default<Error> deletePet(String petId) {
+        public Response404Default<Error> deletePet(PetId petId) {
             if (pets.containsKey(petId)) {
                 pets.remove(petId);
                 return new Default<>(204, new Error("OK", Optional.empty(), "Deleted"));
@@ -70,7 +71,7 @@ public class OpenApiIntegrationTest {
         }
 
         @Override
-        public Response200404<Pet, Error> getPet(String petId) {
+        public Response200404<Pet, Error> getPet(PetId petId) {
             if (pets.containsKey(petId)) {
                 return new Ok<>(pets.get(petId));
             } else {
@@ -79,7 +80,7 @@ public class OpenApiIntegrationTest {
         }
 
         @Override
-        public Void getPetPhoto(String petId) {
+        public Void getPetPhoto(PetId petId) {
             throw new UnsupportedOperationException("Not implemented");
         }
 
@@ -97,7 +98,7 @@ public class OpenApiIntegrationTest {
         }
 
         @Override
-        public JsonNode uploadPetPhoto(String petId, String caption, Byte[] file) {
+        public JsonNode uploadPetPhoto(PetId petId, String caption, Byte[] file) {
             throw new UnsupportedOperationException("Not implemented");
         }
     }
@@ -105,7 +106,7 @@ public class OpenApiIntegrationTest {
     @Test
     public void testGetPetReturnsOk() {
         var server = new TestPetsApiServer();
-        Response200404<Pet, Error> result = server.getPet("pet-123");
+        Response200404<Pet, Error> result = server.getPet(new PetId("pet-123"));
 
         assertTrue(result instanceof Ok);
         assertEquals("200", result.status());
@@ -118,7 +119,7 @@ public class OpenApiIntegrationTest {
     @Test
     public void testGetPetReturnsNotFound() {
         var server = new TestPetsApiServer();
-        Response200404<Pet, Error> result = server.getPet("nonexistent");
+        Response200404<Pet, Error> result = server.getPet(new PetId("nonexistent"));
 
         assertTrue(result instanceof NotFound);
         assertEquals("404", result.status());
@@ -154,7 +155,7 @@ public class OpenApiIntegrationTest {
     @Test
     public void testDeletePetReturnsDefault() {
         var server = new TestPetsApiServer();
-        Response404Default<Error> result = server.deletePet("pet-123");
+        Response404Default<Error> result = server.deletePet(new PetId("pet-123"));
 
         assertTrue(result instanceof Default);
         assertEquals("default", result.status());
@@ -167,7 +168,7 @@ public class OpenApiIntegrationTest {
     @Test
     public void testDeletePetReturnsNotFoundForMissing() {
         var server = new TestPetsApiServer();
-        Response404Default<Error> result = server.deletePet("nonexistent");
+        Response404Default<Error> result = server.deletePet(new PetId("nonexistent"));
 
         assertTrue(result instanceof NotFound);
         assertEquals("404", result.status());
@@ -188,7 +189,7 @@ public class OpenApiIntegrationTest {
         var server = new TestPetsApiServer();
 
         // Test Response200404 pattern matching (simulating endpoint wrapper)
-        Response200404<Pet, Error> getPetResult = server.getPet("pet-123");
+        Response200404<Pet, Error> getPetResult = server.getPet(new PetId("pet-123"));
         String resultBody = switch (getPetResult) {
             case Ok<?, ?> r -> "OK: " + ((Pet) r.value()).name();
             case NotFound<?, ?> r -> "NotFound: " + ((Error) r.value()).code();
@@ -208,7 +209,7 @@ public class OpenApiIntegrationTest {
         assertEquals("Created: Test", createBody);
 
         // Test Response404Default pattern matching
-        Response404Default<Error> deleteResult = server.deletePet("nonexistent");
+        Response404Default<Error> deleteResult = server.deletePet(new PetId("nonexistent"));
         String deleteBody = switch (deleteResult) {
             case NotFound<?, ?> r -> "NotFound: " + ((Error) r.value()).code();
             case Default<?> r -> "Default: " + r.statusCode();
@@ -223,7 +224,7 @@ public class OpenApiIntegrationTest {
         // Created<Pet, Error> should be assignable to Response201400<Pet, Error>
 
         Response201400<Pet, Error> response = new Created<>(new Pet(
-            Optional.empty(), "test-id", PetStatus.available,
+            Optional.empty(), new PetId("test-id"), PetStatus.available,
             OffsetDateTime.now(), Optional.empty(), "Test", Optional.empty()
         ));
 
@@ -231,7 +232,7 @@ public class OpenApiIntegrationTest {
 
         // Similarly for NotFound with multiple interfaces
         Response200404<Pet, Error> okResponse = new Ok<>(new Pet(
-            Optional.empty(), "test-id", PetStatus.available,
+            Optional.empty(), new PetId("test-id"), PetStatus.available,
             OffsetDateTime.now(), Optional.empty(), "Test", Optional.empty()
         ));
         assertEquals("200", okResponse.status());

@@ -1,6 +1,7 @@
 package typo.openapi.codegen
 
 import typo.jvm
+import typo.jvm.Code.TypeOps
 import typo.internal.codegen._
 import typo.openapi.{ApiMethod, ApiParameter, FormField, HttpMethod, ParameterIn, RequestBody, SecurityRequirement, SecurityScheme}
 
@@ -102,6 +103,10 @@ trait FrameworkSupport {
   def toResponseBodyRange(statusCodeExpr: jvm.Code, valueExpr: jvm.Code, @annotation.nowarn encoderExpr: jvm.Code): jvm.Code = {
     buildStatusResponse(statusCodeExpr, valueExpr)
   }
+
+  /** Static members to add to wrapper type companion objects (e.g., Http4s path extractors). Default implementation returns empty list.
+    */
+  def wrapperTypeStaticMembers(tpe: jvm.Type.Qualified, underlyingType: jvm.Type): List[jvm.ClassMember] = Nil
 }
 
 /** No framework annotations - just generate plain interfaces */
@@ -668,5 +673,50 @@ object Http4sSupport extends FrameworkSupport {
   override def toResponseBodyRange(statusCodeExpr: jvm.Code, valueExpr: jvm.Code, encoderExpr: jvm.Code): jvm.Code = {
     val responseCode = buildStatusResponse(statusCodeExpr, valueExpr)
     code"${Types.Cats.IO}.pure($responseCode)"
+  }
+
+  /** Generate Http4s path extractor for wrapper types. This creates an unapply method that can be used in Http4s route pattern matching, allowing path parameters to be extracted directly as the
+    * wrapper type:
+    * {{{
+    * case GET -> Root / "pets" / PetId(petId) => getPet(petId)
+    * }}}
+    *
+    * For a wrapper type PetId(value: String), generates:
+    * {{{
+    * def unapply(str: String): Option[PetId] = Some(PetId(str))
+    * }}}
+    */
+  override def wrapperTypeStaticMembers(tpe: jvm.Type.Qualified, underlyingType: jvm.Type): List[jvm.ClassMember] = {
+    // Generate: def unapply(str: String): Option[T] = Some(T(str))
+    // This allows the wrapper type to be used as a path extractor in Http4s routes
+    val strParam = jvm.Param[jvm.Type](
+      annotations = Nil,
+      comments = jvm.Comments.Empty,
+      name = jvm.Ident("str"),
+      tpe = Types.String,
+      default = None
+    )
+
+    val optionType = jvm.Type.TApply(ScalaTypes.Option, List(tpe))
+
+    // Body: Some(T(str))
+    val constructorCall = tpe.construct(jvm.Ident("str").code)
+    val body = code"${ScalaTypes.Some}($constructorCall)"
+
+    val unapplyMethod = jvm.Method(
+      annotations = Nil,
+      comments = jvm.Comments(List("Path extractor for Http4s routes")),
+      tparams = Nil,
+      name = jvm.Ident("unapply"),
+      params = List(strParam),
+      implicitParams = Nil,
+      tpe = optionType,
+      throws = Nil,
+      body = jvm.Body.Expr(body),
+      isOverride = false,
+      isDefault = false
+    )
+
+    List(unapplyMethod)
   }
 }

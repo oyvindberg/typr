@@ -7,6 +7,7 @@ import org.http4s.Response
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 import org.http4s.circe.CirceEntityEncoder.circeEntityEncoder
 import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 
@@ -27,13 +28,13 @@ trait PetsApiClient extends PetsApi {
   /** Delete a pet */
   def deletePetRaw(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Response[IO]]
 
   /** Delete a pet - handles response status codes */
   override def deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Response404Default[Error]] = {
     deletePetRaw(petId).flatMap { response => {
       val statusCode = response.status.code
@@ -45,13 +46,13 @@ trait PetsApiClient extends PetsApi {
   /** Get a pet by ID */
   def getPetRaw(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Response[IO]]
 
   /** Get a pet by ID - handles response status codes */
   override def getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Response200404[Pet, Error]] = {
     getPetRaw(petId).flatMap { response => {
       val statusCode = response.status.code
@@ -64,7 +65,7 @@ trait PetsApiClient extends PetsApi {
   /** Get pet photo */
   override def getPetPhoto(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Void]
 
   /** List all pets */
@@ -78,7 +79,7 @@ trait PetsApiClient extends PetsApi {
   /** Upload a pet photo */
   override def uploadPetPhoto(
     /** The pet ID */
-    petId: String,
+    petId: PetId,
     /** Optional caption for the photo */
     caption: String,
     /** The photo file to upload */

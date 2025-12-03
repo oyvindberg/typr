@@ -252,6 +252,7 @@ object ScalaTypes {
   val BigDecimal = jvm.Type.Qualified("scala.math.BigDecimal")
   val ByteArray = jvm.Type.ArrayOf(jvm.Type.Qualified("scala.Byte"))
   val Option = jvm.Type.Qualified("scala.Option")
+  val Some = jvm.Type.Qualified("scala.Some")
   val List = jvm.Type.Qualified("scala.List")
   val Map = jvm.Type.Qualified("scala.collection.immutable.Map")
   val JsonNode = jvm.Type.Qualified("io.circe.Json") // For Scala, use Circe's Json type

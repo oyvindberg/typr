@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public record Cat(
   @JsonProperty("meowVolume") Optional<Integer> meowVolume,
-  @JsonProperty("id") @NotNull String id,
+  @JsonProperty("id") @NotNull PetId id,
   @JsonProperty("createdAt") @NotNull OffsetDateTime createdAt,
   /** Whether the cat is an indoor cat */
   @JsonProperty("indoor") @NotNull Boolean indoor,
@@ -18,7 +18,7 @@ public record Cat(
     return new Cat(meowVolume, id, createdAt, indoor, name, updatedAt);
   };
 
-  public Cat withId(String id) {
+  public Cat withId(PetId id) {
     return new Cat(meowVolume, id, createdAt, indoor, name, updatedAt);
   };
 

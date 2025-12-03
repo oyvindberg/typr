@@ -24,6 +24,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
+import testapi.model.PetId;
 
 @Path("/pets")
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
@@ -55,7 +56,7 @@ public interface PetsApiServer extends PetsApi {
   Response404Default<Error> deletePet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   );
 
   /** Endpoint wrapper for deletePet - handles response status codes */
@@ -64,7 +65,7 @@ public interface PetsApiServer extends PetsApi {
   default Response deletePetEndpoint(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   ) {
     return switch (deletePet(petId)) {
       case NotFound r -> Response.status(404).entity(r.value()).build();
@@ -78,7 +79,7 @@ public interface PetsApiServer extends PetsApi {
   Response200404<Pet, Error> getPet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   );
 
   /** Endpoint wrapper for getPet - handles response status codes */
@@ -88,7 +89,7 @@ public interface PetsApiServer extends PetsApi {
   default Response getPetEndpoint(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   ) {
     return switch (getPet(petId)) {
       case Ok r -> Response.ok(r.value()).build();
@@ -105,7 +106,7 @@ public interface PetsApiServer extends PetsApi {
   Void getPetPhoto(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   );
 
   /** List all pets */
@@ -128,7 +129,7 @@ public interface PetsApiServer extends PetsApi {
   @Produces(value = { MediaType.APPLICATION_JSON })
   JsonNode uploadPetPhoto(
     /** The pet ID */
-    @PathParam("petId") String petId,
+    @PathParam("petId") PetId petId,
     /** Optional caption for the photo */
     @FormDataParam("caption") String caption,
     /** The photo file to upload */

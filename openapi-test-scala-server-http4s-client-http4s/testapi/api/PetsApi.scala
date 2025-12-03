@@ -6,6 +6,7 @@ import java.lang.Void
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 
 trait PetsApi {
   /** Create a pet */
@@ -14,19 +15,19 @@ trait PetsApi {
   /** Delete a pet */
   def deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Response404Default[Error]]
 
   /** Get a pet by ID */
   def getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Response200404[Pet, Error]]
 
   /** Get pet photo */
   def getPetPhoto(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): IO[Void]
 
   /** List all pets */
@@ -40,7 +41,7 @@ trait PetsApi {
   /** Upload a pet photo */
   def uploadPetPhoto(
     /** The pet ID */
-    petId: String,
+    petId: PetId,
     /** Optional caption for the photo */
     caption: String,
     /** The photo file to upload */

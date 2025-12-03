@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 
 case class BaseEntity(
   createdAt: OffsetDateTime,
-  id: String,
+  id: PetId,
   updatedAt: Option[OffsetDateTime]
 )
 

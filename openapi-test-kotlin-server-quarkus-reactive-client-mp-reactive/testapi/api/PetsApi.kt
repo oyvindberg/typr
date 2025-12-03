@@ -8,6 +8,7 @@ import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 
 interface PetsApi {
   /** Create a pet */
@@ -16,19 +17,19 @@ interface PetsApi {
   /** Delete a pet */
   fun deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Uni<Response404Default<Error>>
 
   /** Get a pet by ID */
   fun getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Uni<Response200404<Pet, Error>>
 
   /** Get pet photo */
   fun getPetPhoto(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Uni<Void>
 
   /** List all pets */
@@ -42,7 +43,7 @@ interface PetsApi {
   /** Upload a pet photo */
   fun uploadPetPhoto(
     /** The pet ID */
-    petId: String,
+    petId: PetId,
     /** Optional caption for the photo */
     caption: String,
     /** The photo file to upload */

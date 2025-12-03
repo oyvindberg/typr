@@ -18,6 +18,7 @@ import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 
 interface PetsApiClient : PetsApi {
   /** Create a pet - handles response status codes */
@@ -45,7 +46,7 @@ interface PetsApiClient : PetsApi {
   /** Delete a pet - handles response status codes */
   override fun deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response404Default<Error> {
     var response: Response
     try {
@@ -62,13 +63,13 @@ interface PetsApiClient : PetsApi {
   @Path("/{petId}")
   fun deletePetRaw(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response
 
   /** Get a pet by ID - handles response status codes */
   override fun getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response200404<Pet, Error> {
     var response: Response
     try {
@@ -87,7 +88,7 @@ interface PetsApiClient : PetsApi {
   @Produces(value = [MediaType.APPLICATION_OCTET_STREAM])
   override fun getPetPhoto(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Void
 
   /** Get a pet by ID */
@@ -96,7 +97,7 @@ interface PetsApiClient : PetsApi {
   @Produces(value = [MediaType.APPLICATION_JSON])
   fun getPetRaw(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response
 
   /** List all pets */
@@ -117,7 +118,7 @@ interface PetsApiClient : PetsApi {
   @Produces(value = [MediaType.APPLICATION_JSON])
   override fun uploadPetPhoto(
     /** The pet ID */
-    petId: String,
+    petId: PetId,
     /** Optional caption for the photo */
     caption: String,
     /** The photo file to upload */

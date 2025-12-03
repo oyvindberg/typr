@@ -25,6 +25,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
+import testapi.model.PetId;
 
 @RegisterRestClient
 @Path("/pets")
@@ -54,7 +55,7 @@ public interface PetsApiClient extends PetsApi {
   Uni<Response> deletePetRaw(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   );
 
   /** Delete a pet - handles response status codes */
@@ -62,7 +63,7 @@ public interface PetsApiClient extends PetsApi {
   default Uni<Response404Default<Error>> deletePet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   ) {
     return deletePetRaw(petId).onFailure(WebApplicationException.class).recoverWithItem((Throwable e) -> ((WebApplicationException) e).getResponse()).map((Response response) -> {
       if (response.getStatus() == 404) { return new NotFound(response.readEntity(Error.class)); }
@@ -77,7 +78,7 @@ public interface PetsApiClient extends PetsApi {
   Uni<Response> getPetRaw(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   );
 
   /** Get a pet by ID - handles response status codes */
@@ -85,7 +86,7 @@ public interface PetsApiClient extends PetsApi {
   default Uni<Response200404<Pet, Error>> getPet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   ) {
     return getPetRaw(petId).onFailure(WebApplicationException.class).recoverWithItem((Throwable e) -> ((WebApplicationException) e).getResponse()).map((Response response) -> {
       if (response.getStatus() == 200) { return new Ok(response.readEntity(Pet.class)); }
@@ -102,7 +103,7 @@ public interface PetsApiClient extends PetsApi {
   Uni<Void> getPetPhoto(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   );
 
   /** List all pets */
@@ -125,7 +126,7 @@ public interface PetsApiClient extends PetsApi {
   @Produces(value = { MediaType.APPLICATION_JSON })
   Uni<JsonNode> uploadPetPhoto(
     /** The pet ID */
-    @PathParam("petId") String petId,
+    @PathParam("petId") PetId petId,
     /** Optional caption for the photo */
     @FormDataParam("caption") String caption,
     /** The photo file to upload */

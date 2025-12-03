@@ -23,6 +23,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
+import testapi.model.PetId;
 
 @RegisterRestClient
 @Path("/pets")
@@ -56,7 +57,7 @@ public interface PetsApiClient extends PetsApi {
   Response deletePetRaw(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   );
 
   /** Delete a pet - handles response status codes */
@@ -64,7 +65,7 @@ public interface PetsApiClient extends PetsApi {
   default Response404Default<Error> deletePet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   ) {
     Response response;
     try {
@@ -83,7 +84,7 @@ public interface PetsApiClient extends PetsApi {
   Response getPetRaw(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   );
 
   /** Get a pet by ID - handles response status codes */
@@ -91,7 +92,7 @@ public interface PetsApiClient extends PetsApi {
   default Response200404<Pet, Error> getPet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   ) {
     Response response;
     try {
@@ -112,7 +113,7 @@ public interface PetsApiClient extends PetsApi {
   Void getPetPhoto(
   
     /** The pet ID */
-    @PathParam("petId") String petId
+    @PathParam("petId") PetId petId
   );
 
   /** List all pets */
@@ -135,7 +136,7 @@ public interface PetsApiClient extends PetsApi {
   @Produces(value = { MediaType.APPLICATION_JSON })
   JsonNode uploadPetPhoto(
     /** The pet ID */
-    @PathParam("petId") String petId,
+    @PathParam("petId") PetId petId,
     /** Optional caption for the photo */
     @FormDataParam("caption") String caption,
     /** The photo file to upload */

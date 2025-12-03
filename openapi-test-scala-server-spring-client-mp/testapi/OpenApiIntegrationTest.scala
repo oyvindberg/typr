@@ -2,7 +2,7 @@ package testapi
 
 import org.scalatest.funsuite.AnyFunSuite
 import testapi.api.*
-import testapi.model.{Error, Pet, PetCreate, PetStatus}
+import testapi.model.{Error, Pet, PetCreate, PetId, PetStatus}
 import java.time.OffsetDateTime
 
 /**
@@ -20,9 +20,9 @@ class OpenApiIntegrationTest extends AnyFunSuite {
 
   class TestPetsApiServer extends PetsApiServer {
     private val pets = scala.collection.mutable.Map(
-      "pet-123" -> Pet(
+      PetId("pet-123") -> Pet(
         tags = Some(List("friendly", "cute")),
-        id = "pet-123",
+        id = PetId("pet-123"),
         status = PetStatus.available,
         createdAt = testTime,
         metadata = Some(Map("color" -> "brown")),
@@ -34,7 +34,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
     override def createPet(body: PetCreate): Response201400[Pet, Error] = {
       val newPet = Pet(
         tags = body.tags,
-        id = s"pet-${System.nanoTime()}",
+        id = PetId(s"pet-${System.nanoTime()}"),
         status = body.status.getOrElse(PetStatus.available),
         createdAt = testTime,
         metadata = None,
@@ -45,7 +45,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
       Created(newPet)
     }
 
-    override def deletePet(petId: String): Response404Default[Error] = {
+    override def deletePet(petId: PetId): Response404Default[Error] = {
       if (pets.contains(petId)) {
         pets.remove(petId)
         Default(204, Error("OK", None, "Deleted"))
@@ -54,14 +54,14 @@ class OpenApiIntegrationTest extends AnyFunSuite {
       }
     }
 
-    override def getPet(petId: String): Response200404[Pet, Error] = {
+    override def getPet(petId: PetId): Response200404[Pet, Error] = {
       pets.get(petId) match {
         case Some(pet) => Ok(pet)
         case None      => NotFound(Error("NOT_FOUND", None, "Pet not found"))
       }
     }
 
-    override def getPetPhoto(petId: String): Void = {
+    override def getPetPhoto(petId: PetId): Void = {
       throw new UnsupportedOperationException("Not implemented")
     }
 
@@ -76,14 +76,14 @@ class OpenApiIntegrationTest extends AnyFunSuite {
       result
     }
 
-    override def uploadPetPhoto(petId: String, caption: String, file: Array[Byte]): io.circe.Json = {
+    override def uploadPetPhoto(petId: PetId, caption: String, file: Array[Byte]): io.circe.Json = {
       throw new UnsupportedOperationException("Not implemented")
     }
   }
 
   test("getPet returns Ok for existing pet") {
     val server = new TestPetsApiServer
-    val result = server.getPet("pet-123")
+    val result = server.getPet(PetId("pet-123"))
 
     assert(result.isInstanceOf[Ok[?]])
     assert(result.status == "200")
@@ -94,7 +94,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
 
   test("getPet returns NotFound for non-existent pet") {
     val server = new TestPetsApiServer
-    val result = server.getPet("nonexistent")
+    val result = server.getPet(PetId("nonexistent"))
 
     assert(result.isInstanceOf[NotFound[?]])
     assert(result.status == "404")
@@ -126,7 +126,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
 
   test("deletePet returns Default for existing pet") {
     val server = new TestPetsApiServer
-    val result = server.deletePet("pet-123")
+    val result = server.deletePet(PetId("pet-123"))
 
     assert(result.isInstanceOf[Default])
     assert(result.status == "default")
@@ -137,7 +137,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
 
   test("deletePet returns NotFound for missing pet") {
     val server = new TestPetsApiServer
-    val result = server.deletePet("nonexistent")
+    val result = server.deletePet(PetId("nonexistent"))
 
     assert(result.isInstanceOf[NotFound[?]])
     assert(result.status == "404")
@@ -155,7 +155,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
     val server = new TestPetsApiServer
 
     // Test Response200404 pattern matching
-    val getPetResult = server.getPet("pet-123")
+    val getPetResult = server.getPet(PetId("pet-123"))
     val resultBody = getPetResult match {
       case ok: Ok[Pet @unchecked]           => s"OK: ${ok.value.name}"
       case notFound: NotFound[Error @unchecked] => s"NotFound: ${notFound.value.code}"
@@ -171,7 +171,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
     assert(createBody == "Created: Test")
 
     // Test Response404Default pattern matching
-    val deleteResult = server.deletePet("nonexistent")
+    val deleteResult = server.deletePet(PetId("nonexistent"))
     val deleteBody = deleteResult match {
       case notFound: NotFound[Error @unchecked] => s"NotFound: ${notFound.value.code}"
       case default: Default              => s"Default: ${default.statusCode}"
@@ -182,13 +182,13 @@ class OpenApiIntegrationTest extends AnyFunSuite {
   test("phantom type parameters enable polymorphism") {
     // Created[Pet] should be assignable to Response201400[Pet, Error]
     val response: Response201400[Pet, Error] = Created(
-      Pet(None, "test-id", PetStatus.available, OffsetDateTime.now(), None, "Test", None)
+      Pet(None, PetId("test-id"), PetStatus.available, OffsetDateTime.now(), None, "Test", None)
     )
     assert(response.status == "201")
 
     // Ok[Pet] should be assignable to Response200404[Pet, Error]
     val okResponse: Response200404[Pet, Error] = Ok(
-      Pet(None, "test-id", PetStatus.available, OffsetDateTime.now(), None, "Test", None)
+      Pet(None, PetId("test-id"), PetStatus.available, OffsetDateTime.now(), None, "Test", None)
     )
     assert(okResponse.status == "200")
 

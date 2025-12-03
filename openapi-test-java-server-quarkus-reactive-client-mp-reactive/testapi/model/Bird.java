@@ -6,14 +6,14 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public record Bird(
-  @JsonProperty("id") @NotNull String id,
+  @JsonProperty("id") @NotNull PetId id,
   @JsonProperty("createdAt") @NotNull OffsetDateTime createdAt,
   @JsonProperty("name") @NotNull String name,
   @JsonProperty("updatedAt") Optional<OffsetDateTime> updatedAt,
   @JsonProperty("wingSpan") Optional<Double> wingSpan,
   @JsonProperty("canFly") @NotNull Boolean canFly
 ) implements Animal {
-  public Bird withId(String id) {
+  public Bird withId(PetId id) {
     return new Bird(id, createdAt, name, updatedAt, wingSpan, canFly);
   };
 

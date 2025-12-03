@@ -138,7 +138,7 @@ paths:
         required: true
         description: The pet ID
         schema:
-          type: string
+          $ref: '#/components/schemas/PetId'
     post:
       operationId: uploadPetPhoto
       summary: Upload a pet photo
@@ -201,7 +201,7 @@ paths:
         required: true
         description: The pet ID
         schema:
-          type: string
+          $ref: '#/components/schemas/PetId'
     get:
       operationId: getPet
       summary: Get a pet by ID
@@ -309,7 +309,7 @@ components:
         - createdAt
       properties:
         id:
-          type: string
+          $ref: '#/components/schemas/PetId'
         createdAt:
           type: string
           format: date-time

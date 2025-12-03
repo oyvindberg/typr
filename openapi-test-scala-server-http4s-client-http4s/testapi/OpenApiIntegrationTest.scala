@@ -27,9 +27,9 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
 
   class TestPetsApiServer extends PetsApiServer {
     private val pets = scala.collection.mutable.Map(
-      "pet-123" -> Pet(
+      PetId("pet-123") -> Pet(
         tags = Some(List("friendly", "cute")),
-        id = "pet-123",
+        id = PetId("pet-123"),
         status = PetStatus.available,
         createdAt = TestTime,
         metadata = Some(Map("color" -> "brown")),
@@ -41,7 +41,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
     override def createPet(body: PetCreate): IO[Response201400[Pet, Error]] = {
       val newPet = Pet(
         tags = body.tags,
-        id = s"pet-${System.nanoTime()}",
+        id = PetId(s"pet-${System.nanoTime()}"),
         status = body.status.getOrElse(PetStatus.available),
         createdAt = TestTime,
         metadata = None,
@@ -52,7 +52,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       IO.pure(Created(newPet))
     }
 
-    override def deletePet(petId: String): IO[Response404Default[Error]] = {
+    override def deletePet(petId: PetId): IO[Response404Default[Error]] = {
       if (pets.contains(petId)) {
         pets.remove(petId)
         IO.pure(Default(204, Error("OK", None, "Deleted")))
@@ -61,14 +61,14 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       }
     }
 
-    override def getPet(petId: String): IO[Response200404[Pet, Error]] = {
+    override def getPet(petId: PetId): IO[Response200404[Pet, Error]] = {
       pets.get(petId) match {
         case Some(foundPet) => IO.pure(Ok(foundPet))
         case None           => IO.pure(NotFound(Error("NOT_FOUND", None, "Pet not found")))
       }
     }
 
-    override def getPetPhoto(petId: String): IO[Void] = {
+    override def getPetPhoto(petId: PetId): IO[Void] = {
       throw new UnsupportedOperationException("Not implemented")
     }
 
@@ -84,14 +84,14 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       IO.pure(limited)
     }
 
-    override def uploadPetPhoto(petId: String, caption: String, file: Array[Byte]): IO[Json] = {
+    override def uploadPetPhoto(petId: PetId, caption: String, file: Array[Byte]): IO[Json] = {
       throw new UnsupportedOperationException("Not implemented")
     }
   }
 
   test("getPet returns Ok for existing pet") {
     val server = new TestPetsApiServer
-    val result = server.getPet("pet-123").unsafeRunSync()
+    val result = server.getPet(PetId("pet-123")).unsafeRunSync()
 
     result shouldBe a[Ok[_]]
     result.status shouldBe "200"
@@ -100,7 +100,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
 
   test("getPet returns NotFound for non-existent pet") {
     val server = new TestPetsApiServer
-    val result = server.getPet("nonexistent").unsafeRunSync()
+    val result = server.getPet(PetId("nonexistent")).unsafeRunSync()
 
     result shouldBe a[NotFound[_]]
     result.status shouldBe "404"
@@ -129,7 +129,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
 
   test("deletePet returns Default for existing pet") {
     val server = new TestPetsApiServer
-    val result = server.deletePet("pet-123").unsafeRunSync()
+    val result = server.deletePet(PetId("pet-123")).unsafeRunSync()
 
     result shouldBe a[Default]
     result.status shouldBe "default"
@@ -138,7 +138,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
 
   test("deletePet returns NotFound for non-existent pet") {
     val server = new TestPetsApiServer
-    val result = server.deletePet("nonexistent").unsafeRunSync()
+    val result = server.deletePet(PetId("nonexistent")).unsafeRunSync()
 
     result shouldBe a[NotFound[_]]
     result.status shouldBe "404"

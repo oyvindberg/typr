@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 
 @RestController
 @RequestMapping("/pets")
@@ -45,14 +46,14 @@ trait PetsApiServer extends PetsApi {
   /** Delete a pet */
   override def deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response404Default[Error]
 
   /** Endpoint wrapper for deletePet - handles response status codes */
   @DeleteMapping(value = Array("/{petId}"))
   def deletePetEndpoint(
     /** The pet ID */
-    @PathVariable("petId") petId: String
+    @PathVariable("petId") petId: PetId
   ): ResponseEntity[?] = {
     deletePet(petId) match {
       case r: testapi.api.NotFound[?] => org.springframework.http.ResponseEntity.status(404).body(r.value.asInstanceOf[testapi.model.Error])
@@ -63,14 +64,14 @@ trait PetsApiServer extends PetsApi {
   /** Get a pet by ID */
   override def getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response200404[Pet, Error]
 
   /** Endpoint wrapper for getPet - handles response status codes */
   @GetMapping(value = Array("/{petId}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def getPetEndpoint(
     /** The pet ID */
-    @PathVariable("petId") petId: String
+    @PathVariable("petId") petId: PetId
   ): ResponseEntity[?] = {
     getPet(petId) match {
       case r: testapi.api.Ok[?] => org.springframework.http.ResponseEntity.ok(r.value.asInstanceOf[testapi.model.Pet])
@@ -82,7 +83,7 @@ trait PetsApiServer extends PetsApi {
   @GetMapping(value = Array("/{petId}/photo"), produces = Array(MediaType.APPLICATION_OCTET_STREAM_VALUE))
   override def getPetPhoto(
     /** The pet ID */
-    @PathVariable("petId") petId: String
+    @PathVariable("petId") petId: PetId
   ): Void
 
   /** List all pets */
@@ -98,7 +99,7 @@ trait PetsApiServer extends PetsApi {
   @PostMapping(value = Array("/{petId}/photo"), consumes = Array(MediaType.MULTIPART_FORM_DATA_VALUE), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   override def uploadPetPhoto(
     /** The pet ID */
-    @PathVariable("petId") petId: String,
+    @PathVariable("petId") petId: PetId,
     /** Optional caption for the photo */
     @RequestPart(name = "caption", required = false) caption: String,
     /** The photo file to upload */

@@ -8,6 +8,7 @@ import java.util.Optional;
 import testapi.model.Error;
 import testapi.model.Pet;
 import testapi.model.PetCreate;
+import testapi.model.PetId;
 
 public interface PetsApi {
   /** Create a pet */
@@ -17,21 +18,21 @@ public interface PetsApi {
   Uni<Response404Default<Error>> deletePet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   );
 
   /** Get a pet by ID */
   Uni<Response200404<Pet, Error>> getPet(
   
     /** The pet ID */
-    String petId
+    PetId petId
   );
 
   /** Get pet photo */
   Uni<Void> getPetPhoto(
   
     /** The pet ID */
-    String petId
+    PetId petId
   );
 
   /** List all pets */
@@ -45,7 +46,7 @@ public interface PetsApi {
   /** Upload a pet photo */
   Uni<JsonNode> uploadPetPhoto(
     /** The pet ID */
-    String petId,
+    PetId petId,
     /** Optional caption for the photo */
     String caption,
     /** The photo file to upload */

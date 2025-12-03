@@ -7,7 +7,7 @@ import java.util.Optional
 
 data class Cat(
   @field:JsonProperty("meowVolume") val meowVolume: Optional<Integer>,
-  @field:JsonProperty("id") @NotNull val id: String,
+  @field:JsonProperty("id") @NotNull val id: PetId,
   @field:JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
   /** Whether the cat is an indoor cat */
   @field:JsonProperty("indoor") @NotNull val indoor: Boolean,

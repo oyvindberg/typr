@@ -17,6 +17,7 @@ import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 
 interface PetsApiServer : PetsApi {
   /** Create a pet */
@@ -38,7 +39,7 @@ interface PetsApiServer : PetsApi {
   /** Delete a pet */
   override fun deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response404Default<Error>
 
   /** Endpoint wrapper for deletePet - handles response status codes */
@@ -46,7 +47,7 @@ interface PetsApiServer : PetsApi {
   @Path("/{petId}")
   fun deletePetEndpoint(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response = when (val __r = deletePet(petId)) {
     is NotFound<*> -> { val r = __r as NotFound<*>; Response.status(404).entity(r.value).build() }
     is Default -> { val r = __r as Default; Response.status(r.statusCode).entity(r.value).build() }
@@ -56,7 +57,7 @@ interface PetsApiServer : PetsApi {
   /** Get a pet by ID */
   override fun getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response200404<Pet, Error>
 
   /** Endpoint wrapper for getPet - handles response status codes */
@@ -65,7 +66,7 @@ interface PetsApiServer : PetsApi {
   @Produces(value = [MediaType.APPLICATION_JSON])
   fun getPetEndpoint(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response = when (val __r = getPet(petId)) {
     is Ok<*> -> { val r = __r as Ok<*>; Response.ok(r.value).build() }
     is NotFound<*> -> { val r = __r as NotFound<*>; Response.status(404).entity(r.value).build() }
@@ -78,7 +79,7 @@ interface PetsApiServer : PetsApi {
   @Produces(value = [MediaType.APPLICATION_OCTET_STREAM])
   override fun getPetPhoto(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Void
 
   /** List all pets */
@@ -99,7 +100,7 @@ interface PetsApiServer : PetsApi {
   @Produces(value = [MediaType.APPLICATION_JSON])
   override fun uploadPetPhoto(
     /** The pet ID */
-    petId: String,
+    petId: PetId,
     /** Optional caption for the photo */
     caption: String,
     /** The photo file to upload */

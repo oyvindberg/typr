@@ -10,7 +10,8 @@ class ModelCodegen(
     typeMapper: TypeMapper,
     lang: Lang,
     jsonLib: JsonLibSupport,
-    validationSupport: ValidationSupport
+    validationSupport: ValidationSupport,
+    serverFramework: FrameworkSupport
 ) {
 
   def generate(model: ModelClass): jvm.File = model match {
@@ -115,8 +116,9 @@ class ModelCodegen(
       default = None
     )
 
-    // Get static members for companion object (e.g., Circe codecs)
-    val staticMembers = jsonLib.wrapperTypeStaticMembers(tpe, underlyingType)
+    // Get static members for companion object (e.g., Circe codecs, Http4s path extractors)
+    val staticMembers = jsonLib.wrapperTypeStaticMembers(tpe, underlyingType) ++
+      serverFramework.wrapperTypeStaticMembers(tpe, underlyingType)
 
     val record = jvm.Adt.Record(
       annotations = jsonLib.wrapperAnnotations(tpe),

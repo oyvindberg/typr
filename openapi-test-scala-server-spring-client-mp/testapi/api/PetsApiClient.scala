@@ -19,6 +19,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 
 @RegisterRestClient
 @Path("/pets")
@@ -50,13 +51,13 @@ trait PetsApiClient extends PetsApi {
   @Path("/{petId}")
   def deletePetRaw(
     /** The pet ID */
-    @PathParam("petId") petId: String
+    @PathParam("petId") petId: PetId
   ): Response
 
   /** Delete a pet - handles response status codes */
   override def deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response404Default[Error] = {
     var response: jakarta.ws.rs.core.Response = null
     try {
@@ -74,13 +75,13 @@ trait PetsApiClient extends PetsApi {
   @Produces(value = Array(MediaType.APPLICATION_JSON))
   def getPetRaw(
     /** The pet ID */
-    @PathParam("petId") petId: String
+    @PathParam("petId") petId: PetId
   ): Response
 
   /** Get a pet by ID - handles response status codes */
   override def getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response200404[Pet, Error] = {
     var response: jakarta.ws.rs.core.Response = null
     try {
@@ -99,7 +100,7 @@ trait PetsApiClient extends PetsApi {
   @Produces(value = Array(MediaType.APPLICATION_OCTET_STREAM))
   override def getPetPhoto(
     /** The pet ID */
-    @PathParam("petId") petId: String
+    @PathParam("petId") petId: PetId
   ): Void
 
   /** List all pets */
@@ -120,7 +121,7 @@ trait PetsApiClient extends PetsApi {
   @Produces(value = Array(MediaType.APPLICATION_JSON))
   override def uploadPetPhoto(
     /** The pet ID */
-    @PathParam("petId") petId: String,
+    @PathParam("petId") petId: PetId,
     /** Optional caption for the photo */
     @FormDataParam("caption") caption: String,
     /** The photo file to upload */

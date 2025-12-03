@@ -6,14 +6,14 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public record Dog(
-  @JsonProperty("id") @NotNull String id,
+  @JsonProperty("id") @NotNull PetId id,
   @JsonProperty("name") @NotNull String name,
   @JsonProperty("updatedAt") Optional<OffsetDateTime> updatedAt,
   @JsonProperty("breed") @NotNull String breed,
   @JsonProperty("createdAt") @NotNull OffsetDateTime createdAt,
   @JsonProperty("barkVolume") Optional<Integer> barkVolume
 ) implements Animal {
-  public Dog withId(String id) {
+  public Dog withId(PetId id) {
     return new Dog(id, name, updatedAt, breed, createdAt, barkVolume);
   };
 

@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 
 case class Cat(
   meowVolume: Option[Int],
-  id: String,
+  id: PetId,
   createdAt: OffsetDateTime,
   /** Whether the cat is an indoor cat */
   indoor: Boolean,

@@ -8,6 +8,7 @@ import testapi.api.*
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 import testapi.model.PetStatus
 import java.time.OffsetDateTime
 import java.util.Optional
@@ -26,9 +27,9 @@ class OpenApiIntegrationTest {
 
     inner class TestPetsApiServer : PetsApiServer {
         private val pets = mutableMapOf(
-            "pet-123" to Pet(
+            PetId("pet-123") to Pet(
                 tags = Optional.of(listOf("friendly", "cute")),
-                id = "pet-123",
+                id = PetId("pet-123"),
                 status = PetStatus.available,
                 createdAt = testTime,
                 metadata = Optional.of(mapOf("color" to "brown")),
@@ -40,7 +41,7 @@ class OpenApiIntegrationTest {
         override fun createPet(body: PetCreate): Uni<Response201400<Pet, Error>> {
             val newPet = Pet(
                 tags = body.tags,
-                id = "pet-${System.nanoTime()}",
+                id = PetId("pet-${System.nanoTime()}"),
                 status = body.status.orElse(PetStatus.available),
                 createdAt = testTime,
                 metadata = Optional.empty(),
@@ -51,7 +52,7 @@ class OpenApiIntegrationTest {
             return Uni.createFrom().item(Created(newPet))
         }
 
-        override fun deletePet(petId: String): Uni<Response404Default<Error>> {
+        override fun deletePet(petId: PetId): Uni<Response404Default<Error>> {
             return if (pets.containsKey(petId)) {
                 pets.remove(petId)
                 Uni.createFrom().item(Default(204, Error("OK", Optional.empty(), "Deleted")))
@@ -60,12 +61,12 @@ class OpenApiIntegrationTest {
             }
         }
 
-        override fun getPet(petId: String): Uni<Response200404<Pet, Error>> {
+        override fun getPet(petId: PetId): Uni<Response200404<Pet, Error>> {
             return pets[petId]?.let { Uni.createFrom().item(Ok(it)) }
                 ?: Uni.createFrom().item(NotFound(Error("NOT_FOUND", Optional.empty(), "Pet not found")))
         }
 
-        override fun getPetPhoto(petId: String): Uni<Void> {
+        override fun getPetPhoto(petId: PetId): Uni<Void> {
             throw UnsupportedOperationException("Not implemented")
         }
 
@@ -80,7 +81,7 @@ class OpenApiIntegrationTest {
             return Uni.createFrom().item(result)
         }
 
-        override fun uploadPetPhoto(petId: String, caption: String, file: Array<Byte>): Uni<JsonNode> {
+        override fun uploadPetPhoto(petId: PetId, caption: String, file: Array<Byte>): Uni<JsonNode> {
             throw UnsupportedOperationException("Not implemented")
         }
     }
@@ -88,7 +89,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testGetPetReturnsOkForExistingPet() {
         val server = TestPetsApiServer()
-        val result = server.getPet("pet-123").await().indefinitely()
+        val result = server.getPet(PetId("pet-123")).await().indefinitely()
 
         assertTrue(result is Ok<*>)
         assertEquals("200", result.status())
@@ -100,7 +101,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testGetPetReturnsNotFoundForNonExistentPet() {
         val server = TestPetsApiServer()
-        val result = server.getPet("nonexistent").await().indefinitely()
+        val result = server.getPet(PetId("nonexistent")).await().indefinitely()
 
         assertTrue(result is NotFound<*>)
         assertEquals("404", result.status())
@@ -134,7 +135,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testDeletePetReturnsDefaultForExistingPet() {
         val server = TestPetsApiServer()
-        val result = server.deletePet("pet-123").await().indefinitely()
+        val result = server.deletePet(PetId("pet-123")).await().indefinitely()
 
         assertTrue(result is Default)
         assertEquals("default", result.status())
@@ -146,7 +147,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testDeletePetReturnsNotFoundForMissingPet() {
         val server = TestPetsApiServer()
-        val result = server.deletePet("nonexistent").await().indefinitely()
+        val result = server.deletePet(PetId("nonexistent")).await().indefinitely()
 
         assertTrue(result is NotFound<*>)
         assertEquals("404", result.status())
@@ -166,7 +167,7 @@ class OpenApiIntegrationTest {
         val server = TestPetsApiServer()
 
         // Test Response200404 pattern matching
-        val getPetResult = server.getPet("pet-123").await().indefinitely()
+        val getPetResult = server.getPet(PetId("pet-123")).await().indefinitely()
         val resultBody = when (getPetResult) {
             is Ok<*> -> "OK: ${(getPetResult as Ok<Pet>).value.name}"
             is NotFound<*> -> "NotFound: ${(getPetResult as NotFound<Error>).value.code}"
@@ -186,7 +187,7 @@ class OpenApiIntegrationTest {
         assertEquals("Created: Test", createBody)
 
         // Test Response404Default pattern matching
-        val deleteResult = server.deletePet("nonexistent").await().indefinitely()
+        val deleteResult = server.deletePet(PetId("nonexistent")).await().indefinitely()
         val deleteBody = when (deleteResult) {
             is NotFound<*> -> "NotFound: ${(deleteResult as NotFound<Error>).value.code}"
             is Default -> "Default: ${deleteResult.statusCode}"
@@ -200,7 +201,7 @@ class OpenApiIntegrationTest {
         // Created<Pet> should be assignable to Response201400<Pet, Error>
         val response: Response201400<Pet, Error> = Created(
             Pet(
-                Optional.empty(), "test-id", PetStatus.available,
+                Optional.empty(), PetId("test-id"), PetStatus.available,
                 OffsetDateTime.now(), Optional.empty(), "Test", Optional.empty()
             )
         )
@@ -209,7 +210,7 @@ class OpenApiIntegrationTest {
         // Ok<Pet> should be assignable to Response200404<Pet, Error>
         val okResponse: Response200404<Pet, Error> = Ok(
             Pet(
-                Optional.empty(), "test-id", PetStatus.available,
+                Optional.empty(), PetId("test-id"), PetStatus.available,
                 OffsetDateTime.now(), Optional.empty(), "Test", Optional.empty()
             )
         )

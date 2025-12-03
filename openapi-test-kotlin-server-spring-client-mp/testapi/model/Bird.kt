@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 import java.util.Optional
 
 data class Bird(
-  @field:JsonProperty("id") @NotNull val id: String,
+  @field:JsonProperty("id") @NotNull val id: PetId,
   @field:JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
   @field:JsonProperty("name") @NotNull val name: String,
   @field:JsonProperty("updatedAt") val updatedAt: Optional<OffsetDateTime>,

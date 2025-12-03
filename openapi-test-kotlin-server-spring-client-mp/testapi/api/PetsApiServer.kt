@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 
 interface PetsApiServer : PetsApi {
   /** Create a pet */
@@ -32,14 +33,14 @@ interface PetsApiServer : PetsApi {
   /** Delete a pet */
   override fun deletePet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response404Default<Error>
 
   /** Endpoint wrapper for deletePet - handles response status codes */
   @DeleteMapping(value = ["/{petId}"])
   fun deletePetEndpoint(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): ResponseEntity<*> = when (val __r = deletePet(petId)) {
     is NotFound<*> -> { val r = __r as NotFound<*>; ResponseEntity.status(404).body(r.value) }
     is Default -> { val r = __r as Default; ResponseEntity.status(r.statusCode).body(r.value) }
@@ -49,14 +50,14 @@ interface PetsApiServer : PetsApi {
   /** Get a pet by ID */
   override fun getPet(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Response200404<Pet, Error>
 
   /** Endpoint wrapper for getPet - handles response status codes */
   @GetMapping(value = ["/{petId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
   fun getPetEndpoint(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): ResponseEntity<*> = when (val __r = getPet(petId)) {
     is Ok<*> -> { val r = __r as Ok<*>; ResponseEntity.ok(r.value) }
     is NotFound<*> -> { val r = __r as NotFound<*>; ResponseEntity.status(404).body(r.value) }
@@ -67,7 +68,7 @@ interface PetsApiServer : PetsApi {
   @GetMapping(value = ["/{petId}/photo"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
   override fun getPetPhoto(
     /** The pet ID */
-    petId: String
+    petId: PetId
   ): Void
 
   /** List all pets */
@@ -83,7 +84,7 @@ interface PetsApiServer : PetsApi {
   @PostMapping(value = ["/{petId}/photo"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
   override fun uploadPetPhoto(
     /** The pet ID */
-    petId: String,
+    petId: PetId,
     /** Optional caption for the photo */
     caption: String,
     /** The photo file to upload */

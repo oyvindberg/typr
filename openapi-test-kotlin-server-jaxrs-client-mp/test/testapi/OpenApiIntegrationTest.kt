@@ -7,6 +7,7 @@ import testapi.api.*
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
+import testapi.model.PetId
 import testapi.model.PetStatus
 import java.time.OffsetDateTime
 import java.util.Optional
@@ -25,9 +26,9 @@ class OpenApiIntegrationTest {
 
     inner class TestPetsApiServer : PetsApiServer {
         private val pets = mutableMapOf(
-            "pet-123" to Pet(
+            PetId("pet-123") to Pet(
                 tags = Optional.of(listOf("friendly", "cute")),
-                id = "pet-123",
+                id = PetId("pet-123"),
                 status = PetStatus.available,
                 createdAt = testTime,
                 metadata = Optional.of(mapOf("color" to "brown")),
@@ -39,7 +40,7 @@ class OpenApiIntegrationTest {
         override fun createPet(body: PetCreate): Response201400<Pet, Error> {
             val newPet = Pet(
                 tags = body.tags,
-                id = "pet-${System.nanoTime()}",
+                id = PetId("pet-${System.nanoTime()}"),
                 status = body.status.orElse(PetStatus.available),
                 createdAt = testTime,
                 metadata = Optional.empty(),
@@ -50,7 +51,7 @@ class OpenApiIntegrationTest {
             return Created(newPet)
         }
 
-        override fun deletePet(petId: String): Response404Default<Error> {
+        override fun deletePet(petId: PetId): Response404Default<Error> {
             return if (pets.containsKey(petId)) {
                 pets.remove(petId)
                 Default(204, Error("OK", Optional.empty(), "Deleted"))
@@ -59,12 +60,12 @@ class OpenApiIntegrationTest {
             }
         }
 
-        override fun getPet(petId: String): Response200404<Pet, Error> {
+        override fun getPet(petId: PetId): Response200404<Pet, Error> {
             return pets[petId]?.let { Ok(it) }
                 ?: NotFound(Error("NOT_FOUND", Optional.empty(), "Pet not found"))
         }
 
-        override fun getPetPhoto(petId: String): Void {
+        override fun getPetPhoto(petId: PetId): Void {
             throw UnsupportedOperationException("Not implemented")
         }
 
@@ -79,7 +80,7 @@ class OpenApiIntegrationTest {
             return result
         }
 
-        override fun uploadPetPhoto(petId: String, caption: String, file: Array<Byte>): JsonNode {
+        override fun uploadPetPhoto(petId: PetId, caption: String, file: Array<Byte>): JsonNode {
             throw UnsupportedOperationException("Not implemented")
         }
     }
@@ -87,7 +88,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testGetPetReturnsOkForExistingPet() {
         val server = TestPetsApiServer()
-        val result = server.getPet("pet-123")
+        val result = server.getPet(PetId("pet-123"))
 
         assertTrue(result is Ok<*>)
         assertEquals("200", result.status())
@@ -99,7 +100,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testGetPetReturnsNotFoundForNonExistentPet() {
         val server = TestPetsApiServer()
-        val result = server.getPet("nonexistent")
+        val result = server.getPet(PetId("nonexistent"))
 
         assertTrue(result is NotFound<*>)
         assertEquals("404", result.status())
@@ -133,7 +134,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testDeletePetReturnsDefaultForExistingPet() {
         val server = TestPetsApiServer()
-        val result = server.deletePet("pet-123")
+        val result = server.deletePet(PetId("pet-123"))
 
         assertTrue(result is Default)
         assertEquals("default", result.status())
@@ -145,7 +146,7 @@ class OpenApiIntegrationTest {
     @Test
     fun testDeletePetReturnsNotFoundForMissingPet() {
         val server = TestPetsApiServer()
-        val result = server.deletePet("nonexistent")
+        val result = server.deletePet(PetId("nonexistent"))
 
         assertTrue(result is NotFound<*>)
         assertEquals("404", result.status())
@@ -165,7 +166,7 @@ class OpenApiIntegrationTest {
         val server = TestPetsApiServer()
 
         // Test Response200404 pattern matching
-        val getPetResult = server.getPet("pet-123")
+        val getPetResult = server.getPet(PetId("pet-123"))
         val resultBody = when (getPetResult) {
             is Ok<*> -> "OK: ${(getPetResult as Ok<Pet>).value.name}"
             is NotFound<*> -> "NotFound: ${(getPetResult as NotFound<Error>).value.code}"
@@ -185,7 +186,7 @@ class OpenApiIntegrationTest {
         assertEquals("Created: Test", createBody)
 
         // Test Response404Default pattern matching
-        val deleteResult = server.deletePet("nonexistent")
+        val deleteResult = server.deletePet(PetId("nonexistent"))
         val deleteBody = when (deleteResult) {
             is NotFound<*> -> "NotFound: ${(deleteResult as NotFound<Error>).value.code}"
             is Default -> "Default: ${deleteResult.statusCode}"
@@ -199,7 +200,7 @@ class OpenApiIntegrationTest {
         // Created<Pet> should be assignable to Response201400<Pet, Error>
         val response: Response201400<Pet, Error> = Created(
             Pet(
-                Optional.empty(), "test-id", PetStatus.available,
+                Optional.empty(), PetId("test-id"), PetStatus.available,
                 OffsetDateTime.now(), Optional.empty(), "Test", Optional.empty()
             )
         )
@@ -208,7 +209,7 @@ class OpenApiIntegrationTest {
         // Ok<Pet> should be assignable to Response200404<Pet, Error>
         val okResponse: Response200404<Pet, Error> = Ok(
             Pet(
-                Optional.empty(), "test-id", PetStatus.available,
+                Optional.empty(), PetId("test-id"), PetStatus.available,
                 OffsetDateTime.now(), Optional.empty(), "Test", Optional.empty()
             )
         )

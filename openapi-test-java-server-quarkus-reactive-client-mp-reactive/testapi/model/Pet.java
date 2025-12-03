@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public record Pet(
   @JsonProperty("tags") Optional<List<String>> tags,
-  @JsonProperty("id") @NotNull String id,
+  @JsonProperty("id") @NotNull PetId id,
   @JsonProperty("status") @NotNull PetStatus status,
   @JsonProperty("createdAt") @NotNull OffsetDateTime createdAt,
   @JsonProperty("metadata") Optional<Map<String, String>> metadata,
@@ -21,7 +21,7 @@ public record Pet(
     return new Pet(tags, id, status, createdAt, metadata, name, updatedAt);
   };
 
-  public Pet withId(String id) {
+  public Pet withId(PetId id) {
     return new Pet(tags, id, status, createdAt, metadata, name, updatedAt);
   };
 

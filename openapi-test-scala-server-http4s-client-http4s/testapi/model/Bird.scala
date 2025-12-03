@@ -5,7 +5,7 @@ import io.circe.Encoder
 import java.time.OffsetDateTime
 
 case class Bird(
-  id: String,
+  id: PetId,
   createdAt: OffsetDateTime,
   name: String,
   updatedAt: Option[OffsetDateTime],

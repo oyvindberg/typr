@@ -10,4 +10,7 @@ object Currency {
   implicit val decoder: Decoder[Currency] = io.circe.Decoder[java.lang.String].map(Currency.apply)
 
   implicit val encoder: Encoder[Currency] = io.circe.Encoder[java.lang.String].contramap(_.value)
+
+  /** Path extractor for Http4s routes */
+  def unapply(str: String): Option[Currency] = scala.Some(new testapi.model.Currency(str))
 }

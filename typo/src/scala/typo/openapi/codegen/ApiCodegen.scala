@@ -1833,9 +1833,25 @@ class ApiCodegen(
     val pathPattern = pathSegments
       .map { segment =>
         if (segment.startsWith("{") && segment.endsWith("}")) {
-          // Path parameter - extract the name
+          // Path parameter - extract the name and check if it needs a wrapper extractor
           val paramName = segment.drop(1).dropRight(1)
-          paramName
+          // Find the corresponding path param to check its type
+          pathParams.find(_.originalName == paramName) match {
+            case Some(param) =>
+              param.typeInfo match {
+                case TypeInfo.Ref(_) =>
+                  // Wrapper type - use extractor pattern: PetId(petId)
+                  val wrapperType = typeMapper.map(param.typeInfo)
+                  val extractorName = wrapperType.code.render(lang).asString
+                  s"$extractorName(${param.name})"
+                case _ =>
+                  // Primitive type - use variable directly
+                  param.name
+              }
+            case None =>
+              // Fallback if param not found
+              paramName
+          }
         } else {
           // Literal segment
           s""""$segment""""
