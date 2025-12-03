@@ -17,7 +17,7 @@ interface AnimalsApiServer : AnimalsApi {
   /** Endpoint wrapper for listAnimals - handles response status codes */
   @GET
   @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = [MediaType.APPLICATION_JSON])
   fun listAnimalsEndpoint(): Uni<Response> = listAnimals().map({ response: Response2004XX5XX<*> -> when (val __r = response) {
     is Ok<*> -> { val r = __r as Ok<*>; Response.ok(r.value).build() }
     is ClientError4XX -> { val r = __r as ClientError4XX; Response.status(r.statusCode).entity(r.value).build() }

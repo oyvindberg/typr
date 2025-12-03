@@ -26,8 +26,8 @@ interface PetsApiServer : PetsApi {
   /** Endpoint wrapper for createPet - handles response status codes */
   @POST
   @Path("/")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(value = [MediaType.APPLICATION_JSON])
+  @Produces(value = [MediaType.APPLICATION_JSON])
   @SecurityRequirement(name = "oauth2", scopes = ["write:pets"])
   @SecurityRequirement(name = "apiKeyHeader")
   fun createPetEndpoint(body: PetCreate): Uni<Response> = createPet(body).map({ response: Response201400<*, *> -> when (val __r = response) {
@@ -63,7 +63,7 @@ interface PetsApiServer : PetsApi {
   /** Endpoint wrapper for getPet - handles response status codes */
   @GET
   @Path("/{petId}")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = [MediaType.APPLICATION_JSON])
   fun getPetEndpoint(
     /** The pet ID */
     petId: String
@@ -76,7 +76,7 @@ interface PetsApiServer : PetsApi {
   /** Get pet photo */
   @GET
   @Path("/{petId}/photo")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(value = [MediaType.APPLICATION_OCTET_STREAM])
   override fun getPetPhoto(
     /** The pet ID */
     petId: String
@@ -85,7 +85,7 @@ interface PetsApiServer : PetsApi {
   /** List all pets */
   @GET
   @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = [MediaType.APPLICATION_JSON])
   override fun listPets(
     /** Maximum number of pets to return */
     limit: Optional<Integer>,
@@ -96,8 +96,8 @@ interface PetsApiServer : PetsApi {
   /** Upload a pet photo */
   @POST
   @Path("/{petId}/photo")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(value = [MediaType.MULTIPART_FORM_DATA])
+  @Produces(value = [MediaType.APPLICATION_JSON])
   override fun uploadPetPhoto(
     /** The pet ID */
     petId: String,

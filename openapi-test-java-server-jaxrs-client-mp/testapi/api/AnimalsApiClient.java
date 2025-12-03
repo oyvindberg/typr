@@ -19,7 +19,7 @@ public interface AnimalsApiClient extends AnimalsApi {
   /** List all animals (polymorphic) */
   @GET
   @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = { MediaType.APPLICATION_JSON })
   Response listAnimalsRaw();
 
   /** List all animals (polymorphic) - handles response status codes */

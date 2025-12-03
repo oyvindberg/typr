@@ -30,6 +30,6 @@ interface AnimalsApiClient : AnimalsApi {
   /** List all animals (polymorphic) */
   @GET
   @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = [MediaType.APPLICATION_JSON])
   fun listAnimalsRaw(): Response
 }

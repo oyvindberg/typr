@@ -58,6 +58,16 @@ object GenerateOpenApiTest {
       generateValidation = false
     )
 
+    // Scala with Spring server + MicroProfile client (blocking)
+    generateCode(
+      specPath = specPath,
+      language = "scala",
+      serverLib = Some(OpenApiServerLib.SpringMvc),
+      clientLib = Some(OpenApiClientLib.MicroProfileBlocking),
+      lang = langScala,
+      generateValidation = true
+    )
+
     // Kotlin with JAX-RS server + MicroProfile client (blocking)
     generateCode(
       specPath = specPath,

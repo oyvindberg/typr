@@ -25,7 +25,7 @@ public interface AnimalsApiServer extends AnimalsApi {
   /** Endpoint wrapper for listAnimals - handles response status codes */
   @GET
   @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = { MediaType.APPLICATION_JSON })
   default Response listAnimalsEndpoint() {
     return switch (listAnimals()) {
       case Ok r -> Response.ok(r.value()).build();

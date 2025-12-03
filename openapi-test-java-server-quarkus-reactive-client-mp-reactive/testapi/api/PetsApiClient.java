@@ -32,8 +32,8 @@ public interface PetsApiClient extends PetsApi {
   /** Create a pet */
   @POST
   @Path("/")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(value = { MediaType.APPLICATION_JSON })
+  @Produces(value = { MediaType.APPLICATION_JSON })
   @SecurityRequirement(name = "oauth2", scopes = { "write:pets" })
   @SecurityRequirement(name = "apiKeyHeader")
   Uni<Response> createPetRaw(PetCreate body);
@@ -73,7 +73,7 @@ public interface PetsApiClient extends PetsApi {
   /** Get a pet by ID */
   @GET
   @Path("/{petId}")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = { MediaType.APPLICATION_JSON })
   Uni<Response> getPetRaw(
   
     /** The pet ID */
@@ -98,7 +98,7 @@ public interface PetsApiClient extends PetsApi {
   @Override
   @GET
   @Path("/{petId}/photo")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(value = { MediaType.APPLICATION_OCTET_STREAM })
   Uni<Void> getPetPhoto(
   
     /** The pet ID */
@@ -109,7 +109,7 @@ public interface PetsApiClient extends PetsApi {
   @Override
   @GET
   @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = { MediaType.APPLICATION_JSON })
   Uni<List<Pet>> listPets(
     /** Maximum number of pets to return */
     @QueryParam("limit") @DefaultValue("20") Optional<Integer> limit,
@@ -121,8 +121,8 @@ public interface PetsApiClient extends PetsApi {
   @Override
   @POST
   @Path("/{petId}/photo")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(value = { MediaType.MULTIPART_FORM_DATA })
+  @Produces(value = { MediaType.APPLICATION_JSON })
   Uni<JsonNode> uploadPetPhoto(
     /** The pet ID */
     @PathParam("petId") String petId,

@@ -238,17 +238,21 @@ object JaxRsSupport extends FrameworkSupport {
     )
 
     // Determine content types from request/response
+    // Use named "value" argument with AnnotationArray for cross-language compatibility
+    // - Java: @Consumes(value = { MediaType.APPLICATION_JSON })
+    // - Kotlin: @Consumes(value = [MediaType.APPLICATION_JSON])
+    // - Scala: @Consumes(value = Array(MediaType.APPLICATION_JSON))
     val consumesAnnotation = method.requestBody.map { body =>
       jvm.Annotation(
         Types.JaxRs.Consumes,
-        List(jvm.Annotation.Arg.Positional(mediaTypeConstant(body.contentType)))
+        List(jvm.Annotation.Arg.Named(jvm.Ident("value"), jvm.AnnotationArray(List(mediaTypeConstant(body.contentType))).code))
       )
     }
 
     val producesAnnotation = method.responses.headOption.flatMap(_.contentType).map { contentType =>
       jvm.Annotation(
         Types.JaxRs.Produces,
-        List(jvm.Annotation.Arg.Positional(mediaTypeConstant(contentType)))
+        List(jvm.Annotation.Arg.Named(jvm.Ident("value"), jvm.AnnotationArray(List(mediaTypeConstant(contentType))).code))
       )
     }
 

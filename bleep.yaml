@@ -188,6 +188,22 @@ projects:
     sources: ./testapi
     scala:
       strict: false
+  openapi-test-scala-spring:
+    dependencies:
+    - org.springframework.boot:spring-boot-starter-web:3.4.0
+    - io.circe::circe-generic:0.14.10
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - org.eclipse.microprofile.rest.client:microprofile-rest-client-api:3.0.1
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    - org.scalatest::scalatest:3.2.18
+    extends: template-scala-3-stable
+    isTestProject: true
+    folder: ./openapi-test-scala-server-spring-client-mp
+    sources: ./testapi
+    scala:
+      strict: false
   openapi-test-java-spring:
     dependencies:
     - org.springframework.boot:spring-boot-starter-web:3.4.0

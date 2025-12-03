@@ -36,8 +36,8 @@ interface PetsApiClient : PetsApi {
   /** Create a pet */
   @POST
   @Path("/")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(value = [MediaType.APPLICATION_JSON])
+  @Produces(value = [MediaType.APPLICATION_JSON])
   @SecurityRequirement(name = "oauth2", scopes = ["write:pets"])
   @SecurityRequirement(name = "apiKeyHeader")
   fun createPetRaw(body: PetCreate): Response
@@ -84,7 +84,7 @@ interface PetsApiClient : PetsApi {
   /** Get pet photo */
   @GET
   @Path("/{petId}/photo")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(value = [MediaType.APPLICATION_OCTET_STREAM])
   override fun getPetPhoto(
     /** The pet ID */
     petId: String
@@ -93,7 +93,7 @@ interface PetsApiClient : PetsApi {
   /** Get a pet by ID */
   @GET
   @Path("/{petId}")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = [MediaType.APPLICATION_JSON])
   fun getPetRaw(
     /** The pet ID */
     petId: String
@@ -102,7 +102,7 @@ interface PetsApiClient : PetsApi {
   /** List all pets */
   @GET
   @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(value = [MediaType.APPLICATION_JSON])
   override fun listPets(
     /** Maximum number of pets to return */
     limit: Optional<Integer>,
@@ -113,8 +113,8 @@ interface PetsApiClient : PetsApi {
   /** Upload a pet photo */
   @POST
   @Path("/{petId}/photo")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(value = [MediaType.MULTIPART_FORM_DATA])
+  @Produces(value = [MediaType.APPLICATION_JSON])
   override fun uploadPetPhoto(
     /** The pet ID */
     petId: String,
