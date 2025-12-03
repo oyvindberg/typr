@@ -15,18 +15,16 @@ import testapi.model.Error
 interface AnimalsApiClient : AnimalsApi {
   /** List all animals (polymorphic) - handles response status codes */
   override fun listAnimals(): Response2004XX5XX<List<Animal>> {
+    var response: Response
     try {
-      val response: Response = listAnimalsRaw();
-      if (response.getStatus() == 200) { return Ok(response.readEntity(object : GenericType<List<Animal>>() {})) }
-      else if (response.getStatus() >= 400 && response.getStatus() < 500) { return ClientError4XX(response.getStatus(), response.readEntity(Error::class.java)) }
-      else if (response.getStatus() >= 500 && response.getStatus() < 600) { return ServerError5XX(response.getStatus(), response.readEntity(Error::class.java)) }
-      else { throw IllegalStateException("Unexpected status code: " + response.getStatus()) }
+      response = listAnimalsRaw();
     } catch (e: WebApplicationException) {
-      if (e.getResponse().getStatus() == 200) { return Ok(e.getResponse().readEntity(object : GenericType<List<Animal>>() {})) }
-      else if (e.getResponse().getStatus() >= 400 && e.getResponse().getStatus() < 500) { return ClientError4XX(e.getResponse().getStatus(), e.getResponse().readEntity(Error::class.java)) }
-      else if (e.getResponse().getStatus() >= 500 && e.getResponse().getStatus() < 600) { return ServerError5XX(e.getResponse().getStatus(), e.getResponse().readEntity(Error::class.java)) }
-      else { throw IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()) }
+      response = e.getResponse();
     } 
+    if (response.getStatus() == 200) { return Ok(response.readEntity(object : GenericType<List<Animal>>() {})) }
+    else if (response.getStatus() >= 400 && response.getStatus() < 500) { return ClientError4XX(response.getStatus(), response.readEntity(Error::class.java)) }
+    else if (response.getStatus() >= 500 && response.getStatus() < 600) { return ServerError5XX(response.getStatus(), response.readEntity(Error::class.java)) }
+    else { throw IllegalStateException("Unexpected status code: " + response.getStatus()) }
   }
 
   /** List all animals (polymorphic) */

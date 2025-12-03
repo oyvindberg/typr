@@ -1106,28 +1106,47 @@ class ApiCodegen(
         List(mappedCall)
 
       case None =>
-        // Sync: wrap in try-catch
+        // Sync: wrap in try-catch, then handle response once after
+        // This avoids duplicating the status handling code in both try and catch
         val exceptionIdent = jvm.Ident("e")
         val exceptionType = clientSupport.clientExceptionType
         val rawResponseType = clientSupport.responseType
 
-        // Build the exception handling code
-        val exceptionResponseCode = clientSupport.getResponseFromException(exceptionIdent.code)
-        val exceptionHandlingCode = generateStatusCodeHandlingFromResponse(exceptionResponseCode, responseName, variants, clientSupport)
+        // Declare response variable before try-catch (will be assigned in try or catch)
+        val responseDecl = lang match {
+          case _: LangScala => code"var ${responseIdent.code}: $rawResponseType = null"
+          case LangKotlin   => code"var ${responseIdent.code}: $rawResponseType"
+          case LangJava     => code"$rawResponseType ${responseIdent.code}"
+        }
 
-        // Generate try-catch block
-        val responseLocalVar = jvm.LocalVar(responseIdent, Some(rawResponseType), rawMethodCall)
+        // In try block: call the raw method and assign to response
+        val assignResponse = lang match {
+          case _: LangScala | LangKotlin => code"${responseIdent.code} = $rawMethodCall"
+          case LangJava                  => code"${responseIdent.code} = $rawMethodCall"
+        }
+
+        // In catch block: extract response from exception and assign
+        val exceptionResponseCode = clientSupport.getResponseFromException(exceptionIdent.code)
+        val assignFromException = lang match {
+          case _: LangScala | LangKotlin => code"${responseIdent.code} = $exceptionResponseCode"
+          case LangJava                  => code"${responseIdent.code} = $exceptionResponseCode"
+        }
+
+        // Generate try-catch block (just assigns response, doesn't handle status)
         val tryCatch = jvm.TryCatch(
-          tryBlock = List(
-            code"${responseLocalVar.code};",
-            statusCodeHandlingCode
-          ),
+          tryBlock = List(code"$assignResponse;"),
           catches = List(
-            jvm.TryCatch.Catch(exceptionType, exceptionIdent, List(exceptionHandlingCode))
+            jvm.TryCatch.Catch(exceptionType, exceptionIdent, List(code"$assignFromException;"))
           ),
           finallyBlock = Nil
         )
-        List(tryCatch.code)
+
+        // After try-catch: handle status codes once
+        List(
+          responseDecl,
+          tryCatch.code,
+          statusCodeHandlingCode
+        )
     }
   }
 

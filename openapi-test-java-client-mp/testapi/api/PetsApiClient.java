@@ -39,16 +39,15 @@ public interface PetsApiClient extends PetsApi {
   /** Create a pet - handles response status codes */
   @Override
   default Response201400<Pet, Error> createPet(PetCreate body) {
+    Response response;
     try {
-      Response response = createPetRaw(body);
-      if (response.getStatus() == 201) { return new Created(response.readEntity(Pet.class)); }
-      else if (response.getStatus() == 400) { return new BadRequest(response.readEntity(Error.class)); }
-      else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()); }
+      response = createPetRaw(body);
     } catch (WebApplicationException e) {
-      if (e.getResponse().getStatus() == 201) { return new Created(e.getResponse().readEntity(Pet.class)); }
-      else if (e.getResponse().getStatus() == 400) { return new BadRequest(e.getResponse().readEntity(Error.class)); }
-      else { throw new IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()); }
+      response = e.getResponse();
     } 
+    if (response.getStatus() == 201) { return new Created(response.readEntity(Pet.class)); }
+    else if (response.getStatus() == 400) { return new BadRequest(response.readEntity(Error.class)); }
+    else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()); }
   };
 
   /** Delete a pet */
@@ -67,14 +66,14 @@ public interface PetsApiClient extends PetsApi {
     /** The pet ID */
     String petId
   ) {
+    Response response;
     try {
-      Response response = deletePetRaw(petId);
-      if (response.getStatus() == 404) { return new NotFound(response.readEntity(Error.class)); }
-      else { return new Default(response.getStatus(), response.readEntity(Error.class)); }
+      response = deletePetRaw(petId);
     } catch (WebApplicationException e) {
-      if (e.getResponse().getStatus() == 404) { return new NotFound(e.getResponse().readEntity(Error.class)); }
-      else { return new Default(e.getResponse().getStatus(), e.getResponse().readEntity(Error.class)); }
+      response = e.getResponse();
     } 
+    if (response.getStatus() == 404) { return new NotFound(response.readEntity(Error.class)); }
+    else { return new Default(response.getStatus(), response.readEntity(Error.class)); }
   };
 
   /** Get a pet by ID */
@@ -94,16 +93,15 @@ public interface PetsApiClient extends PetsApi {
     /** The pet ID */
     String petId
   ) {
+    Response response;
     try {
-      Response response = getPetRaw(petId);
-      if (response.getStatus() == 200) { return new Ok(response.readEntity(Pet.class)); }
-      else if (response.getStatus() == 404) { return new NotFound(response.readEntity(Error.class)); }
-      else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()); }
+      response = getPetRaw(petId);
     } catch (WebApplicationException e) {
-      if (e.getResponse().getStatus() == 200) { return new Ok(e.getResponse().readEntity(Pet.class)); }
-      else if (e.getResponse().getStatus() == 404) { return new NotFound(e.getResponse().readEntity(Error.class)); }
-      else { throw new IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()); }
+      response = e.getResponse();
     } 
+    if (response.getStatus() == 200) { return new Ok(response.readEntity(Pet.class)); }
+    else if (response.getStatus() == 404) { return new NotFound(response.readEntity(Error.class)); }
+    else { throw new IllegalStateException("Unexpected status code: " + response.getStatus()); }
   };
 
   /** Get pet photo */

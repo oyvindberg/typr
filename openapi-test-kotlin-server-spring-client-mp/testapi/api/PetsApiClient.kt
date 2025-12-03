@@ -22,16 +22,15 @@ import testapi.model.PetCreate
 interface PetsApiClient : PetsApi {
   /** Create a pet - handles response status codes */
   override fun createPet(body: PetCreate): Response201400<Pet, Error> {
+    var response: Response
     try {
-      val response: Response = createPetRaw(body);
-      if (response.getStatus() == 201) { return Created(response.readEntity(Pet::class.java)) }
-      else if (response.getStatus() == 400) { return BadRequest(response.readEntity(Error::class.java)) }
-      else { throw IllegalStateException("Unexpected status code: " + response.getStatus()) }
+      response = createPetRaw(body);
     } catch (e: WebApplicationException) {
-      if (e.getResponse().getStatus() == 201) { return Created(e.getResponse().readEntity(Pet::class.java)) }
-      else if (e.getResponse().getStatus() == 400) { return BadRequest(e.getResponse().readEntity(Error::class.java)) }
-      else { throw IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()) }
+      response = e.getResponse();
     } 
+    if (response.getStatus() == 201) { return Created(response.readEntity(Pet::class.java)) }
+    else if (response.getStatus() == 400) { return BadRequest(response.readEntity(Error::class.java)) }
+    else { throw IllegalStateException("Unexpected status code: " + response.getStatus()) }
   }
 
   /** Create a pet */
@@ -48,14 +47,14 @@ interface PetsApiClient : PetsApi {
     /** The pet ID */
     petId: String
   ): Response404Default<Error> {
+    var response: Response
     try {
-      val response: Response = deletePetRaw(petId);
-      if (response.getStatus() == 404) { return NotFound(response.readEntity(Error::class.java)) }
-      else { return Default(response.getStatus(), response.readEntity(Error::class.java)) }
+      response = deletePetRaw(petId);
     } catch (e: WebApplicationException) {
-      if (e.getResponse().getStatus() == 404) { return NotFound(e.getResponse().readEntity(Error::class.java)) }
-      else { return Default(e.getResponse().getStatus(), e.getResponse().readEntity(Error::class.java)) }
+      response = e.getResponse();
     } 
+    if (response.getStatus() == 404) { return NotFound(response.readEntity(Error::class.java)) }
+    else { return Default(response.getStatus(), response.readEntity(Error::class.java)) }
   }
 
   /** Delete a pet */
@@ -71,16 +70,15 @@ interface PetsApiClient : PetsApi {
     /** The pet ID */
     petId: String
   ): Response200404<Pet, Error> {
+    var response: Response
     try {
-      val response: Response = getPetRaw(petId);
-      if (response.getStatus() == 200) { return Ok(response.readEntity(Pet::class.java)) }
-      else if (response.getStatus() == 404) { return NotFound(response.readEntity(Error::class.java)) }
-      else { throw IllegalStateException("Unexpected status code: " + response.getStatus()) }
+      response = getPetRaw(petId);
     } catch (e: WebApplicationException) {
-      if (e.getResponse().getStatus() == 200) { return Ok(e.getResponse().readEntity(Pet::class.java)) }
-      else if (e.getResponse().getStatus() == 404) { return NotFound(e.getResponse().readEntity(Error::class.java)) }
-      else { throw IllegalStateException("Unexpected status code: " + e.getResponse().getStatus()) }
+      response = e.getResponse();
     } 
+    if (response.getStatus() == 200) { return Ok(response.readEntity(Pet::class.java)) }
+    else if (response.getStatus() == 404) { return NotFound(response.readEntity(Error::class.java)) }
+    else { throw IllegalStateException("Unexpected status code: " + response.getStatus()) }
   }
 
   /** Get pet photo */
