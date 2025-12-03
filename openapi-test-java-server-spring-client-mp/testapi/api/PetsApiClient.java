@@ -52,30 +52,14 @@ public interface PetsApiClient extends PetsApi {
   };
 
   /** Delete a pet */
+  @Override
   @DELETE
   @Path("/{petId}")
-  Response deletePetRaw(
+  Void deletePet(
   
     /** The pet ID */
     @PathParam("petId") PetId petId
   );
-
-  /** Delete a pet - handles response status codes */
-  @Override
-  default Response404Default<Error> deletePet(
-  
-    /** The pet ID */
-    PetId petId
-  ) {
-    Response response;
-    try {
-      response = deletePetRaw(petId);
-    } catch (WebApplicationException e) {
-      response = e.getResponse();
-    } 
-    if (response.getStatus() == 404) { return new NotFound(response.readEntity(Error.class)); }
-    else { return new Default(response.getStatus(), response.readEntity(Error.class)); }
-  };
 
   /** Get a pet by ID */
   @GET

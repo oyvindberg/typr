@@ -246,15 +246,9 @@ paths:
         - pets
       responses:
         '204':
-          description: Pet deleted
+          description: Pet deleted successfully
         '404':
           description: Pet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        default:
-          description: Unexpected error
           content:
             application/json:
               schema:

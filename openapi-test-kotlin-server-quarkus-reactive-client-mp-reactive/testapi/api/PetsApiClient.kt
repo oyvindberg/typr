@@ -37,20 +37,13 @@ interface PetsApiClient : PetsApi {
   @SecurityRequirement(name = "apiKeyHeader")
   fun createPetRaw(body: PetCreate): Uni<Response>
 
-  /** Delete a pet - handles response status codes */
-  override fun deletePet(
-    /** The pet ID */
-    petId: PetId
-  ): Uni<Response404Default<Error>> = deletePetRaw(petId).onFailure(WebApplicationException::class.java).recoverWithItem(object : Function<Throwable, Response> { override fun apply(e: Throwable): Response = (e as WebApplicationException).getResponse() }).map({ response: Response -> if (response.getStatus() == 404) { NotFound(response.readEntity(Error::class.java)) }
-  else { Default(response.getStatus(), response.readEntity(Error::class.java)) } })
-
   /** Delete a pet */
   @DELETE
   @Path("/{petId}")
-  fun deletePetRaw(
+  override fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Uni<Response>
+  ): Uni<Void>
 
   /** Get a pet by ID - handles response status codes */
   override fun getPet(

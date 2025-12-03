@@ -24,6 +24,7 @@ import testapi.model.PetId
 @RegisterRestClient
 @Path("/pets")
 trait PetsApiClient extends PetsApi {
+
   /** Create a pet */
   @POST
   @Path("/")
@@ -40,7 +41,7 @@ trait PetsApiClient extends PetsApi {
       response = createPetRaw(body);
     } catch {
       case e: jakarta.ws.rs.WebApplicationException => response = e.getResponse();
-    } 
+    }
     if (response.getStatus() == 201) new testapi.api.Created(response.readEntity(classOf[testapi.model.Pet]))
     else if (response.getStatus() == 400) new testapi.api.BadRequest(response.readEntity(classOf[testapi.model.Error]))
     else throw new java.lang.IllegalStateException("Unexpected status code: " + response.getStatus())
@@ -49,46 +50,31 @@ trait PetsApiClient extends PetsApi {
   /** Delete a pet */
   @DELETE
   @Path("/{petId}")
-  def deletePetRaw(
-    /** The pet ID */
-    @PathParam("petId") petId: PetId
-  ): Response
-
-  /** Delete a pet - handles response status codes */
   override def deletePet(
-    /** The pet ID */
-    petId: PetId
-  ): Response404Default[Error] = {
-    var response: jakarta.ws.rs.core.Response = null
-    try {
-      response = deletePetRaw(petId);
-    } catch {
-      case e: jakarta.ws.rs.WebApplicationException => response = e.getResponse();
-    } 
-    if (response.getStatus() == 404) new testapi.api.NotFound(response.readEntity(classOf[testapi.model.Error]))
-    else new testapi.api.Default(response.getStatus(), response.readEntity(classOf[testapi.model.Error]))
-  }
+      /** The pet ID */
+      @PathParam("petId") petId: PetId
+  ): Void
 
   /** Get a pet by ID */
   @GET
   @Path("/{petId}")
   @Produces(value = Array(MediaType.APPLICATION_JSON))
   def getPetRaw(
-    /** The pet ID */
-    @PathParam("petId") petId: PetId
+      /** The pet ID */
+      @PathParam("petId") petId: PetId
   ): Response
 
   /** Get a pet by ID - handles response status codes */
   override def getPet(
-    /** The pet ID */
-    petId: PetId
+      /** The pet ID */
+      petId: PetId
   ): Response200404[Pet, Error] = {
     var response: jakarta.ws.rs.core.Response = null
     try {
       response = getPetRaw(petId);
     } catch {
       case e: jakarta.ws.rs.WebApplicationException => response = e.getResponse();
-    } 
+    }
     if (response.getStatus() == 200) new testapi.api.Ok(response.readEntity(classOf[testapi.model.Pet]))
     else if (response.getStatus() == 404) new testapi.api.NotFound(response.readEntity(classOf[testapi.model.Error]))
     else throw new java.lang.IllegalStateException("Unexpected status code: " + response.getStatus())
@@ -99,8 +85,8 @@ trait PetsApiClient extends PetsApi {
   @Path("/{petId}/photo")
   @Produces(value = Array(MediaType.APPLICATION_OCTET_STREAM))
   override def getPetPhoto(
-    /** The pet ID */
-    @PathParam("petId") petId: PetId
+      /** The pet ID */
+      @PathParam("petId") petId: PetId
   ): Void
 
   /** List all pets */
@@ -108,10 +94,10 @@ trait PetsApiClient extends PetsApi {
   @Path("/")
   @Produces(value = Array(MediaType.APPLICATION_JSON))
   override def listPets(
-    /** Maximum number of pets to return */
-    @QueryParam("limit") @DefaultValue("20") limit: Option[Int],
-    /** Filter by status */
-    @QueryParam("status") @DefaultValue("available") status: Option[String]
+      /** Maximum number of pets to return */
+      @QueryParam("limit") @DefaultValue("20") limit: Option[Int],
+      /** Filter by status */
+      @QueryParam("status") @DefaultValue("available") status: Option[String]
   ): List[Pet]
 
   /** Upload a pet photo */
@@ -120,11 +106,11 @@ trait PetsApiClient extends PetsApi {
   @Consumes(value = Array(MediaType.MULTIPART_FORM_DATA))
   @Produces(value = Array(MediaType.APPLICATION_JSON))
   override def uploadPetPhoto(
-    /** The pet ID */
-    @PathParam("petId") petId: PetId,
-    /** Optional caption for the photo */
-    @FormDataParam("caption") caption: String,
-    /** The photo file to upload */
-    @FormDataParam("file") file: Array[Byte]
+      /** The pet ID */
+      @PathParam("petId") petId: PetId,
+      /** Optional caption for the photo */
+      @FormDataParam("caption") caption: String,
+      /** The photo file to upload */
+      @FormDataParam("file") file: Array[Byte]
   ): Json
 }

@@ -75,6 +75,11 @@ trait FrameworkSupport {
     */
   def supportsRouteGeneration: Boolean = false
 
+  /** Whether this framework generates a concrete client class (vs a trait with abstract methods). DSL-based frameworks like Http4s generate a class that takes Client[IO] and Uri as constructor
+    * parameters and implements all methods with real HTTP calls.
+    */
+  def generatesConcreteClient: Boolean = false
+
   /** Generate the toResponse method body for a generic response type (e.g., Ok[T]). Takes the value expression and generates the response creation code with entity encoding.
     * @param valueExpr
     *   Expression to access the value field
@@ -641,6 +646,9 @@ object Http4sSupport extends FrameworkSupport {
   /** Http4s uses a DSL-based approach for routing, so we generate routes in the server trait */
   override def supportsRouteGeneration: Boolean = true
 
+  /** Http4s generates a concrete client class that takes Client[IO] and Uri as constructor parameters */
+  override def generatesConcreteClient: Boolean = true
+
   /** Generate the toResponse method body for a generic response type (e.g., Ok[T]). Takes the value expression and generates the response creation code with entity encoding.
     * @param valueExpr
     *   Expression to access the value field
@@ -675,15 +683,22 @@ object Http4sSupport extends FrameworkSupport {
     code"${Types.Cats.IO}.pure($responseCode)"
   }
 
-  /** Generate Http4s path extractor for wrapper types. This creates an unapply method that can be used in Http4s route pattern matching, allowing path parameters to be extracted directly as the
-    * wrapper type:
+  /** Generate Http4s path extractor and SegmentEncoder for wrapper types.
+    *
+    * For server-side route matching, creates an unapply method:
     * {{{
     * case GET -> Root / "pets" / PetId(petId) => getPet(petId)
+    * }}}
+    *
+    * For client-side path building, creates a SegmentEncoder:
+    * {{{
+    * val uri = baseUri / "pets" / petId  // petId: PetId
     * }}}
     *
     * For a wrapper type PetId(value: String), generates:
     * {{{
     * def unapply(str: String): Option[PetId] = Some(PetId(str))
+    * given segmentEncoder: SegmentEncoder[PetId] = SegmentEncoder[String].contramap(_.value)
     * }}}
     */
   override def wrapperTypeStaticMembers(tpe: jvm.Type.Qualified, underlyingType: jvm.Type): List[jvm.ClassMember] = {
@@ -701,7 +716,7 @@ object Http4sSupport extends FrameworkSupport {
 
     // Body: Some(T(str))
     val constructorCall = tpe.construct(jvm.Ident("str").code)
-    val body = code"${ScalaTypes.Some}($constructorCall)"
+    val unapplyBody = code"${ScalaTypes.Some}($constructorCall)"
 
     val unapplyMethod = jvm.Method(
       annotations = Nil,
@@ -712,11 +727,21 @@ object Http4sSupport extends FrameworkSupport {
       implicitParams = Nil,
       tpe = optionType,
       throws = Nil,
-      body = jvm.Body.Expr(body),
+      body = jvm.Body.Expr(unapplyBody),
       isOverride = false,
       isDefault = false
     )
 
-    List(unapplyMethod)
+    // Generate: given segmentEncoder: SegmentEncoder[T] = SegmentEncoder[Underlying].contramap(_.value)
+    // This allows the wrapper type to be used in Uri path building with the / operator
+    val segmentEncoderGiven = jvm.Given(
+      tparams = Nil,
+      name = jvm.Ident("segmentEncoder"),
+      implicitParams = Nil,
+      tpe = jvm.Type.TApply(Types.Http4s.SegmentEncoder, List(tpe)),
+      body = code"${Types.Http4s.SegmentEncoder}[$underlyingType].contramap(_.value)"
+    )
+
+    List(unapplyMethod, segmentEncoderGiven)
   }
 }

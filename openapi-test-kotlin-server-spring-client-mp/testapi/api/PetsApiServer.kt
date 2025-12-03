@@ -31,21 +31,11 @@ interface PetsApiServer : PetsApi {
   }
 
   /** Delete a pet */
+  @DeleteMapping(value = ["/{petId}"])
   override fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Response404Default<Error>
-
-  /** Endpoint wrapper for deletePet - handles response status codes */
-  @DeleteMapping(value = ["/{petId}"])
-  fun deletePetEndpoint(
-    /** The pet ID */
-    petId: PetId
-  ): ResponseEntity<*> = when (val __r = deletePet(petId)) {
-    is NotFound<*> -> { val r = __r as NotFound<*>; ResponseEntity.status(404).body(r.value) }
-    is Default -> { val r = __r as Default; ResponseEntity.status(r.statusCode).body(r.value) }
-    else -> throw IllegalStateException("Unexpected response type")
-  }
+  ): Void
 
   /** Get a pet by ID */
   override fun getPet(

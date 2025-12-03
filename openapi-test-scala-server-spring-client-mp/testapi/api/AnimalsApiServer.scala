@@ -17,6 +17,7 @@ import testapi.model.Animal
 @SecurityScheme(name = "apiKeyQuery", `type` = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, paramName = "api_key")
 @SecurityScheme(name = "oauth2", `type` = SecuritySchemeType.OAUTH2)
 trait AnimalsApiServer extends AnimalsApi {
+
   /** List all animals (polymorphic) */
   override def listAnimals: Response2004XX5XX[List[Animal]]
 
@@ -24,7 +25,7 @@ trait AnimalsApiServer extends AnimalsApi {
   @GetMapping(value = Array("/"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def listAnimalsEndpoint: ResponseEntity[?] = {
     listAnimals match {
-      case r: testapi.api.Ok[?] => org.springframework.http.ResponseEntity.ok(r.value.asInstanceOf[scala.List[testapi.model.Animal]])
+      case r: testapi.api.Ok[?]          => org.springframework.http.ResponseEntity.ok(r.value.asInstanceOf[scala.List[testapi.model.Animal]])
       case r: testapi.api.ClientError4XX => org.springframework.http.ResponseEntity.status(r.statusCode).body(r.value)
       case r: testapi.api.ServerError5XX => org.springframework.http.ResponseEntity.status(r.statusCode).body(r.value)
     }

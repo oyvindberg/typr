@@ -14,7 +14,7 @@ public interface PetsApi {
   Response201400<Pet, Error> createPet(PetCreate body);
 
   /** Delete a pet */
-  Response404Default<Error> deletePet(
+  Void deletePet(
   
     /** The pet ID */
     PetId petId

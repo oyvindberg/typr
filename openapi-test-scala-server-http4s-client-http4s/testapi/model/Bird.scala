@@ -5,12 +5,12 @@ import io.circe.Encoder
 import java.time.OffsetDateTime
 
 case class Bird(
-  id: PetId,
-  createdAt: OffsetDateTime,
-  name: String,
-  updatedAt: Option[OffsetDateTime],
-  wingSpan: Option[Double],
-  canFly: Boolean
+    id: PetId,
+    createdAt: OffsetDateTime,
+    name: String,
+    updatedAt: Option[OffsetDateTime],
+    wingSpan: Option[Double],
+    canFly: Boolean
 ) extends Animal {
   override lazy val animal_type: String = "bird"
 }

@@ -18,7 +18,7 @@ interface PetsApi {
   fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Uni<Response404Default<Error>>
+  ): Uni<Void>
 
   /** Get a pet by ID */
   fun getPet(

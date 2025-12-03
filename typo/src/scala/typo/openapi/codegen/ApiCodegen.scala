@@ -149,8 +149,22 @@ class ApiCodegen(
     jvm.File(serverTpe, generatedCode, secondaryTypes = Nil, scope = Scope.Main, additionalImports = additionalImports)
   }
 
-  /** Generate client trait that extends the base trait */
+  /** Generate client trait or class that extends the base trait */
   private def generateClientTrait(
+      api: ApiInterface,
+      baseTpe: jvm.Type.Qualified,
+      basePath: Option[String],
+      clientSupport: FrameworkSupport
+  ): jvm.File = {
+    if (clientSupport.generatesConcreteClient) {
+      generateConcreteClientClass(api, baseTpe, clientSupport)
+    } else {
+      generateClientTraitWithAbstractMethods(api, baseTpe, basePath, clientSupport)
+    }
+  }
+
+  /** Generate client trait with abstract methods (for annotation-based frameworks like JAX-RS) */
+  private def generateClientTraitWithAbstractMethods(
       api: ApiInterface,
       baseTpe: jvm.Type.Qualified,
       basePath: Option[String],
@@ -193,16 +207,296 @@ class ApiCodegen(
     )
 
     val generatedCode = lang.renderTree(clientInterface, lang.Ctx.Empty)
-    // Add http4s-circe imports for Http4s clients (needed for EntityEncoder/EntityDecoder)
-    val additionalImports = clientSupport match {
-      case Http4sSupport =>
-        List(
-          "org.http4s.circe.CirceEntityEncoder.circeEntityEncoder",
-          "org.http4s.circe.CirceEntityDecoder.circeEntityDecoder"
-        )
-      case _ => Nil
+    jvm.File(clientTpe, generatedCode, secondaryTypes = Nil, scope = Scope.Main)
+  }
+
+  /** Generate concrete client class (for DSL-based frameworks like Http4s) */
+  private def generateConcreteClientClass(
+      api: ApiInterface,
+      baseTpe: jvm.Type.Qualified,
+      clientSupport: FrameworkSupport
+  ): jvm.File = {
+    val clientTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(api.name + "Client"))
+
+    // Constructor parameters: Client[IO] and Uri
+    val clientParam = jvm.Param[jvm.Type](
+      annotations = Nil,
+      comments = jvm.Comments(List("Http4s client for making HTTP requests")),
+      name = jvm.Ident("client"),
+      tpe = jvm.Type.TApply(Types.Http4s.Client, List(Types.Cats.IO)),
+      default = None
+    )
+    val baseUriParam = jvm.Param[jvm.Type](
+      annotations = Nil,
+      comments = jvm.Comments(List("Base URI for API requests")),
+      name = jvm.Ident("baseUri"),
+      tpe = Types.Http4s.Uri,
+      default = None
+    )
+
+    // Generate methods with concrete implementations
+    val methods = api.methods.map { m =>
+      generateConcreteClientMethod(m, clientSupport)
     }
+
+    val clientClass = jvm.Class(
+      annotations = Nil,
+      comments = jvm.Comments(List(s"Http4s client implementation for ${api.name}")),
+      classType = jvm.ClassType.Class,
+      name = clientTpe,
+      tparams = Nil,
+      params = List(clientParam, baseUriParam),
+      implicitParams = Nil,
+      `extends` = Some(baseTpe),
+      implements = Nil,
+      members = methods,
+      staticMembers = Nil
+    )
+
+    val generatedCode = lang.renderTree(clientClass, lang.Ctx.Empty)
+    // Add http4s imports for client
+    val additionalImports = List(
+      "org.http4s.circe.CirceEntityEncoder.circeEntityEncoder",
+      "org.http4s.circe.CirceEntityDecoder.circeEntityDecoder"
+    )
     jvm.File(clientTpe, generatedCode, secondaryTypes = Nil, scope = Scope.Main, additionalImports = additionalImports)
+  }
+
+  /** Generate a concrete client method implementation for Http4s */
+  private def generateConcreteClientMethod(
+      method: ApiMethod,
+      clientSupport: FrameworkSupport
+  ): jvm.Method = {
+    val comments = method.description.map(d => jvm.Comments(List(d))).getOrElse(jvm.Comments.Empty)
+    val params = generateBaseParams(method)
+
+    // Determine return type
+    val returnType = method.responseVariants match {
+      case Some(variants) =>
+        val responseTpe = if (useGenericResponseTypes) {
+          val shape = ResponseShape.fromVariants(variants)
+          val baseTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(shape.typeName))
+          val typeArgs = variants.filter(v => !ResponseShape.isRangeStatus(v.statusCode)).map(v => typeMapper.map(v.typeInfo))
+          if (typeArgs.nonEmpty) jvm.Type.TApply(baseTpe, typeArgs) else baseTpe
+        } else {
+          val responseName = capitalize(method.name) + "Response"
+          jvm.Type.Qualified(apiPkg / jvm.Ident(responseName))
+        }
+        effectOps match {
+          case Some(ops) => jvm.Type.TApply(ops.tpe, List(responseTpe))
+          case None      => responseTpe
+        }
+      case None =>
+        inferReturnType(method)
+    }
+
+    // Generate method body
+    val body = generateConcreteClientMethodBody(method, clientSupport)
+
+    jvm.Method(
+      annotations = Nil,
+      comments = comments,
+      tparams = Nil,
+      name = jvm.Ident(method.name),
+      params = params,
+      implicitParams = Nil,
+      tpe = returnType,
+      throws = Nil,
+      body = jvm.Body(body),
+      isOverride = true,
+      isDefault = false
+    )
+  }
+
+  /** Generate the body of a concrete client method */
+  private def generateConcreteClientMethodBody(
+      method: ApiMethod,
+      clientSupport: FrameworkSupport
+  ): List[jvm.Code] = {
+    // Build the URI with path and query parameters
+    val uriCode = buildClientUri(method)
+
+    // Build the HTTP method
+    val httpMethodCode = method.httpMethod match {
+      case HttpMethod.Get     => code"${Types.Http4s.Method}.GET"
+      case HttpMethod.Post    => code"${Types.Http4s.Method}.POST"
+      case HttpMethod.Put     => code"${Types.Http4s.Method}.PUT"
+      case HttpMethod.Delete  => code"${Types.Http4s.Method}.DELETE"
+      case HttpMethod.Patch   => code"${Types.Http4s.Method}.PATCH"
+      case HttpMethod.Head    => code"${Types.Http4s.Method}.HEAD"
+      case HttpMethod.Options => code"${Types.Http4s.Method}.OPTIONS"
+    }
+
+    // Build the request
+    val requestIdent = jvm.Ident("request")
+    val baseRequestCode = code"${Types.Http4s.Request}[${Types.Cats.IO}]($httpMethodCode, $uriCode)"
+
+    // Add request body if present
+    val requestWithBody = method.requestBody match {
+      case Some(body) if !body.isMultipart =>
+        code"$baseRequestCode.withEntity(${jvm.Ident("body").code})"
+      case _ => baseRequestCode
+    }
+
+    val requestDecl = code"val ${requestIdent.code} = $requestWithBody"
+
+    // Generate response handling based on whether we have response variants
+    method.responseVariants match {
+      case Some(variants) =>
+        // Multiple response types - use client.run and handle each status
+        val responseIdent = jvm.Ident("response")
+        val responseName = if (useGenericResponseTypes) {
+          val shape = ResponseShape.fromVariants(variants)
+          shape.typeName
+        } else {
+          capitalize(method.name) + "Response"
+        }
+
+        val responseHandlingCode = generateAsyncClientResponseHandling(responseIdent, responseName, variants, clientSupport)
+
+        // The responseHandlingCode has 2-space indentation built in for the lambda body
+        // Add newline before it and closing brace after
+        val clientRunCode = code"${jvm.Ident("client").code}.run(${requestIdent.code}).use { ${responseIdent.code} =>" ++ code"\n$responseHandlingCode\n}"
+        List(requestDecl, clientRunCode)
+
+      case None =>
+        // Single response type - use client.expect
+        val singleResponseType = inferSingleResponseType(method)
+        // Handle Void specially - for 204 No Content responses, we can't use expect
+        // because it tries to decode a body. Use status instead and discard it.
+        val expectCode = if (singleResponseType == Types.Void) {
+          code"${jvm.Ident("client").code}.status(${requestIdent.code}).as(null.asInstanceOf[${Types.Void}])"
+        } else {
+          code"${jvm.Ident("client").code}.expect[$singleResponseType](${requestIdent.code})"
+        }
+        List(requestDecl, expectCode)
+    }
+  }
+
+  /** Build URI code for client request with path and query parameters */
+  private def buildClientUri(method: ApiMethod): jvm.Code = {
+    val fullPath = method.path
+    val pathSegments = fullPath.split("/").filter(_.nonEmpty).toList
+
+    // Start with baseUri
+    var uriCode: jvm.Code = jvm.Ident("baseUri").code
+
+    // Add each path segment
+    for (segment <- pathSegments) {
+      if (segment.startsWith("{") && segment.endsWith("}")) {
+        // Path parameter - use the parameter name directly (SegmentEncoder will handle conversion)
+        val paramName = segment.substring(1, segment.length - 1)
+        // Find the parameter to get the sanitized name
+        val param = method.parameters.find(p => p.originalName == paramName).map(_.name).getOrElse(paramName)
+        uriCode = code"$uriCode / ${jvm.Ident(param).code}"
+      } else {
+        // Literal path segment
+        uriCode = code"$uriCode / ${jvm.StrLit(segment).code}"
+      }
+    }
+
+    // Add query parameters - wrap path in parentheses to ensure correct precedence
+    val queryParams = method.parameters.filter(_.in == ParameterIn.Query)
+    if (queryParams.nonEmpty) {
+      // Wrap the path expression in parentheses before adding query params
+      uriCode = code"($uriCode)"
+      for (param <- queryParams) {
+        val paramIdent = jvm.Ident(param.name)
+        if (param.required) {
+          // Required param: uri.withQueryParam("name", value)
+          uriCode = code"$uriCode.withQueryParam(${jvm.StrLit(param.originalName).code}, ${paramIdent.code})"
+        } else {
+          // Optional param: uri.withOptionQueryParam("name", value)
+          uriCode = code"$uriCode.withOptionQueryParam(${jvm.StrLit(param.originalName).code}, ${paramIdent.code})"
+        }
+      }
+    }
+
+    uriCode
+  }
+
+  /** Generate async response handling code (for use inside client.run(...).use) */
+  private def generateAsyncClientResponseHandling(
+      responseIdent: jvm.Ident,
+      responseName: String,
+      variants: List[ResponseVariant],
+      clientSupport: FrameworkSupport
+  ): jvm.Code = {
+    val statusCodeIdent = jvm.Ident("statusCode")
+    val statusCodeExpr = clientSupport.getStatusCode(responseIdent.code)
+
+    // Build if-else chain for each variant
+    val ifElseCases = variants.map { variant =>
+      val subtypeCtorTpe = statusSubtypeCtorTpe(variant.statusCode, responseName)
+      val bodyType = typeMapper.map(variant.typeInfo)
+      val readEntityCode = clientSupport.readEntity(responseIdent.code, bodyType)
+
+      val isRangeStatus = variant.statusCode.toLowerCase match {
+        case "4xx" | "5xx" | "default" | "2xx" => true
+        case _                                 => false
+      }
+
+      val condition = variant.statusCode.toLowerCase match {
+        case "2xx"     => code"${statusCodeIdent.code} >= 200 && ${statusCodeIdent.code} < 300"
+        case "4xx"     => code"${statusCodeIdent.code} >= 400 && ${statusCodeIdent.code} < 500"
+        case "5xx"     => code"${statusCodeIdent.code} >= 500 && ${statusCodeIdent.code} < 600"
+        case "default" => code"true"
+        case s =>
+          val statusInt = scala.util.Try(s.toInt).getOrElse(500)
+          code"${statusCodeIdent.code} == $statusInt"
+      }
+
+      val valueIdent = jvm.Ident("v")
+      val constructorCall = if (isRangeStatus) {
+        code"$subtypeCtorTpe(${statusCodeIdent.code}, ${valueIdent.code})"
+      } else {
+        code"$subtypeCtorTpe(${valueIdent.code})"
+      }
+      val result = code"$readEntityCode.map(${valueIdent.code} => $constructorCall)"
+
+      (condition, result, variant.statusCode.toLowerCase == "default")
+    }
+
+    val (defaultCases, specificCases) = ifElseCases.partition(_._3)
+
+    val ifElseCode = if (specificCases.isEmpty && defaultCases.nonEmpty) {
+      defaultCases.head._2
+    } else if (specificCases.isEmpty) {
+      val errorExpr = Types.IllegalStateException.construct(jvm.StrLit("No response handler for status code").code)
+      clientSupport.raiseError(errorExpr)
+    } else {
+      val ifCases = specificCases.zipWithIndex.map { case ((cond, body, _), idx) =>
+        if (idx == 0) code"if ($cond) $body"
+        else code"else if ($cond) $body"
+      }
+      val elseCase = defaultCases.headOption
+        .map(_._2)
+        .getOrElse {
+          val errorExpr = Types.IllegalStateException.construct(lang.s(code"Unexpected status code: ${rt(statusCodeIdent.code)}").code)
+          clientSupport.raiseError(errorExpr)
+        }
+      val elseCode = code"else $elseCase"
+      // Add 4 spaces prefix for lambda body indentation (Body.Stmts adds 2 more -> 6 total)
+      code"    " ++ (ifCases :+ elseCode).mkCode("\n    ")
+    }
+
+    // Lambda body needs 4 spaces (Body.Stmts adds 2 more -> 6 total in output)
+    code"""    val $statusCodeIdent = $statusCodeExpr
+$ifElseCode"""
+  }
+
+  /** Infer the single response type for methods without response variants */
+  private def inferSingleResponseType(method: ApiMethod): jvm.Type = {
+    // Find the success response (usually 200 or 2XX)
+    val successResponse = method.responses.find { r =>
+      r.statusCode match {
+        case ResponseStatus.Specific(code) => code >= 200 && code < 300
+        case ResponseStatus.Success2XX     => true
+        case _                             => false
+      }
+    }
+
+    successResponse.flatMap(_.typeInfo).map(typeMapper.map).getOrElse(Types.Void)
   }
 
   /** Find the common base path prefix for a list of paths */
@@ -1049,7 +1343,7 @@ class ApiCodegen(
       val elseCase = defaultCases.headOption
         .map(_._2)
         .getOrElse {
-          val errorExpr = Types.IllegalStateException.construct(lang.s(code"Unexpected status code: ${statusCodeIdent.code}").code)
+          val errorExpr = Types.IllegalStateException.construct(lang.s(code"Unexpected status code: ${rt(statusCodeIdent.code)}").code)
           clientSupport.raiseError(errorExpr)
         }
       val elseCode = code"else $elseCase"
@@ -1919,6 +2213,14 @@ class ApiCodegen(
     // Methods without response variants return IO[T] and need Ok(result) wrapping
     val hasResponseVariants = method.responseVariants.isDefined
 
+    // Check if this method returns Void (204 No Content) - no response body
+    val returnsVoid = !hasResponseVariants && {
+      val successResponse = method.responses
+        .find(r => isSuccessStatus(r.statusCode))
+        .orElse(method.responses.find(_.statusCode == ResponseStatus.Default))
+      successResponse.flatMap(_.typeInfo).isEmpty
+    }
+
     // Build the call body
     val callBody = method.requestBody match {
       case Some(body) if !body.isMultipart =>
@@ -1930,6 +2232,8 @@ class ApiCodegen(
         val argsStr = allArgs.mkString(", ")
         if (hasResponseVariants) {
           s"req.as[$bodyTypeStr].flatMap(body => $endpointName($argsStr))"
+        } else if (returnsVoid) {
+          s"req.as[$bodyTypeStr].flatMap(body => ${method.name}($argsStr).flatMap(_ => NoContent()))"
         } else {
           s"req.as[$bodyTypeStr].flatMap(body => ${method.name}($argsStr).flatMap(result => Ok(result)))"
         }
@@ -1939,6 +2243,8 @@ class ApiCodegen(
         val argsStr = if (allArgs.isEmpty) "" else allArgs.mkString("(", ", ", ")")
         if (hasResponseVariants) {
           s"$endpointName$argsStr"
+        } else if (returnsVoid) {
+          s"${method.name}$argsStr.flatMap(_ => NoContent())"
         } else {
           s"${method.name}$argsStr.flatMap(result => Ok(result))"
         }

@@ -50,25 +50,12 @@ public interface PetsApiServer extends PetsApi {
 
   /** Delete a pet */
   @Override
-  Response404Default<Error> deletePet(
-  
-    /** The pet ID */
-    PetId petId
-  );
-
-  /** Endpoint wrapper for deletePet - handles response status codes */
   @DeleteMapping(value = { "/{petId}" })
-  default ResponseEntity<?> deletePetEndpoint(
+  Void deletePet(
   
     /** The pet ID */
     @PathVariable("petId") PetId petId
-  ) {
-    return switch (deletePet(petId)) {
-      case NotFound r -> ResponseEntity.status(404).body(r.value());
-      case Default r -> ResponseEntity.status(r.statusCode()).body(r.value());
-      default -> throw new IllegalStateException("Unexpected response type");
-    };
-  };
+  );
 
   /** Get a pet by ID */
   @Override

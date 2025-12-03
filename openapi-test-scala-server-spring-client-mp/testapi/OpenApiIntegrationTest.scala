@@ -5,15 +5,12 @@ import testapi.api.*
 import testapi.model.{Error, Pet, PetCreate, PetId, PetStatus}
 import java.time.OffsetDateTime
 
-/**
- * Unit tests for the OpenAPI generated Scala Spring server code.
- *
- * These tests verify that:
- * 1. The generated server trait can be implemented
- * 2. The generated response types work correctly with phantom type parameters
- * 3. Pattern matching works correctly for response types
- * 4. The codegen is truly language-agnostic - Scala works with Spring annotations
- */
+/** Unit tests for the OpenAPI generated Scala Spring server code.
+  *
+  * These tests verify that:
+  *   1. The generated server trait can be implemented 2. The generated response types work correctly with phantom type parameters 3. Pattern matching works correctly for response types 4. The codegen
+  *      is truly language-agnostic - Scala works with Spring annotations
+  */
 class OpenApiIntegrationTest extends AnyFunSuite {
 
   val testTime: OffsetDateTime = OffsetDateTime.parse("2024-01-01T12:00:00Z")
@@ -157,7 +154,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
     // Test Response200404 pattern matching
     val getPetResult = server.getPet(PetId("pet-123"))
     val resultBody = getPetResult match {
-      case ok: Ok[Pet @unchecked]           => s"OK: ${ok.value.name}"
+      case ok: Ok[Pet @unchecked]               => s"OK: ${ok.value.name}"
       case notFound: NotFound[Error @unchecked] => s"NotFound: ${notFound.value.code}"
     }
     assert(resultBody == "OK: Fluffy")
@@ -165,7 +162,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
     // Test Response201400 pattern matching
     val createResult = server.createPet(PetCreate(None, None, "Test", None, None, None))
     val createBody = createResult match {
-      case created: Created[Pet @unchecked]     => s"Created: ${created.value.name}"
+      case created: Created[Pet @unchecked]         => s"Created: ${created.value.name}"
       case badRequest: BadRequest[Error @unchecked] => s"BadRequest: ${badRequest.value.code}"
     }
     assert(createBody == "Created: Test")
@@ -174,7 +171,7 @@ class OpenApiIntegrationTest extends AnyFunSuite {
     val deleteResult = server.deletePet(PetId("nonexistent"))
     val deleteBody = deleteResult match {
       case notFound: NotFound[Error @unchecked] => s"NotFound: ${notFound.value.code}"
-      case default: Default              => s"Default: ${default.statusCode}"
+      case default: Default                     => s"Default: ${default.statusCode}"
     }
     assert(deleteBody == "NotFound: NOT_FOUND")
   }

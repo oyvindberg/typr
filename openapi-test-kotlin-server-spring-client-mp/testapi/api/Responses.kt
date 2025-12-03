@@ -10,12 +10,6 @@ sealed interface Response201400<out T201, out T400> {
   fun status(): String
 }
 
-/** Response type for: 404, default */
-sealed interface Response404Default<out T404> {
-  @JsonProperty("status")
-  fun status(): String
-}
-
 /** Response type for: 200, 404 */
 sealed interface Response200404<out T200, out T404> {
   @JsonProperty("status")
@@ -38,15 +32,6 @@ data class Created<out T>(@field:JsonProperty("value") val value: T) : Response2
   override fun status(): String = "201"
 }
 
-/** HTTP default response */
-data class Default(
-  /** HTTP status code */
-  @field:JsonProperty("statusCode") val statusCode: Int,
-  @field:JsonProperty("value") val value: Error
-) : Response404Default<Nothing> {
-  override fun status(): String = "default"
-}
-
 /** HTTP 5XX response */
 data class ServerError5XX(
   /** HTTP status code */
@@ -62,7 +47,7 @@ data class Ok<out T>(@field:JsonProperty("value") val value: T) : Response200404
 }
 
 /** HTTP 404 response */
-data class NotFound<out T>(@field:JsonProperty("value") val value: T) : Response404Default<T>, Response200404<Nothing, T> {
+data class NotFound<out T>(@field:JsonProperty("value") val value: T) : Response200404<Nothing, T> {
   override fun status(): String = "404"
 }
 

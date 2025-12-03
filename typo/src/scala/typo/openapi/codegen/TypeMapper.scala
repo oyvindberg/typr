@@ -210,6 +210,7 @@ object Types {
     val EntityEncoder = jvm.Type.Qualified("org.http4s.EntityEncoder")
     val UnexpectedStatus = jvm.Type.Qualified("org.http4s.client.UnexpectedStatus")
     val CIString = jvm.Type.Qualified("org.typelevel.ci.CIString")
+    val SegmentEncoder = jvm.Type.Qualified("org.http4s.Uri.Path.SegmentEncoder")
   }
 
   // Cats Effect types

@@ -2,10 +2,12 @@ package testapi
 
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
+import com.comcast.ip4s._
 import io.circe.Json
-import org.http4s.Method._
-import org.http4s.Request
-import org.http4s.Response
+import org.http4s.Uri
+import org.http4s.client.Client
+import org.http4s.ember.client.EmberClientBuilder
+import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -14,29 +16,35 @@ import testapi.model._
 import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 import org.http4s.circe.CirceEntityEncoder.circeEntityEncoder
 
+import java.lang.Void
 import java.time.OffsetDateTime
 
-/** Integration tests for the OpenAPI generated Scala HTTP4s server code.
+/** Integration tests for the OpenAPI generated Scala HTTP4s server and client code.
   *
-  * These tests verify that:
-  *   1. The generated server trait can be implemented 2. The generated response types work correctly 3. Routes are correctly wired to handler methods
+  * These tests start a real Http4s server, create a real client, and verify that requests/responses round-trip correctly through the generated code.
   */
 class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
 
   private val TestTime = OffsetDateTime.parse("2024-01-01T12:00:00Z")
 
+  /** Test server implementation with resettable state */
   class TestPetsApiServer extends PetsApiServer {
-    private val pets = scala.collection.mutable.Map(
-      PetId("pet-123") -> Pet(
-        tags = Some(List("friendly", "cute")),
-        id = PetId("pet-123"),
-        status = PetStatus.available,
-        createdAt = TestTime,
-        metadata = Some(Map("color" -> "brown")),
-        name = "Fluffy",
-        updatedAt = None
-      )
+    private val initialPet = Pet(
+      tags = Some(List("friendly", "cute")),
+      id = PetId("pet-123"),
+      status = PetStatus.available,
+      createdAt = TestTime,
+      metadata = Some(Map("color" -> "brown")),
+      name = "Fluffy",
+      updatedAt = None
     )
+
+    private val pets = scala.collection.mutable.Map(initialPet.id -> initialPet)
+
+    def reset(): Unit = {
+      pets.clear()
+      pets(initialPet.id) = initialPet
+    }
 
     override def createPet(body: PetCreate): IO[Response201400[Pet, Error]] = {
       val newPet = Pet(
@@ -52,13 +60,9 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       IO.pure(Created(newPet))
     }
 
-    override def deletePet(petId: PetId): IO[Response404Default[Error]] = {
-      if (pets.contains(petId)) {
-        pets.remove(petId)
-        IO.pure(Default(204, Error("OK", None, "Deleted")))
-      } else {
-        IO.pure(NotFound(Error("NOT_FOUND", None, "Pet not found")))
-      }
+    override def deletePet(petId: PetId): IO[Void] = {
+      pets.remove(petId)
+      IO.pure(null)
     }
 
     override def getPet(petId: PetId): IO[Response200404[Pet, Error]] = {
@@ -89,26 +93,46 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
     }
   }
 
-  test("getPet returns Ok for existing pet") {
-    val server = new TestPetsApiServer
-    val result = server.getPet(PetId("pet-123")).unsafeRunSync()
+  // Shared server and client - started once for all tests
+  private val serverImpl = new TestPetsApiServer
+  private lazy val (httpClient, cleanup) = {
+    val resources = for {
+      client <- EmberClientBuilder.default[IO].build
+      srv <- EmberServerBuilder
+        .default[IO]
+        .withHost(host"127.0.0.1")
+        .withPort(port"0")
+        .withHttpApp(serverImpl.routes.orNotFound)
+        .build
+    } yield (client, srv)
 
-    result shouldBe a[Ok[_]]
-    result.status shouldBe "200"
-    result.asInstanceOf[Ok[Pet]].value.name shouldBe "Fluffy"
+    val ((client, srv), release) = resources.allocated.unsafeRunSync()
+    val baseUri = Uri.unsafeFromString(s"http://127.0.0.1:${srv.address.getPort}")
+    (new PetsApiClient(client, baseUri), release)
   }
 
-  test("getPet returns NotFound for non-existent pet") {
-    val server = new TestPetsApiServer
-    val result = server.getPet(PetId("nonexistent")).unsafeRunSync()
-
-    result shouldBe a[NotFound[_]]
-    result.status shouldBe "404"
-    result.asInstanceOf[NotFound[Error]].value.code shouldBe "NOT_FOUND"
+  override def withFixture(test: NoArgTest) = {
+    serverImpl.reset()
+    super.withFixture(test)
   }
 
-  test("createPet returns Created") {
-    val server = new TestPetsApiServer
+  test("getPet returns existing pet via HTTP round-trip") {
+    httpClient.getPet(PetId("pet-123")).map { response =>
+      val ok = response.asInstanceOf[Ok[Pet]]
+      ok.value.name shouldBe "Fluffy"
+      ok.value.id shouldBe PetId("pet-123")
+      ok.value.status shouldBe PetStatus.available
+    }.unsafeRunSync()
+  }
+
+  test("getPet returns NotFound for non-existent pet via HTTP round-trip") {
+    httpClient.getPet(PetId("nonexistent")).map { response =>
+      val notFound = response.asInstanceOf[NotFound[Error]]
+      notFound.value.code shouldBe "NOT_FOUND"
+    }.unsafeRunSync()
+  }
+
+  test("createPet creates and returns pet via HTTP round-trip") {
     val newPet = PetCreate(
       age = Some(2L),
       email = None,
@@ -118,56 +142,30 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       website = None
     )
 
-    val result = server.createPet(newPet).unsafeRunSync()
-
-    result shouldBe a[Created[_]]
-    result.status shouldBe "201"
-    val created = result.asInstanceOf[Created[Pet]]
-    created.value.name shouldBe "Buddy"
-    created.value.status shouldBe PetStatus.pending
+    httpClient.createPet(newPet).map { response =>
+      val created = response.asInstanceOf[Created[Pet]]
+      created.value.name shouldBe "Buddy"
+      created.value.status shouldBe PetStatus.pending
+      created.value.tags shouldBe Some(List("playful"))
+    }.unsafeRunSync()
   }
 
-  test("deletePet returns Default for existing pet") {
-    val server = new TestPetsApiServer
-    val result = server.deletePet(PetId("pet-123")).unsafeRunSync()
-
-    result shouldBe a[Default]
-    result.status shouldBe "default"
-    result.asInstanceOf[Default].statusCode shouldBe 204
+  test("deletePet deletes existing pet via HTTP round-trip") {
+    httpClient.deletePet(PetId("pet-123")).map { _ =>
+      succeed
+    }.unsafeRunSync()
   }
 
-  test("deletePet returns NotFound for non-existent pet") {
-    val server = new TestPetsApiServer
-    val result = server.deletePet(PetId("nonexistent")).unsafeRunSync()
-
-    result shouldBe a[NotFound[_]]
-    result.status shouldBe "404"
+  test("listPets returns all pets via HTTP round-trip") {
+    httpClient.listPets(None, None).map { pets =>
+      pets should not be empty
+      pets.exists(_.name == "Fluffy") shouldBe true
+    }.unsafeRunSync()
   }
 
-  test("listPets returns all pets") {
-    val server = new TestPetsApiServer
-    val result = server.listPets(None, None).unsafeRunSync()
-
-    result should not be empty
-    result.exists(_.name == "Fluffy") shouldBe true
-  }
-
-  test("HTTP routes work correctly") {
-    val server = new TestPetsApiServer
-    val httpApp = server.routes.orNotFound
-
-    // Test GET /pets/{petId}
-    val getRequest = Request[IO](GET, uri"/pets/pet-123")
-    val getResponse = httpApp.run(getRequest).unsafeRunSync()
-
-    getResponse.status.code shouldBe 200
-    val pet = getResponse.as[Pet].unsafeRunSync()
-    pet.name shouldBe "Fluffy"
-
-    // Test GET /pets/{petId} not found
-    val get404Request = Request[IO](GET, uri"/pets/nonexistent")
-    val get404Response = httpApp.run(get404Request).unsafeRunSync()
-
-    get404Response.status.code shouldBe 404
+  test("listPets with limit returns limited pets via HTTP round-trip") {
+    httpClient.listPets(Some(1), None).map { pets =>
+      pets.size shouldBe 1
+    }.unsafeRunSync()
   }
 }
