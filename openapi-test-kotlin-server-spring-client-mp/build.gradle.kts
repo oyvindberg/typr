@@ -19,7 +19,7 @@ sourceSets {
         kotlin.srcDirs("testapi")
     }
     test {
-        kotlin.srcDirs("testapi")
+        kotlin.srcDirs("test")
     }
 }
 
@@ -47,11 +47,5 @@ dependencies {
     implementation("org.glassfish.jersey.media:jersey-media-multipart:3.1.9")
 
     // Testing
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.0")
-}
-
-tasks.test {
-    useJUnitPlatform()
+    testImplementation("junit:junit:4.13.2")
 }

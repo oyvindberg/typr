@@ -18,7 +18,7 @@ sourceSets {
         kotlin.srcDirs("testapi")
     }
     test {
-        kotlin.srcDirs("testapi")
+        kotlin.srcDirs("test")
     }
 }
 
@@ -44,10 +44,5 @@ dependencies {
     implementation("org.eclipse.microprofile.rest.client:microprofile-rest-client-api:3.0.1")
 
     // Testing
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-}
-
-tasks.test {
-    useJUnitPlatform()
+    testImplementation("junit:junit:4.13.2")
 }

@@ -46,26 +46,7 @@ object GenerateOpenApiTest {
       generateValidation = true
     )
 
-    // Java with MicroProfile client only (blocking)
-    generateCode(
-      specPath = specPath,
-      language = "java",
-      serverLib = None,
-      clientLib = Some(OpenApiClientLib.MicroProfileBlocking),
-      lang = LangJava,
-      generateValidation = true
-    )
-
-    // Scala base only (no server or client)
     val langScala = LangScala(Dialect.Scala3, TypeSupportScala)
-    generateCode(
-      specPath = specPath,
-      language = "scala",
-      serverLib = None,
-      clientLib = None,
-      lang = langScala,
-      generateValidation = false
-    )
 
     // Scala with HTTP4s server + client
     generateCode(
