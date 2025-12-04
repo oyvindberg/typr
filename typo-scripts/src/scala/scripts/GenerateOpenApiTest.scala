@@ -1,6 +1,6 @@
 package scripts
 
-import typo.openapi.{OpenApiCodegen, OpenApiClientLib, OpenApiOptions, OpenApiServerLib}
+import typo.openapi.{OpenApiCodegen, OpenApiClientLib, OpenApiEffectType, OpenApiOptions, OpenApiServerLib}
 import typo.internal.FileSync
 import typo.jvm
 import typo.internal.codegen.{addPackageAndImports, LangJava, LangKotlin, LangScala}
@@ -16,94 +16,86 @@ object GenerateOpenApiTest {
 
     println(s"Generating code from: $specPath")
 
-    // Java with JAX-RS server (no client - JAX-RS client doesn't support standalone typed proxies)
+    // Java with JAX-RS server + JDK HTTP Client (blocking)
     generateCode(
       specPath = specPath,
       language = "java",
       serverLib = Some(OpenApiServerLib.JaxRsSync),
-      clientLib = None,
+      clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
       lang = LangJava,
       generateValidation = true
     )
 
-    // Java with JAX-RS server + JDK HTTP Client
-    generateCode(
-      specPath = specPath,
-      language = "java",
-      serverLib = Some(OpenApiServerLib.JaxRsSync),
-      clientLib = Some(OpenApiClientLib.JdkHttpClient),
-      lang = LangJava,
-      generateValidation = true
-    )
-
-    // Java with Spring server (no client)
+    // Java with Spring server + JDK HTTP Client (blocking)
     generateCode(
       specPath = specPath,
       language = "java",
       serverLib = Some(OpenApiServerLib.SpringMvc),
-      clientLib = None,
+      clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
       lang = LangJava,
       generateValidation = true
     )
 
-    // Java with Quarkus server (no client)
+    // Java with Quarkus server + JDK HTTP Client (Mutiny Uni - async)
     generateCode(
       specPath = specPath,
       language = "java",
       serverLib = Some(OpenApiServerLib.QuarkusReactive),
-      clientLib = None,
+      clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.MutinyUni)),
       lang = LangJava,
       generateValidation = true
     )
 
     val langScala = LangScala(Dialect.Scala3, TypeSupportScala)
 
-    // Scala with HTTP4s server + client
+    // Scala with HTTP4s server + client (uses Circe for JSON)
     generateCode(
       specPath = specPath,
       language = "scala",
       serverLib = Some(OpenApiServerLib.Http4s),
       clientLib = Some(OpenApiClientLib.Http4s),
       lang = langScala,
-      generateValidation = false
+      generateValidation = false,
+      jsonLib = typo.openapi.OpenApiJsonLib.Circe
     )
 
-    // Scala with Spring server (no client)
+    // Scala with Spring server + JDK HTTP Client (blocking, uses Jackson for JSON)
     generateCode(
       specPath = specPath,
       language = "scala",
       serverLib = Some(OpenApiServerLib.SpringMvc),
-      clientLib = None,
+      clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
       lang = langScala,
-      generateValidation = true
+      generateValidation = true,
+      jsonLib = typo.openapi.OpenApiJsonLib.Jackson
     )
 
-    // Kotlin with JAX-RS server (no client)
+    // Kotlin with JAX-RS server + JDK HTTP Client (blocking)
     generateCode(
       specPath = specPath,
       language = "kotlin",
       serverLib = Some(OpenApiServerLib.JaxRsSync),
-      clientLib = None,
+      clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
       lang = LangKotlin,
       generateValidation = true
     )
 
-    // Kotlin with Spring server (no client)
+    // Kotlin with Spring server + JDK HTTP Client (blocking)
     generateCode(
       specPath = specPath,
       language = "kotlin",
       serverLib = Some(OpenApiServerLib.SpringMvc),
-      clientLib = None,
+      clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
       lang = LangKotlin,
       generateValidation = true
     )
 
-    // Kotlin with Quarkus server (no client)
+    // Kotlin with Quarkus server + JDK HTTP Client (Mutiny Uni - async)
     generateCode(
       specPath = specPath,
       language = "kotlin",
       serverLib = Some(OpenApiServerLib.QuarkusReactive),
-      clientLib = None,
+      clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.MutinyUni)),
       lang = LangKotlin,
       generateValidation = true
     )
@@ -133,7 +125,7 @@ object GenerateOpenApiTest {
 
     clientLib.foreach { client =>
       val name = client match {
-        case OpenApiClientLib.JdkHttpClient      => "jdk"
+        case OpenApiClientLib.JdkHttpClient(_)   => "jdk"
         case OpenApiClientLib.SpringWebClient    => "spring-webclient"
         case OpenApiClientLib.SpringRestTemplate => "spring-rest"
         case OpenApiClientLib.Http4s             => "http4s"
@@ -152,7 +144,8 @@ object GenerateOpenApiTest {
       serverLib: Option[OpenApiServerLib],
       clientLib: Option[OpenApiClientLib],
       lang: Lang,
-      generateValidation: Boolean
+      generateValidation: Boolean,
+      jsonLib: typo.openapi.OpenApiJsonLib = typo.openapi.OpenApiJsonLib.Jackson
   ): Unit = {
     val outputDirName = buildOutputDirName(language, serverLib, clientLib)
     val projectDir = buildDir.resolve(outputDirName)
@@ -167,7 +160,8 @@ object GenerateOpenApiTest {
         serverLib = serverLib,
         clientLib = clientLib,
         generateValidation = generateValidation,
-        useGenericResponseTypes = true
+        useGenericResponseTypes = true,
+        jsonLib = jsonLib
       )
 
     val result = OpenApiCodegen.generate(specPath, options, lang)

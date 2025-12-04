@@ -351,7 +351,7 @@ case object LangKotlin extends Lang {
       case jvm.Type.Primitive(name)           => name
       case jvm.RuntimeInterpolation(value)    => value
       case jvm.IfExpr(pred, thenp, elsep) =>
-        code"if ($pred) $thenp else $elsep"
+        code"(if ($pred) $thenp else $elsep)"
       case jvm.TypeSwitch(value, cases, nullCase, defaultCase, _) =>
         // Use `when (val __r = value)` to bind value once and avoid double evaluation
         // Note: unchecked flag is Scala-only (for @unchecked annotation), ignored in Kotlin
@@ -507,6 +507,23 @@ case object LangKotlin extends Lang {
 
         val staticMembers = cls.staticMembers.sortBy(_.name).map(x => renderTree(x, memberCtx))
 
+        // For wrapper types with a single value field, generate toString() that returns just the value
+        val toStringMethod: Option[jvm.Code] =
+          if (cls.isWrapper && cls.params.size == 1) {
+            val valueParam = cls.params.head
+            // Unwrap to base type (removes comments, annotations, etc.) to check if it's String
+            val baseTpe = jvm.Type.base(valueParam.tpe)
+            val toStringBody =
+              if (baseTpe == TypesKotlin.String) code"return ${valueParam.name}"
+              else code"return ${valueParam.name}.toString()"
+            Some(
+              renderTree(
+                jvm.Method(Nil, jvm.Comments.Empty, Nil, jvm.Ident("toString"), Nil, Nil, TypesKotlin.String, Nil, jvm.Body.Stmts(List(toStringBody)), isOverride = true, isDefault = false),
+                memberCtx
+              )
+            )
+          } else None
+
         // Kotlin data classes have named parameters for copy(), so withers are unnecessary
 
         // Kotlin data classes must have at least one constructor parameter.
@@ -518,7 +535,7 @@ case object LangKotlin extends Lang {
                         |}""".stripMargin)
           } else None
 
-          val allBody = body ++ companionBody.toList
+          val allBody = body ++ toStringMethod.toList ++ companionBody.toList
 
           val classKeyword = if (cls.tparams.isEmpty) "object" else "class"
 
@@ -549,7 +566,7 @@ case object LangKotlin extends Lang {
                         |}""".stripMargin)
           } else None
 
-          val allBody = body ++ companionBody.toList
+          val allBody = body ++ toStringMethod.toList ++ companionBody.toList
 
           // Constructor annotations render as: data class Name @Annotation constructor(params)
           val constructorAnnotationsCode = if (cls.constructorAnnotations.nonEmpty) {
@@ -696,6 +713,7 @@ case object LangKotlin extends Lang {
         val classKeyword = cls.classType match {
           case jvm.ClassType.Class if cls.params.isEmpty => "class "
           case jvm.ClassType.Class                       => "data class "
+          case jvm.ClassType.AbstractClass               => "abstract class "
           case jvm.ClassType.Interface                   => "interface "
         }
 
@@ -724,6 +742,7 @@ case object LangKotlin extends Lang {
           cls.classType match {
             case jvm.ClassType.Class if cls.params.nonEmpty => Some(renderDataClassParams(cls.params, ctx))
             case jvm.ClassType.Class                        => Some(code"()")
+            case jvm.ClassType.AbstractClass                => Some(code"()")
             case jvm.ClassType.Interface                    => None
           },
           extendsAndImplements,
@@ -733,18 +752,18 @@ case object LangKotlin extends Lang {
         ).flatten.mkCode("")
       case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
         val tryCode = code"""|try {
-                             |  ${tryBlock.mkCode("\n")}
+                             |  ${tryBlock.map(s => renderStmt(s)).mkCode("\n")}
                              |}""".stripMargin
         val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
           code"""|catch ($ident: $exType) {
-                 |  ${body.mkCode("\n")}
+                 |  ${body.map(s => renderStmt(s)).mkCode("\n")}
                  |}""".stripMargin
         }
         val finallyCode =
           if (finallyBlock.isEmpty) jvm.Code.Str("")
           else
             code"""|finally {
-                   |  ${finallyBlock.mkCode("\n")}
+                   |  ${finallyBlock.map(s => renderStmt(s)).mkCode("\n")}
                    |}""".stripMargin
         code"$tryCode ${catchCodes.mkCode(" ")} $finallyCode"
       case jvm.IfElseChain(cases, elseCase) =>

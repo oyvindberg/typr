@@ -1,5 +1,7 @@
 package typo
 
+import typo.jvm.Code.TreeOps
+
 trait Lang extends TypeSupport {
   val `;`: jvm.Code
 
@@ -109,6 +111,11 @@ trait OptionalSupport {
   def getOrElse(opt: jvm.Code, default: jvm.Code): jvm.Code
   def isEmpty(opt: jvm.Code): jvm.Code
   def isDefined(opt: jvm.Code): jvm.Code
+
+  /** fold: if defined use ifSome(get(opt)), else return ifNone. Uses IfExpr for language-agnostic rendering. */
+  def fold(opt: jvm.Code, ifNone: jvm.Code, ifSome: jvm.Code => jvm.Code): jvm.Code = {
+    jvm.IfExpr(isDefined(opt), ifSome(get(opt)), ifNone).code
+  }
 
   /** filter then map then getOrElse - combines common pattern */
   def filterMapOrElse(opt: jvm.Code, predicate: jvm.Code, mapper: jvm.Code, default: jvm.Code): jvm.Code

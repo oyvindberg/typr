@@ -157,9 +157,9 @@ case object LangJava extends Lang {
       case jvm.Type.Primitive(name)                        => name
       case jvm.RuntimeInterpolation(value)                 => value
       case jvm.IfExpr(pred, thenp, elsep) =>
-        code"""|$pred
+        code"""|($pred
                |  ? $thenp
-               |  : $elsep""".stripMargin
+               |  : $elsep)""".stripMargin
       case jvm.TypeSwitch(value, cases, nullCase, defaultCase, _) =>
         // In Java switch expressions: blocks don't need semicolon, expressions do
         // Note: unchecked flag is Scala-only (for @unchecked annotation), ignored in Java
@@ -176,18 +176,18 @@ case object LangJava extends Lang {
                |}""".stripMargin
       case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
         val tryCode = code"""|try {
-                             |  ${tryBlock.mkCode("\n")}
+                             |  ${tryBlock.map(s => renderStmt(s)).mkCode("\n")}
                              |}""".stripMargin
         val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
           code"""|catch ($exType $ident) {
-                 |  ${body.mkCode("\n")}
+                 |  ${body.map(s => renderStmt(s)).mkCode("\n")}
                  |}""".stripMargin
         }
         val finallyCode =
           if (finallyBlock.isEmpty) jvm.Code.Str("")
           else
             code"""|finally {
-                 |  ${finallyBlock.mkCode("\n")}
+                 |  ${finallyBlock.map(s => renderStmt(s)).mkCode("\n")}
                  |}""".stripMargin
         code"$tryCode ${catchCodes.mkCode(" ")} $finallyCode"
       case jvm.IfElseChain(cases, elseCase) =>
@@ -388,6 +388,23 @@ case object LangJava extends Lang {
             renderTree(jvm.Method(Nil, param.comments, Nil, name, List(paramWithoutComment), Nil, clsType, Nil, jvm.Body.Expr(body.code), isOverride = false, isDefault = false), memberCtx)
           }
 
+        // For wrapper types with a single value field, generate toString() that returns just the value
+        val toStringMethod: Option[jvm.Code] =
+          if (cls.isWrapper && cls.params.size == 1) {
+            val valueParam = cls.params.head
+            // Unwrap to base type (removes comments, annotations, etc.) to check if it's String
+            val baseTpe = jvm.Type.base(valueParam.tpe)
+            val toStringBody =
+              if (baseTpe == TypesJava.String) code"return ${valueParam.name}"
+              else code"return ${valueParam.name}.toString()"
+            Some(
+              renderTree(
+                jvm.Method(Nil, jvm.Comments.Empty, Nil, jvm.Ident("toString"), Nil, Nil, TypesJava.String, Nil, jvm.Body.Stmts(List(toStringBody)), isOverride = true, isDefault = false),
+                memberCtx
+              )
+            )
+          } else None
+
         // Params with defaults can be omitted from the short constructor
         val requiredParams = cls.params.filter(_.default.isEmpty)
         val hasDefaultableParams = cls.params.exists(_.default.isDefined)
@@ -422,7 +439,7 @@ case object LangJava extends Lang {
             case nonEmpty => Some(code" implements ${nonEmpty.map(x => code"$x").mkCode(", ")}")
           },
           Some(code"""| {
-                      |  ${(shortConstructor.toList ++ withers ++ body).map(_ ++ code";").mkCode("\n\n")}
+                      |  ${(shortConstructor.toList ++ withers ++ toStringMethod.toList ++ body).map(_ ++ code";").mkCode("\n\n")}
                       |}""".stripMargin)
         ).flatten.mkCode("")
       case sum: jvm.Adt.Sum =>
@@ -508,8 +525,9 @@ case object LangJava extends Lang {
           annotationsCode,
           Some(code"${ctx.public}"),
           cls.classType match {
-            case jvm.ClassType.Class     => Some(code"class ")
-            case jvm.ClassType.Interface => Some(code"interface ")
+            case jvm.ClassType.Class         => Some(code"class ")
+            case jvm.ClassType.AbstractClass => Some(code"abstract class ")
+            case jvm.ClassType.Interface     => Some(code"interface ")
           },
           Some(cls.name.name.value),
           cls.tparams match {

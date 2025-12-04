@@ -85,7 +85,7 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
 
   override def renderTree(tree: jvm.Tree, ctx: Ctx): jvm.Code =
     tree match {
-      case jvm.IfExpr(pred, thenp, elsep) => code"if ($pred) $thenp else $elsep"
+      case jvm.IfExpr(pred, thenp, elsep) => code"(if ($pred) $thenp else $elsep)"
       case jvm.IgnoreResult(expr)         => code"$expr: @${TypesScala.nowarn}"
       case jvm.NotNull(expr)              => expr // Scala doesn't need not-null assertions
       case jvm.ConstructorMethodRef(tpe)  => code"$tpe.apply"
@@ -349,7 +349,9 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
           case (true, types) => (Some(TypesScala.AnyVal), types)
           case (_, types)    => (types.headOption, types.drop(1))
         }
-        val annotationsCode = if (cls.annotations.isEmpty) None else Some(renderAnnotations(cls.annotations))
+        // Combine class annotations and constructor annotations (for Scala, put them before case class)
+        val allAnnotations = cls.annotations ++ cls.constructorAnnotations
+        val annotationsCode = if (allAnnotations.isEmpty) None else Some(renderAnnotations(allAnnotations))
         val prefix = List[Option[jvm.Code]](
           annotationsCode,
           renderComments(cls.comments),
@@ -409,8 +411,9 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
           annotationsCode,
           renderComments(cls.comments),
           cls.classType match {
-            case jvm.ClassType.Class     => Some(code"class ")
-            case jvm.ClassType.Interface => Some(code"trait ")
+            case jvm.ClassType.Class         => Some(code"class ")
+            case jvm.ClassType.AbstractClass => Some(code"abstract class ")
+            case jvm.ClassType.Interface     => Some(code"trait ")
           },
           Some(cls.name.name.value),
           cls.tparams match {
@@ -459,8 +462,13 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
       case ann: jvm.Annotation => renderAnnotation(ann)
 
       // Annotation array: Scala uses Array(a, b)
+      // Nested annotations use 'new' instead of '@'
       case jvm.AnnotationArray(elements) =>
-        code"Array(${elements.mkCode(", ")})"
+        val renderedElements = elements.map {
+          case jvm.Code.Tree(ann: jvm.Annotation) => renderNestedAnnotation(ann)
+          case other                              => other
+        }
+        code"Array(${renderedElements.mkCode(", ")})"
 
       // Anonymous class: new Trait { members }
       case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
@@ -505,18 +513,26 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
   }
 
   def renderAnnotation(ann: jvm.Annotation): jvm.Code = {
-    val argsCode = ann.args match {
-      case Nil => code""
-      case args =>
-        val rendered = args
-          .map {
-            case jvm.Annotation.Arg.Named(name, value) => code"$name = $value"
-            case jvm.Annotation.Arg.Positional(value)  => value
-          }
-          .mkCode(", ")
-        code"($rendered)"
-    }
+    val argsCode = renderAnnotationArgs(ann.args)
     code"@${ann.tpe}$argsCode"
+  }
+
+  /** Render a nested annotation (inside another annotation) - uses 'new' instead of '@' in Scala */
+  def renderNestedAnnotation(ann: jvm.Annotation): jvm.Code = {
+    val argsCode = renderAnnotationArgs(ann.args)
+    code"new ${ann.tpe}$argsCode"
+  }
+
+  private def renderAnnotationArgs(args: List[jvm.Annotation.Arg]): jvm.Code = args match {
+    case Nil => jvm.Code.Empty
+    case args =>
+      val rendered = args
+        .map {
+          case jvm.Annotation.Arg.Named(name, value) => code"$name = $value"
+          case jvm.Annotation.Arg.Positional(value)  => value
+        }
+        .mkCode(", ")
+      code"($rendered)"
   }
 
   def renderAnnotations(annotations: List[jvm.Annotation]): jvm.Code = {

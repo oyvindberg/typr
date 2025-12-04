@@ -74,6 +74,7 @@ object Types {
   val JsonNode = jvm.Type.Qualified("com.fasterxml.jackson.databind.JsonNode")
   val Void = jvm.Type.Qualified("java.lang.Void")
   val Throwable = jvm.Type.Qualified("java.lang.Throwable")
+  val RuntimeException = jvm.Type.Qualified("java.lang.RuntimeException")
   val IllegalStateException = jvm.Type.Qualified("java.lang.IllegalStateException")
 
   // Jackson annotations

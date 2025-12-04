@@ -1,6 +1,6 @@
 package typo.openapi.codegen
 
-import typo.jvm
+import typo.{jvm, OptionalSupport}
 import typo.jvm.Code.TypeOps
 import typo.internal.codegen._
 import typo.openapi.{ApiMethod, ApiParameter, FormField, HttpMethod, ParameterIn, RequestBody, SecurityRequirement, SecurityScheme}
@@ -586,6 +586,40 @@ object SpringBootSupport extends FrameworkSupport {
     code"$response.getResponseHeaders().getFirst(${jvm.StrLit(headerName).code})"
   override def clientExceptionType: jvm.Type.Qualified = Types.Spring.HttpStatusCodeException
   override def getResponseFromException(exception: jvm.Code): jvm.Code = code"$exception" // Exception itself has the response data
+
+  /** Generate valueOf(String) static method for Scala wrapper types to support Spring @PathVariable conversion. Spring's DefaultConversionService looks for static valueOf(String) methods for type
+    * conversion. Example: {{{def valueOf(s: String): PetId = new PetId(s)}}}
+    */
+  override def wrapperTypeStaticMembers(tpe: jvm.Type.Qualified, underlyingType: jvm.Type): List[jvm.ClassMember] = {
+    // Only needed for Scala - Java records and Kotlin data classes have compatible constructors
+    // Generate: def valueOf(s: String): T = new T(s)
+    val strParam = jvm.Param[jvm.Type](
+      annotations = Nil,
+      comments = jvm.Comments.Empty,
+      name = jvm.Ident("s"),
+      tpe = Types.String,
+      default = None
+    )
+
+    // Body: new T(s) - using jvm.New so it renders correctly for each language
+    val constructorCall = jvm.New(tpe.code, List(jvm.Arg.Pos(jvm.Ident("s").code)))
+
+    val valueOfMethod = jvm.Method(
+      annotations = Nil,
+      comments = jvm.Comments(List("Converts a String to this type for Spring @PathVariable binding")),
+      tparams = Nil,
+      name = jvm.Ident("valueOf"),
+      params = List(strParam),
+      implicitParams = Nil,
+      tpe = tpe,
+      throws = Nil,
+      body = jvm.Body.Expr(jvm.Code.Tree(constructorCall)),
+      isOverride = false,
+      isDefault = false
+    )
+
+    List(valueOfMethod)
+  }
 }
 
 /** Quarkus with RESTEasy Reactive - uses JAX-RS annotations with Mutiny Uni return types. The effect type wrapping (Uni<T>) is handled by ApiCodegen via the effectType parameter.
@@ -735,6 +769,11 @@ object JdkHttpClientSupport extends FrameworkSupport {
   override def executeClientRequest(requestIdent: jvm.Ident): jvm.Code =
     code"httpClient.send(${requestIdent.code}, ${Types.JdkHttp.BodyHandlers}.ofString())"
 
+  /** Execute the client request asynchronously (returns a lambda that yields CompletableFuture). Used with effectOps.fromCompletionStage() to wrap in the effect type.
+    */
+  def executeClientRequestAsyncSupplier(requestIdent: jvm.Ident): jvm.Code =
+    code"() -> httpClient.sendAsync(${requestIdent.code}, ${Types.JdkHttp.BodyHandlers}.ofString())"
+
   override def buildUriPath(baseUriIdent: jvm.Ident, segments: List[(String, Boolean)]): jvm.Code = {
     // For JDK, we need to build the path string and use URI.resolve
     val pathParts = segments.map {
@@ -760,7 +799,8 @@ object JdkHttpClientSupport extends FrameworkSupport {
   def buildFullClientUri(
       baseUriIdent: jvm.Ident,
       segments: List[(String, Boolean)],
-      queryParams: List[(String, jvm.Ident, Boolean)]
+      queryParams: List[(String, jvm.Ident, Boolean)],
+      optionalSupport: OptionalSupport
   ): jvm.Code = {
     // Build path as string first
     val pathParts = segments.map {
@@ -780,8 +820,13 @@ object JdkHttpClientSupport extends FrameworkSupport {
       if (required) {
         uriStringCode = code"$uriStringCode + ${jvm.StrLit(s"$separator$paramName=").code} + ${paramIdent.code}.toString()"
       } else {
-        // For Optional in Java, check .isPresent() and use .get()
-        uriStringCode = code"$uriStringCode + (${paramIdent.code}.isPresent() ? ${jvm.StrLit(s"$separator$paramName=").code} + ${paramIdent.code}.get().toString() : ${jvm.StrLit("").code})"
+        // For optional params: if (opt.isDefined) separator + paramName + "=" + opt.get().toString() else ""
+        val folded = optionalSupport.fold(
+          paramIdent.code,
+          jvm.StrLit("").code,
+          v => code"${jvm.StrLit(s"$separator$paramName=").code} + $v.toString()"
+        )
+        uriStringCode = code"$uriStringCode + $folded"
       }
     }
 

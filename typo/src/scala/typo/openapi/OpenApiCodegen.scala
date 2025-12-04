@@ -87,10 +87,10 @@ object OpenApiCodegen {
     val isScala = lang.isInstanceOf[LangScala]
 
     val jsonLib: JsonLibSupport = (isScala, options.jsonLib) match {
-      case (true, OpenApiJsonLib.Circe)    => CirceSupport
-      case (true, _)                       => CirceSupport // Default to Circe for Scala
-      case (false, OpenApiJsonLib.Jackson) => JacksonSupport
-      case (false, _)                      => JacksonSupport // Default to Jackson for Java
+      case (_, OpenApiJsonLib.Jackson) => JacksonSupport
+      case (_, OpenApiJsonLib.Circe)   => CirceSupport
+      case (true, _)                   => CirceSupport // Default to Circe for Scala
+      case (false, _)                  => JacksonSupport // Default to Jackson for Java/Kotlin
     }
 
     // Determine server framework support based on serverLib
@@ -107,7 +107,7 @@ object OpenApiCodegen {
 
     // Determine client framework support based on clientLib
     val clientFrameworkSupport: Option[FrameworkSupport] = options.clientLib.map {
-      case OpenApiClientLib.JdkHttpClient      => JdkHttpClientSupport
+      case OpenApiClientLib.JdkHttpClient(_)   => JdkHttpClientSupport
       case OpenApiClientLib.SpringWebClient    => SpringBootSupport // TODO: implement
       case OpenApiClientLib.SpringRestTemplate => SpringBootSupport // TODO: implement
       case OpenApiClientLib.Http4s             => Http4sSupport

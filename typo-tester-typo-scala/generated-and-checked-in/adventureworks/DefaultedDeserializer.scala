@@ -29,7 +29,7 @@ class DefaultedDeserializer(
     property: BeanProperty
   ): JsonDeserializer[?] = {
     val contextType: JavaType = ctxt.getContextualType()
-    val `type`: JavaType = if (contextType == null && property != null) property.getType() else contextType
+    val `type`: JavaType = (if (contextType == null && property != null) property.getType() else contextType)
     if (`type` != null && `type`.containedTypeCount() > 0) {
       return new DefaultedDeserializer(`type`.containedType(0), `type`.getRawClass());
     }

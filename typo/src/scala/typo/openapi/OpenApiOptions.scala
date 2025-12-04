@@ -82,6 +82,11 @@ trait EffectTypeOps {
 
   /** Wrap a value in the effect: Effect.pure(value) */
   def pure(value: jvm.Code): jvm.Code
+
+  /** Wrap a CompletionStage supplier in the effect (non-blocking). The supplier is a lambda that returns CompletableFuture/CompletionStage. For Mutiny: Uni.createFrom().completionStage(supplier) For
+    * Reactor: Mono.fromCompletionStage(supplier)
+    */
+  def fromCompletionStage(supplier: jvm.Code): jvm.Code
 }
 
 /** Effect type for async/reactive APIs */
@@ -100,6 +105,7 @@ object OpenApiEffectType {
     def map(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.map($f)"
     def flatMap(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.flatMap($f)"
     def pure(value: jvm.Code): jvm.Code = code"$tpe.createFrom().item($value)"
+    def fromCompletionStage(supplier: jvm.Code): jvm.Code = code"$tpe.createFrom().completionStage($supplier)"
   }
 
   private object ReactorMonoOps extends EffectTypeOps {
@@ -107,6 +113,7 @@ object OpenApiEffectType {
     def map(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.map($f)"
     def flatMap(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.flatMap($f)"
     def pure(value: jvm.Code): jvm.Code = code"$tpe.just($value)"
+    def fromCompletionStage(supplier: jvm.Code): jvm.Code = code"$tpe.fromCompletionStage($supplier)"
   }
 
   private object CompletableFutureOps extends EffectTypeOps {
@@ -114,6 +121,8 @@ object OpenApiEffectType {
     def map(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.thenApply($f)"
     def flatMap(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.thenCompose($f)"
     def pure(value: jvm.Code): jvm.Code = code"$tpe.completedFuture($value)"
+    // CompletableFuture is already a CompletionStage, so just invoke the supplier
+    def fromCompletionStage(supplier: jvm.Code): jvm.Code = code"$supplier.get()"
   }
 
   private object CatsIOOps extends EffectTypeOps {
@@ -121,6 +130,7 @@ object OpenApiEffectType {
     def map(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.map($f)"
     def flatMap(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.flatMap($f)"
     def pure(value: jvm.Code): jvm.Code = code"$tpe.pure($value)"
+    def fromCompletionStage(supplier: jvm.Code): jvm.Code = code"$tpe.fromCompletableFuture($tpe.delay($supplier.get()))"
   }
 
   private object ZIOOps extends EffectTypeOps {
@@ -128,6 +138,7 @@ object OpenApiEffectType {
     def map(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.map($f)"
     def flatMap(effect: jvm.Code, f: jvm.Code): jvm.Code = code"$effect.flatMap($f)"
     def pure(value: jvm.Code): jvm.Code = code"zio.ZIO.succeed($value)"
+    def fromCompletionStage(supplier: jvm.Code): jvm.Code = code"zio.ZIO.fromCompletableFuture($supplier.get())"
   }
 
   /** SmallRye Mutiny Uni - used by Quarkus */
@@ -182,8 +193,17 @@ object OpenApiServerLib {
 sealed abstract class OpenApiClientLib(val effectType: OpenApiEffectType)
 object OpenApiClientLib {
 
-  /** JDK HTTP Client (java.net.http.HttpClient) - zero dependency, synchronous */
-  case object JdkHttpClient extends OpenApiClientLib(OpenApiEffectType.Blocking)
+  /** JDK HTTP Client (java.net.http.HttpClient) - zero dependency, configurable effect type.
+    *
+    * When effectType is Blocking: uses httpClient.send() (synchronous) When effectType is async (MutinyUni, ReactorMono, etc.): uses httpClient.sendAsync() wrapped in the effect type
+    *
+    * Examples:
+    *   - JdkHttpClient(Blocking) for synchronous blocking calls
+    *   - JdkHttpClient(MutinyUni) for Quarkus reactive
+    *   - JdkHttpClient(ReactorMono) for Spring WebFlux
+    *   - JdkHttpClient(CompletableFuture) for plain Java async
+    */
+  case class JdkHttpClient(override val effectType: OpenApiEffectType) extends OpenApiClientLib(effectType)
 
   /** Spring WebClient (Reactor Mono) */
   case object SpringWebClient extends OpenApiClientLib(OpenApiEffectType.ReactorMono)

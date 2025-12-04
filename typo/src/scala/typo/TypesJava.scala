@@ -84,6 +84,7 @@ object TypesJava {
   val Runnable = jvm.Type.Qualified("java.lang.Runnable")
   val RuntimeException = Qualified("java.lang.RuntimeException")
   val Object = Qualified("java.lang.Object")
+  val Override = Qualified("java.lang.Override")
   val Short = Qualified("java.lang.Short")
   val SqlTypes = Qualified("java.sql.Types")
   val Stream = Qualified("java.util.stream.Stream")

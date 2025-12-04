@@ -100,7 +100,7 @@ class BusinessentityRepoImpl() : BusinessentityRepo {
         typo.runtime.Fragment.lit("::timestamp")
       )) }
     );
-    val q: Fragment = if (columns.isEmpty()) interpolate(typo.runtime.Fragment.lit("""
+    val q: Fragment = (if (columns.isEmpty()) interpolate(typo.runtime.Fragment.lit("""
       insert into "person"."businessentity" default values
       returning "businessentityid", "rowguid", "modifieddate"::text
     """.trimMargin())) else interpolate(
@@ -116,7 +116,7 @@ class BusinessentityRepoImpl() : BusinessentityRepo {
         )
         returning "businessentityid", "rowguid", "modifieddate"::text
       """.trimMargin())
-    )
+    ))
     return q.updateReturning(BusinessentityRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 

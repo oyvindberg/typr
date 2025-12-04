@@ -38,14 +38,14 @@ public interface PetsApiServer extends PetsApi {
 
   /** Endpoint wrapper for createPet - handles response status codes */
   @POST
-  @Path("/")
+  @Path("")
   @Consumes(value = { MediaType.APPLICATION_JSON })
   @Produces(value = { MediaType.APPLICATION_JSON })
   @SecurityRequirement(name = "oauth2", scopes = { "write:pets" })
   @SecurityRequirement(name = "apiKeyHeader")
   default Response createPetEndpoint(PetCreate body) {
     return switch (createPet(body)) {
-      case Created r -> Response.ok(r.value()).build();
+      case Created r -> Response.status(201).entity(r.value()).build();
       case BadRequest r -> Response.status(400).entity(r.value()).build();
       default -> throw new IllegalStateException("Unexpected response type");
     };
@@ -99,7 +99,7 @@ public interface PetsApiServer extends PetsApi {
   /** List all pets */
   @Override
   @GET
-  @Path("/")
+  @Path("")
   @Produces(value = { MediaType.APPLICATION_JSON })
   List<Pet> listPets(
     /** Maximum number of pets to return */

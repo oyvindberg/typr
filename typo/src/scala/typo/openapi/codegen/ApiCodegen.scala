@@ -50,10 +50,15 @@ class ApiCodegen(
 
     // Get throws clause from client support if it generates concrete client
     // (interface methods must declare checked exceptions that implementations throw)
-    val baseMethodThrows = clientFrameworkSupport
-      .filter(_.generatesConcreteClient)
-      .map(_.clientMethodThrows)
-      .getOrElse(Nil)
+    // For async methods (with effect type), no throws clause is needed since exceptions are wrapped in the effect
+    val baseMethodThrows = if (effectOps.isDefined) {
+      Nil
+    } else {
+      clientFrameworkSupport
+        .filter(_.generatesConcreteClient)
+        .map(_.clientMethodThrows)
+        .getOrElse(Nil)
+    }
 
     // Generate base trait (no framework annotations on methods)
     val baseMethods = api.methods.map(m => generateBaseMethod(m, throws = baseMethodThrows))
@@ -289,6 +294,9 @@ class ApiCodegen(
     // Generate method body
     val body = generateConcreteClientMethodBody(method, clientSupport)
 
+    // For async methods (with effect type), no throws clause is needed since exceptions are wrapped in the effect
+    val throwsClause = if (effectOps.isDefined) Nil else clientSupport.clientMethodThrows
+
     jvm.Method(
       annotations = Nil,
       comments = comments,
@@ -297,7 +305,7 @@ class ApiCodegen(
       params = params,
       implicitParams = Nil,
       tpe = returnType,
-      throws = clientSupport.clientMethodThrows,
+      throws = throwsClause,
       body = jvm.Body(body),
       isOverride = true,
       isDefault = false
@@ -310,9 +318,18 @@ class ApiCodegen(
       clientSupport: FrameworkSupport
   ): List[jvm.Code] = {
     if (clientSupport.isAsyncEntityRead) {
+      // Http4s-style async (entity reading returns IO[T])
       generateAsyncClientMethodBody(method, clientSupport)
     } else {
-      generateSyncClientMethodBody(method, clientSupport)
+      // Check if we're using JDK HTTP Client with an async effect type
+      (clientSupport, effectOps) match {
+        case (jdk: JdkHttpClientSupport.type, Some(ops)) =>
+          // JDK HTTP Client with async effect type: use sendAsync() wrapped in effect
+          generateJdkAsyncClientMethodBody(method, jdk, ops)
+        case _ =>
+          // Sync client (JDK with Blocking, or other frameworks)
+          generateSyncClientMethodBody(method, clientSupport)
+      }
     }
   }
 
@@ -491,6 +508,188 @@ class ApiCodegen(
     stmts.result()
   }
 
+  /** Generate JDK HTTP Client async method body using sendAsync() wrapped in effect type.
+    *
+    * Generated code structure:
+    * {{{
+    *   var request = HttpRequest.newBuilder(...).build()
+    *   return Uni.createFrom().completionStage(() -> httpClient.sendAsync(request, BodyHandlers.ofString()))
+    *       .map(response -> {
+    *           var statusCode = response.statusCode()
+    *           if (statusCode == 200) { return new Ok(...); }
+    *           else if (statusCode == 404) { return new NotFound(...); }
+    *           else { throw new IllegalStateException(...); }
+    *       })
+    * }}}
+    */
+  private def generateJdkAsyncClientMethodBody(
+      method: ApiMethod,
+      clientSupport: JdkHttpClientSupport.type,
+      ops: EffectTypeOps
+  ): List[jvm.Code] = {
+    // Build the URI with path and query parameters
+    val uriCode = buildClientUriJdk(method, clientSupport)
+
+    // Build the HTTP method code
+    val httpMethodCode = clientSupport.httpMethodCode(method.httpMethod)
+
+    // Get body parameter name if present
+    val bodyParamName = method.requestBody match {
+      case Some(body) if !body.isMultipart => Some("body")
+      case _                               => None
+    }
+
+    // Build the request using framework support
+    val requestIdent = jvm.Ident("request")
+    val requestCode = clientSupport.buildClientRequest(httpMethodCode, uriCode, bodyParamName)
+
+    // Get the async supplier: () -> httpClient.sendAsync(request, BodyHandlers.ofString())
+    val asyncSupplier = clientSupport.executeClientRequestAsyncSupplier(requestIdent)
+
+    // Wrap in effect type: Uni.createFrom().completionStage(supplier)
+    val effectWrapped = ops.fromCompletionStage(asyncSupplier)
+
+    // Helper to wrap single-response lambda body in try/catch (for JSON parsing exceptions)
+    def wrapSingleResponseLambda(responseIdent: jvm.Ident, readCode: jvm.Code): jvm.Code = {
+      val exIdent = jvm.Ident("e")
+      val rethrowExpr = Types.RuntimeException.construct(exIdent.code)
+      val catchBody = List(code"throw $rethrowExpr")
+      val tryCatch = jvm.TryCatch(
+        tryBlock = List(code"return $readCode"),
+        catches = List(jvm.TryCatch.Catch(Types.Exception, exIdent, catchBody)),
+        finallyBlock = Nil
+      )
+      jvm.Lambda(List(jvm.LambdaParam(responseIdent)), jvm.Body.Stmts(List(tryCatch.code))).code
+    }
+
+    // Generate response handling based on return type
+    val (requestDecl, mappedEffect) = method.responseVariants match {
+      case Some(variants) =>
+        val responseName = if (useGenericResponseTypes) {
+          val shape = ResponseShape.fromVariants(variants)
+          shape.typeName
+        } else {
+          capitalize(method.name) + "Response"
+        }
+
+        // Build the map lambda that handles different status codes
+        val responseIdent = jvm.Ident("response")
+        val lambdaBodyStmts = generateJdkAsyncResponseHandlingLambdaBody(responseIdent, responseName, variants, clientSupport)
+
+        // Build: effectType.map(effectWrapped, response -> { ... })
+        val mapLambda = jvm.Lambda(List(jvm.LambdaParam(responseIdent)), jvm.Body.Stmts(lambdaBodyStmts)).code
+        (code"var ${requestIdent.code} = $requestCode", ops.map(effectWrapped, mapLambda))
+
+      case None =>
+        // Single response type - just parse the body
+        val singleResponseType = inferSingleResponseType(method)
+        if (singleResponseType == Types.Void) {
+          // For void, just map to null
+          val mapToNull = jvm.Lambda(jvm.Ident("response"), code"null").code
+          (code"var ${requestIdent.code} = $requestCode", ops.map(effectWrapped, mapToNull))
+        } else {
+          // Parse the body and return - wrap in try/catch for checked exceptions
+          val responseIdent = jvm.Ident("response")
+          val readCode = clientSupport.readEntity(responseIdent.code, singleResponseType)
+          val mapLambda = wrapSingleResponseLambda(responseIdent, readCode)
+          (code"var ${requestIdent.code} = $requestCode", ops.map(effectWrapped, mapLambda))
+        }
+    }
+
+    // Check if request building involves JSON serialization (has body param)
+    // If so, wrap the whole thing in try/catch
+    bodyParamName match {
+      case Some(_) =>
+        // Has body - need to wrap in try/catch for writeValueAsString
+        val exIdent = jvm.Ident("e")
+        val rethrowExpr = Types.RuntimeException.construct(exIdent.code)
+        val catchBody = List(code"throw $rethrowExpr")
+        val tryCatch = jvm.TryCatch(
+          tryBlock = List(requestDecl, code"return $mappedEffect"),
+          catches = List(jvm.TryCatch.Catch(Types.Exception, exIdent, catchBody)),
+          finallyBlock = Nil
+        )
+        List(tryCatch.code)
+      case None =>
+        // No body - no need to wrap
+        List(requestDecl, code"return $mappedEffect")
+    }
+  }
+
+  /** Generate the lambda body for JDK async response handling. Returns the list of statements for status code handling. The body is wrapped in try/catch to convert checked exceptions to unchecked.
+    */
+  private def generateJdkAsyncResponseHandlingLambdaBody(
+      responseIdent: jvm.Ident,
+      responseName: String,
+      variants: List[ResponseVariant],
+      clientSupport: FrameworkSupport
+  ): List[jvm.Code] = {
+    val tryStmts = List.newBuilder[jvm.Code]
+    val statusCodeIdent = jvm.Ident("statusCode")
+    val statusCodeExpr = clientSupport.getStatusCode(responseIdent.code)
+    tryStmts += code"var ${statusCodeIdent.code} = $statusCodeExpr"
+
+    // Build if-else chain for each variant
+    val ifElseCases = variants.map { variant =>
+      val subtypeCtorTpe = statusSubtypeCtorTpe(variant.statusCode, responseName)
+      val bodyType = typeMapper.map(variant.typeInfo)
+      val readEntityCode = clientSupport.readEntity(responseIdent.code, bodyType)
+
+      val isRangeStatus = variant.statusCode.toLowerCase match {
+        case "4xx" | "5xx" | "default" | "2xx" => true
+        case _                                 => false
+      }
+
+      val condition = variant.statusCode.toLowerCase match {
+        case "2xx"     => code"${statusCodeIdent.code} >= 200 && ${statusCodeIdent.code} < 300"
+        case "4xx"     => code"${statusCodeIdent.code} >= 400 && ${statusCodeIdent.code} < 500"
+        case "5xx"     => code"${statusCodeIdent.code} >= 500 && ${statusCodeIdent.code} < 600"
+        case "default" => code"true"
+        case s =>
+          val statusInt = scala.util.Try(s.toInt).getOrElse(500)
+          code"${statusCodeIdent.code} == $statusInt"
+      }
+
+      // Use .construct() to generate proper `new Type(...)` for Java
+      val constructorCall = if (isRangeStatus) {
+        val newExpr = subtypeCtorTpe.construct(statusCodeIdent.code, readEntityCode)
+        code"return $newExpr"
+      } else {
+        val newExpr = subtypeCtorTpe.construct(readEntityCode)
+        code"return $newExpr"
+      }
+
+      (condition, constructorCall, variant.statusCode.toLowerCase == "default")
+    }
+
+    val (defaultCases, specificCases) = ifElseCases.partition(_._3)
+
+    // Build if-else chain using IfElseChain tree
+    val cases = specificCases.map { case (cond, body, _) => (cond, body) }
+
+    // Add else case
+    val elseBody = defaultCases.headOption
+      .map(_._2)
+      .getOrElse {
+        val errorExpr = Types.IllegalStateException.construct(lang.s(code"Unexpected status code: ${rt(statusCodeIdent.code)}").code)
+        code"throw $errorExpr"
+      }
+
+    tryStmts += jvm.IfElseChain(cases, elseBody).code
+
+    // Wrap in try/catch to convert checked exceptions (like JsonProcessingException) to unchecked
+    val exIdent = jvm.Ident("e")
+    val rethrowExpr = Types.RuntimeException.construct(exIdent.code)
+    val catchBody = List(code"throw $rethrowExpr")
+    val tryCatch = jvm.TryCatch(
+      tryBlock = tryStmts.result(),
+      catches = List(jvm.TryCatch.Catch(Types.Exception, exIdent, catchBody)),
+      finallyBlock = Nil
+    )
+
+    List(tryCatch.code)
+  }
+
   /** Build URI code for Http4s client request with path and query parameters (uses / operator) */
   private def buildClientUriHttp4s(method: ApiMethod): jvm.Code = {
     val fullPath = method.path
@@ -558,7 +757,7 @@ class ApiCodegen(
     // Use the JDK-specific method that handles all query params at once
     clientSupport match {
       case jdk: JdkHttpClientSupport.type =>
-        jdk.buildFullClientUri(baseUriIdent, segments, queryParams)
+        jdk.buildFullClientUri(baseUriIdent, segments, queryParams, lang.Optional)
       case _ =>
         // Fallback for other frameworks - build path only (shouldn't reach here for JDK)
         clientSupport.buildUriPath(baseUriIdent, segments)
@@ -672,7 +871,8 @@ $ifElseCode"""
     basePath match {
       case Some(base) if fullPath.startsWith(base) =>
         val relative = fullPath.stripPrefix(base)
-        if (relative.isEmpty) "/" else relative
+        // Return empty string for JAX-RS sub-resources at base path, otherwise keep relative path
+        if (relative.isEmpty) "" else relative
       case _ => fullPath
     }
   }
@@ -2076,11 +2276,11 @@ $ifElseCode"""
       val body = if (isRangeStatus) {
         // Use the user-provided statusCode field
         serverSupport.buildStatusResponse(statusCodeAccess, rawValueAccess) // Range types have fixed Error type, no cast needed
-      } else if (defaultStatusCode >= 200 && defaultStatusCode < 300) {
-        // Fixed success response
+      } else if (defaultStatusCode == 200) {
+        // HTTP 200 OK - use the framework's ok response helper
         serverSupport.buildOkResponse(valueAccess)
       } else {
-        // Fixed error response
+        // Other status codes (including 201 Created, etc.) - use explicit status
         serverSupport.buildStatusResponse(code"$defaultStatusCode", valueAccess)
       }
 

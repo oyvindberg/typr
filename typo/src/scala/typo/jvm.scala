@@ -147,6 +147,7 @@ object jvm {
   sealed trait ClassType
   object ClassType {
     case object Class extends ClassType
+    case object AbstractClass extends ClassType
     case object Interface extends ClassType
   }
 
