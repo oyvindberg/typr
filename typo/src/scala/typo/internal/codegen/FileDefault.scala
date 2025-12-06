@@ -2,14 +2,14 @@ package typo
 package internal
 package codegen
 
-case class FileDefault(default: ComputedDefault, jsonLibs: List[JsonLib], dbLib: Option[DbLib], lang: Lang) {
-  private val jsonInstances = jsonLibs.map(_.defaultedInstance)
-  val additionalFiles: List[jvm.File] = jsonInstances.flatMap(_.additionalFiles)
+case class FileDefault(default: ComputedDefault, jsonLib: JsonLib, dbLib: Option[DbLib], lang: Lang) {
+  private val jsonInstances = jsonLib.defaultedInstance
+  val additionalFiles: List[jvm.File] = jsonInstances.additionalFiles
 
   val cls = {
-    val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
+    val typeAnnotations = jsonInstances.typeAnnotations
     val instances: List[jvm.Given] =
-      jsonInstances.flatMap(_.givens) ++
+      jsonInstances.givens ++
         dbLib.toList.flatMap(_.defaultedInstance)
 
     val T = jvm.Type.Abstract(jvm.Ident("T"))

@@ -54,7 +54,7 @@ object generate {
       fileHeader = publicOptions.fileHeader,
       generateMockRepos = publicOptions.generateMockRepos,
       enablePrimaryKeyType = publicOptions.enablePrimaryKeyType,
-      jsonLibs = publicOptions.jsonLibs.map {
+      jsonLib = publicOptions.jsonLib match {
         case JsonLibName.Circe    => JsonLibCirce(pkg, default, publicOptions.inlineImplicits, requireScala("circe"))
         case JsonLibName.PlayJson => JsonLibPlay(pkg, default, publicOptions.inlineImplicits, requireScala("play-json"))
         case JsonLibName.ZioJson  => JsonLibZioJson(pkg, default, publicOptions.inlineImplicits, requireScala("zio-json"))
@@ -119,7 +119,7 @@ object generate {
 
         val domainFiles = domains.map(d => FileDomain(d, options, language))
 
-        val defaultFile = FileDefault(default, options.jsonLibs, options.dbLib, language)
+        val defaultFile = FileDefault(default, options.jsonLib, options.dbLib, language)
         val mostFiles: List[jvm.File] =
           List(
             options.dbLib.toList.flatMap(_.additionalFiles),

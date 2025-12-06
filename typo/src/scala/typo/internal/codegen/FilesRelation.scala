@@ -83,9 +83,9 @@ case class FilesRelation(
         }
       ).flatten
 
-      val jsonInstances = options.jsonLibs.map(_.instances(names.RowName, cols))
-      val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
-      val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
+      val jsonInstances = options.jsonLib.instances(names.RowName, cols)
+      val fieldAnnotations = jsonInstances.fieldAnnotations
+      val typeAnnotations = jsonInstances.typeAnnotations
 
       val commentedParams: NonEmptyList[jvm.Param[jvm.Type]] =
         cols.map { col =>
@@ -105,7 +105,7 @@ case class FilesRelation(
         }
 
       val instances: List[jvm.ClassMember] =
-        jsonInstances.flatMap(_.givens) ++
+        jsonInstances.givens ++
           options.dbLib.toList.flatMap(_.rowInstances(names.RowName, cols, rowType = rowType))
 
       val classComment = {
@@ -463,7 +463,14 @@ case class FilesRelation(
     })
 
     /* fields: lazy override val (Scala) / @Override public Type fields() (Java) */
-    val fieldsValue = jvm.Value(Nil, jvm.Ident("fields"), fieldsName, Some(jvm.NewWithBody(extendsClass = None, implementsInterface = Some(fieldsName), fieldImplMethods).code), isLazy = true, isOverride = true)
+    val fieldsValue = jvm.Value(
+      Nil,
+      jvm.Ident("fields"),
+      fieldsName,
+      Some(jvm.NewWithBody(extendsClass = None, implementsInterface = Some(fieldsName), fieldImplMethods).code),
+      isLazy = true,
+      isOverride = true
+    )
 
     val columnsImplMethod = jvm.Method(
       annotations = Nil,

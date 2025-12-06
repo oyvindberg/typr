@@ -108,7 +108,7 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
       case jvm.NotNull(expr)             => expr // Scala doesn't need not-null assertions
       case jvm.ConstructorMethodRef(tpe) => code"$tpe.apply"
       case jvm.ClassOf(tpe)              => code"classOf[$tpe]"
-      case jvm.JavaClassOf(tpe)           => code"classOf[$tpe]" // Same as ClassOf for Scala
+      case jvm.JavaClassOf(tpe)          => code"classOf[$tpe]" // Same as ClassOf for Scala
       case jvm.Call(target, argGroups) =>
         val renderedGroups = argGroups.map { group =>
           val argsStr = group.args.map(_.value).mkCode(", ")
