@@ -243,10 +243,20 @@ public interface tester {
 
         withConnection(conn -> {
             conn.unwrap(PgConnection.class).setPrepareThreshold(0);
+
+            // Native type roundtrip tests
+            System.out.println("\n=== Native Type Roundtrip Tests ===");
             for (PgTypeAndExample<?> t : All) {
                 System.out.println("Testing " + t.type.typename().sqlType() + " with example '" + (format(t.example)) + "'");
                 testCase(conn, t);
             }
+
+            // JSON DB roundtrip tests (simulates MULTISET behavior)
+            System.out.println("\n=== JSON DB Roundtrip Tests (MULTISET simulation) ===");
+            for (PgTypeAndExample<?> t : All) {
+                testJsonDbRoundtrip(conn, t);
+            }
+
             return null;
         });
     }
@@ -256,7 +266,7 @@ public interface tester {
             PgJson<A> jsonCodec = t.type.pgJson();
             A original = t.example;
 
-            // Test toJson -> encode -> parse -> fromJson roundtrip
+            // Test toJson -> encode -> parse -> fromJson roundtrip (in-memory)
             JsonValue jsonValue = jsonCodec.toJson(original);
             String encoded = jsonValue.encode();
             JsonValue parsed = JsonValue.parse(encoded);
@@ -271,6 +281,52 @@ public interface tester {
             }
         } catch (Exception e) {
             throw new RuntimeException("JSON roundtrip test failed for " + t.type.typename().sqlType(), e);
+        }
+    }
+
+    // Test JSON roundtrip through the database - simulates MULTISET behavior
+    // Insert value into native column, read back as JSON using to_json(), parse back to value
+    static <A> void testJsonDbRoundtrip(Connection conn, PgTypeAndExample<A> t) throws SQLException {
+        PgJson<A> jsonCodec = t.type.pgJson();
+        A original = t.example;
+        String sqlType = t.type.typename().sqlType();
+
+        // Create temp table with the native type column
+        conn.createStatement().execute("CREATE TEMP TABLE test_json_rt (v " + sqlType + ")");
+
+        try {
+            // Insert value using native type
+            var insert = conn.prepareStatement("INSERT INTO test_json_rt (v) VALUES (?)");
+            t.type.write().set(insert, 1, original);
+            insert.execute();
+            insert.close();
+
+            // Select back as JSON using to_json - this is what MULTISET does
+            var select = conn.prepareStatement("SELECT to_json(v) FROM test_json_rt");
+            select.execute();
+            var rs = select.getResultSet();
+
+            if (!rs.next()) {
+                throw new RuntimeException("No rows returned");
+            }
+
+            // Read the JSON string back from the database
+            String jsonFromDb = rs.getString(1);
+            select.close();
+
+            // Parse the JSON and convert back to value
+            JsonValue parsedFromDb = JsonValue.parse(jsonFromDb);
+            A decoded = jsonCodec.fromJson(parsedFromDb);
+
+            System.out.println("JSON DB roundtrip " + sqlType +
+                    ": " + format(original) + " -> DB -> " + jsonFromDb + " -> " + format(decoded));
+
+            if (t.hasIdentity && !areEqual(decoded, original)) {
+                throw new RuntimeException("JSON DB roundtrip failed for " + sqlType +
+                        ": expected '" + format(original) + "' but got '" + format(decoded) + "'");
+            }
+        } finally {
+            conn.createStatement().execute("DROP TABLE IF EXISTS test_json_rt");
         }
     }
 

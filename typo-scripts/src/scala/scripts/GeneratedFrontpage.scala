@@ -36,7 +36,7 @@ object GeneratedFrontpage {
           pkg = "frontpage",
           lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
           dbLib = Some(DbLibName.Anorm),
-          jsonLib = JsonLibName.PlayJson,
+          jsonLibs = List(JsonLibName.PlayJson),
           typeOverride = TypeOverride.Empty,
           openEnums = Selector.None,
           generateMockRepos = Selector.All,

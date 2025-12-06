@@ -57,7 +57,7 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
             pkg = "adventureworks",
             lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
             dbLib = dbLib,
-            jsonLib = jsonLib,
+            jsonLibs = List(jsonLib),
             enableTestInserts = Selector.All,
             enableStreamingInserts = false,
             enableDsl = dbLib.nonEmpty,

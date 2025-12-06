@@ -160,8 +160,8 @@ object GenHardcodedFiles extends BleepCodegenScript("GenHardcodedFiles") {
           Options(
             pkg = "testdb.hardcoded",
             lang = language,
-            dbLib,
-            jsonLib,
+            dbLib = dbLib,
+            jsonLibs = List(jsonLib),
             generateMockRepos = mockSelector,
             silentBanner = true,
             fileHeader = header,

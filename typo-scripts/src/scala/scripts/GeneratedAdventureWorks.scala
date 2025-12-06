@@ -60,7 +60,7 @@ object GeneratedAdventureWorks {
               pkg = "adventureworks",
               lang = lang,
               dbLib = Some(dbLib),
-              jsonLib = jsonLib,
+              jsonLibs = List(jsonLib),
               typeOverride = TypeOverride.relation {
                 case (_, "firstname")                     => "adventureworks.userdefined.FirstName"
                 case ("sales.creditcard", "creditcardid") => "adventureworks.userdefined.CustomCreditcardId"

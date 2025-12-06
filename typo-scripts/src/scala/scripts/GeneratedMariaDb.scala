@@ -50,7 +50,7 @@ object GeneratedMariaDb {
               pkg = "testdb",
               lang = lang,
               dbLib = Some(dbLib),
-              jsonLib = jsonLib,
+              jsonLibs = List(jsonLib),
               generateMockRepos = Selector.All,
               enablePrimaryKeyType = Selector.All,
               enableTestInserts = Selector.All,

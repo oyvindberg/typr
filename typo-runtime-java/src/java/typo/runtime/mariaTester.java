@@ -220,6 +220,8 @@ public interface mariaTester {
             int passed = 0;
             int failed = 0;
 
+            // Test native type roundtrip
+            System.out.println("=== Native Type Roundtrip Tests ===");
             for (MariaTypeAndExample<?> t : All) {
                 String typeName = t.type.typename().sqlType();
                 try {
@@ -234,8 +236,22 @@ public interface mariaTester {
                 }
             }
 
-            System.out.println("=====================================");
-            System.out.println("Results: " + passed + " passed, " + failed + " failed out of " + All.size() + " tests");
+            // Test JSON DB roundtrip (simulates MULTISET behavior)
+            System.out.println("\n=== JSON DB Roundtrip Tests (MULTISET simulation) ===");
+            for (MariaTypeAndExample<?> t : All) {
+                String typeName = t.type.typename().sqlType();
+                try {
+                    testJsonDbRoundtrip(conn, t);
+                    passed++;
+                } catch (Exception e) {
+                    System.out.println("  FAILED " + typeName + ": " + e.getMessage() + "\n");
+                    e.printStackTrace();
+                    failed++;
+                }
+            }
+
+            System.out.println("\n=====================================");
+            System.out.println("Results: " + passed + " passed, " + failed + " failed out of " + (All.size() * 2) + " tests");
             System.out.println("=====================================");
 
             if (failed > 0) {
@@ -251,7 +267,7 @@ public interface mariaTester {
             MariaJson<A> jsonCodec = t.type.mariaJson();
             A original = t.example;
 
-            // Test toJson -> encode -> parse -> fromJson roundtrip
+            // Test toJson -> encode -> parse -> fromJson roundtrip (in-memory)
             JsonValue jsonValue = jsonCodec.toJson(original);
             String encoded = jsonValue.encode();
             JsonValue parsed = JsonValue.parse(encoded);
@@ -266,6 +282,53 @@ public interface mariaTester {
             }
         } catch (Exception e) {
             throw new RuntimeException("JSON roundtrip test failed for " + t.type.typename().sqlType(), e);
+        }
+    }
+
+    // Test JSON roundtrip through the database - simulates MULTISET behavior
+    // Insert value into native column, read back as JSON, parse back to value
+    static <A> void testJsonDbRoundtrip(Connection conn, MariaTypeAndExample<A> t) throws SQLException {
+        MariaJson<A> jsonCodec = t.type.mariaJson();
+        A original = t.example;
+        String sqlType = t.type.typename().sqlType();
+
+        // Create temp table with the native type column
+        conn.createStatement().execute("CREATE TEMPORARY TABLE test_json_rt (v " + sqlType + ")");
+
+        try {
+            // Insert value using native type
+            var insert = conn.prepareStatement("INSERT INTO test_json_rt (v) VALUES (?)");
+            t.type.write().set(insert, 1, original);
+            insert.execute();
+            insert.close();
+
+            // Select back as JSON using JSON_OBJECT - this is what MULTISET does
+            var select = conn.prepareStatement("SELECT JSON_OBJECT('v', v) FROM test_json_rt");
+            select.execute();
+            var rs = select.getResultSet();
+
+            if (!rs.next()) {
+                throw new RuntimeException("No rows returned");
+            }
+
+            // Read the JSON string back from the database
+            String jsonFromDb = rs.getString(1);
+            select.close();
+
+            // Parse the JSON object and extract 'v' field
+            JsonValue parsedFromDb = JsonValue.parse(jsonFromDb);
+            JsonValue fieldValue = ((JsonValue.JObject) parsedFromDb).get("v");
+            A decoded = jsonCodec.fromJson(fieldValue);
+
+            System.out.println("JSON DB roundtrip " + sqlType +
+                    ": " + format(original) + " -> DB -> " + jsonFromDb + " -> " + format(decoded));
+
+            if (t.hasIdentity && !areEqual(decoded, original)) {
+                throw new RuntimeException("JSON DB roundtrip failed for " + sqlType +
+                        ": expected '" + format(original) + "' but got '" + format(decoded) + "'");
+            }
+        } finally {
+            conn.createStatement().execute("DROP TEMPORARY TABLE IF EXISTS test_json_rt");
         }
     }
 

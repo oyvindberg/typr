@@ -79,7 +79,7 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
       }
 
       val instances =
-        jsonInstances.givens ++
+        jsonInstances.flatMap(_.givens) ++
           options.dbLib.toList.flatMap(_.rowInstances(unsaved.tpe, unsaved.unsavedCols, rowType = DbLib.RowType.Writable))
 
       val cls = jvm.Adt.Record(

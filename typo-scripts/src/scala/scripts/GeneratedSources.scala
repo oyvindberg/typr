@@ -26,7 +26,7 @@ object GeneratedSources {
     val options = Options(
       pkg = "typo.generated",
       lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
-      jsonLib = JsonLibName.PlayJson,
+      jsonLibs = List(JsonLibName.PlayJson),
       dbLib = Some(DbLibName.Anorm),
       fileHeader = header,
       debugTypes = true
