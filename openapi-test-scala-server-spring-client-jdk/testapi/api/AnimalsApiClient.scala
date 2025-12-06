@@ -8,23 +8,17 @@ import testapi.model.Animal
 
 /** JDK HTTP Client implementation for AnimalsApi */
 class AnimalsApiClient(
-    /** JDK HTTP client for making HTTP requests */
-    val httpClient: HttpClient,
-    /** Base URI for API requests */
-    val baseUri: URI,
-    /** Jackson ObjectMapper for JSON serialization */
-    val objectMapper: ObjectMapper
+  /** JDK HTTP client for making HTTP requests */
+  val httpClient: HttpClient,
+  /** Base URI for API requests */
+  val baseUri: URI,
+  /** Jackson ObjectMapper for JSON serialization */
+  val objectMapper: ObjectMapper
 ) extends AnimalsApi {
-
   /** List all animals (polymorphic) */
   @throws[Exception]
   override def listAnimals: Response2004XX5XX[java.util.List[Animal]] = {
-    var request = java.net.http.HttpRequest
-      .newBuilder(java.net.URI.create(baseUri.toString() + "/" + "animals"))
-      .method("GET", java.net.http.HttpRequest.BodyPublishers.noBody())
-      .header("Content-Type", "application/json")
-      .header("Accept", "application/json")
-      .build()
+    var request = java.net.http.HttpRequest.newBuilder(java.net.URI.create(baseUri.toString() + "/" + "animals")).method("GET", java.net.http.HttpRequest.BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
     var response = httpClient.send(request, java.net.http.HttpResponse.BodyHandlers.ofString())
     var statusCode = response.statusCode()
     if (statusCode == 200) return new testapi.api.Ok(objectMapper.readValue(response.body(), new com.fasterxml.jackson.core.`type`.TypeReference[java.util.List[testapi.model.Animal]] {}))

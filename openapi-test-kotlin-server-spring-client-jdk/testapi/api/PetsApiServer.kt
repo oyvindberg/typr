@@ -3,7 +3,6 @@ package testapi.api
 import com.fasterxml.jackson.databind.JsonNode
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.lang.IllegalStateException
-import java.lang.Void
 import java.util.Optional
 import kotlin.collections.List
 import org.springframework.http.MediaType
@@ -35,7 +34,7 @@ interface PetsApiServer : PetsApi {
   override fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Void
+  ): Unit
 
   /** Get a pet by ID */
   override fun getPet(
@@ -59,7 +58,7 @@ interface PetsApiServer : PetsApi {
   override fun getPetPhoto(
     /** The pet ID */
     petId: PetId
-  ): Void
+  ): Unit
 
   /** List all pets */
   @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])

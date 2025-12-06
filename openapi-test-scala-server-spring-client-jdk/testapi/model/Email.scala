@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonValue
 case class Email(@JsonValue value: String) extends AnyVal
 
 object Email {
-
   /** Converts a String to this type for Spring @PathVariable binding */
   def valueOf(s: String): Email = new testapi.model.Email(s)
 }

@@ -71,9 +71,8 @@ class OpenApiIntegrationTest {
       Created(newPet)
     }
 
-    override def deletePet(petId: PetId): Void = {
+    override def deletePet(petId: PetId): Unit = {
       pets.remove(petId)
-      null
     }
 
     override def getPet(petId: PetId): Response200404[Pet, Error] = {
@@ -83,7 +82,7 @@ class OpenApiIntegrationTest {
       }
     }
 
-    override def getPetPhoto(petId: PetId): Void = {
+    override def getPetPhoto(petId: PetId): Unit = {
       throw new UnsupportedOperationException("Not implemented")
     }
 

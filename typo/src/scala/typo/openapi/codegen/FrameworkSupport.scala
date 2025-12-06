@@ -771,8 +771,10 @@ object JdkHttpClientSupport extends FrameworkSupport {
 
   /** Execute the client request asynchronously (returns a lambda that yields CompletableFuture). Used with effectOps.fromCompletionStage() to wrap in the effect type.
     */
-  def executeClientRequestAsyncSupplier(requestIdent: jvm.Ident): jvm.Code =
-    code"() -> httpClient.sendAsync(${requestIdent.code}, ${Types.JdkHttp.BodyHandlers}.ofString())"
+  def executeClientRequestAsyncSupplier(requestIdent: jvm.Ident): jvm.Code = {
+    val asyncCall = code"httpClient.sendAsync(${requestIdent.code}, ${Types.JdkHttp.BodyHandlers}.ofString())"
+    jvm.Lambda(jvm.Body.Expr(asyncCall)).code
+  }
 
   override def buildUriPath(baseUriIdent: jvm.Ident, segments: List[(String, Boolean)]): jvm.Code = {
     // For JDK, we need to build the path string and use URI.resolve

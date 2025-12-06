@@ -1,6 +1,5 @@
 package testapi.api
 
-import java.lang.Void
 import testapi.model.Pet
 
 /** Callback handler for createPet - OnPetCreated
@@ -8,5 +7,5 @@ import testapi.model.Pet
   */
 interface CreatePetOnPetCreatedCallback {
   /** Called when pet is created */
-  fun onPetCreatedCallback(body: Pet): Void
+  fun onPetCreatedCallback(body: Pet): Unit
 }

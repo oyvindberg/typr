@@ -2,7 +2,6 @@ package testapi.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.smallrye.mutiny.Uni
-import java.lang.Void
 import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
@@ -18,7 +17,7 @@ interface PetsApi {
   fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Uni<Void>
+  ): Uni<Unit>
 
   /** Get a pet by ID */
   fun getPet(
@@ -30,7 +29,7 @@ interface PetsApi {
   fun getPetPhoto(
     /** The pet ID */
     petId: PetId
-  ): Uni<Void>
+  ): Uni<Unit>
 
   /** List all pets */
   fun listPets(

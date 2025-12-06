@@ -60,9 +60,9 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       IO.pure(Created(newPet))
     }
 
-    override def deletePet(petId: PetId): IO[Void] = {
+    override def deletePet(petId: PetId): IO[Unit] = {
       pets.remove(petId)
-      IO.pure(null)
+      IO.unit
     }
 
     override def getPet(petId: PetId): IO[Response200404[Pet, Error]] = {
@@ -72,7 +72,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       }
     }
 
-    override def getPetPhoto(petId: PetId): IO[Void] = {
+    override def getPetPhoto(petId: PetId): IO[Unit] = {
       throw new UnsupportedOperationException("Not implemented")
     }
 

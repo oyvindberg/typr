@@ -2,7 +2,6 @@ package testapi.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import java.lang.Exception
-import java.lang.Void
 import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
@@ -20,7 +19,7 @@ interface PetsApi {
   fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Void
+  ): Unit
 
   /** Get a pet by ID */
   @Throws(Exception::class)
@@ -34,7 +33,7 @@ interface PetsApi {
   fun getPetPhoto(
     /** The pet ID */
     petId: PetId
-  ): Void
+  ): Unit
 
   /** List all pets */
   @Throws(Exception::class)

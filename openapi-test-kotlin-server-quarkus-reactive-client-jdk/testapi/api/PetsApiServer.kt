@@ -12,7 +12,6 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import java.lang.IllegalStateException
-import java.lang.Void
 import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
@@ -43,7 +42,7 @@ interface PetsApiServer : PetsApi {
   override fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Uni<Void>
+  ): Uni<Unit>
 
   /** Get a pet by ID */
   override fun getPet(
@@ -71,7 +70,7 @@ interface PetsApiServer : PetsApi {
   override fun getPetPhoto(
     /** The pet ID */
     petId: PetId
-  ): Uni<Void>
+  ): Uni<Unit>
 
   /** List all pets */
   @GET

@@ -28,6 +28,19 @@ class ApiCodegen(
     case LangJava     => jvm.Type.Qualified("java.lang.Void")
   }
 
+  /** The "Void" type for this language - represents no return value */
+  private val voidType: jvm.Type = (lang: @unchecked) match {
+    case _: LangScala => jvm.Type.Qualified("scala.Unit")
+    case LangKotlin   => jvm.Type.Qualified("kotlin.Unit")
+    case LangJava     => jvm.Type.Qualified("java.lang.Void")
+  }
+
+  /** Whether this language uses explicit return statements for void methods */
+  private val needsVoidReturn: Boolean = lang match {
+    case LangJava => true
+    case _        => false
+  }
+
   /** Generate API interface files: base trait, optional server trait, optional client trait, and response sum types */
   def generate(api: ApiInterface): List[jvm.File] = {
     val baseTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(api.name))
@@ -381,8 +394,8 @@ class ApiCodegen(
         val singleResponseType = inferSingleResponseType(method)
         // Handle Void specially - for 204 No Content responses, we can't use expect
         // because it tries to decode a body. Use status instead and discard it.
-        val expectCode = if (singleResponseType == Types.Void) {
-          code"${jvm.Ident("client").code}.status(${requestIdent.code}).as(null.asInstanceOf[${Types.Void}])"
+        val expectCode = if (singleResponseType == voidType) {
+          code"${jvm.Ident("client").code}.status(${requestIdent.code}).as(null.asInstanceOf[$voidType])"
         } else {
           code"${jvm.Ident("client").code}.expect[$singleResponseType](${requestIdent.code})"
         }
@@ -433,8 +446,11 @@ class ApiCodegen(
       case None =>
         // Single response type - just parse the body
         val singleResponseType = inferSingleResponseType(method)
-        if (singleResponseType == Types.Void) {
-          stmts += code"return null"
+        if (singleResponseType == voidType) {
+          // In Java, we need `return null` for Void. In Kotlin/Scala, no return needed for Unit.
+          if (needsVoidReturn) {
+            stmts += code"return null"
+          }
         } else {
           val readCode = clientSupport.readEntity(responseIdent.code, singleResponseType)
           stmts += code"return $readCode"
@@ -554,8 +570,15 @@ class ApiCodegen(
       val exIdent = jvm.Ident("e")
       val rethrowExpr = Types.RuntimeException.construct(exIdent.code)
       val catchBody = List(code"throw $rethrowExpr")
+      // In Kotlin lambdas, we can't use `return` - the last expression is implicitly returned.
+      // In Java, we need explicit return statements.
+      val returnExpr = (lang: @unchecked) match {
+        case _: LangScala => readCode // Scala: expression-based
+        case LangKotlin   => readCode // Kotlin lambda: implicit return
+        case LangJava     => jvm.Return(readCode).code // Java: explicit return
+      }
       val tryCatch = jvm.TryCatch(
-        tryBlock = List(code"return $readCode"),
+        tryBlock = List(returnExpr),
         catches = List(jvm.TryCatch.Catch(Types.Exception, exIdent, catchBody)),
         finallyBlock = Nil
       )
@@ -583,10 +606,15 @@ class ApiCodegen(
       case None =>
         // Single response type - just parse the body
         val singleResponseType = inferSingleResponseType(method)
-        if (singleResponseType == Types.Void) {
-          // For void, just map to null
-          val mapToNull = jvm.Lambda(jvm.Ident("response"), code"null").code
-          (code"var ${requestIdent.code} = $requestCode", ops.map(effectWrapped, mapToNull))
+        if (singleResponseType == voidType) {
+          // For void, just map to null (Java Void) or Unit (Kotlin/Scala)
+          val voidValue = (lang: @unchecked) match {
+            case LangJava     => code"null"
+            case LangKotlin   => code"Unit"
+            case _: LangScala => code"()"
+          }
+          val mapToVoid = jvm.Lambda(jvm.Ident("response"), voidValue).code
+          (code"var ${requestIdent.code} = $requestCode", ops.map(effectWrapped, mapToVoid))
         } else {
           // Parse the body and return - wrap in try/catch for checked exceptions
           val responseIdent = jvm.Ident("response")
@@ -651,15 +679,21 @@ class ApiCodegen(
       }
 
       // Use .construct() to generate proper `new Type(...)` for Java
-      val constructorCall = if (isRangeStatus) {
-        val newExpr = subtypeCtorTpe.construct(statusCodeIdent.code, readEntityCode)
-        code"return $newExpr"
+      val constructorExpr = if (isRangeStatus) {
+        subtypeCtorTpe.construct(statusCodeIdent.code, readEntityCode)
       } else {
-        val newExpr = subtypeCtorTpe.construct(readEntityCode)
-        code"return $newExpr"
+        subtypeCtorTpe.construct(readEntityCode)
       }
 
-      (condition, constructorCall, variant.statusCode.toLowerCase == "default")
+      // In Kotlin lambdas inside try-catch, we can't use `return` - the last expression is implicitly returned.
+      // In Java, we need explicit return statements.
+      val resultExpr = (lang: @unchecked) match {
+        case _: LangScala => constructorExpr // Scala: expression-based
+        case LangKotlin   => constructorExpr // Kotlin lambda: implicit return
+        case LangJava     => jvm.Return(constructorExpr).code // Java: explicit return
+      }
+
+      (condition, resultExpr, variant.statusCode.toLowerCase == "default")
     }
 
     val (defaultCases, specificCases) = ifElseCases.partition(_._3)
@@ -845,7 +879,7 @@ $ifElseCode"""
       }
     }
 
-    successResponse.flatMap(_.typeInfo).map(typeMapper.map).getOrElse(Types.Void)
+    successResponse.flatMap(_.typeInfo).map(typeMapper.map).getOrElse(voidType)
   }
 
   /** Find the common base path prefix for a list of paths */
@@ -1761,21 +1795,21 @@ $ifElseCode"""
         val rawResponseType = clientSupport.responseType
 
         // Declare response variable before try-catch (will be assigned in try or catch)
-        val responseDecl = lang match {
+        val responseDecl = (lang: @unchecked) match {
           case _: LangScala => code"var ${responseIdent.code}: $rawResponseType = null"
           case LangKotlin   => code"var ${responseIdent.code}: $rawResponseType"
           case LangJava     => code"$rawResponseType ${responseIdent.code}"
         }
 
         // In try block: call the raw method and assign to response
-        val assignResponse = lang match {
+        val assignResponse = (lang: @unchecked) match {
           case _: LangScala | LangKotlin => code"${responseIdent.code} = $rawMethodCall"
           case LangJava                  => code"${responseIdent.code} = $rawMethodCall"
         }
 
         // In catch block: extract response from exception and assign
         val exceptionResponseCode = clientSupport.getResponseFromException(exceptionIdent.code)
-        val assignFromException = lang match {
+        val assignFromException = (lang: @unchecked) match {
           case _: LangScala | LangKotlin => code"${responseIdent.code} = $exceptionResponseCode"
           case LangJava                  => code"${responseIdent.code} = $exceptionResponseCode"
         }
@@ -2062,7 +2096,7 @@ $ifElseCode"""
 
         successResponse.flatMap(_.typeInfo) match {
           case Some(typeInfo) => typeMapper.map(typeInfo)
-          case None           => Types.Void
+          case None           => voidType
         }
     }
 

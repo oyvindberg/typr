@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.lang.Exception
 import java.lang.IllegalStateException
-import java.lang.Void
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -44,10 +43,9 @@ data class PetsApiClient(
   override fun deletePet(
     /** The pet ID */
     petId: PetId
-  ): Void {
+  ): Unit {
     var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + "/" + petId.toString())).method("DELETE", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
     var response = httpClient.send(request, BodyHandlers.ofString())
-    return null
   }
 
   /** Get a pet by ID */
@@ -69,10 +67,9 @@ data class PetsApiClient(
   override fun getPetPhoto(
     /** The pet ID */
     petId: PetId
-  ): Void {
+  ): Unit {
     var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + "/" + petId.toString() + "/" + "photo")).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
     var response = httpClient.send(request, BodyHandlers.ofString())
-    return null
   }
 
   /** List all pets */
