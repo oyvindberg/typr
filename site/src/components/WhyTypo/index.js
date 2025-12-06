@@ -46,10 +46,10 @@ export default function WhyTypo() {
                     <h3>Ready to Ship Faster with Fewer Bugs?</h3>
                     <p>Join developers who've discovered the joy of type-safe database development.</p>
                     <div className={styles.ctaButtons}>
-                        <Link className="button button--primary button--lg" to="/docs/setup">
+                        <Link className="button button--primary button--lg" to="/db/setup">
                             Get Started Now
                         </Link>
-                        <Link className="button button--outline button--lg" to="/docs">
+                        <Link className="button button--outline button--lg" to="/db">
                             Read the Docs
                         </Link>
                     </div>
