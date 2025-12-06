@@ -78,7 +78,8 @@ public interface MariaJson<A> extends DbJson<A> {
         };
     }
 
-    // Primitive type codecs - same format as PostgreSQL
+    // Primitive type codecs
+    // MariaDB returns BOOLEAN as 1/0 in JSON when coming from a column, not true/false
     MariaJson<Boolean> bool = new MariaJson<>() {
         @Override
         public JsonValue toJson(Boolean value) {
@@ -88,7 +89,9 @@ public interface MariaJson<A> extends DbJson<A> {
         @Override
         public Boolean fromJson(JsonValue json) {
             if (json instanceof JsonValue.JBool b) return b.value();
-            throw new IllegalArgumentException("Expected boolean, got: " + json.getClass().getSimpleName());
+            // MariaDB returns BOOLEAN columns as 1/0 in JSON
+            if (json instanceof JsonValue.JNumber n) return n.value().intValue() != 0;
+            throw new IllegalArgumentException("Expected boolean or number, got: " + json.getClass().getSimpleName());
         }
     };
 
@@ -183,11 +186,13 @@ public interface MariaJson<A> extends DbJson<A> {
         }
     };
 
+    // MariaDB returns binary data as raw bytes with unicode escapes for unprintable chars
+    // e.g., "�\u0001\u0000\u0000" - the JSON parser handles unicode escapes
     MariaJson<byte[]> bytea = new MariaJson<>() {
         @Override
         public JsonValue toJson(byte[] value) {
-            // MariaDB uses base64 encoding for binary in JSON
-            return new JsonValue.JString(Base64.getEncoder().encodeToString(value));
+            // Encode as raw string - the JSON encoder will escape as needed
+            return new JsonValue.JString(new String(value, java.nio.charset.StandardCharsets.ISO_8859_1));
         }
 
         @Override
@@ -195,7 +200,8 @@ public interface MariaJson<A> extends DbJson<A> {
             if (!(json instanceof JsonValue.JString s)) {
                 throw new IllegalArgumentException("Expected string for bytea, got: " + json.getClass().getSimpleName());
             }
-            return Base64.getDecoder().decode(s.value());
+            // The JSON parser already decoded unicode escapes, so we get the raw bytes
+            return s.value().getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
         }
     };
 
@@ -234,7 +240,11 @@ public interface MariaJson<A> extends DbJson<A> {
 
         @Override
         public LocalDateTime fromJson(JsonValue json) {
-            if (json instanceof JsonValue.JString s) return LocalDateTime.parse(s.value());
+            if (json instanceof JsonValue.JString s) {
+                // MariaDB returns "2024-06-15 14:30:45.123456" with space, ISO format uses 'T'
+                String value = s.value().replace(' ', 'T');
+                return LocalDateTime.parse(value);
+            }
             throw new IllegalArgumentException("Expected string for timestamp, got: " + json.getClass().getSimpleName());
         }
     };

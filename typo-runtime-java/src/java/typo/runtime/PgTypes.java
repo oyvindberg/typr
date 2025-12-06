@@ -61,9 +61,9 @@ public interface PgTypes {
     PgType<UUID[]> uuidArray = uuid.array(PgRead.massageJdbcArrayTo(UUID[].class), UUID[]::new);
 
     // JSON types
-    PgType<Json> json = ofPgObject("json", PgJson.json).bimap(Json::new, Json::value);
+    PgType<Json> json = ofPgObject("json", Json::new, Json::value, PgJson.json);
     PgType<Json[]> jsonArray = json.array(PgRead.readJsonArray, Json[]::new).withText(PgText.NotWorking());
-    PgType<Jsonb> jsonb = ofPgObject("jsonb", PgJson.jsonb).bimap(Jsonb::new, Jsonb::value);
+    PgType<Jsonb> jsonb = ofPgObject("jsonb", Jsonb::new, Jsonb::value, PgJson.jsonb);
     PgType<Jsonb[]> jsonbArray = jsonb.array(PgRead.readJsonbArray, Jsonb[]::new).withText(PgText.NotWorking());
 
     // Geometric types
@@ -83,7 +83,7 @@ public interface PgTypes {
     PgType<PGpolygon[]> polygonArray = polygon.array(PgRead.castJdbcArrayTo(PGpolygon.class), PGpolygon[]::new);
 
     // Network types
-    PgType<Inet> inet = ofPgObject("inet", PgJson.inet).bimap(Inet::new, Inet::value);
+    PgType<Inet> inet = ofPgObject("inet", Inet::new, Inet::value, PgJson.inet);
     PgType<Inet[]> inetArray = inet.array(PgRead.pgObjectArray(Inet::new, Inet.class), Inet[]::new);
 
     // Money
@@ -102,41 +102,41 @@ public interface PgTypes {
     PgType<Vector[]> vectorArray = vector.array(PgRead.pgObjectArray(Vector::new, Vector.class), Vector[]::new);
 
     // Object identifier types
-    PgType<AclItem> aclitem = ofPgObject("aclitem", PgJson.aclitem).bimap(AclItem::new, AclItem::value);
+    PgType<AclItem> aclitem = ofPgObject("aclitem", AclItem::new, AclItem::value, PgJson.aclitem);
     PgType<AclItem[]> aclitemArray = aclitem.array(PgRead.pgObjectArray(AclItem::new, AclItem.class), AclItem[]::new);
-    PgType<AnyArray> anyarray = ofPgObject("anyarray", PgJson.text).bimap(AnyArray::new, AnyArray::value);
+    PgType<AnyArray> anyarray = ofPgObject("anyarray", AnyArray::new, AnyArray::value, PgJson.text.bimap(AnyArray::new, AnyArray::value));
     PgType<AnyArray[]> anyarrayArray = anyarray.array(PgRead.pgObjectArray(AnyArray::new, AnyArray.class), AnyArray[]::new);
-    PgType<Int2Vector> int2vector = ofPgObject("int2vector", PgJson.int2vector).bimap(Int2Vector::new, Int2Vector::value);
+    PgType<Int2Vector> int2vector = ofPgObject("int2vector", Int2Vector::new, Int2Vector::value, PgJson.int2vector);
     PgType<Int2Vector[]> int2vectorArray = int2vector.array(PgRead.pgObjectArray(Int2Vector::new, Int2Vector.class), Int2Vector[]::new);
-    PgType<OidVector> oidvector = ofPgObject("oidvector", PgJson.oidvector).bimap(OidVector::new, OidVector::value);
+    PgType<OidVector> oidvector = ofPgObject("oidvector", OidVector::new, OidVector::value, PgJson.oidvector);
     PgType<OidVector[]> oidvectorArray = oidvector.array(PgRead.pgObjectArray(OidVector::new, OidVector.class), OidVector[]::new);
-    PgType<Xid> xid = ofPgObject("xid", PgJson.xid).bimap(Xid::new, Xid::value);
+    PgType<Xid> xid = ofPgObject("xid", Xid::new, Xid::value, PgJson.xid);
     PgType<Xid[]> xidArray = xid.array(PgRead.pgObjectArray(Xid::new, Xid.class), Xid[]::new);
 
     // Reg* types (system catalog types)
-    PgType<Regclass> regclass = ofPgObject("regclass", PgJson.regclass).bimap(Regclass::new, Regclass::value);
+    PgType<Regclass> regclass = ofPgObject("regclass", Regclass::new, Regclass::value, PgJson.regclass);
     PgType<Regclass[]> regclassArray = regclass.array(PgRead.pgObjectArray(Regclass::new, Regclass.class), Regclass[]::new);
-    PgType<Regconfig> regconfig = ofPgObject("regconfig", PgJson.regconfig).bimap(Regconfig::new, Regconfig::value);
+    PgType<Regconfig> regconfig = ofPgObject("regconfig", Regconfig::new, Regconfig::value, PgJson.regconfig);
     PgType<Regconfig[]> regconfigArray = regconfig.array(PgRead.pgObjectArray(Regconfig::new, Regconfig.class), Regconfig[]::new);
-    PgType<Regdictionary> regdictionary = ofPgObject("regdictionary", PgJson.regdictionary).bimap(Regdictionary::new, Regdictionary::value);
+    PgType<Regdictionary> regdictionary = ofPgObject("regdictionary", Regdictionary::new, Regdictionary::value, PgJson.regdictionary);
     PgType<Regdictionary[]> regdictionaryArray = regdictionary.array(PgRead.pgObjectArray(Regdictionary::new, Regdictionary.class), Regdictionary[]::new);
-    PgType<Regnamespace> regnamespace = ofPgObject("regnamespace", PgJson.regnamespace).bimap(Regnamespace::new, Regnamespace::value);
+    PgType<Regnamespace> regnamespace = ofPgObject("regnamespace", Regnamespace::new, Regnamespace::value, PgJson.regnamespace);
     PgType<Regnamespace[]> regnamespaceArray = regnamespace.array(PgRead.pgObjectArray(Regnamespace::new, Regnamespace.class), Regnamespace[]::new);
-    PgType<Regoper> regoper = ofPgObject("regoper", PgJson.regoper).bimap(Regoper::new, Regoper::value);
+    PgType<Regoper> regoper = ofPgObject("regoper", Regoper::new, Regoper::value, PgJson.regoper);
     PgType<Regoper[]> regoperArray = regoper.array(PgRead.pgObjectArray(Regoper::new, Regoper.class), Regoper[]::new);
-    PgType<Regoperator> regoperator = ofPgObject("regoperator", PgJson.regoperator).bimap(Regoperator::new, Regoperator::value);
+    PgType<Regoperator> regoperator = ofPgObject("regoperator", Regoperator::new, Regoperator::value, PgJson.regoperator);
     PgType<Regoperator[]> regoperatorArray = regoperator.array(PgRead.pgObjectArray(Regoperator::new, Regoperator.class), Regoperator[]::new);
-    PgType<Regproc> regproc = ofPgObject("regproc", PgJson.regproc).bimap(Regproc::new, Regproc::value);
+    PgType<Regproc> regproc = ofPgObject("regproc", Regproc::new, Regproc::value, PgJson.regproc);
     PgType<Regproc[]> regprocArray = regproc.array(PgRead.pgObjectArray(Regproc::new, Regproc.class), Regproc[]::new);
-    PgType<Regprocedure> regprocedure = ofPgObject("regprocedure", PgJson.regprocedure).bimap(Regprocedure::new, Regprocedure::value);
+    PgType<Regprocedure> regprocedure = ofPgObject("regprocedure", Regprocedure::new, Regprocedure::value, PgJson.regprocedure);
     PgType<Regprocedure[]> regprocedureArray = regprocedure.array(PgRead.pgObjectArray(Regprocedure::new, Regprocedure.class), Regprocedure[]::new);
-    PgType<Regrole> regrole = ofPgObject("regrole", PgJson.regrole).bimap(Regrole::new, Regrole::value);
+    PgType<Regrole> regrole = ofPgObject("regrole", Regrole::new, Regrole::value, PgJson.regrole);
     PgType<Regrole[]> regroleArray = regrole.array(PgRead.pgObjectArray(Regrole::new, Regrole.class), Regrole[]::new);
-    PgType<Regtype> regtype = ofPgObject("regtype", PgJson.regtype).bimap(Regtype::new, Regtype::value);
+    PgType<Regtype> regtype = ofPgObject("regtype", Regtype::new, Regtype::value, PgJson.regtype);
     PgType<Regtype[]> regtypeArray = regtype.array(PgRead.pgObjectArray(Regtype::new, Regtype.class), Regtype[]::new);
 
     // Internal types
-    PgType<PgNodeTree> pgNodeTree = ofPgObject("pg_node_tree", PgJson.text).bimap(PgNodeTree::new, PgNodeTree::value);
+    PgType<PgNodeTree> pgNodeTree = ofPgObject("pg_node_tree", PgNodeTree::new, PgNodeTree::value, PgJson.text.bimap(PgNodeTree::new, PgNodeTree::value));
     PgType<PgNodeTree[]> pgNodeTreeArray = pgNodeTree.array(PgRead.pgObjectArray(PgNodeTree::new, PgNodeTree.class), PgNodeTree[]::new);
     PgType<Unknown> unknown = PgType.of("unknown", PgRead.readString, PgWrite.pgObject("unknown"), PgText.textString, PgJson.text).bimap(Unknown::new, Unknown::value);
     PgType<Unknown[]> unknownArray = unknown.array(PgRead.pgObjectArray(Unknown::new, Unknown.class), Unknown[]::new);
@@ -150,12 +150,28 @@ public interface PgTypes {
         return PgType.of(sqlType, PgRead.pgObject(sqlType), PgWrite.pgObject(sqlType), PgText.textString, PgJson.text);
     }
 
-    static PgType<String> ofPgObject(String sqlType, PgJson<?> ignored) {
-        return PgType.of(sqlType, PgRead.pgObject(sqlType), PgWrite.pgObject(sqlType), PgText.textString, PgJson.text);
+    /**
+     * Create a PgType backed by PGobject string representation, with a custom PgJson codec.
+     * The string representation is used for native DB access, while pgJson handles JSON encoding
+     * (e.g., for MULTISET).
+     *
+     * @param sqlType The SQL type name
+     * @param fromString Function to parse the string representation into the target type
+     * @param toString Function to convert the target type back to its string representation
+     * @param pgJson The JSON codec for this type
+     */
+    static <T> PgType<T> ofPgObject(String sqlType, SqlFunction<String, T> fromString, Function<T, String> toString, PgJson<T> pgJson) {
+        return PgType.of(
+                sqlType,
+                PgRead.pgObject(sqlType).map(fromString),
+                PgWrite.pgObject(sqlType).contramap(toString),
+                PgText.textString.contramap(toString),
+                pgJson
+        );
     }
 
     static PgType<Record> record(String sqlType) {
-        return ofPgObject(sqlType, PgJson.record).bimap(Record::new, Record::value);
+        return ofPgObject(sqlType, Record::new, Record::value, PgJson.record);
     }
 
     static PgType<Record[]> recordArray(String sqlType) {

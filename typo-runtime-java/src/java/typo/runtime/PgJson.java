@@ -282,6 +282,18 @@ public interface PgJson<A> extends DbJson<A> {
     };
 
     PgJson<OffsetTime> timetz = new PgJson<>() {
+        // PostgreSQL may return offsets like "+01" instead of "+01:00", need custom formatter
+        private static final DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder()
+                .appendPattern("HH:mm:ss")
+                .appendFraction(java.time.temporal.ChronoField.MICRO_OF_SECOND, 0, 6, true)
+                .appendOffset("+HH:mm", "+00:00")
+                .toFormatter();
+        private static final DateTimeFormatter FORMATTER_SHORT_OFFSET = new DateTimeFormatterBuilder()
+                .appendPattern("HH:mm:ss")
+                .appendFraction(java.time.temporal.ChronoField.MICRO_OF_SECOND, 0, 6, true)
+                .appendOffset("+HH", "+00")
+                .toFormatter();
+
         @Override
         public JsonValue toJson(OffsetTime value) {
             return new JsonValue.JString(value.toString());
@@ -289,7 +301,14 @@ public interface PgJson<A> extends DbJson<A> {
 
         @Override
         public OffsetTime fromJson(JsonValue json) {
-            if (json instanceof JsonValue.JString(String value)) return OffsetTime.parse(value);
+            if (json instanceof JsonValue.JString(String value)) {
+                // Try standard format first, then short offset format (e.g., "+01" instead of "+01:00")
+                try {
+                    return OffsetTime.parse(value, FORMATTER);
+                } catch (java.time.format.DateTimeParseException e) {
+                    return OffsetTime.parse(value, FORMATTER_SHORT_OFFSET);
+                }
+            }
             throw new IllegalArgumentException("Expected string for timetz, got: " + json.getClass().getSimpleName());
         }
     };
@@ -470,14 +489,125 @@ public interface PgJson<A> extends DbJson<A> {
 
     // Wrapper types that use string representation
     PgJson<Inet> inet = text.bimap(Inet::new, Inet::value);
-    PgJson<Money> money = float8.bimap(Money::new, Money::value);
+    // Money is returned as string by PostgreSQL's to_json (e.g., "$42.22")
+    PgJson<Money> money = new PgJson<>() {
+        @Override
+        public JsonValue toJson(Money value) {
+            return JsonValue.JNumber.of(value.value());
+        }
+
+        @Override
+        public Money fromJson(JsonValue json) {
+            if (json instanceof JsonValue.JNumber(BigDecimal value)) return new Money(value.doubleValue());
+            if (json instanceof JsonValue.JString(String value)) return new Money(value);
+            throw new IllegalArgumentException("Expected number or string for money, got: " + json.getClass().getSimpleName());
+        }
+    };
     PgJson<AclItem> aclitem = text.bimap(AclItem::new, AclItem::value);
     PgJson<Xml> xml = text.bimap(Xml::new, Xml::value);
     PgJson<Xid> xid = text.bimap(Xid::new, Xid::value);
-    PgJson<typo.data.Record> record = text.bimap(typo.data.Record::new, typo.data.Record::value);
+    // PostgreSQL returns composite types as JSON objects, but Record stores the raw string representation.
+    // We encode as string and decode from either object (convert to string) or string directly.
+    PgJson<typo.data.Record> record = new PgJson<>() {
+        @Override
+        public JsonValue toJson(typo.data.Record value) {
+            return new JsonValue.JString(value.value());
+        }
+
+        @Override
+        public typo.data.Record fromJson(JsonValue json) {
+            if (json instanceof JsonValue.JString(String value)) {
+                return new typo.data.Record(value);
+            }
+            if (json instanceof JsonValue.JObject obj) {
+                // PostgreSQL returns composite types as JSON objects with field names
+                // Convert back to tuple string format: (val1, val2, ...)
+                StringBuilder sb = new StringBuilder("(");
+                boolean first = true;
+                for (JsonValue v : obj.fields().values()) {
+                    if (!first) sb.append(",");
+                    first = false;
+                    // Handle each value type
+                    if (v instanceof JsonValue.JNull) {
+                        // null values are empty in tuple representation
+                    } else if (v instanceof JsonValue.JString(String s)) {
+                        sb.append(s);
+                    } else if (v instanceof JsonValue.JNumber(BigDecimal n)) {
+                        sb.append(n.toPlainString());
+                    } else if (v instanceof JsonValue.JBool(boolean b)) {
+                        sb.append(b);
+                    } else {
+                        // For nested objects/arrays, use JSON encoding
+                        sb.append(v.encode());
+                    }
+                }
+                sb.append(")");
+                return new typo.data.Record(sb.toString());
+            }
+            throw new IllegalArgumentException("Expected string or object for record, got: " + json.getClass().getSimpleName());
+        }
+    };
     PgJson<Vector> vector = text.bimap(Vector::parse, Vector::value);
-    PgJson<Int2Vector> int2vector = text.bimap(Int2Vector::parse, Int2Vector::value);
-    PgJson<OidVector> oidvector = text.bimap(OidVector::parse, OidVector::value);
+    // PostgreSQL returns int2vector as JSON array, not string
+    PgJson<Int2Vector> int2vector = new PgJson<>() {
+        @Override
+        public JsonValue toJson(Int2Vector value) {
+            JsonValue[] elements = new JsonValue[value.values().length];
+            for (int i = 0; i < value.values().length; i++) {
+                elements[i] = JsonValue.JNumber.of(value.values()[i]);
+            }
+            return new JsonValue.JArray(List.of(elements));
+        }
+
+        @Override
+        public Int2Vector fromJson(JsonValue json) {
+            if (json instanceof JsonValue.JArray(List<JsonValue> elements)) {
+                short[] values = new short[elements.size()];
+                for (int i = 0; i < elements.size(); i++) {
+                    if (elements.get(i) instanceof JsonValue.JNumber(BigDecimal num)) {
+                        values[i] = num.shortValue();
+                    } else {
+                        throw new IllegalArgumentException("Expected number in int2vector array");
+                    }
+                }
+                return new Int2Vector(values);
+            }
+            if (json instanceof JsonValue.JString(String value)) return Int2Vector.parse(value);
+            throw new IllegalArgumentException("Expected array or string for int2vector, got: " + json.getClass().getSimpleName());
+        }
+    };
+    // PostgreSQL returns oidvector as JSON array, but with STRING elements (unlike int2vector which uses numbers)
+    PgJson<OidVector> oidvector = new PgJson<>() {
+        @Override
+        public JsonValue toJson(OidVector value) {
+            JsonValue[] elements = new JsonValue[value.values().length];
+            for (int i = 0; i < value.values().length; i++) {
+                elements[i] = JsonValue.JNumber.of(value.values()[i]);
+            }
+            return new JsonValue.JArray(List.of(elements));
+        }
+
+        @Override
+        public OidVector fromJson(JsonValue json) {
+            if (json instanceof JsonValue.JArray(List<JsonValue> elements)) {
+                int[] values = new int[elements.size()];
+                for (int i = 0; i < elements.size(); i++) {
+                    JsonValue elem = elements.get(i);
+                    if (elem instanceof JsonValue.JNumber(BigDecimal num)) {
+                        values[i] = num.intValue();
+                    } else if (elem instanceof JsonValue.JString(String s)) {
+                        // PostgreSQL returns oidvector elements as strings in arrays
+                        values[i] = Integer.parseInt(s);
+                    } else {
+                        throw new IllegalArgumentException("Expected number or string in oidvector array, got: " + elem.getClass().getSimpleName());
+                    }
+                }
+                return new OidVector(values);
+            }
+            if (json instanceof JsonValue.JString(String value)) return OidVector.parse(value);
+            throw new IllegalArgumentException("Expected array or string for oidvector, got: " + json.getClass().getSimpleName());
+        }
+    };
     PgJson<Regclass> regclass = text.bimap(Regclass::new, Regclass::value);
     PgJson<Regconfig> regconfig = text.bimap(Regconfig::new, Regconfig::value);
     PgJson<Regdictionary> regdictionary = text.bimap(Regdictionary::new, Regdictionary::value);
