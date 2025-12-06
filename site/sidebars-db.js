@@ -2,10 +2,10 @@
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
-    tutorialSidebar: [
+    dbSidebar: [
         {
             type: "category",
-            label: "What is Typr?",
+            label: "What is Typo DB?",
             collapsible: true,
             collapsed: false,
             items: [

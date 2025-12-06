@@ -3,14 +3,14 @@
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Typr",
-  tagline: "Typed postgres boilerplate generation. Hopes to avoid typos ",
-  url: "https://typr.dev",
+  title: "Typo",
+  tagline: "Type-safe code generation for Postgres and OpenAPI",
+  url: "https://typo.oyvindberg.dev",
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
-  
+
   // Modern browsers prefer SVG favicons
   headTags: [
     {
@@ -24,14 +24,10 @@ const config = {
   ],
 
   // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "oyvindberg", // Usually your GitHub org/user name.
-  projectName: "typr", // Usually your repo name.
+  organizationName: "oyvindberg",
+  projectName: "typo",
   trailingSlash: true,
 
-  // Even if you don't use internalization, you can use this field to set useful
-  // metadata like html lang. For example, if your site is Chinese, you may want
-  // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -43,7 +39,10 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
+          id: 'db',
+          path: 'docs-db',
+          routeBasePath: 'db',
+          sidebarPath: require.resolve("./sidebars-db.js"),
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -51,28 +50,48 @@ const config = {
       }),
     ],
   ],
+
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'api',
+        path: 'docs-api',
+        routeBasePath: 'api',
+        sidebarPath: require.resolve('./sidebars-api.js'),
+      },
+    ],
+  ],
+
   clientModules: [
     require.resolve('./tracker.js'),
   ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: "Typr",
+        title: "Typo",
         logo: {
-          alt: "Typr",
+          alt: "Typo",
           src: "img/logo.svg",
         },
         items: [
           {
-            type: "doc",
-            docId: "readme",
-            position: "left",
-            label: "Documentation",
+            to: '/db/',
+            label: 'Typo DB',
+            position: 'left',
+            activeBaseRegex: '/db/',
           },
-          {to: 'blog', label: 'Blog', position: 'left'}, // or position: 'right'
           {
-            href: "https://github.com/oyvindberg/typr",
+            to: '/api/',
+            label: 'Typo API',
+            position: 'left',
+            activeBaseRegex: '/api/',
+          },
+          {to: 'blog', label: 'Blog', position: 'left'},
+          {
+            href: "https://github.com/oyvindberg/typo",
             label: "GitHub",
             position: "right",
           },
@@ -82,11 +101,24 @@ const config = {
         style: "dark",
         links: [
           {
+            title: "Products",
+            items: [
+              {
+                label: "Typo DB",
+                to: "/db/",
+              },
+              {
+                label: "Typo API",
+                to: "/api/",
+              },
+            ],
+          },
+          {
             title: "Links",
             items: [
               {
-                label: "Github",
-                to: "https://github.com/oyvindberg/typr",
+                label: "GitHub",
+                to: "https://github.com/oyvindberg/typo",
               },
             ],
           },
@@ -96,7 +128,7 @@ const config = {
       prism: {
         theme: require("prism-react-renderer").themes.github,
         darkTheme: require("prism-react-renderer").themes.dracula,
-        additionalLanguages: ["java", "scala", "yaml", "sql"],
+        additionalLanguages: ["java", "scala", "kotlin", "yaml", "sql"],
       },
     }),
 };
