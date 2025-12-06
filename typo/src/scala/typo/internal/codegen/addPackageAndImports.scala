@@ -38,10 +38,30 @@ object addPackageAndImports {
     }
 
     // Filter out scala.* imports for Kotlin - they're not valid in Kotlin
+    // Also filter out Java boxed types that map to Kotlin built-ins (Integer -> Int, etc.)
     def filterImports(imports: scala.collection.mutable.Map[jvm.Ident, jvm.Type.Qualified]): List[jvm.Type.Qualified] =
       language match {
-        case LangKotlin => imports.values.filter(!_.dotName.startsWith("scala.")).toList.sorted
-        case _          => imports.values.toList.sorted
+        case LangKotlin =>
+          // These Java types get mapped to Kotlin built-ins in renderTree, so they shouldn't be imported
+          val javaToKotlinBuiltins = Set(
+            "java.lang.String",
+            "java.lang.Integer",
+            "java.lang.Long",
+            "java.lang.Short",
+            "java.lang.Byte",
+            "java.lang.Float",
+            "java.lang.Double",
+            "java.lang.Boolean",
+            "java.lang.Character",
+            "java.lang.Object",
+            "java.lang.Throwable" // kotlin.Throwable is auto-imported and maps to java.lang.Throwable
+          )
+          imports.values
+            .filter(!_.dotName.startsWith("scala."))
+            .filter(t => !javaToKotlinBuiltins.contains(t.dotName))
+            .toList
+            .sorted
+        case _ => imports.values.toList.sorted
       }
 
     val renderedImports = filterImports(newImports).map { i =>
@@ -58,7 +78,16 @@ object addPackageAndImports {
         case other                     => sys.error(s"Unsupported language: $other")
       }
     }
-    val allImports = renderedImports ++ renderedStaticImports
+    // Render additional imports (wildcard imports like "org.http4s.circe._")
+    val renderedAdditionalImports = file.additionalImports.map { imp =>
+      language match {
+        case LangJava                  => code"import $imp;"
+        case _: LangScala | LangKotlin => code"import $imp"
+        case other                     => sys.error(s"Unsupported language: $other")
+      }
+    }
+
+    val allImports = renderedImports ++ renderedStaticImports ++ renderedAdditionalImports
     val withPrefix =
       code"""|package ${file.pkg}${language.`;`}
              |
@@ -82,6 +111,7 @@ object addPackageAndImports {
         )
       case jvm.ConstructorMethodRef(tpe) => jvm.ConstructorMethodRef(shortenNamesType(tpe, typeImport))
       case jvm.ClassOf(tpe)              => jvm.ClassOf(shortenNamesType(tpe, typeImport))
+      case jvm.JavaClassOf(tpe)          => jvm.JavaClassOf(shortenNamesType(tpe, typeImport))
       case adt: jvm.Adt                  => shortenNamesAdt(adt, typeImport, staticImport)
       case cls: jvm.Class                => shortenNamesClass(cls, typeImport, staticImport)
       case jvm.Call(target, argGroups) =>
@@ -119,8 +149,12 @@ object addPackageAndImports {
         )
       case jvm.MethodRef(tpe, name) => jvm.MethodRef(shortenNamesType(tpe, typeImport), name)
       case jvm.New(target, args)    => jvm.New(target.mapTrees(t => shortenNames(t, typeImport, staticImport)), args.map(shortenNamesArg(_, typeImport, staticImport)))
-      case jvm.NewWithBody(tpe, members) =>
-        jvm.NewWithBody(shortenNamesType(tpe, typeImport), members.map(shortenNamesClassMember(_, typeImport, staticImport)))
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        jvm.NewWithBody(
+          extendsClass.map(shortenNamesType(_, typeImport)),
+          implementsInterface.map(shortenNamesType(_, typeImport)),
+          members.map(shortenNamesClassMember(_, typeImport, staticImport))
+        )
       case jvm.InferredTargs(target) => jvm.InferredTargs(target.mapTrees(t => shortenNames(t, typeImport, staticImport)))
       case jvm.GenericMethodCall(target, methodName, typeArgs, args) =>
         jvm.GenericMethodCall(
@@ -134,6 +168,12 @@ object addPackageAndImports {
       case jvm.Lambda(params, body) =>
         val newParams = params.map(p => jvm.LambdaParam(p.name, p.tpe.map(shortenNamesType(_, typeImport))))
         jvm.Lambda(newParams, shortenNamesBody(body, typeImport, staticImport))
+      case jvm.SamLambda(samType, lambda) =>
+        val newSamType = shortenNamesType(samType, typeImport)
+        val newLambda = shortenNames(lambda, typeImport, staticImport).asInstanceOf[jvm.Lambda]
+        jvm.SamLambda(newSamType, newLambda)
+      case jvm.Cast(targetType, expr) =>
+        jvm.Cast(shortenNamesType(targetType, typeImport), expr.mapTrees(t => shortenNames(t, typeImport, staticImport)))
       case jvm.ByName(body)                 => jvm.ByName(shortenNamesBody(body, typeImport, staticImport))
       case jvm.FieldGetterRef(rowType, fld) => jvm.FieldGetterRef(shortenNamesType(rowType, typeImport), fld)
       case jvm.SelfNullary(name)            => jvm.SelfNullary(name)
@@ -150,21 +190,46 @@ object addPackageAndImports {
       case x: jvm.Summon                             => jvm.Summon(shortenNamesType(x.tpe, typeImport))
       case jvm.LocalVar(name, tpe, value) =>
         jvm.LocalVar(name, tpe.map(shortenNamesType(_, typeImport)), value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
-      case jvm.TypeSwitch(value, cases, nullCase, defaultCase) =>
+      case jvm.TypeSwitch(value, cases, nullCase, defaultCase, unchecked) =>
         jvm.TypeSwitch(
           value.mapTrees(t => shortenNames(t, typeImport, staticImport)),
           cases.map { c => jvm.TypeSwitch.Case(shortenNamesType(c.tpe, typeImport), c.ident, c.body.mapTrees(t => shortenNames(t, typeImport, staticImport))) },
           nullCase.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))),
-          defaultCase.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+          defaultCase.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))),
+          unchecked
         )
-      case jvm.Annotation(tpe, args) =>
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        jvm.TryCatch(
+          tryBlock.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))),
+          catches.map { c =>
+            jvm.TryCatch.Catch(
+              typeImport(c.exceptionType),
+              c.ident,
+              c.body.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+            )
+          },
+          finallyBlock.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+        )
+      case jvm.IfElseChain(cases, elseCase) =>
+        jvm.IfElseChain(
+          cases.map { case (cond, body) =>
+            (cond.mapTrees(t => shortenNames(t, typeImport, staticImport)), body.mapTrees(t => shortenNames(t, typeImport, staticImport)))
+          },
+          elseCase.mapTrees(t => shortenNames(t, typeImport, staticImport))
+        )
+      case jvm.Stmt(inner, needsSemicolon) =>
+        jvm.Stmt(inner.mapTrees(t => shortenNames(t, typeImport, staticImport)), needsSemicolon)
+      case jvm.Annotation(tpe, args, useTarget) =>
         jvm.Annotation(
           typeImport(tpe),
           args.map {
             case jvm.Annotation.Arg.Named(name, value) => jvm.Annotation.Arg.Named(name, value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
             case jvm.Annotation.Arg.Positional(value)  => jvm.Annotation.Arg.Positional(value.mapTrees(t => shortenNames(t, typeImport, staticImport)))
-          }
+          },
+          useTarget
         )
+      case jvm.AnnotationArray(elements) =>
+        jvm.AnnotationArray(elements.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))))
     }
 
   def shortenNamesParam(param: jvm.Param[jvm.Type], typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Param[jvm.Type] =
@@ -222,6 +287,7 @@ object addPackageAndImports {
   def shortenNamesAdtRecord(x: jvm.Adt.Record, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Adt.Record =
     jvm.Adt.Record(
       annotations = x.annotations.map(shortenNamesAnnotation(_, typeImport, staticImport)),
+      constructorAnnotations = x.constructorAnnotations.map(shortenNamesAnnotation(_, typeImport, staticImport)),
       isWrapper = x.isWrapper,
       comments = x.comments,
       name = x.name,
@@ -257,14 +323,15 @@ object addPackageAndImports {
           shortenNamesType(tpe, typeImport),
           body.mapTrees(t => shortenNames(t, typeImport, staticImport))
         )
-      case jvm.Value(anns, name, tpe, body, isLazy, isOverride) =>
+      case jvm.Value(anns, name, tpe, body, isLazy, isOverride, isImplicit) =>
         jvm.Value(
           anns,
           name,
           shortenNamesType(tpe, typeImport),
           body.map(_.mapTrees(t => shortenNames(t, typeImport, staticImport))),
           isLazy,
-          isOverride
+          isOverride,
+          isImplicit
         )
       case x: jvm.Method =>
         shortenNamesMethod(x, typeImport, staticImport)
@@ -304,17 +371,18 @@ object addPackageAndImports {
   // traverse type tree and rewrite qualified names
   def shortenNamesType(tpe: jvm.Type, f: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Type =
     tpe match {
-      case q @ jvm.Type.Qualified(_)               => f(q)
-      case jvm.Type.Abstract(value)                => jvm.Type.Abstract(value)
-      case jvm.Type.ArrayOf(value)                 => jvm.Type.ArrayOf(shortenNamesType(value, f))
-      case jvm.Type.Commented(underlying, comment) => jvm.Type.Commented(shortenNamesType(underlying, f), comment)
-      case jvm.Type.TApply(underlying, targs)      => jvm.Type.TApply(shortenNamesType(underlying, f), targs.map(targ => shortenNamesType(targ, f)))
-      case jvm.Type.UserDefined(underlying)        => jvm.Type.UserDefined(shortenNamesType(underlying, f))
-      case jvm.Type.Void                           => jvm.Type.Void
-      case jvm.Type.Wildcard                       => jvm.Type.Wildcard
-      case jvm.Type.Function0(ret)                 => jvm.Type.Function0(shortenNamesType(ret, f))
-      case jvm.Type.Function1(tpe1, ret)           => jvm.Type.Function1(shortenNamesType(tpe1, f), shortenNamesType(ret, f))
-      case jvm.Type.Function2(tpe1, tpe2, ret)     => jvm.Type.Function2(shortenNamesType(tpe1, f), shortenNamesType(tpe2, f), shortenNamesType(ret, f))
-      case p: jvm.Type.Primitive                   => p
+      case q @ jvm.Type.Qualified(_)                  => f(q)
+      case jvm.Type.Abstract(value, variance)         => jvm.Type.Abstract(value, variance)
+      case jvm.Type.ArrayOf(value)                    => jvm.Type.ArrayOf(shortenNamesType(value, f))
+      case jvm.Type.Commented(underlying, comment)    => jvm.Type.Commented(shortenNamesType(underlying, f), comment)
+      case jvm.Type.Annotated(underlying, annotation) => jvm.Type.Annotated(shortenNamesType(underlying, f), f(annotation).asInstanceOf[jvm.Type.Qualified])
+      case jvm.Type.TApply(underlying, targs)         => jvm.Type.TApply(shortenNamesType(underlying, f), targs.map(targ => shortenNamesType(targ, f)))
+      case jvm.Type.UserDefined(underlying)           => jvm.Type.UserDefined(shortenNamesType(underlying, f))
+      case jvm.Type.Void                              => jvm.Type.Void
+      case jvm.Type.Wildcard                          => jvm.Type.Wildcard
+      case jvm.Type.Function0(ret)                    => jvm.Type.Function0(shortenNamesType(ret, f))
+      case jvm.Type.Function1(tpe1, ret)              => jvm.Type.Function1(shortenNamesType(tpe1, f), shortenNamesType(ret, f))
+      case jvm.Type.Function2(tpe1, tpe2, ret)        => jvm.Type.Function2(shortenNamesType(tpe1, f), shortenNamesType(tpe2, f), shortenNamesType(ret, f))
+      case p: jvm.Type.Primitive                      => p
     }
 }

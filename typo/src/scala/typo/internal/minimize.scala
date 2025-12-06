@@ -15,7 +15,7 @@ object minimize {
               go(expr)
             case jvm.NotNull(expr) =>
               go(expr)
-            case jvm.TypeSwitch(value, cases, nullCase, defaultCase) =>
+            case jvm.TypeSwitch(value, cases, nullCase, defaultCase, _) =>
               go(value)
               cases.foreach { c =>
                 goTree(c.tpe)
@@ -24,6 +24,22 @@ object minimize {
               }
               nullCase.foreach(go)
               defaultCase.foreach(go)
+            case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+              tryBlock.foreach(go)
+              catches.foreach { c =>
+                goTree(c.exceptionType)
+                goTree(c.ident)
+                c.body.foreach(go)
+              }
+              finallyBlock.foreach(go)
+            case jvm.IfElseChain(cases, elseCase) =>
+              cases.foreach { case (cond, body) =>
+                go(cond)
+                go(body)
+              }
+              go(elseCase)
+            case jvm.Stmt(inner, _) =>
+              go(inner)
             case jvm.IfExpr(pred, thenp, elsep) =>
               go(pred)
               go(thenp)
@@ -31,6 +47,8 @@ object minimize {
             case jvm.ConstructorMethodRef(tpe) =>
               goTree(tpe)
             case jvm.ClassOf(tpe) =>
+              goTree(tpe)
+            case jvm.JavaClassOf(tpe) =>
               goTree(tpe)
             case jvm.Call(target, argGroups) =>
               go(target)
@@ -44,8 +62,9 @@ object minimize {
             case jvm.New(target, args) =>
               go(target)
               args.foreach(goTree)
-            case jvm.NewWithBody(tpe, members) =>
-              goTree(tpe)
+            case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+              extendsClass.foreach(goTree)
+              implementsInterface.foreach(goTree)
               members.foreach(goTree)
             case jvm.InferredTargs(target) =>
               go(target)
@@ -56,6 +75,12 @@ object minimize {
             case jvm.Lambda(params, body) =>
               params.foreach(p => p.tpe.foreach(goTree))
               goBody(body)
+            case jvm.SamLambda(samType, lambda) =>
+              goTree(samType)
+              goTree(lambda)
+            case jvm.Cast(targetType, expr) =>
+              goTree(targetType)
+              go(expr)
             case jvm.ByName(body) =>
               goBody(body)
             case jvm.FieldGetterRef(rowType, _) =>
@@ -101,7 +126,7 @@ object minimize {
               implicitParams.foreach(goTree)
               goTree(tpe)
               go(body)
-            case jvm.Value(_, name, tpe, body, _, _) =>
+            case jvm.Value(_, name, tpe, body, _, _, _) =>
               goTree(name)
               goTree(tpe)
               body.foreach(go)
@@ -129,7 +154,7 @@ object minimize {
               extends_.foreach(goTree)
               superArgs.foreach(goTree)
               members.foreach(goTree)
-            case jvm.Adt.Record(_, _, _, _, tparams, params, implicitParams, extends_, implements, members, staticMembers) =>
+            case jvm.Adt.Record(_, _, _, _, _, tparams, params, implicitParams, extends_, implements, members, staticMembers) =>
               tparams.foreach(goTree)
               params.foreach(goTree)
               implicitParams.foreach(goTree)
@@ -137,13 +162,14 @@ object minimize {
               implements.foreach(goTree)
               members.foreach(goTree)
               staticMembers.foreach(goTree)
-            case jvm.Adt.Sum(annotations, _, _, tparams, members, implements, subtypes, staticMembers) =>
+            case jvm.Adt.Sum(annotations, _, _, tparams, members, implements, subtypes, staticMembers, permittedSubtypes) =>
               annotations.foreach(goTree)
               tparams.foreach(goTree)
               members.foreach(goTree)
               implements.foreach(goTree)
               subtypes.foreach(goTree)
               staticMembers.foreach(goTree)
+              permittedSubtypes.foreach(goTree)
             case jvm.Type.Wildcard =>
               ()
             case jvm.Type.TApply(underlying, targs) =>
@@ -153,10 +179,13 @@ object minimize {
               goTree(value)
             case jvm.Type.Qualified(value) =>
               goTree(value)
-            case jvm.Type.Abstract(_) =>
+            case jvm.Type.Abstract(_, _) =>
               ()
             case jvm.Type.Commented(underlying, _) =>
               goTree(underlying)
+            case jvm.Type.Annotated(underlying, ann) =>
+              goTree(underlying)
+              goTree(ann)
             case jvm.Type.UserDefined(underlying) =>
               goTree(underlying)
             case jvm.Type.Void =>
@@ -189,12 +218,14 @@ object minimize {
             }
             case jvm.RuntimeInterpolation(value) =>
               go(value)
-            case jvm.Annotation(tpe, args) =>
+            case jvm.Annotation(tpe, args, _) =>
               goTree(tpe)
               args.foreach {
                 case jvm.Annotation.Arg.Named(_, value)   => go(value)
                 case jvm.Annotation.Arg.Positional(value) => go(value)
               }
+            case jvm.AnnotationArray(elements) =>
+              elements.foreach(go)
             case jvm.Return(value) =>
               go(value)
             case jvm.Throw(value) =>

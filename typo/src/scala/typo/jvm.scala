@@ -10,6 +10,15 @@ import scala.reflect.ClassTag
   * You'll mainly use this module with the `code"..."` interpolator.
   */
 object jvm {
+
+  /** Variance for type parameters */
+  sealed trait Variance
+  object Variance {
+    case object Invariant extends Variance
+    case object Covariant extends Variance
+    case object Contravariant extends Variance
+  }
+
   sealed trait Tree
 
   case class Ident(value: String) extends Tree {
@@ -63,6 +72,9 @@ object jvm {
   case class ConstructorMethodRef(tpe: Type) extends Tree
   case class ClassOf(tpe: Type) extends Tree
 
+  /** Java Class literal - for Kotlin renders as `tpe::class.java`, for Java/Scala renders same as ClassOf */
+  case class JavaClassOf(tpe: Type) extends Tree
+
   /** Not-null assertion: Kotlin renders as `expr!!`, other languages ignore */
   case class NotNull(expr: Code) extends Tree
 
@@ -70,7 +82,9 @@ object jvm {
 
   case class Annotation(
       tpe: Type.Qualified,
-      args: List[Annotation.Arg] = Nil
+      args: List[Annotation.Arg] = Nil,
+      /** Use-site target for Kotlin: @get:, @field:, @param: etc. None for other languages. */
+      useTarget: Option[Annotation.UseTarget] = None
   ) extends Tree
 
   object Annotation {
@@ -79,7 +93,24 @@ object jvm {
       case class Named(name: Ident, value: Code) extends Arg
       case class Positional(value: Code) extends Arg
     }
+
+    /** Use-site targets for Kotlin annotations on data class parameters */
+    sealed abstract class UseTarget(val name: String)
+    object UseTarget {
+      case object Get extends UseTarget("get")
+      case object Set extends UseTarget("set")
+      case object Field extends UseTarget("field")
+      case object Param extends UseTarget("param")
+      case object SetParam extends UseTarget("setparam")
+      case object Delegate extends UseTarget("delegate")
+      case object File extends UseTarget("file")
+      case object Property extends UseTarget("property")
+      case object Receiver extends UseTarget("receiver")
+    }
   }
+
+  /** Annotation array literal: Java `{ a, b }`, Kotlin `[ a, b ]` */
+  case class AnnotationArray(elements: List[Code]) extends Tree
 
   // we use this to abstract over calling static methods for java, and real string interplators for scala.
   // the nice thing is that it makes generating code a bit easier
@@ -116,6 +147,7 @@ object jvm {
   sealed trait ClassType
   object ClassType {
     case object Class extends ClassType
+    case object AbstractClass extends ClassType
     case object Interface extends ClassType
   }
 
@@ -157,8 +189,13 @@ object jvm {
 
   case class New(target: Code, args: List[Arg]) extends Tree
 
-  /** Anonymous class instantiation with body members: Scala: `new Trait { members }`, Java: `new Trait() { members }` */
-  case class NewWithBody(tpe: Type, members: List[ClassMember]) extends Tree
+  /** Anonymous class instantiation with body members: Scala: `new Trait { members }`, Java: `new Trait() { members }`
+    * @param extendsClass
+    *   Optional class to extend (needs constructor call in Kotlin)
+    * @param implementsInterface
+    *   Optional interface to implement (no constructor in Kotlin)
+    */
+  case class NewWithBody(extendsClass: Option[Type], implementsInterface: Option[Type], members: List[ClassMember]) extends Tree
 
   /** Diamond operator in Java: `new Foo<>()`. Renders as empty in Scala. */
   case class InferredTargs(target: Code) extends Tree
@@ -185,10 +222,17 @@ object jvm {
     /** Statement body - explicit statements with control flow (Return/Throw) */
     case class Stmts(stmts: List[Code]) extends Body
 
-    /** Convert a list of statements to Body - single element becomes Expr, multiple becomes Stmts */
+    /** Convert a list of code to Body - single element becomes Expr (unless it's a statement construct), multiple becomes Stmts */
     def apply(stmts: List[Code]): Body = stmts match {
-      case List(single) => Expr(single)
-      case multiple     => Stmts(multiple)
+      case List(single) =>
+        // TryCatch and IfElseChain are statement constructs in Java/Kotlin - they must remain as Stmts
+        // so they get rendered as block bodies, not expression bodies
+        single match {
+          case Code.Tree(_: TryCatch)    => Stmts(stmts)
+          case Code.Tree(_: IfElseChain) => Stmts(stmts)
+          case _                         => Expr(single)
+        }
+      case multiple => Stmts(multiple)
     }
   }
 
@@ -215,6 +259,15 @@ object jvm {
     def apply(p1: String, p2: String, expr: Code): Lambda = Lambda(List(LambdaParam(p1), LambdaParam(p2)), Body.Expr(expr))
   }
 
+  /** SAM-typed lambda for explicit SAM conversion. Needed in Kotlin when SAM type can't be inferred. Java: just renders as lambda (automatic SAM conversion) Kotlin: `TypeName { params -> body }`
+    * (explicit SAM conversion) Scala: just renders as lambda (automatic SAM conversion)
+    */
+  case class SamLambda(samType: Type, lambda: Lambda) extends Tree
+
+  /** Type cast expression. Java: `(Type) expr` Kotlin: `expr as Type` Scala: `expr.asInstanceOf[Type]`
+    */
+  case class Cast(targetType: Type, expr: Code) extends Tree
+
   /** By-name argument for method calls. Scala: `body` (by-name parameter), Java: `() -> body` (Supplier/Runnable) */
   case class ByName(body: Body) extends Tree
 
@@ -239,9 +292,26 @@ object jvm {
     case class Named(name: Ident, value: Code) extends Arg
   }
 
-  case class TypeSwitch(value: Code, cases: List[TypeSwitch.Case], nullCase: Option[Code] = None, defaultCase: Option[Code] = None) extends Tree
+  case class TypeSwitch(value: Code, cases: List[TypeSwitch.Case], nullCase: Option[Code] = None, defaultCase: Option[Code] = None, unchecked: Boolean = false) extends Tree
   object TypeSwitch {
     case class Case(tpe: Type, ident: Ident, body: Code)
+  }
+
+  /** Try-catch block */
+  case class TryCatch(tryBlock: List[Code], catches: List[TryCatch.Catch], finallyBlock: List[Code]) extends Tree
+  object TryCatch {
+    case class Catch(exceptionType: Type.Qualified, ident: Ident, body: List[Code])
+  }
+
+  /** If-else chain */
+  case class IfElseChain(cases: List[(Code, Code)], elseCase: Code) extends Tree
+
+  /** Statement wrapper - indicates whether semicolon is needed in Java/Kotlin. Compound statements (if/try/while) don't need semicolons, simple statements do.
+    */
+  case class Stmt(code: Code, needsSemicolon: Boolean) extends Tree
+  object Stmt {
+    def simple(code: Code): Stmt = Stmt(code, needsSemicolon = true)
+    def compound(code: Code): Stmt = Stmt(code, needsSemicolon = false)
   }
 
   sealed trait Adt extends Tree {
@@ -256,7 +326,9 @@ object jvm {
         members: List[Method],
         implements: List[Type],
         subtypes: List[Adt],
-        staticMembers: List[ClassMember]
+        staticMembers: List[ClassMember],
+        /** For Java sealed interfaces: explicitly permitted subtypes (empty means nested subtypes are used) */
+        permittedSubtypes: List[Type.Qualified] = Nil
     ) extends Adt {
       def flattenedSubtypes: List[Adt] = {
         val b = List.newBuilder[Adt]
@@ -274,6 +346,7 @@ object jvm {
 
     case class Record(
         annotations: List[Annotation],
+        constructorAnnotations: List[Annotation],
         isWrapper: Boolean,
         comments: Comments,
         name: Type.Qualified,
@@ -318,7 +391,8 @@ object jvm {
       tpe: Type,
       body: Option[Code],
       isLazy: Boolean,
-      isOverride: Boolean
+      isOverride: Boolean,
+      isImplicit: Boolean = false
   ) extends ClassMember
 
   /** Local variable declaration - renders as `val` in Scala, `var` in Java */
@@ -360,8 +434,11 @@ object jvm {
       lazy val dotName = value.dotName
       def name = value.name
     }
-    case class Abstract(value: Ident) extends Type
+    case class Abstract(value: Ident, variance: Variance = Variance.Invariant) extends Type
     case class Commented(underlying: Type, comment: String) extends Type
+
+    /** Type with annotation in type position: `T @annotation` (Scala) */
+    case class Annotated(underlying: Type, annotation: Type.Qualified) extends Type
     case class UserDefined(underlying: Type) extends Type
     case class ArrayOf(underlying: Type) extends Type
 
@@ -407,9 +484,10 @@ object jvm {
     // todo: represent this fact better.
     def containsUserDefined(tpe: Type): Boolean =
       tpe match {
-        case Abstract(_)               => false
+        case Abstract(_, _)            => false
         case ArrayOf(targ)             => containsUserDefined(targ)
         case Commented(underlying, _)  => containsUserDefined(underlying)
+        case Annotated(underlying, _)  => containsUserDefined(underlying)
         case Qualified(_)              => false
         case TApply(underlying, targs) => containsUserDefined(underlying) || targs.exists(containsUserDefined)
         case UserDefined(_)            => true
@@ -422,9 +500,10 @@ object jvm {
       }
 
     def base(tpe: Type): Type = tpe match {
-      case Abstract(_)               => tpe
+      case Abstract(_, _)            => tpe
       case ArrayOf(targ)             => Type.ArrayOf(base(targ))
       case Commented(underlying, _)  => base(underlying)
+      case Annotated(underlying, _)  => base(underlying)
       case Qualified(_)              => tpe
       case TApply(underlying, targs) => TApply(base(underlying), targs.map(base))
       case UserDefined(tpe)          => base(tpe)
@@ -437,7 +516,7 @@ object jvm {
     }
   }
 
-  case class File(tpe: Type.Qualified, contents: Code, secondaryTypes: List[Type.Qualified], scope: Scope) {
+  case class File(tpe: Type.Qualified, contents: Code, secondaryTypes: List[Type.Qualified], scope: Scope, additionalImports: List[String] = Nil) {
     val name: Ident = tpe.value.name
     val pkg = QIdent(tpe.value.idents.dropRight(1))
   }

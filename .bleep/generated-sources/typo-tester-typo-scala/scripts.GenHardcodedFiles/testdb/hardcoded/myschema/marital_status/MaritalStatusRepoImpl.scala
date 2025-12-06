@@ -90,10 +90,10 @@ class MaritalStatusRepoImpl extends MaritalStatusRepo {
         case x: id => interpolate""""id" = ${MaritalStatusId.pgType.encode(x.value)}"""
       }).toList()
     }
-    return if (updates.isEmpty) false else interpolate"""update "myschema"."marital_status"
-                                           ${Fragment.set(updates)}
-                                           where "id" = ${MaritalStatusId.pgType.encode(id)}"""
-      .update().runUnchecked(c) > 0
+    return (if (updates.isEmpty) false else interpolate"""update "myschema"."marital_status"
+                                            ${Fragment.set(updates)}
+                                            where "id" = ${MaritalStatusId.pgType.encode(id)}"""
+      .update().runUnchecked(c) > 0)
   }
 
   override def upsert(unsaved: MaritalStatusRow)(using c: Connection): MaritalStatusRow = {

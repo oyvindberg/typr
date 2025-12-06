@@ -85,11 +85,12 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
 
   override def renderTree(tree: jvm.Tree, ctx: Ctx): jvm.Code =
     tree match {
-      case jvm.IfExpr(pred, thenp, elsep) => code"if ($pred) $thenp else $elsep"
+      case jvm.IfExpr(pred, thenp, elsep) => code"(if ($pred) $thenp else $elsep)"
       case jvm.IgnoreResult(expr)         => code"$expr: @${TypesScala.nowarn}"
       case jvm.NotNull(expr)              => expr // Scala doesn't need not-null assertions
       case jvm.ConstructorMethodRef(tpe)  => code"$tpe.apply"
       case jvm.ClassOf(tpe)               => code"classOf[$tpe]"
+      case jvm.JavaClassOf(tpe)           => code"classOf[$tpe]" // Same as ClassOf for Scala
       case jvm.Call(target, argGroups) =>
         val renderedGroups = argGroups.map { group =>
           val argsStr = group.args.map(_.value).mkCode(", ")
@@ -110,27 +111,63 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
       case jvm.StrLit(str) if str.contains(Quote)                             => TripleQuote + str + TripleQuote
       case jvm.StrLit(str)                                                    => Quote + str + Quote
       case jvm.Summon(tpe)                                                    => code"implicitly[$tpe]"
-      case jvm.Type.Abstract(value)                                           => value.code
-      case jvm.Type.ArrayOf(value)                                            => code"Array[$value]"
-      case jvm.Type.Commented(underlying, comment)                            => code"$comment $underlying"
-      case jvm.Type.Function0(ret)                                            => code"=> $ret"
-      case jvm.Type.Function1(t1, ret)                                        => code"$t1 => $ret"
-      case jvm.Type.Function2(t1, t2, ret)                                    => code"($t1, $t2) => $ret"
-      case jvm.Type.Qualified(value)                                          => value.code
-      case jvm.Type.TApply(underlying, targs)                                 => code"$underlying[${targs.map(t => renderTree(t, ctx)).mkCode(", ")}]"
-      case jvm.Type.UserDefined(underlying)                                   => code"/* user-picked */ $underlying"
-      case jvm.Type.Void                                                      => code"Unit"
-      case jvm.Type.Wildcard                                                  => code"?"
-      case jvm.Type.Primitive(name)                                           => name
-      case p: jvm.Param[jvm.Type]                                             => renderParam(p, false)
-      case jvm.RuntimeInterpolation(value)                                    => code"$${$value"
-      case jvm.TypeSwitch(value, cases, nullCase, _) =>
+      case jvm.Type.Abstract(value, variance) =>
+        variance match {
+          case jvm.Variance.Invariant     => value.code
+          case jvm.Variance.Covariant     => code"+$value"
+          case jvm.Variance.Contravariant => code"-$value"
+        }
+      case jvm.Type.ArrayOf(value)                    => code"Array[$value]"
+      case jvm.Type.Commented(underlying, comment)    => code"$comment $underlying"
+      case jvm.Type.Annotated(underlying, annotation) => code"$underlying @$annotation"
+      case jvm.Type.Function0(ret)                    => code"=> $ret"
+      case jvm.Type.Function1(t1, ret)                => code"$t1 => $ret"
+      case jvm.Type.Function2(t1, t2, ret)            => code"($t1, $t2) => $ret"
+      case jvm.Type.Qualified(value)                  => value.code
+      case jvm.Type.TApply(underlying, targs)         => code"$underlying[${targs.map(t => renderTree(t, ctx)).mkCode(", ")}]"
+      case jvm.Type.UserDefined(underlying)           => code"/* user-picked */ $underlying"
+      case jvm.Type.Void                              => code"Unit"
+      case jvm.Type.Wildcard                          => code"?"
+      case jvm.Type.Primitive(name)                   => name
+      case p: jvm.Param[jvm.Type]                     => renderParam(p, false)
+      case jvm.RuntimeInterpolation(value)            => code"$${$value"
+      case jvm.TypeSwitch(value, cases, nullCase, _, unchecked) =>
         val nullCaseCode = nullCase.map(body => code"case null => $body").toList
         val typeCases = cases.map { case jvm.TypeSwitch.Case(pat, ident, body) => code"case $ident: $pat => $body" }
         val allCases = nullCaseCode ++ typeCases
-        code"""|$value match {
+        // If unchecked is true, add @unchecked annotation to suppress type erasure warnings
+        val scrutinee = if (unchecked) code"($value: @unchecked)" else value
+        code"""|$scrutinee match {
                |  ${allCases.mkCode("\n")}
                |}""".stripMargin
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        val tryCode = code"""|try {
+                             |  ${tryBlock.mkCode("\n")}
+                             |}""".stripMargin
+        val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
+          code"case $ident: $exType => ${body.mkCode("\n")}"
+        }
+        val catchCode =
+          if (catches.isEmpty) jvm.Code.Str("")
+          else
+            code"""|catch {
+                 |  ${catchCodes.mkCode("\n")}
+                 |}""".stripMargin
+        val finallyCode =
+          if (finallyBlock.isEmpty) jvm.Code.Str("")
+          else
+            code"""|finally {
+                 |  ${finallyBlock.mkCode("\n")}
+                 |}""".stripMargin
+        code"$tryCode $catchCode $finallyCode"
+      case jvm.IfElseChain(cases, elseCase) =>
+        val ifCases = cases.zipWithIndex.map { case ((cond, body), idx) =>
+          if (idx == 0) code"if ($cond) $body"
+          else code"else if ($cond) $body"
+        }
+        val elseCode = code"else $elseCase"
+        (ifCases :+ elseCode).mkCode("\n")
+      case jvm.Stmt(inner, _) => inner // Scala doesn't need semicolons, just render inner code
       case jvm.New(target, args) =>
         if (args.length > breakAfter)
           code"""|new $target(
@@ -155,6 +192,12 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
           case _                                      => code"(${params.map(p => p.tpe.fold(code"${p.name}")(t => code"${p.name}: $t")).mkCode(", ")}) => "
         }
         code"$paramsCode${renderBody(body)}"
+      case jvm.SamLambda(_, lambda) =>
+        // Scala: SAM conversion is automatic, just render the lambda
+        renderTree(lambda, ctx)
+      case jvm.Cast(targetType, expr) =>
+        // Scala cast: expr.asInstanceOf[Type]
+        code"$expr.asInstanceOf[$targetType]"
       case jvm.ByName(body)                          => renderBody(body) // Scala: by-name is just the body expression
       case jvm.FieldGetterRef(_, field)              => code"_.$field" // Scala uses underscore syntax
       case jvm.SelfNullary(name)                     => name.code // Scala: just the identifier (nullary methods don't need parens)
@@ -187,11 +230,12 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
         else {
           withBody(code"$annotationsCode${dialect.defDefinition} $name${renderTparams(tparams, ctx)}${renderImplicitParams(implicitParams, ctx)}: $tpe", List(body))
         }
-      case jvm.Value(annotations, name, tpe, body, isLazy, isOverride) =>
+      case jvm.Value(annotations, name, tpe, body, isLazy, isOverride, isImplicit) =>
         val annotationsCode = renderAnnotations(annotations)
         val overrideMod = if (isOverride) "override " else ""
         val lazyMod = if (isLazy) "lazy " else ""
-        withBody(code"$annotationsCode${overrideMod}${lazyMod}val $name: $tpe", body.toList)
+        val implicitMod = if (isImplicit) "implicit " else ""
+        withBody(code"$annotationsCode${overrideMod}${implicitMod}${lazyMod}val $name: $tpe", body.toList)
       case jvm.Method(annotations, comments, tparams, name, params, implicitParams, tpe, throws, body, isOverride, _) =>
         val annotationsCode = renderAnnotations(annotations)
         val throwsCode = throws.map(th => code"@throws[$th]\n").mkCode("")
@@ -229,7 +273,7 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
         code"""|$annotationsCode${renderComments(enm.comments).getOrElse(jvm.Code.Empty)}
                |sealed abstract class ${enm.tpe.name}(val value: ${TypesJava.String})
                |
-               |object ${enm.tpe.value} {
+               |object ${enm.tpe.name} {
                |  ${enm.staticMembers.map(_.code).mkCode("\n\n")}
                |  def apply($str: ${TypesJava.String}): ${TypesScala.Either.of(TypesJava.String, enm.tpe)} =
                |    ByName.get($str).toRight(s"'$$str' does not match any of the following legal values: $$Names")
@@ -264,10 +308,13 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
 
       case sum: jvm.Adt.Sum =>
         val annotationsCode = if (sum.annotations.isEmpty) None else Some(renderAnnotations(sum.annotations))
+        // Only use 'sealed' if subtypes are defined in the same file (non-empty subtypes list)
+        // If subtypes is empty, the trait might be extended from other files
+        val traitKeyword = if (sum.subtypes.nonEmpty) code"sealed trait " else code"trait "
         List[Option[jvm.Code]](
           annotationsCode,
           renderComments(sum.comments),
-          Some(code"sealed trait "),
+          Some(traitKeyword),
           Some(sum.name.name.value),
           sum.tparams match {
             case Nil      => None
@@ -302,7 +349,9 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
           case (true, types) => (Some(TypesScala.AnyVal), types)
           case (_, types)    => (types.headOption, types.drop(1))
         }
-        val annotationsCode = if (cls.annotations.isEmpty) None else Some(renderAnnotations(cls.annotations))
+        // Combine class annotations and constructor annotations (for Scala, put them before case class)
+        val allAnnotations = cls.annotations ++ cls.constructorAnnotations
+        val annotationsCode = if (allAnnotations.isEmpty) None else Some(renderAnnotations(allAnnotations))
         val prefix = List[Option[jvm.Code]](
           annotationsCode,
           renderComments(cls.comments),
@@ -362,8 +411,9 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
           annotationsCode,
           renderComments(cls.comments),
           cls.classType match {
-            case jvm.ClassType.Class     => Some(code"class ")
-            case jvm.ClassType.Interface => Some(code"trait ")
+            case jvm.ClassType.Class         => Some(code"class ")
+            case jvm.ClassType.AbstractClass => Some(code"abstract class ")
+            case jvm.ClassType.Interface     => Some(code"trait ")
           },
           Some(cls.name.name.value),
           cls.tparams match {
@@ -411,8 +461,23 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
         ).flatten.mkCode("")
       case ann: jvm.Annotation => renderAnnotation(ann)
 
+      // Annotation array: Scala uses Array(a, b)
+      // Nested annotations use 'new' instead of '@'
+      case jvm.AnnotationArray(elements) =>
+        val renderedElements = elements.map {
+          case jvm.Code.Tree(ann: jvm.Annotation) => renderNestedAnnotation(ann)
+          case other                              => other
+        }
+        code"Array(${renderedElements.mkCode(", ")})"
+
       // Anonymous class: new Trait { members }
-      case jvm.NewWithBody(tpe, members) =>
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        val tpe = (extendsClass, implementsInterface) match {
+          case (Some(cls), Some(iface)) => code"$cls with $iface"
+          case (Some(cls), None)        => code"$cls"
+          case (None, Some(iface))      => code"$iface"
+          case (None, None)             => jvm.Code.Empty
+        }
         if (members.isEmpty) code"new $tpe {}"
         else
           code"""|new $tpe {
@@ -448,18 +513,26 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
   }
 
   def renderAnnotation(ann: jvm.Annotation): jvm.Code = {
-    val argsCode = ann.args match {
-      case Nil => code""
-      case args =>
-        val rendered = args
-          .map {
-            case jvm.Annotation.Arg.Named(name, value) => code"$name = $value"
-            case jvm.Annotation.Arg.Positional(value)  => value
-          }
-          .mkCode(", ")
-        code"($rendered)"
-    }
+    val argsCode = renderAnnotationArgs(ann.args)
     code"@${ann.tpe}$argsCode"
+  }
+
+  /** Render a nested annotation (inside another annotation) - uses 'new' instead of '@' in Scala */
+  def renderNestedAnnotation(ann: jvm.Annotation): jvm.Code = {
+    val argsCode = renderAnnotationArgs(ann.args)
+    code"new ${ann.tpe}$argsCode"
+  }
+
+  private def renderAnnotationArgs(args: List[jvm.Annotation.Arg]): jvm.Code = args match {
+    case Nil => jvm.Code.Empty
+    case args =>
+      val rendered = args
+        .map {
+          case jvm.Annotation.Arg.Named(name, value) => code"$name = $value"
+          case jvm.Annotation.Arg.Positional(value)  => value
+        }
+        .mkCode(", ")
+      code"($rendered)"
   }
 
   def renderAnnotations(annotations: List[jvm.Annotation]): jvm.Code = {
@@ -481,9 +554,8 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
     }
     renderComments(p.comments) match {
       case Some(comment) =>
-        // Wrap comment in Indented so smartIndent applies to continuation lines
-        // Comment already includes trailing newline, just add 2-space indentation
-        // This matches the indentation used in renderWithParams: (\n  and ,\n
+        // Comment includes trailing newline, so we need explicit indentation before param name
+        // The 2-space indent matches renderWithParams's `(\n  ` prefix
         code"${jvm.Code.Indented(comment)}  $annotationsPrefix$prefix${p.name}: ${p.tpe}$renderedDefault"
       case None =>
         code"$annotationsPrefix$prefix${p.name}: ${p.tpe}$renderedDefault"

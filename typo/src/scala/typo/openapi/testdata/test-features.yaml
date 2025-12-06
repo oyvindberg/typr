@@ -1,0 +1,530 @@
+openapi: 3.1.0
+info:
+  title: Test API - OpenAPI Feature Coverage
+  description: A test API spec covering various OpenAPI features for code generation testing
+  version: 1.0.0
+  license:
+    name: MIT
+
+security:
+  - bearerAuth: []
+
+# OpenAPI 3.1 webhooks - callback endpoints that the API will call
+webhooks:
+  petStatusChanged:
+    post:
+      operationId: onPetStatusChanged
+      summary: Called when a pet's status changes
+      tags:
+        - webhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - petId
+                - oldStatus
+                - newStatus
+              properties:
+                petId:
+                  $ref: '#/components/schemas/PetId'
+                oldStatus:
+                  $ref: '#/components/schemas/PetStatus'
+                newStatus:
+                  $ref: '#/components/schemas/PetStatus'
+                timestamp:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Webhook received successfully
+
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List all pets
+      tags:
+        - pets
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of pets to return
+          schema:
+            type: integer
+            format: int32
+            default: 20
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [available, pending, sold]
+            default: available
+      responses:
+        '200':
+          description: A list of pets
+          headers:
+            X-Total-Count:
+              description: Total number of pets available
+              schema:
+                type: integer
+                format: int32
+            X-Page:
+              description: Current page number
+              schema:
+                type: integer
+            X-Request-Id:
+              description: Unique request identifier
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+    post:
+      operationId: createPet
+      summary: Create a pet
+      tags:
+        - pets
+      security:
+        - oauth2: [write:pets]
+        - apiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetCreate'
+      responses:
+        '201':
+          description: Pet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      # Callback to notify when pet status changes
+      callbacks:
+        onPetCreated:
+          '{$request.body#/callbackUrl}':
+            post:
+              operationId: onPetCreatedCallback
+              summary: Called when pet is created
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/Pet'
+              responses:
+                '200':
+                  description: Callback received
+
+  /pets/{petId}/photo:
+    parameters:
+      - name: petId
+        in: path
+        required: true
+        description: The pet ID
+        schema:
+          $ref: '#/components/schemas/PetId'
+    post:
+      operationId: uploadPetPhoto
+      summary: Upload a pet photo
+      tags:
+        - pets
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The photo file to upload
+                caption:
+                  type: string
+                  description: Optional caption for the photo
+      responses:
+        '200':
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photoUrl:
+                    type: string
+                    format: uri
+    get:
+      operationId: getPetPhoto
+      summary: Get pet photo
+      tags:
+        - pets
+      responses:
+        '200':
+          description: Pet photo
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Attachment filename
+              schema:
+                type: string
+            X-Photo-Size:
+              description: Photo file size in bytes
+              schema:
+                type: integer
+
+  /pets/{petId}:
+    parameters:
+      - name: petId
+        in: path
+        required: true
+        description: The pet ID
+        schema:
+          $ref: '#/components/schemas/PetId'
+    get:
+      operationId: getPet
+      summary: Get a pet by ID
+      tags:
+        - pets
+      responses:
+        '200':
+          description: Pet found
+          headers:
+            X-Request-Id:
+              description: Unique request identifier for tracing
+              required: true
+              schema:
+                type: string
+                format: uuid
+            X-Cache-Status:
+              description: Whether the response was served from cache
+              schema:
+                type: string
+                enum: [HIT, MISS, BYPASS]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+          headers:
+            X-Request-Id:
+              description: Unique request identifier for tracing
+              required: true
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deletePet
+      summary: Delete a pet
+      tags:
+        - pets
+      responses:
+        '204':
+          description: Pet deleted successfully
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /animals:
+    get:
+      operationId: listAnimals
+      summary: List all animals (polymorphic)
+      tags:
+        - animals
+      responses:
+        '200':
+          description: A list of animals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Animal'
+        '4XX':
+          description: Client error (any 4xx status)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '5XX':
+          description: Server error (any 5xx status)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    # Simple ID wrapper type
+    PetId:
+      type: string
+      description: Unique pet identifier
+
+    # Enum type
+    PetStatus:
+      type: string
+      enum: [available, pending, sold]
+      description: Pet availability status
+
+    # Base type for allOf composition
+    BaseEntity:
+      type: object
+      required:
+        - id
+        - createdAt
+      properties:
+        id:
+          $ref: '#/components/schemas/PetId'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # allOf composition example
+    Pet:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - status
+          properties:
+            name:
+              type: string
+              description: Pet name
+            status:
+              $ref: '#/components/schemas/PetStatus'
+            tags:
+              type: array
+              items:
+                type: string
+            metadata:
+              type: object
+              additionalProperties:
+                type: string
+
+    PetCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/PetStatus'
+        tags:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          maxItems: 10
+        age:
+          type: integer
+          minimum: 0
+          maximum: 100
+        email:
+          type: string
+          format: email
+        website:
+          type: string
+          pattern: '^https?://.*'
+
+    # Sum type with discriminator (oneOf)
+    Animal:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+        - $ref: '#/components/schemas/Bird'
+      discriminator:
+        propertyName: animal_type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
+          bird: '#/components/schemas/Bird'
+
+    # Sum type variants
+    Cat:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - indoor
+          properties:
+            name:
+              type: string
+            indoor:
+              type: boolean
+              description: Whether the cat is an indoor cat
+            meowVolume:
+              type: integer
+              format: int32
+
+    Dog:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - breed
+          properties:
+            name:
+              type: string
+            breed:
+              type: string
+            barkVolume:
+              type: integer
+              format: int32
+
+    Bird:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+            - canFly
+          properties:
+            name:
+              type: string
+            canFly:
+              type: boolean
+            wingSpan:
+              type: number
+              format: double
+
+    # Nested object
+    Owner:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          $ref: '#/components/schemas/Address'
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        zipCode:
+          type: string
+        country:
+          type: string
+
+    # Error response
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+    # Wrapper types for type safety
+    Email:
+      type: string
+      format: email
+      description: Email address wrapper
+
+    Currency:
+      type: string
+      description: ISO 4217 currency code
+      pattern: '^[A-Z]{3}$'
+
+    Money:
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          $ref: '#/components/schemas/Currency'
+
+    # Nullable field example
+    OptionalInfo:
+      type: object
+      properties:
+        required_field:
+          type: string
+        optional_field:
+          type: string
+          nullable: true
+        optional_with_default:
+          type: string
+          default: "default_value"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    apiKeyQuery:
+      type: apiKey
+      in: query
+      name: api_key
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read:pets: Read pet information
+            write:pets: Modify pets
+            admin: Full admin access

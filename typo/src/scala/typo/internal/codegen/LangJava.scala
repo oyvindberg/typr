@@ -76,6 +76,13 @@ case object LangJava extends Lang {
           case other                          => other
         }
         code"${stripTypeParams(tpe)}.class"
+      case jvm.JavaClassOf(tpe) =>
+        // Same as ClassOf for Java
+        def stripTypeParams(t: jvm.Type): jvm.Type = t match {
+          case jvm.Type.TApply(underlying, _) => stripTypeParams(underlying)
+          case other                          => other
+        }
+        code"${stripTypeParams(tpe)}.class"
       case jvm.Call(target, argGroups) =>
         val allArgs = argGroups.flatMap(_.args)
         code"$target(${allArgs.map(_.value).mkCode(", ")})"
@@ -100,8 +107,9 @@ case object LangJava extends Lang {
         val typeArgStr = if (typeArgs.isEmpty) jvm.Code.Empty else code"<${typeArgs.map(t => renderTree(t, ctx)).mkCode(", ")}>"
         val argStr = if (args.isEmpty) code"()" else code"(${args.map(a => renderTree(a, ctx)).mkCode(", ")})"
         code"$target.$typeArgStr$methodName$argStr"
-      case jvm.Return(expr) => code"return $expr"
-      case jvm.Throw(expr)  => code"throw $expr"
+      case jvm.Return(expr)                   => code"return $expr"
+      case jvm.Throw(expr)                    => code"throw $expr"
+      case jvm.Stmt(stmtCode, needsSemicolon) => if (needsSemicolon) code"$stmtCode;" else stmtCode
       case jvm.Lambda(params, body) =>
         val paramsCode = params match {
           case Nil                                    => code"()"
@@ -111,6 +119,12 @@ case object LangJava extends Lang {
           case _                                      => code"(${params.map(p => p.tpe.fold(code"${p.name}")(t => code"$t ${p.name}")).mkCode(", ")})"
         }
         code"$paramsCode -> ${renderBody(body)}"
+      case jvm.SamLambda(_, lambda) =>
+        // Java: SAM conversion is automatic, just render the lambda
+        renderTree(lambda, ctx)
+      case jvm.Cast(targetType, expr) =>
+        // Java cast: (Type) expr
+        code"(($targetType) $expr)"
       case jvm.ByName(body) =>
         // Java: by-name becomes Supplier/Runnable
         code"() -> ${renderBody(body)}"
@@ -125,9 +139,10 @@ case object LangJava extends Lang {
       case jvm.StrLit(str) if str.contains(Quote)          => Quote + str.replace(Quote, "\\\"") + Quote
       case jvm.StrLit(str)                                 => Quote + str + Quote
       case jvm.Summon(_)                                   => sys.error("java doesn't support `summon`")
-      case jvm.Type.Abstract(value)                        => value.code
+      case jvm.Type.Abstract(value, _)                     => value.code // Java ignores variance
       case jvm.Type.ArrayOf(value)                         => code"$value[]"
       case jvm.Type.Commented(underlying, comment)         => code"$comment $underlying"
+      case jvm.Type.Annotated(underlying, _)               => renderTree(underlying, ctx) // Java doesn't support Scala-style type annotations
       case jvm.Type.Function0(jvm.Type.Void)               => TypesJava.Runnable.code
       case jvm.Type.Function0(targ)                        => TypesJava.Supplier.of(targ).code
       case jvm.Type.Function1(targ, jvm.Type.Void)         => TypesJava.Consumer.of(targ).code
@@ -142,11 +157,12 @@ case object LangJava extends Lang {
       case jvm.Type.Primitive(name)                        => name
       case jvm.RuntimeInterpolation(value)                 => value
       case jvm.IfExpr(pred, thenp, elsep) =>
-        code"""|$pred
+        code"""|($pred
                |  ? $thenp
-               |  : $elsep""".stripMargin
-      case jvm.TypeSwitch(value, cases, nullCase, defaultCase) =>
+               |  : $elsep)""".stripMargin
+      case jvm.TypeSwitch(value, cases, nullCase, defaultCase, _) =>
         // In Java switch expressions: blocks don't need semicolon, expressions do
+        // Note: unchecked flag is Scala-only (for @unchecked annotation), ignored in Java
         def needsSemicolon(body: jvm.Code): String = {
           val rendered = body.render(LangJava).asString.trim
           if (rendered.endsWith("}")) "" else ";"
@@ -158,6 +174,30 @@ case object LangJava extends Lang {
         code"""|switch ($value) {
                |  ${allCases.mkCode("\n")}
                |}""".stripMargin
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        val tryCode = code"""|try {
+                             |  ${tryBlock.map(s => renderStmt(s)).mkCode("\n")}
+                             |}""".stripMargin
+        val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
+          code"""|catch ($exType $ident) {
+                 |  ${body.map(s => renderStmt(s)).mkCode("\n")}
+                 |}""".stripMargin
+        }
+        val finallyCode =
+          if (finallyBlock.isEmpty) jvm.Code.Str("")
+          else
+            code"""|finally {
+                 |  ${finallyBlock.map(s => renderStmt(s)).mkCode("\n")}
+                 |}""".stripMargin
+        code"$tryCode ${catchCodes.mkCode(" ")} $finallyCode"
+      case jvm.IfElseChain(cases, elseCase) =>
+        // IfElseChain bodies are statements that need semicolons in Java
+        val ifCases = cases.zipWithIndex.map { case ((cond, body), idx) =>
+          if (idx == 0) code"if ($cond) { $body; }"
+          else code"else if ($cond) { $body; }"
+        }
+        val elseCode = code"else { $elseCase; }"
+        (ifCases :+ elseCode).mkCode("\n")
       case jvm.StringInterpolate(_, prefix, content) =>
         // For Java, determine if we need Fragment.lit() wrapping
         // - interpolate() needs Fragment.lit() for string parts (it expects Fragment varargs)
@@ -218,11 +258,11 @@ case object LangJava extends Lang {
                 |  return $body;
                 |}""".stripMargin
         }
-      case jvm.Value(annotations, name, tpe, None, _, _) =>
+      case jvm.Value(annotations, name, tpe, None, _, _, _) =>
         val annotationsCode = renderAnnotations(annotations)
         val staticMod = if (ctx.staticImplied) "static " else ""
         code"$annotationsCode$staticMod$tpe $name;"
-      case jvm.Value(annotations, name, tpe, Some(body), isLazy, isOverride) =>
+      case jvm.Value(annotations, name, tpe, Some(body), isLazy, isOverride, _) =>
         val overrideAnnotation = if (isOverride) "@Override\n" else ""
         val staticMod = if (ctx.staticImplied) "static " else ""
         if (isLazy) {
@@ -249,13 +289,16 @@ case object LangJava extends Lang {
           case jvm.Body.Abstract =>
             signature
           case jvm.Body.Expr(expr) =>
-            val bodyCode = if (tpe == jvm.Type.Void) code"$expr;" else code"return $expr;"
+            // TryCatch has internal returns, so don't add outer return
+            val bodyCode =
+              if (tpe == jvm.Type.Void) code"$expr;"
+              else code"return $expr;"
             signature ++ code"""| {
                   |  $bodyCode
                   |}""".stripMargin
           case jvm.Body.Stmts(stmts) =>
             signature ++ code"""| {
-                  |  ${stmts.map(s => code"$s;").mkCode("\n")}
+                  |  ${stmts.map(s => renderStmt(s)).mkCode("\n")}
                   |}""".stripMargin
         }
       case enm: jvm.Enum =>
@@ -345,6 +388,23 @@ case object LangJava extends Lang {
             renderTree(jvm.Method(Nil, param.comments, Nil, name, List(paramWithoutComment), Nil, clsType, Nil, jvm.Body.Expr(body.code), isOverride = false, isDefault = false), memberCtx)
           }
 
+        // For wrapper types with a single value field, generate toString() that returns just the value
+        val toStringMethod: Option[jvm.Code] =
+          if (cls.isWrapper && cls.params.size == 1) {
+            val valueParam = cls.params.head
+            // Unwrap to base type (removes comments, annotations, etc.) to check if it's String
+            val baseTpe = jvm.Type.base(valueParam.tpe)
+            val toStringBody =
+              if (baseTpe == TypesJava.String) code"return ${valueParam.name}"
+              else code"return ${valueParam.name}.toString()"
+            Some(
+              renderTree(
+                jvm.Method(Nil, jvm.Comments.Empty, Nil, jvm.Ident("toString"), Nil, Nil, TypesJava.String, Nil, jvm.Body.Stmts(List(toStringBody)), isOverride = true, isDefault = false),
+                memberCtx
+              )
+            )
+          } else None
+
         // Params with defaults can be omitted from the short constructor
         val requiredParams = cls.params.filter(_.default.isEmpty)
         val hasDefaultableParams = cls.params.exists(_.default.isDefined)
@@ -376,10 +436,10 @@ case object LangJava extends Lang {
           Some(renderParams(cls.params, ctx)),
           cls.implements match {
             case Nil      => None
-            case nonEmpty => Some(nonEmpty.map(x => code" implements $x").mkCode(" "))
+            case nonEmpty => Some(code" implements ${nonEmpty.map(x => code"$x").mkCode(", ")}")
           },
           Some(code"""| {
-                      |  ${(shortConstructor.toList ++ withers ++ body).map(_ ++ code";").mkCode("\n\n")}
+                      |  ${(shortConstructor.toList ++ withers ++ toStringMethod.toList ++ body).map(_ ++ code";").mkCode("\n\n")}
                       |}""".stripMargin)
         ).flatten.mkCode("")
       case sum: jvm.Adt.Sum =>
@@ -393,6 +453,25 @@ case object LangJava extends Lang {
             sum.members.sortBy(_.name).map(m => renderTree(m, memberCtx))
           ).flatten
 
+        // Java sealed interfaces need a 'permits' clause listing all permitted subtypes
+        // If permittedSubtypes is provided, use those; otherwise derive from nested subtypes
+        val permitsClause: Option[jvm.Code] = sum.permittedSubtypes match {
+          case Nil if sum.subtypes.isEmpty => None // No subtypes at all - this would be a compile error in Java
+          case Nil                         =>
+            // Use nested subtypes - for nested types, use simple name (Parent.Child format)
+            val subtypeNames = sum.flattenedSubtypes.map { subtype =>
+              // Get relative name from parent type
+              val parentName = sum.name.name.value
+              val childName = subtype.name.name.value
+              code"$parentName.$childName"
+            }
+            Some(code" permits ${subtypeNames.mkCode(", ")}")
+          case nonEmpty =>
+            // Use explicitly provided permitted subtypes (for top-level classes in same file)
+            val subtypeNames = nonEmpty.map(_.name.value).map(n => code"$n")
+            Some(code" permits ${subtypeNames.mkCode(", ")}")
+        }
+
         val annotationsCode = if (sum.annotations.isEmpty) None else Some(renderAnnotations(sum.annotations))
         List[Option[jvm.Code]](
           renderComments(sum.comments),
@@ -403,6 +482,7 @@ case object LangJava extends Lang {
             case Nil      => None
             case nonEmpty => Some(renderTparams(nonEmpty))
           },
+          permitsClause,
           sum.implements match {
             case Nil      => None
             case nonEmpty => Some(nonEmpty.map(x => code" extends $x").mkCode(" "))
@@ -445,8 +525,9 @@ case object LangJava extends Lang {
           annotationsCode,
           Some(code"${ctx.public}"),
           cls.classType match {
-            case jvm.ClassType.Class     => Some(code"class ")
-            case jvm.ClassType.Interface => Some(code"interface ")
+            case jvm.ClassType.Class         => Some(code"class ")
+            case jvm.ClassType.AbstractClass => Some(code"abstract class ")
+            case jvm.ClassType.Interface     => Some(code"interface ")
           },
           Some(cls.name.name.value),
           cls.tparams match {
@@ -456,7 +537,7 @@ case object LangJava extends Lang {
           cls.`extends`.map(x => code" extends $x"),
           cls.implements match {
             case Nil      => None
-            case nonEmpty => Some(nonEmpty.map(x => code" implements $x").mkCode(" "))
+            case nonEmpty => Some(code" implements ${nonEmpty.map(x => code"$x").mkCode(", ")}")
           },
           Some {
             val allBody = fieldsCode ++ constructorCode ++ body
@@ -467,8 +548,17 @@ case object LangJava extends Lang {
         ).flatten.mkCode("")
       case ann: jvm.Annotation => renderAnnotation(ann)
 
+      // Annotation array: Java uses { a, b }
+      case jvm.AnnotationArray(elements) =>
+        code"{ ${elements.mkCode(", ")} }"
+
       // Anonymous class: new Interface() { members }
-      case jvm.NewWithBody(tpe, members) =>
+      // In Java, anonymous classes can only extend one class OR implement one interface
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        val tpe: jvm.Code = extendsClass.orElse(implementsInterface) match {
+          case Some(t) => t.code
+          case None    => jvm.Code.Empty
+        }
         if (members.isEmpty) code"new $tpe() {}"
         else {
           val memberCtx = Ctx.Empty // Inside anonymous class, public is required
@@ -525,10 +615,17 @@ case object LangJava extends Lang {
 
   /** Render a Body for lambda expressions */
   def renderBody(body: jvm.Body): jvm.Code = body match {
-    case jvm.Body.Abstract    => jvm.Code.Empty
-    case jvm.Body.Expr(value) => value
-    case jvm.Body.Stmts(stmts) =>
-      code"{\n  ${stmts.map(s => code"$s;").mkCode("\n  ")}\n}"
+    case jvm.Body.Abstract     => jvm.Code.Empty
+    case jvm.Body.Expr(value)  => value
+    case jvm.Body.Stmts(stmts) => code"{\n  ${stmts.map(s => renderStmt(s)).mkCode("\n  ")}\n}"
+  }
+
+  /** Render a statement with semicolon if needed. Compound statements (if/try) don't need semicolons. */
+  def renderStmt(stmt: jvm.Code): jvm.Code = stmt match {
+    case jvm.Code.Tree(jvm.Stmt(inner, needsSemi)) => if (needsSemi) code"$inner;" else inner
+    case jvm.Code.Tree(_: jvm.IfElseChain)         => stmt
+    case jvm.Code.Tree(_: jvm.TryCatch)            => stmt
+    case _                                         => code"$stmt;"
   }
 
   def renderComments(comments: jvm.Comments): Option[jvm.Code] = {

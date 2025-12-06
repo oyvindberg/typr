@@ -125,7 +125,7 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
       ));
       }
     );;
-    Fragment q = columns.isEmpty()
+    Fragment q = (columns.isEmpty()
       ? interpolate(typo.runtime.Fragment.lit("""
            insert into "person"."businessentity" default values
            returning "businessentityid", "rowguid", "modifieddate"::text
@@ -143,7 +143,7 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
              )
              returning "businessentityid", "rowguid", "modifieddate"::text
           """)
-        );;
+        ));;
     return q.updateReturning(BusinessentityRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 

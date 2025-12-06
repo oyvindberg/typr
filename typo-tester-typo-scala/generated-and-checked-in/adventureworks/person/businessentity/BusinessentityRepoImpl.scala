@@ -56,12 +56,12 @@ class BusinessentityRepoImpl extends BusinessentityRepo {
       value => { columns.add(Fragment.lit(""""modifieddate"""")): @scala.annotation.nowarn; values.add(interpolate"${TypoLocalDateTime.pgType.encode(value)}::timestamp"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      if (columns.isEmpty) interpolate"""insert into "person"."businessentity" default values
+      (if (columns.isEmpty) interpolate"""insert into "person"."businessentity" default values
       returning "businessentityid", "rowguid", "modifieddate"::text
       """ else interpolate"""insert into "person"."businessentity"(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning "businessentityid", "rowguid", "modifieddate"::text
-      """
+      """)
     }
     return q.updateReturning(BusinessentityRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }

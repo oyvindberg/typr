@@ -54,10 +54,10 @@ function HomepageHeader() {
                         </div>
                         
                         <div className={styles.buttonsContainer}>
-                            <Link className="button button--primary button--lg" to="/docs/setup">
+                            <Link className="button button--primary button--lg" to="/db/setup">
                                 Start Building in 2 Minutes →
                             </Link>
-                            <Link className="button button--outline button--lg" to="/docs">
+                            <Link className="button button--outline button--lg" to="/db">
                                 See the Magic
                             </Link>
                         </div>

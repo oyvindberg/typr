@@ -101,10 +101,10 @@ class FootballClubRepoImpl extends FootballClubRepo {
         case x: name => interpolate""""name" = ${PgTypes.text.encode(x.value)}"""
       }).toList()
     }
-    return if (updates.isEmpty) false else interpolate"""update "myschema"."football_club"
-                                           ${Fragment.set(updates)}
-                                           where "id" = ${FootballClubId.pgType.encode(id)}"""
-      .update().runUnchecked(c) > 0
+    return (if (updates.isEmpty) false else interpolate"""update "myschema"."football_club"
+                                            ${Fragment.set(updates)}
+                                            where "id" = ${FootballClubId.pgType.encode(id)}"""
+      .update().runUnchecked(c) > 0)
   }
 
   override def upsert(unsaved: FootballClubRow)(using c: Connection): FootballClubRow = {

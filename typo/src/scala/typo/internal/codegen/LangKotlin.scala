@@ -239,6 +239,12 @@ case object LangKotlin extends Lang {
           code"$stripped::class.javaObjectType"
         else
           code"$stripped::class.java"
+      case jvm.JavaClassOf(tpe) =>
+        def stripTypeParams(t: jvm.Type): jvm.Type = t match {
+          case jvm.Type.TApply(underlying, _) => stripTypeParams(underlying)
+          case other                          => other
+        }
+        code"${stripTypeParams(tpe)}::class.java"
       case jvm.Call(target, argGroups) =>
         val allArgs = argGroups.flatMap(_.args)
         code"$target(${allArgs.map(a => renderTree(a, ctx)).mkCode(", ")})"
@@ -265,8 +271,9 @@ case object LangKotlin extends Lang {
         val typeArgStr = if (typeArgs.isEmpty) jvm.Code.Empty else code"<${typeArgs.map(t => renderTree(t, ctx)).mkCode(", ")}>"
         val argStr = if (args.isEmpty) code"()" else code"(${args.map(a => renderTree(a, ctx)).mkCode(", ")})"
         code"$target.$methodName$typeArgStr$argStr"
-      case jvm.Return(expr) => code"return $expr"
-      case jvm.Throw(expr)  => code"throw $expr"
+      case jvm.Return(expr)                   => code"return $expr"
+      case jvm.Throw(expr)                    => code"throw $expr"
+      case jvm.Stmt(stmtCode, needsSemicolon) => if (needsSemicolon) code"$stmtCode;" else stmtCode
       case jvm.Lambda(params, body) =>
         val paramsCode = params match {
           case Nil                                    => jvm.Code.Empty
@@ -276,15 +283,46 @@ case object LangKotlin extends Lang {
           case _                                      => code"${params.map(p => p.tpe.fold(code"${p.name}")(t => code"${p.name}: $t")).mkCode(", ")} -> "
         }
         code"{ $paramsCode${renderBody(body)} }"
-      case jvm.FieldGetterRef(rowType, field)              => code"$rowType::$field"
-      case jvm.Param(_, cs, name, tpe, _)                  => code"${renderComments(cs).getOrElse(jvm.Code.Empty)}$name: $tpe"
-      case jvm.QIdent(value)                               => value.map(i => renderTree(i, ctx)).mkCode(".")
-      case jvm.StrLit(str) if str.contains(Quote)          => Quote + str.replace(Quote, "\\\"") + Quote
-      case jvm.StrLit(str)                                 => Quote + str + Quote
-      case jvm.Summon(_)                                   => sys.error("kotlin doesn't support `summon`")
-      case jvm.Type.Abstract(value)                        => value.code
+      case jvm.SamLambda(samType, lambda) =>
+        // Kotlin SAM conversion can be unreliable with Java SAM interfaces due to overload resolution.
+        // Use anonymous object implementation instead for better compatibility.
+        // object : FunctionType { override fun apply(param): ReturnType = body }
+        // Type may be shortened (e.g., java.util.function.Function -> Function), so check the simple name
+        val (methodName, returnType) = samType match {
+          case jvm.Type.TApply(jvm.Type.Qualified(base), _ :: ret :: Nil) if base.name.value == "Function" =>
+            ("apply", ret)
+          case jvm.Type.TApply(jvm.Type.Qualified(base), ret :: Nil) if base.name.value == "Supplier" =>
+            ("get", ret)
+          case _ =>
+            // Fallback to SAM conversion syntax for unknown types
+            val baseType = samType match {
+              case jvm.Type.TApply(underlying, _) => underlying
+              case other                          => other
+            }
+            val lambdaCode = renderTree(lambda, ctx)
+            return code"$baseType $lambdaCode"
+        }
+        val params = lambda.params.map(p => code"${p.name}: ${p.tpe.getOrElse(sys.error("SamLambda param must have type"))}").mkCode(", ")
+        val bodyCode = renderBody(lambda.body)
+        code"object : $samType { override fun $methodName($params): $returnType = $bodyCode }"
+      case jvm.Cast(targetType, expr) =>
+        // Kotlin cast: expr as Type
+        code"($expr as $targetType)"
+      case jvm.FieldGetterRef(rowType, field)     => code"$rowType::$field"
+      case jvm.Param(_, cs, name, tpe, _)         => code"${renderComments(cs).getOrElse(jvm.Code.Empty)}$name: $tpe"
+      case jvm.QIdent(value)                      => value.map(i => renderTree(i, ctx)).mkCode(".")
+      case jvm.StrLit(str) if str.contains(Quote) => Quote + str.replace(Quote, "\\\"") + Quote
+      case jvm.StrLit(str)                        => Quote + str + Quote
+      case jvm.Summon(_)                          => sys.error("kotlin doesn't support `summon`")
+      case jvm.Type.Abstract(value, variance) =>
+        variance match {
+          case jvm.Variance.Invariant     => value.code
+          case jvm.Variance.Covariant     => code"out $value"
+          case jvm.Variance.Contravariant => code"in $value"
+        }
       case jvm.Type.ArrayOf(value)                         => code"Array<$value>"
       case jvm.Type.Commented(underlying, comment)         => code"$comment $underlying"
+      case jvm.Type.Annotated(underlying, _)               => renderTree(underlying, ctx) // Kotlin doesn't support Scala-style type annotations
       case jvm.Type.Function0(jvm.Type.Void)               => code"() -> Unit"
       case jvm.Type.Function0(targ)                        => code"() -> $targ"
       case jvm.Type.Function1(targ, jvm.Type.Void)         => code"($targ) -> Unit"
@@ -293,7 +331,7 @@ case object LangKotlin extends Lang {
       case jvm.Type.Function2(targ1, targ2, ret)           => code"($targ1, $targ2) -> $ret"
       case jvm.Type.Qualified(value)                       =>
         // Map Java types to Kotlin equivalents
-        value.idents.mkString(".") match {
+        value.dotName match {
           case "java.lang.String"    => code"String"
           case "java.lang.Boolean"   => code"Boolean"
           case "java.lang.Integer"   => code"Int"
@@ -313,25 +351,31 @@ case object LangKotlin extends Lang {
       case jvm.Type.Primitive(name)           => name
       case jvm.RuntimeInterpolation(value)    => value
       case jvm.IfExpr(pred, thenp, elsep) =>
-        code"if ($pred) $thenp else $elsep"
-      case jvm.TypeSwitch(value, cases, nullCase, defaultCase) =>
+        code"(if ($pred) $thenp else $elsep)"
+      case jvm.TypeSwitch(value, cases, nullCase, defaultCase, _) =>
+        // Use `when (val __r = value)` to bind value once and avoid double evaluation
+        // Note: unchecked flag is Scala-only (for @unchecked annotation), ignored in Kotlin
+        val boundIdent = jvm.Ident("__r")
         val nullCaseCode = nullCase.map(body => code"null -> $body").toList
         val typeCases = cases.map { case jvm.TypeSwitch.Case(pat, ident, body) =>
+          // Convert type to wildcard version for pattern matching and cast
+          // Ok<T> -> Ok<*>, Response2004XX5XX<T> -> Response2004XX5XX<*>
+          val wildcardPat = toWildcardType(pat)
           // If body starts with {, unwrap it and merge with cast assignment
           val bodyStr = body.render(LangKotlin).asString.trim
           if (bodyStr.startsWith("{") && bodyStr.endsWith("}")) {
             val innerBody = bodyStr.drop(1).dropRight(1).trim
-            code"""|is $pat -> {
-                   |  val $ident = $value as $pat
+            code"""|is $wildcardPat -> {
+                   |  val $ident = $boundIdent as $wildcardPat
                    |  $innerBody
                    |}""".stripMargin
           } else {
-            code"is $pat -> { val $ident = $value as $pat; $body }"
+            code"is $wildcardPat -> { val $ident = $boundIdent as $wildcardPat; $body }"
           }
         }
         val defaultCaseCode = defaultCase.map(body => code"else -> $body").toList
         val allCases = nullCaseCode ++ typeCases ++ defaultCaseCode
-        code"""|when ($value) {
+        code"""|when (val $boundIdent = $value) {
                |  ${allCases.mkCode("\n")}
                |}""".stripMargin
       case jvm.StringInterpolate(_, prefix, content) =>
@@ -384,14 +428,14 @@ case object LangKotlin extends Lang {
                 |  return $body
                 |}""".stripMargin
         }
-      case jvm.Value(_, name, tpe, None, _, isOverride) =>
+      case jvm.Value(_, name, tpe, None, _, isOverride, _) =>
         val overrideMod = if (isOverride) "override " else ""
         // In Kotlin, override of Java methods must be fun, not val
         if (isOverride)
           code"${overrideMod}fun $name(): $tpe"
         else
           code"${overrideMod}abstract val $name: $tpe"
-      case jvm.Value(_, name, tpe, Some(body), _, isOverride) =>
+      case jvm.Value(_, name, tpe, Some(body), _, isOverride, _) =>
         val overrideMod = if (isOverride) "override " else ""
         // In Kotlin, override of Java methods must be fun, not val
         if (isOverride)
@@ -419,7 +463,7 @@ case object LangKotlin extends Lang {
             signature ++ code" = $expr"
           case jvm.Body.Stmts(stmts) =>
             signature ++ code"""| {
-                  |  ${stmts.mkCode("\n")}
+                  |  ${stmts.map(s => renderStmt(s)).mkCode("\n")}
                   |}""".stripMargin
         }
       case enm: jvm.Enum =>
@@ -463,6 +507,23 @@ case object LangKotlin extends Lang {
 
         val staticMembers = cls.staticMembers.sortBy(_.name).map(x => renderTree(x, memberCtx))
 
+        // For wrapper types with a single value field, generate toString() that returns just the value
+        val toStringMethod: Option[jvm.Code] =
+          if (cls.isWrapper && cls.params.size == 1) {
+            val valueParam = cls.params.head
+            // Unwrap to base type (removes comments, annotations, etc.) to check if it's String
+            val baseTpe = jvm.Type.base(valueParam.tpe)
+            val toStringBody =
+              if (baseTpe == TypesKotlin.String) code"return ${valueParam.name}"
+              else code"return ${valueParam.name}.toString()"
+            Some(
+              renderTree(
+                jvm.Method(Nil, jvm.Comments.Empty, Nil, jvm.Ident("toString"), Nil, Nil, TypesKotlin.String, Nil, jvm.Body.Stmts(List(toStringBody)), isOverride = true, isDefault = false),
+                memberCtx
+              )
+            )
+          } else None
+
         // Kotlin data classes have named parameters for copy(), so withers are unnecessary
 
         // Kotlin data classes must have at least one constructor parameter.
@@ -474,7 +535,7 @@ case object LangKotlin extends Lang {
                         |}""".stripMargin)
           } else None
 
-          val allBody = body ++ companionBody.toList
+          val allBody = body ++ toStringMethod.toList ++ companionBody.toList
 
           val classKeyword = if (cls.tparams.isEmpty) "object" else "class"
 
@@ -489,7 +550,7 @@ case object LangKotlin extends Lang {
             },
             cls.implements match {
               case Nil      => None
-              case nonEmpty => Some(nonEmpty.map(x => code" : $x").mkCode(", "))
+              case nonEmpty => Some(code" : " ++ nonEmpty.map(x => code"$x").mkCode(", "))
             },
             if (allBody.nonEmpty)
               Some(code"""| {
@@ -505,7 +566,12 @@ case object LangKotlin extends Lang {
                         |}""".stripMargin)
           } else None
 
-          val allBody = body ++ companionBody.toList
+          val allBody = body ++ toStringMethod.toList ++ companionBody.toList
+
+          // Constructor annotations render as: data class Name @Annotation constructor(params)
+          val constructorAnnotationsCode = if (cls.constructorAnnotations.nonEmpty) {
+            Some(code" ${cls.constructorAnnotations.map(renderAnnotation).mkCode(" ")} constructor")
+          } else None
 
           List[Option[jvm.Code]](
             Some(renderAnnotations(cls.annotations)),
@@ -516,10 +582,11 @@ case object LangKotlin extends Lang {
               case Nil      => None
               case nonEmpty => Some(renderTparams(nonEmpty))
             },
+            constructorAnnotationsCode,
             Some(renderDataClassParams(cls.params, ctx)),
             cls.implements match {
               case Nil      => None
-              case nonEmpty => Some(nonEmpty.map(x => code" : $x").mkCode(", "))
+              case nonEmpty => Some(code" : " ++ nonEmpty.map(x => code"$x").mkCode(", "))
             },
             if (allBody.nonEmpty)
               Some(code"""| {
@@ -568,12 +635,28 @@ case object LangKotlin extends Lang {
       // Annotation: @Annotation(args)
       case ann: jvm.Annotation => renderAnnotation(ann)
 
+      // Annotation array: Kotlin uses [ a, b ]
+      // Nested annotations don't have @ prefix
+      case jvm.AnnotationArray(elements) =>
+        val renderedElements = elements.map {
+          case jvm.Code.Tree(ann: jvm.Annotation) => renderNestedAnnotation(ann)
+          case other                              => other
+        }
+        code"[${renderedElements.mkCode(", ")}]"
+
       // Anonymous class: object : Type { members }
-      case jvm.NewWithBody(tpe, members) =>
-        if (members.isEmpty) code"object : $tpe {}"
+      // In Kotlin: classes need (), interfaces don't
+      case jvm.NewWithBody(extendsClass, implementsInterface, members) =>
+        val typeClause = (extendsClass, implementsInterface) match {
+          case (Some(cls), Some(iface)) => code"$cls(), $iface"
+          case (Some(cls), None)        => code"$cls()"
+          case (None, Some(iface))      => code"$iface"
+          case (None, None)             => jvm.Code.Empty
+        }
+        if (members.isEmpty) code"object : $typeClause {}"
         else {
           val memberCtx = Ctx.Empty
-          code"""|object : $tpe {
+          code"""|object : $typeClause {
                  |  ${members.map(m => renderTree(m, memberCtx)).mkCode("\n")}
                  |}""".stripMargin
         }
@@ -630,15 +713,22 @@ case object LangKotlin extends Lang {
         val classKeyword = cls.classType match {
           case jvm.ClassType.Class if cls.params.isEmpty => "class "
           case jvm.ClassType.Class                       => "data class "
+          case jvm.ClassType.AbstractClass               => "abstract class "
           case jvm.ClassType.Interface                   => "interface "
         }
 
-        // In Kotlin, extends comes first with () for constructor call, then implements
+        // In Kotlin, extends comes first with () for constructor call (for classes), then implements
+        // Interfaces don't need () when extending other interfaces
+        val isInterface = cls.classType == jvm.ClassType.Interface
         val extendsAndImplements: Option[jvm.Code] = (cls.`extends`, cls.implements) match {
-          case (None, Nil)        => None
-          case (Some(ext), Nil)   => Some(code" : $ext()")
-          case (None, impls)      => Some(impls.map(x => code" : $x").mkCode(", "))
-          case (Some(ext), impls) => Some(code" : $ext(), " ++ impls.map(x => code"$x").mkCode(", "))
+          case (None, Nil) => None
+          case (Some(ext), Nil) =>
+            if (isInterface) Some(code" : $ext")
+            else Some(code" : $ext()")
+          case (None, impls) => Some(code" : " ++ impls.map(x => code"$x").mkCode(", "))
+          case (Some(ext), impls) =>
+            if (isInterface) Some(code" : $ext, " ++ impls.map(x => code"$x").mkCode(", "))
+            else Some(code" : $ext(), " ++ impls.map(x => code"$x").mkCode(", "))
         }
 
         List[Option[jvm.Code]](
@@ -652,6 +742,7 @@ case object LangKotlin extends Lang {
           cls.classType match {
             case jvm.ClassType.Class if cls.params.nonEmpty => Some(renderDataClassParams(cls.params, ctx))
             case jvm.ClassType.Class                        => Some(code"()")
+            case jvm.ClassType.AbstractClass                => Some(code"()")
             case jvm.ClassType.Interface                    => None
           },
           extendsAndImplements,
@@ -659,6 +750,29 @@ case object LangKotlin extends Lang {
                       |  ${body.mkCode("\n\n")}
                       |}""".stripMargin)
         ).flatten.mkCode("")
+      case jvm.TryCatch(tryBlock, catches, finallyBlock) =>
+        val tryCode = code"""|try {
+                             |  ${tryBlock.map(s => renderStmt(s)).mkCode("\n")}
+                             |}""".stripMargin
+        val catchCodes = catches.map { case jvm.TryCatch.Catch(exType, ident, body) =>
+          code"""|catch ($ident: $exType) {
+                 |  ${body.map(s => renderStmt(s)).mkCode("\n")}
+                 |}""".stripMargin
+        }
+        val finallyCode =
+          if (finallyBlock.isEmpty) jvm.Code.Str("")
+          else
+            code"""|finally {
+                   |  ${finallyBlock.map(s => renderStmt(s)).mkCode("\n")}
+                   |}""".stripMargin
+        code"$tryCode ${catchCodes.mkCode(" ")} $finallyCode"
+      case jvm.IfElseChain(cases, elseCase) =>
+        val ifCases = cases.zipWithIndex.map { case ((cond, body), idx) =>
+          if (idx == 0) code"if ($cond) { $body }"
+          else code"else if ($cond) { $body }"
+        }
+        val elseCode = code"else { $elseCase }"
+        (ifCases :+ elseCode).mkCode("\n")
     }
 
   override def escapedIdent(value: String): String = {
@@ -672,9 +786,15 @@ case object LangKotlin extends Lang {
   }
 
   def renderParams(params: List[jvm.Param[jvm.Type]], ctx: Ctx): jvm.Code = {
+    val hasComments = params.exists(_.comments.lines.nonEmpty)
     params match {
-      case Nil       => code"()"
-      case List(one) => code"(${renderTree(one, ctx)})"
+      case Nil                       => code"()"
+      case List(one) if !hasComments => code"(${renderTree(one, ctx)})"
+      case List(one)                 =>
+        // Single param with comment - no empty init line
+        code"""|(
+               |  ${renderTree(one, ctx)}
+               |)""".stripMargin
       case more =>
         code"""|(
                |  ${more.init.map(p => code"${renderTree(p, ctx)},").mkCode("\n")}
@@ -715,7 +835,13 @@ case object LangKotlin extends Lang {
   def renderBody(body: jvm.Body): jvm.Code = body match {
     case jvm.Body.Abstract     => jvm.Code.Empty
     case jvm.Body.Expr(value)  => value
-    case jvm.Body.Stmts(stmts) => stmts.mkCode("\n")
+    case jvm.Body.Stmts(stmts) => stmts.map(s => renderStmt(s)).mkCode("\n")
+  }
+
+  /** Render a statement. Kotlin doesn't require semicolons, but we still handle Stmt wrapper. */
+  def renderStmt(stmt: jvm.Code): jvm.Code = stmt match {
+    case jvm.Code.Tree(jvm.Stmt(inner, _)) => inner // Kotlin doesn't need semicolons
+    case _                                 => stmt
   }
 
   def renderComments(comments: jvm.Comments): Option[jvm.Code] = {
@@ -731,19 +857,41 @@ case object LangKotlin extends Lang {
   }
 
   def renderAnnotation(ann: jvm.Annotation): jvm.Code = {
-    val argsCode = ann.args match {
-      case Nil                                        => jvm.Code.Empty
-      case List(jvm.Annotation.Arg.Positional(value)) => code"($value)"
-      case args =>
-        val rendered = args
-          .map {
-            case jvm.Annotation.Arg.Named(name, value) => code"$name = $value"
-            case jvm.Annotation.Arg.Positional(value)  => value
-          }
-          .mkCode(", ")
-        code"($rendered)"
-    }
-    code"@${ann.tpe}$argsCode"
+    val argsCode = renderAnnotationArgs(ann.args)
+    // Kotlin use-site targets: @get:JsonValue, @field:JsonCreator etc
+    val useTargetPrefix = ann.useTarget.map(t => code"${t.name}:").getOrElse(jvm.Code.Empty)
+    code"@$useTargetPrefix${ann.tpe}$argsCode"
+  }
+
+  /** Render a nested annotation (inside another annotation) - no @ prefix */
+  def renderNestedAnnotation(ann: jvm.Annotation): jvm.Code = {
+    val argsCode = renderAnnotationArgs(ann.args)
+    code"${ann.tpe}$argsCode"
+  }
+
+  /** Render annotation arguments, converting ClassOf to KClass for Kotlin */
+  private def renderAnnotationArgs(args: List[jvm.Annotation.Arg]): jvm.Code = args match {
+    case Nil                                        => jvm.Code.Empty
+    case List(jvm.Annotation.Arg.Positional(value)) => code"(${renderAnnotationValue(value)})"
+    case args =>
+      val rendered = args
+        .map {
+          case jvm.Annotation.Arg.Named(name, value) => code"$name = ${renderAnnotationValue(value)}"
+          case jvm.Annotation.Arg.Positional(value)  => renderAnnotationValue(value)
+        }
+        .mkCode(", ")
+      code"($rendered)"
+  }
+
+  /** Render annotation argument value, converting ClassOf to KClass and JavaClassOf to Java Class */
+  private def renderAnnotationValue(value: jvm.Code): jvm.Code = value match {
+    case jvm.Code.Tree(jvm.ClassOf(tpe)) =>
+      // For Kotlin annotations, use KClass (::class) not Java Class (::class.java)
+      code"$tpe::class"
+    case jvm.Code.Tree(jvm.JavaClassOf(tpe)) =>
+      // Explicit Java Class reference - use ::class.java
+      code"$tpe::class.java"
+    case other => other
   }
 
   def renderAnnotations(annotations: List[jvm.Annotation]): jvm.Code = {
@@ -788,4 +936,12 @@ case object LangKotlin extends Lang {
       "when",
       "while"
     )
+
+  /** Convert a type to wildcard version for pattern matching. Ok<T> -> Ok<*>, Response2004XX5XX<T> -> Response2004XX5XX<*> Non-generic types are returned unchanged.
+    */
+  private def toWildcardType(tpe: jvm.Type): jvm.Type = tpe match {
+    case jvm.Type.TApply(underlying, targs) =>
+      jvm.Type.TApply(underlying, targs.map(_ => jvm.Type.Wildcard))
+    case other => other
+  }
 }
