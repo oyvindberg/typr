@@ -7,7 +7,7 @@ object FileStringEnum {
     val underlying = options.lang.String
     val instances: List[jvm.ClassMember] = List(
       options.dbLib.toList.flatMap(_.stringEnumInstances(enm.tpe, underlying, enm.dbEnum.name.value, openEnum = false)),
-      options.jsonLib.stringEnumInstances(enm.tpe, underlying, openEnum = false).givens
+      options.jsonLibs.flatMap(_.stringEnumInstances(enm.tpe, underlying, openEnum = false).givens)
     ).flatten
     val comments = scaladoc(s"Enum `${enm.dbEnum.name.value}`" +: enm.members.toList.map { case (_, v) => " - " + v })
 

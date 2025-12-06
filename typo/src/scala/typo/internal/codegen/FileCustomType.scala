@@ -16,13 +16,13 @@ object FileCustomType {
       case _ => None
     }
 
-    val jsonInstances = options.jsonLib.customTypeInstances(ct)
+    val jsonInstances = options.jsonLibs.map(_.customTypeInstances(ct))
     val instances =
       maybeBijection.toList ++
-        jsonInstances.givens ++
+        jsonInstances.flatMap(_.givens) ++
         options.dbLib.toList.flatMap(_.customTypeInstances(ct))
-    val fieldAnnotations = jsonInstances.fieldAnnotations
-    val typeAnnotations = jsonInstances.typeAnnotations
+    val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
+    val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
 
     val paramsWithAnnotations = ct.params.toList.map { p =>
       fieldAnnotations.get(p.name) match {

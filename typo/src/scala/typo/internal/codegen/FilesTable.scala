@@ -52,9 +52,9 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
         )
       }
 
-      val jsonInstances = options.jsonLib.instances(unsaved.tpe, unsaved.unsavedCols)
-      val fieldAnnotations = jsonInstances.fieldAnnotations
-      val typeAnnotations = jsonInstances.typeAnnotations
+      val jsonInstances = options.jsonLibs.map(_.instances(unsaved.tpe, unsaved.unsavedCols))
+      val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
+      val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
 
       val colParams = unsaved.unsavedCols.map { col =>
         col.param.copy(
@@ -140,13 +140,13 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
             case _ => None
           }
 
-        val jsonInstances = options.jsonLib.wrapperTypeInstances(wrapperType = id.tpe, fieldName = value, underlying = id.underlying)
-        val fieldAnnotations = jsonInstances.fieldAnnotations
-        val typeAnnotations = jsonInstances.typeAnnotations
+        val jsonInstances = options.jsonLibs.map(_.wrapperTypeInstances(wrapperType = id.tpe, fieldName = value, underlying = id.underlying))
+        val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
+        val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
 
         val instances = List(
           bijection.toList,
-          jsonInstances.givens,
+          jsonInstances.flatMap(_.givens),
           options.dbLib.toList.flatMap(_.wrapperTypeInstances(wrapperType = id.tpe, underlying = id.underlying, overrideDbType = None))
         ).flatten
 
@@ -209,7 +209,7 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
 
         val instances = List(
           options.dbLib.toList.flatMap(_.stringEnumInstances(x.tpe, x.underlying, sqlType, openEnum = true)),
-          options.jsonLib.stringEnumInstances(x.tpe, x.underlying, openEnum = true).givens
+          options.jsonLibs.flatMap(_.stringEnumInstances(x.tpe, x.underlying, openEnum = true).givens)
         ).flatten
 
         // shortcut for id files wrapping a domain
@@ -279,10 +279,10 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
             )
           }
 
-        val jsonInstances = options.jsonLib.instances(tpe = id.tpe, cols = cols)
-        val fieldAnnotations = jsonInstances.fieldAnnotations
-        val typeAnnotations = jsonInstances.typeAnnotations
-        val instances: List[jvm.Given] = jsonInstances.givens
+        val jsonInstances = options.jsonLibs.map(_.instances(tpe = id.tpe, cols = cols))
+        val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
+        val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
+        val instances: List[jvm.Given] = jsonInstances.flatMap(_.givens)
 
         Some(
           jvm.File(

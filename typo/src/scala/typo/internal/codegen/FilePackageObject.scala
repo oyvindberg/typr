@@ -5,7 +5,7 @@ package codegen
 object FilePackageObject {
   def packageObject(options: InternalOptions): Option[jvm.File] = {
     val parentPkg = NonEmptyList.fromList(options.pkg.idents.dropRight(1))
-    val instances = options.dbLib.toList.flatMap(_.missingInstances) ++ options.jsonLib.missingInstances
+    val instances = options.dbLib.toList.flatMap(_.missingInstances) ++ options.jsonLibs.flatMap(_.missingInstances)
     if (instances.isEmpty) None
     else {
       val content =

@@ -6,7 +6,7 @@ case class Options(
     pkg: String,
     lang: Lang,
     dbLib: Option[DbLibName],
-    jsonLib: JsonLibName,
+    jsonLibs: List[JsonLibName] = Nil,
     silentBanner: Boolean = false,
     logger: TypoLogger = TypoLogger.Console,
     fileHeader: String = Options.header,

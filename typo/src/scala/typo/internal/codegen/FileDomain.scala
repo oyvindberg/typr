@@ -24,14 +24,14 @@ object FileDomain {
         }
       else None
 
-    val jsonInstances = options.jsonLib.wrapperTypeInstances(wrapperType = domain.tpe, fieldName = value, underlying = domain.underlyingType)
+    val jsonInstances = options.jsonLibs.map(_.wrapperTypeInstances(wrapperType = domain.tpe, fieldName = value, underlying = domain.underlyingType))
     val instances = List(
       bijection.toList,
-      jsonInstances.givens,
+      jsonInstances.flatMap(_.givens),
       options.dbLib.toList.flatMap(_.wrapperTypeInstances(wrapperType = domain.tpe, underlying = domain.underlyingType, overrideDbType = Some(domain.underlying.name.quotedValue)))
     ).flatten
-    val fieldAnnotations = jsonInstances.fieldAnnotations
-    val typeAnnotations = jsonInstances.typeAnnotations
+    val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
+    val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
 
     val paramsWithAnnotations = List(jvm.Param(value, domain.underlyingType)).map { p =>
       fieldAnnotations.get(p.name) match {

@@ -83,9 +83,9 @@ case class FilesRelation(
         }
       ).flatten
 
-      val jsonInstances = options.jsonLib.instances(names.RowName, cols)
-      val fieldAnnotations = jsonInstances.fieldAnnotations
-      val typeAnnotations = jsonInstances.typeAnnotations
+      val jsonInstances = options.jsonLibs.map(_.instances(names.RowName, cols))
+      val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
+      val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)
 
       val commentedParams: NonEmptyList[jvm.Param[jvm.Type]] =
         cols.map { col =>
@@ -105,7 +105,7 @@ case class FilesRelation(
         }
 
       val instances: List[jvm.ClassMember] =
-        jsonInstances.givens ++
+        jsonInstances.flatMap(_.givens) ++
           options.dbLib.toList.flatMap(_.rowInstances(names.RowName, cols, rowType = rowType))
 
       val classComment = {
