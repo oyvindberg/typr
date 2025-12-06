@@ -34,9 +34,9 @@ case class Created[+T](@JsonProperty("value") value: T) extends Response201400[T
 
 /** HTTP 5XX response */
 case class ServerError5XX(
-  /** HTTP status code */
-  @JsonProperty("statusCode") statusCode: Int,
-  @JsonProperty("value") value: Error
+    /** HTTP status code */
+    @JsonProperty("statusCode") statusCode: Integer,
+    @JsonProperty("value") value: Error
 ) extends Response2004XX5XX[Nothing] {
   override lazy val status: String = "5XX"
 }
@@ -53,9 +53,9 @@ case class NotFound[+T](@JsonProperty("value") value: T) extends Response200404[
 
 /** HTTP 4XX response */
 case class ClientError4XX(
-  /** HTTP status code */
-  @JsonProperty("statusCode") statusCode: Int,
-  @JsonProperty("value") value: Error
+    /** HTTP status code */
+    @JsonProperty("statusCode") statusCode: Integer,
+    @JsonProperty("value") value: Error
 ) extends Response2004XX5XX[Nothing] {
   override lazy val status: String = "4XX"
 }

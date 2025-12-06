@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.RestController
 import testapi.model.Animal
 
 @RestController
-@RequestMapping("/animals")
+@RequestMapping(value = Array("/animals"))
 @SecurityScheme(name = "bearerAuth", `type` = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @SecurityScheme(name = "apiKeyHeader", `type` = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, paramName = "X-API-Key")
 @SecurityScheme(name = "apiKeyQuery", `type` = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, paramName = "api_key")
 @SecurityScheme(name = "oauth2", `type` = SecuritySchemeType.OAUTH2)
 trait AnimalsApiServer extends AnimalsApi {
+
   /** List all animals (polymorphic) */
-  override def listAnimals: Response2004XX5XX[List[Animal]]
+  override def listAnimals: Response2004XX5XX[java.util.List[Animal]]
 
   /** Endpoint wrapper for listAnimals - handles response status codes */
   @GetMapping(value = Array(""), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def listAnimalsEndpoint: ResponseEntity[?] = {
     listAnimals match {
-      case r: testapi.api.Ok[?] => org.springframework.http.ResponseEntity.ok(r.value.asInstanceOf[scala.List[testapi.model.Animal]])
+      case r: testapi.api.Ok[?]          => org.springframework.http.ResponseEntity.ok(r.value.asInstanceOf[java.util.List[testapi.model.Animal]])
       case r: testapi.api.ClientError4XX => org.springframework.http.ResponseEntity.status(r.statusCode).body(r.value)
       case r: testapi.api.ServerError5XX => org.springframework.http.ResponseEntity.status(r.statusCode).body(r.value)
     }

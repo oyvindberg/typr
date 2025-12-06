@@ -1,9 +1,9 @@
 package typo.openapi.codegen
 
-import typo.{jvm, OptionalSupport}
+import typo.internal.codegen.*
 import typo.jvm.Code.TypeOps
-import typo.internal.codegen._
-import typo.openapi.{ApiMethod, ApiParameter, FormField, HttpMethod, ParameterIn, RequestBody, SecurityRequirement, SecurityScheme}
+import typo.openapi.*
+import typo.{OptionalSupport, jvm}
 
 /** Framework-specific annotation generation for API interfaces */
 trait FrameworkSupport {
@@ -454,7 +454,7 @@ object SpringBootSupport extends FrameworkSupport {
     val requestMapping = basePath.map { path =>
       jvm.Annotation(
         Types.Spring.RequestMapping,
-        List(jvm.Annotation.Arg.Positional(jvm.StrLit(path).code))
+        List(jvm.Annotation.Arg.Named(jvm.Ident("value"), jvm.AnnotationArray(List(jvm.StrLit(path).code)).code))
       )
     }
 

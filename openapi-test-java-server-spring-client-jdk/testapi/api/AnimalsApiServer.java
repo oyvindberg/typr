@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import testapi.model.Animal;
 
 @RestController
-@RequestMapping("/animals")
+@RequestMapping(value = { "/animals" })
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @SecurityScheme(name = "apiKeyHeader", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, paramName = "X-API-Key")
 @SecurityScheme(name = "apiKeyQuery", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, paramName = "api_key")

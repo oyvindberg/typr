@@ -22,7 +22,9 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.OffsetDateTime
+import java.util.Optional
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 /** Integration tests for the OpenAPI generated Scala Spring server and JDK HTTP client code. These tests start a real Spring Boot server and use the generated client.
   */
@@ -39,13 +41,13 @@ class OpenApiIntegrationTest {
   /** Test server implementation */
   class TestPetsApiServer extends PetsApiServer {
     private val initialPet = Pet(
-      tags = Some(List("friendly", "cute")),
+      tags = Optional.of(List("friendly", "cute").asJava),
       id = PetId("pet-123"),
       status = PetStatus.available,
       createdAt = TestTime,
-      metadata = Some(Map("color" -> "brown")),
+      metadata = Optional.of(Map("color" -> "brown").asJava),
       name = "Fluffy",
-      updatedAt = None
+      updatedAt = Optional.empty()
     )
 
     private val pets = mutable.Map[PetId, Pet](initialPet.id -> initialPet)
@@ -59,11 +61,11 @@ class OpenApiIntegrationTest {
       val newPet = Pet(
         tags = body.tags,
         id = PetId(s"pet-${System.nanoTime()}"),
-        status = body.status.getOrElse(PetStatus.available),
+        status = if (body.status.isPresent) body.status.get() else PetStatus.available,
         createdAt = TestTime,
-        metadata = None,
+        metadata = Optional.empty(),
         name = body.name,
-        updatedAt = None
+        updatedAt = Optional.empty()
       )
       pets(newPet.id) = newPet
       Created(newPet)
@@ -77,7 +79,7 @@ class OpenApiIntegrationTest {
     override def getPet(petId: PetId): Response200404[Pet, Error] = {
       pets.get(petId) match {
         case Some(foundPet) => Ok(foundPet)
-        case None           => NotFound(Error("NOT_FOUND", None, "Pet not found"))
+        case None           => NotFound(Error("NOT_FOUND", Optional.empty(), "Pet not found"))
       }
     }
 
@@ -85,15 +87,18 @@ class OpenApiIntegrationTest {
       throw new UnsupportedOperationException("Not implemented")
     }
 
-    override def listPets(limit: Option[Int], status: Option[String]): List[Pet] = {
-      val filtered = status match {
-        case Some(s) => pets.values.filter(_.status.value == s).toList
-        case None    => pets.values.toList
+    override def listPets(limit: Optional[Integer], status: Optional[String]): java.util.List[Pet] = {
+      val filtered = if (status.isPresent) {
+        pets.values.filter(_.status.value == status.get()).toList
+      } else {
+        pets.values.toList
       }
-      limit match {
-        case Some(l) => filtered.take(l)
-        case None    => filtered
+      val result = if (limit.isPresent) {
+        filtered.take(limit.get().intValue())
+      } else {
+        filtered
       }
+      result.asJava
     }
 
     override def uploadPetPhoto(petId: PetId, caption: String, file: Array[Byte]): Json = {

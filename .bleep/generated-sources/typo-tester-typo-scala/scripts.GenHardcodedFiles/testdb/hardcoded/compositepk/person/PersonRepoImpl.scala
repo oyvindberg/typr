@@ -113,10 +113,10 @@ class PersonRepoImpl extends PersonRepo {
         case x: name => interpolate""""name" = ${PgTypes.text.opt().encode(x.value)}"""
       }).toList()
     }
-    return if (updates.isEmpty) false else interpolate"""update "compositepk"."person"
-                                           ${Fragment.set(updates)}
-                                           where "one" = ${PgTypes.int8.encode(compositeId.one)} AND "two" = ${PgTypes.text.opt().encode(compositeId.two)}"""
-      .update().runUnchecked(c) > 0
+    return (if (updates.isEmpty) false else interpolate"""update "compositepk"."person"
+                                            ${Fragment.set(updates)}
+                                            where "one" = ${PgTypes.int8.encode(compositeId.one)} AND "two" = ${PgTypes.text.opt().encode(compositeId.two)}"""
+      .update().runUnchecked(c) > 0)
   }
 
   override def upsert(unsaved: PersonRow)(using c: Connection): PersonRow = {

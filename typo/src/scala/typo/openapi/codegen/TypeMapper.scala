@@ -282,19 +282,19 @@ class ScalaTypeMapper(
     lang: typo.Lang
 ) extends TypeMapper(modelPkg, typeOverrides, lang) {
 
-  /** Map a TypeInfo to a jvm.Type */
+  /** Map a TypeInfo to a jvm.Type - delegates to parent for Optional/List/Map to respect TypeSupport */
   override def map(typeInfo: TypeInfo): jvm.Type = typeInfo match {
     case TypeInfo.Primitive(primitiveType) =>
       mapPrimitive(primitiveType)
 
     case TypeInfo.ListOf(itemType) =>
-      ScalaTypes.List.of(map(itemType))
+      lang.ListType.tpe.of(map(itemType))
 
     case TypeInfo.Optional(underlying) =>
-      ScalaTypes.Option.of(map(underlying))
+      lang.Optional.tpe.of(map(underlying))
 
     case TypeInfo.MapOf(keyType, valueType) =>
-      ScalaTypes.Map.of(map(keyType), map(valueType))
+      lang.MapOps.tpe.of(map(keyType), map(valueType))
 
     case TypeInfo.Ref(name) =>
       typeOverrides.getOrElse(name, jvm.Type.Qualified(modelPkg / jvm.Ident(name)))
@@ -307,20 +307,20 @@ class ScalaTypeMapper(
       ScalaTypes.String
   }
 
-  /** Map a primitive type to jvm.Type */
+  /** Map a primitive type to jvm.Type - uses lang for primitives to respect TypeSupport */
   override def mapPrimitive(primitiveType: PrimitiveType): jvm.Type = primitiveType match {
-    case PrimitiveType.String     => ScalaTypes.String
-    case PrimitiveType.Int32      => ScalaTypes.Int
-    case PrimitiveType.Int64      => ScalaTypes.Long
-    case PrimitiveType.Float      => ScalaTypes.Float
-    case PrimitiveType.Double     => ScalaTypes.Double
-    case PrimitiveType.Boolean    => ScalaTypes.Boolean
+    case PrimitiveType.String     => lang.String
+    case PrimitiveType.Int32      => lang.Int
+    case PrimitiveType.Int64      => lang.Long
+    case PrimitiveType.Float      => lang.Float
+    case PrimitiveType.Double     => lang.Double
+    case PrimitiveType.Boolean    => lang.Boolean
     case PrimitiveType.Date       => ScalaTypes.LocalDate
     case PrimitiveType.DateTime   => ScalaTypes.OffsetDateTime
     case PrimitiveType.Time       => ScalaTypes.LocalTime
     case PrimitiveType.UUID       => ScalaTypes.UUID
     case PrimitiveType.URI        => ScalaTypes.URI
-    case PrimitiveType.Email      => ScalaTypes.String
+    case PrimitiveType.Email      => lang.String
     case PrimitiveType.Binary     => ScalaTypes.ByteArray
     case PrimitiveType.Byte       => ScalaTypes.String
     case PrimitiveType.BigDecimal => ScalaTypes.BigDecimal

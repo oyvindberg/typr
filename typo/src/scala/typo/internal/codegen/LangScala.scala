@@ -554,9 +554,8 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
     }
     renderComments(p.comments) match {
       case Some(comment) =>
-        // Wrap comment in Indented so smartIndent applies to continuation lines
-        // Comment already includes trailing newline, just add 2-space indentation
-        // This matches the indentation used in renderWithParams: (\n  and ,\n
+        // Comment includes trailing newline, so we need explicit indentation before param name
+        // The 2-space indent matches renderWithParams's `(\n  ` prefix
         code"${jvm.Code.Indented(comment)}  $annotationsPrefix$prefix${p.name}: ${p.tpe}$renderedDefault"
       case None =>
         code"$annotationsPrefix$prefix${p.name}: ${p.tpe}$renderedDefault"

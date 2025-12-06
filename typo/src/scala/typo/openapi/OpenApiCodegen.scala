@@ -1,6 +1,6 @@
 package typo.openapi
 
-import typo.{jvm, Lang}
+import typo.{jvm, Lang, TypeSupportJava, TypeSupportScala}
 import typo.internal.codegen.LangScala
 import typo.openapi.codegen.{
   ApiCodegen,
@@ -103,6 +103,21 @@ object OpenApiCodegen {
       case OpenApiServerLib.JaxRsSync       => JaxRsSupport
       case OpenApiServerLib.Http4s          => Http4sSupport
       case OpenApiServerLib.ZioHttp         => NoFrameworkSupport // TODO: implement
+    }
+
+    // Validate TypeSupport compatibility with server framework
+    (options.serverLib, lang) match {
+      case (Some(OpenApiServerLib.SpringMvc | OpenApiServerLib.SpringWebFlux), ls: LangScala) =>
+        require(
+          ls.typeSupport == TypeSupportJava,
+          "Spring MVC/WebFlux with Scala requires TypeSupportJava (use java.util.Optional, java.util.List, etc.)"
+        )
+      case (Some(OpenApiServerLib.Http4s), ls: LangScala) =>
+        require(
+          ls.typeSupport == TypeSupportScala,
+          "Http4s requires TypeSupportScala (use scala.Option, scala.List, etc.)"
+        )
+      case _ => // No validation needed for other combinations
     }
 
     // Determine client framework support based on clientLib

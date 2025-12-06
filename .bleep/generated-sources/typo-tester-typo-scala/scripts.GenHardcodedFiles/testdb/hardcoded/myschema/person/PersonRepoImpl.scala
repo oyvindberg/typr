@@ -192,10 +192,10 @@ class PersonRepoImpl extends PersonRepo {
         case x: favoriteNumber => interpolate""""favorite_number" = ${Number.pgType.encode(x.value)}"""
       }).toList()
     }
-    return if (updates.isEmpty) false else interpolate"""update "myschema"."person"
-                                           ${Fragment.set(updates)}
-                                           where "id" = ${PersonId.pgType.encode(id)}"""
-      .update().runUnchecked(c) > 0
+    return (if (updates.isEmpty) false else interpolate"""update "myschema"."person"
+                                            ${Fragment.set(updates)}
+                                            where "id" = ${PersonId.pgType.encode(id)}"""
+      .update().runUnchecked(c) > 0)
   }
 
   override def upsert(unsaved: PersonRow)(using c: Connection): PersonRow = {

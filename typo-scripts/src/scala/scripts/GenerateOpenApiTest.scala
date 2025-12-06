@@ -4,7 +4,7 @@ import typo.openapi.{OpenApiCodegen, OpenApiClientLib, OpenApiEffectType, OpenAp
 import typo.internal.FileSync
 import typo.jvm
 import typo.internal.codegen.{addPackageAndImports, LangJava, LangKotlin, LangScala}
-import typo.{Dialect, Lang, RelPath, TypeSupportScala}
+import typo.{Dialect, Lang, RelPath, TypeSupportJava, TypeSupportScala}
 
 import java.nio.file.Path
 
@@ -47,6 +47,8 @@ object GenerateOpenApiTest {
     )
 
     val langScala = LangScala(Dialect.Scala3, TypeSupportScala)
+    // For Spring, use Java types (Optional, List, etc.) since Spring understands Java types natively
+    val langScalaWithJavaTypes = LangScala(Dialect.Scala3, TypeSupportJava)
 
     // Scala with HTTP4s server + client (uses Circe for JSON)
     generateCode(
@@ -60,12 +62,13 @@ object GenerateOpenApiTest {
     )
 
     // Scala with Spring server + JDK HTTP Client (blocking, uses Jackson for JSON)
+    // Uses Java types so Spring can handle Optional<Integer> etc. correctly
     generateCode(
       specPath = specPath,
       language = "scala",
       serverLib = Some(OpenApiServerLib.SpringMvc),
       clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
-      lang = langScala,
+      lang = langScalaWithJavaTypes,
       generateValidation = true,
       jsonLib = typo.openapi.OpenApiJsonLib.Jackson
     )

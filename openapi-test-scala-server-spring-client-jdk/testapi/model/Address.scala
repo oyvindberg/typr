@@ -1,10 +1,11 @@
 package testapi.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.util.Optional
 
 case class Address(
-  @JsonProperty("city") city: Option[String],
-  @JsonProperty("country") country: Option[String],
-  @JsonProperty("street") street: Option[String],
-  @JsonProperty("zipCode") zipCode: Option[String]
+    @JsonProperty("city") city: Optional[String],
+    @JsonProperty("country") country: Optional[String],
+    @JsonProperty("street") street: Optional[String],
+    @JsonProperty("zipCode") zipCode: Optional[String]
 )
