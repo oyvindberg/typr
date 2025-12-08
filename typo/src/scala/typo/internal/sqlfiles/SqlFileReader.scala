@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 object SqlFileReader {
   def apply(logger: TypoLogger, scriptsPath: Path, ds: TypoDataSource)(implicit ec: ExecutionContext): Future[List[SqlFile]] = {
     ds.dbType match {
-      case DbType.PostgreSQL =>
+      case DbType.PostgreSQL | DbType.DuckDB =>
         readSqlFileDirectories(logger, scriptsPath, ds)
       case DbType.MariaDB | DbType.MySQL =>
         MariaSqlFileMetadata(logger, scriptsPath, ds)

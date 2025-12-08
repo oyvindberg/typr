@@ -19,14 +19,16 @@ object SqlCast {
   def toPg(param: ComputedSqlFile.Param): Option[SqlCast] =
     toPg(param.dbType, Some(param.udtName))
 
-  /** cast to correctly insert into PG/MariaDB
+  /** cast to correctly insert into PG/MariaDB/DuckDB
     */
   def toPg(dbType: db.Type, udtName: Option[String]): Option[SqlCast] =
     dbType match {
-      // Unknown type (extends both PgType and MariaType) - must be first
+      // Unknown type (extends all DB types) - must be first
       case db.Unknown(sqlType) => Some(SqlCast(sqlType))
       // MariaDB types - no cast needed, driver handles it
       case _: db.MariaType => None
+      // DuckDB types - no cast needed, driver handles it
+      case _: db.DuckDbType => None
       // PostgreSQL types
       case db.PgType.EnumRef(enm)                                    => Some(SqlCast(enm.name.value))
       case db.PgType.Boolean | db.PgType.Text | db.PgType.VarChar(_) => None
@@ -44,11 +46,13 @@ object SqlCast {
     */
   def fromPg(dbType: db.Type): Option[SqlCast] =
     dbType match {
-      // Unknown type (extends both PgType and MariaType) - must be first
+      // Unknown type (extends all DB types) - must be first
       case db.Unknown(_) =>
         Some(SqlCast("text"))
       // MariaDB types - no cast needed for reading
       case _: db.MariaType => None
+      // DuckDB types - no cast needed for reading
+      case _: db.DuckDbType => None
       // PostgreSQL types
       case db.PgType.Array(db.Unknown(_)) | db.PgType.Array(db.PgType.DomainRef(_, _, db.Unknown(_))) =>
         Some(SqlCast("text[]"))

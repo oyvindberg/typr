@@ -118,6 +118,44 @@ case class TypeMapperJvmOld(lang: Lang, typeOverride: TypeOverride, nullabilityO
       case db.MariaType.MultiLineString    => TypesJava.maria.MultiLineString
       case db.MariaType.MultiPolygon       => TypesJava.maria.MultiPolygon
       case db.MariaType.GeometryCollection => TypesJava.maria.GeometryCollection
+
+      // DuckDB types
+      case db.DuckDbType.TinyInt         => lang.Byte
+      case db.DuckDbType.SmallInt        => lang.Short
+      case db.DuckDbType.Integer         => lang.Int
+      case db.DuckDbType.BigInt          => lang.Long
+      case db.DuckDbType.HugeInt         => TypesJava.BigInteger
+      case db.DuckDbType.UTinyInt        => lang.Short // 0-255 fits in Short
+      case db.DuckDbType.USmallInt       => lang.Int // 0-65535 fits in Int
+      case db.DuckDbType.UInteger        => lang.Long // 0-4294967295 fits in Long
+      case db.DuckDbType.UBigInt         => TypesJava.BigInteger
+      case db.DuckDbType.UHugeInt        => TypesJava.BigInteger
+      case db.DuckDbType.Float           => lang.Float
+      case db.DuckDbType.Double          => lang.Double
+      case db.DuckDbType.Decimal(_, _)   => lang.BigDecimal
+      case db.DuckDbType.Boolean         => lang.Boolean
+      case db.DuckDbType.VarChar(_)      => lang.String
+      case db.DuckDbType.Char(_)         => lang.String
+      case db.DuckDbType.Text            => lang.String
+      case db.DuckDbType.Blob            => lang.ByteArrayType
+      case db.DuckDbType.Bit(_)          => lang.String // BIT is string of 0s and 1s
+      case db.DuckDbType.Date            => TypesJava.LocalDate
+      case db.DuckDbType.Time            => TypesJava.LocalTime
+      case db.DuckDbType.Timestamp       => TypesJava.LocalDateTime
+      case db.DuckDbType.TimestampTz     => TypesJava.OffsetDateTime
+      case db.DuckDbType.TimestampS      => TypesJava.LocalDateTime
+      case db.DuckDbType.TimestampMS     => TypesJava.LocalDateTime
+      case db.DuckDbType.TimestampNS     => TypesJava.LocalDateTime
+      case db.DuckDbType.TimeTz          => TypesJava.OffsetDateTime
+      case db.DuckDbType.Interval        => TypesJava.Duration
+      case db.DuckDbType.UUID            => TypesJava.UUID
+      case db.DuckDbType.Json            => TypesJava.runtime.Json
+      case db.DuckDbType.Enum(_, _)      => lang.String // DuckDB inline ENUMs
+      case db.DuckDbType.ListType(_)     => TypesJava.runtime.Json // Serialize as JSON
+      case db.DuckDbType.ArrayType(_, _) => TypesJava.runtime.Json
+      case db.DuckDbType.MapType(_, _)   => TypesJava.runtime.Json
+      case db.DuckDbType.StructType(_)   => TypesJava.runtime.Json
+      case db.DuckDbType.UnionType(_)    => TypesJava.runtime.Json
     }
   }
 

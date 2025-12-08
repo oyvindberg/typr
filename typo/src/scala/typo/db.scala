@@ -134,8 +134,74 @@ object db {
     case object Json extends MariaType
   }
 
-  // Shared/unknown type - extends both PgType and MariaType so it can be used in pattern matching for either
-  case class Unknown(sqlType: String) extends PgType with MariaType
+  // DuckDB-specific types
+  sealed trait DuckDbType extends Type
+  object DuckDbType {
+    // Integer types (signed)
+    case object TinyInt extends DuckDbType // 8-bit signed
+    case object SmallInt extends DuckDbType // 16-bit signed
+    case object Integer extends DuckDbType // 32-bit signed
+    case object BigInt extends DuckDbType // 64-bit signed
+    case object HugeInt extends DuckDbType // 128-bit signed
+
+    // Integer types (unsigned)
+    case object UTinyInt extends DuckDbType // 8-bit unsigned (0-255)
+    case object USmallInt extends DuckDbType // 16-bit unsigned
+    case object UInteger extends DuckDbType // 32-bit unsigned
+    case object UBigInt extends DuckDbType // 64-bit unsigned
+    case object UHugeInt extends DuckDbType // 128-bit unsigned
+
+    // Floating-point
+    case object Float extends DuckDbType // 32-bit IEEE floating point
+    case object Double extends DuckDbType // 64-bit IEEE floating point
+
+    // Fixed-point
+    case class Decimal(precision: Option[Int], scale: Option[Int]) extends DuckDbType
+
+    // Boolean
+    case object Boolean extends DuckDbType
+
+    // String types
+    case class VarChar(maxLength: Option[Int]) extends DuckDbType
+    case class Char(length: Option[Int]) extends DuckDbType
+    case object Text extends DuckDbType // alias for VARCHAR
+
+    // Binary
+    case object Blob extends DuckDbType
+
+    // Bit string
+    case class Bit(length: Option[Int]) extends DuckDbType
+
+    // Date/Time types
+    case object Date extends DuckDbType
+    case object Time extends DuckDbType
+    case object Timestamp extends DuckDbType // TIMESTAMP or DATETIME
+    case object TimestampTz extends DuckDbType // TIMESTAMP WITH TIME ZONE
+    case object TimestampS extends DuckDbType // TIMESTAMP_S (second precision)
+    case object TimestampMS extends DuckDbType // TIMESTAMP_MS (millisecond precision)
+    case object TimestampNS extends DuckDbType // TIMESTAMP_NS (nanosecond precision)
+    case object TimeTz extends DuckDbType // TIME WITH TIME ZONE
+    case object Interval extends DuckDbType
+
+    // UUID
+    case object UUID extends DuckDbType
+
+    // JSON
+    case object Json extends DuckDbType
+
+    // Enum type (inline definition like MariaDB)
+    case class Enum(name: String, values: List[String]) extends DuckDbType
+
+    // Nested/Complex types
+    case class ListType(elementType: Type) extends DuckDbType
+    case class ArrayType(elementType: Type, size: Option[Int]) extends DuckDbType
+    case class MapType(keyType: Type, valueType: Type) extends DuckDbType
+    case class StructType(fields: List[(String, Type)]) extends DuckDbType
+    case class UnionType(members: List[(String, Type)]) extends DuckDbType
+  }
+
+  // Shared/unknown type - extends all database-specific types so it can be used in pattern matching for any
+  case class Unknown(sqlType: String) extends PgType with MariaType with DuckDbType
 
   case class Domain(name: RelationName, tpe: Type, originalType: String, isNotNull: Nullability, hasDefault: Boolean, constraintDefinition: Option[String])
   case class StringEnum(name: RelationName, values: NonEmptyList[String])

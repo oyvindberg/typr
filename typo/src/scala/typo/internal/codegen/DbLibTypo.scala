@@ -165,10 +165,10 @@ class DbLibTypo(
     val rowParser = rowParserFor(rowType)
 
     adapter.dbType match {
-      case DbType.PostgreSQL =>
+      case DbType.PostgreSQL | DbType.DuckDB =>
         id match {
           case x: IdComputed.Unary =>
-            // PostgreSQL: WHERE col = ANY(array)
+            // PostgreSQL/DuckDB: WHERE col = ANY(array)
             val sql = SQL {
               code"""|select $colNames
                      |from $qRelName
@@ -177,7 +177,7 @@ class DbLibTypo(
             jvm.Body.Expr(code"$sql.query($rowParser.all()).runUnchecked(c)")
 
           case x: IdComputed.Composite =>
-            // PostgreSQL: WHERE (cols) IN (SELECT unnest(...), unnest(...))
+            // PostgreSQL/DuckDB: WHERE (cols) IN (SELECT unnest(...), unnest(...))
             val vals = x.cols.map { col =>
               jvm
                 .Value(
@@ -275,10 +275,10 @@ class DbLibTypo(
     val qRelNameStr = quotedRelNameStr(relName)
 
     adapter.dbType match {
-      case DbType.PostgreSQL =>
+      case DbType.PostgreSQL | DbType.DuckDB =>
         id match {
           case x: IdComputed.Unary =>
-            // PostgreSQL: WHERE col = ANY(array)
+            // PostgreSQL/DuckDB: WHERE col = ANY(array)
             val sql = SQL {
               code"""|delete
                      |from $qRelName
@@ -291,7 +291,7 @@ class DbLibTypo(
             )
 
           case x: IdComputed.Composite =>
-            // PostgreSQL: WHERE (cols) IN (SELECT unnest(...), unnest(...))
+            // PostgreSQL/DuckDB: WHERE (cols) IN (SELECT unnest(...), unnest(...))
             val vals = x.cols.map { col =>
               jvm
                 .Value(

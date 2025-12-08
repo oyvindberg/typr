@@ -127,6 +127,8 @@ object PostgresAdapter extends DbAdapter {
         sys.error(s"PostgresAdapter.lookupTypeByDbType: Cannot lookup for unknown type: $sqlType")
       case _: db.MariaType =>
         sys.error(s"PostgresAdapter.lookupTypeByDbType: Cannot lookup MariaDB type in PostgreSQL adapter")
+      case _: db.DuckDbType =>
+        sys.error(s"PostgresAdapter.lookupTypeByDbType: Cannot lookup DuckDB type in PostgreSQL adapter")
     }
 
   // ═══════════════════════════════════════════════════════════════════════════
