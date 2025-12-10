@@ -26,17 +26,17 @@ trait VproductmodelinstructionsViewFields extends FieldsExpr[Vproductmodelinstru
 
   def instructions: OptField[String, VproductmodelinstructionsViewRow]
 
-  def locationID: OptField[Integer, VproductmodelinstructionsViewRow]
+  def locationID: Field[Integer, VproductmodelinstructionsViewRow]
 
-  def setupHours: OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow]
+  def setupHours: Field[java.math.BigDecimal, VproductmodelinstructionsViewRow]
 
-  def machineHours: OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow]
+  def machineHours: Field[java.math.BigDecimal, VproductmodelinstructionsViewRow]
 
-  def laborHours: OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow]
+  def laborHours: Field[java.math.BigDecimal, VproductmodelinstructionsViewRow]
 
-  def lotSize: OptField[Integer, VproductmodelinstructionsViewRow]
+  def lotSize: Field[Integer, VproductmodelinstructionsViewRow]
 
-  def step: OptField[/* max 1024 chars */ String, VproductmodelinstructionsViewRow]
+  def step: Field[/* max 1024 chars */ String, VproductmodelinstructionsViewRow]
 
   def rowguid: Field[TypoUUID, VproductmodelinstructionsViewRow]
 
@@ -86,8 +86,8 @@ object VproductmodelinstructionsViewFields {
       )
     }
 
-    override def locationID: OptField[Integer, VproductmodelinstructionsViewRow] = {
-      new OptField[Integer, VproductmodelinstructionsViewRow](
+    override def locationID: Field[Integer, VproductmodelinstructionsViewRow] = {
+      new Field[Integer, VproductmodelinstructionsViewRow](
         _path,
         "LocationID",
         _.locationID,
@@ -98,8 +98,8 @@ object VproductmodelinstructionsViewFields {
       )
     }
 
-    override def setupHours: OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow] = {
-      new OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow](
+    override def setupHours: Field[java.math.BigDecimal, VproductmodelinstructionsViewRow] = {
+      new Field[java.math.BigDecimal, VproductmodelinstructionsViewRow](
         _path,
         "SetupHours",
         _.setupHours,
@@ -110,8 +110,8 @@ object VproductmodelinstructionsViewFields {
       )
     }
 
-    override def machineHours: OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow] = {
-      new OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow](
+    override def machineHours: Field[java.math.BigDecimal, VproductmodelinstructionsViewRow] = {
+      new Field[java.math.BigDecimal, VproductmodelinstructionsViewRow](
         _path,
         "MachineHours",
         _.machineHours,
@@ -122,8 +122,8 @@ object VproductmodelinstructionsViewFields {
       )
     }
 
-    override def laborHours: OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow] = {
-      new OptField[java.math.BigDecimal, VproductmodelinstructionsViewRow](
+    override def laborHours: Field[java.math.BigDecimal, VproductmodelinstructionsViewRow] = {
+      new Field[java.math.BigDecimal, VproductmodelinstructionsViewRow](
         _path,
         "LaborHours",
         _.laborHours,
@@ -134,8 +134,8 @@ object VproductmodelinstructionsViewFields {
       )
     }
 
-    override def lotSize: OptField[Integer, VproductmodelinstructionsViewRow] = {
-      new OptField[Integer, VproductmodelinstructionsViewRow](
+    override def lotSize: Field[Integer, VproductmodelinstructionsViewRow] = {
+      new Field[Integer, VproductmodelinstructionsViewRow](
         _path,
         "LotSize",
         _.lotSize,
@@ -146,8 +146,8 @@ object VproductmodelinstructionsViewFields {
       )
     }
 
-    override def step: OptField[/* max 1024 chars */ String, VproductmodelinstructionsViewRow] = {
-      new OptField[/* max 1024 chars */ String, VproductmodelinstructionsViewRow](
+    override def step: Field[/* max 1024 chars */ String, VproductmodelinstructionsViewRow] = {
+      new Field[/* max 1024 chars */ String, VproductmodelinstructionsViewRow](
         _path,
         "Step",
         _.step,

@@ -1,5 +1,6 @@
 package typo
 
+import typo.internal.external.{ExternalTools, ExternalToolsConfig}
 import typo.internal.pg.OpenEnum
 import typo.internal.sqlfiles.SqlFileReader
 
@@ -32,9 +33,14 @@ object generateFromDb {
   ): List[Generated] = {
     Banner.maybePrint(options)
     implicit val ec: ExecutionContext = options.executionContext
+
+    // Initialize external tools for sqlglot analysis (needed for both MetaDb and SqlFileReader)
+    val externalTools = ExternalTools.init(options.logger, ExternalToolsConfig.default)
+
     val viewSelector = graph.toList.map(_.value).foldLeft(Selector.None)(_.or(_))
-    val eventualMetaDb = MetaDb.fromDb(options.logger, dataSource, viewSelector, options.schemaMode)
-    val eventualScripts = graph.mapScripts(paths => Future.sequence(paths.map(p => SqlFileReader(options.logger, p, dataSource))).map(_.flatten))
+    val eventualMetaDb = MetaDb.fromDb(options.logger, dataSource, viewSelector, options.schemaMode, externalTools)
+
+    val eventualScripts = graph.mapScripts(paths => Future.sequence(paths.map(p => SqlFileReader(options.logger, p, dataSource, externalTools))).map(_.flatten))
 
     val combined = for {
       metaDb <- eventualMetaDb

@@ -32,9 +32,9 @@ case class VindividualcustomerViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
   suffix: Option[/* max 10 chars */ String],
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -69,8 +69,8 @@ object VindividualcustomerViewRow {
             middlename = JdbcDecoder.optionDecoder(using Name.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
             lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             suffix = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
-            phonenumber = JdbcDecoder.optionDecoder(using Phone.jdbcDecoder).unsafeDecode(columIndex + 6, rs)._2,
-            phonenumbertype = JdbcDecoder.optionDecoder(using Name.jdbcDecoder).unsafeDecode(columIndex + 7, rs)._2,
+            phonenumber = Phone.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
+            phonenumbertype = Name.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
             emailaddress = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
             emailpromotion = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 9, rs)._2,
             addresstype = Name.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
@@ -93,8 +93,8 @@ object VindividualcustomerViewRow {
       val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(using JsonDecoder.option(using Name.jsonDecoder)))
       val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(using Name.jsonDecoder))
       val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val phonenumber = jsonObj.get("phonenumber").fold[Either[String, Option[Phone]]](Right(None))(_.as(using JsonDecoder.option(using Phone.jsonDecoder)))
-      val phonenumbertype = jsonObj.get("phonenumbertype").fold[Either[String, Option[Name]]](Right(None))(_.as(using JsonDecoder.option(using Name.jsonDecoder)))
+      val phonenumber = jsonObj.get("phonenumber").toRight("Missing field 'phonenumber'").flatMap(_.as(using Phone.jsonDecoder))
+      val phonenumbertype = jsonObj.get("phonenumbertype").toRight("Missing field 'phonenumbertype'").flatMap(_.as(using Name.jsonDecoder))
       val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
       val emailpromotion = jsonObj.get("emailpromotion").toRight("Missing field 'emailpromotion'").flatMap(_.as(using JsonDecoder.int))
       val addresstype = jsonObj.get("addresstype").toRight("Missing field 'addresstype'").flatMap(_.as(using Name.jsonDecoder))
@@ -134,10 +134,10 @@ object VindividualcustomerViewRow {
         JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.suffix, indent, out)
         out.write(",")
         out.write(""""phonenumber":""")
-        JsonEncoder.option(using Phone.jsonEncoder).unsafeEncode(a.phonenumber, indent, out)
+        Phone.jsonEncoder.unsafeEncode(a.phonenumber, indent, out)
         out.write(",")
         out.write(""""phonenumbertype":""")
-        JsonEncoder.option(using Name.jsonEncoder).unsafeEncode(a.phonenumbertype, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.phonenumbertype, indent, out)
         out.write(",")
         out.write(""""emailaddress":""")
         JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)

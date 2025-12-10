@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
 import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -19,38 +19,38 @@ import typo.runtime.RowParser;
 public interface VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr<VsalespersonsalesbyfiscalyearsViewRow> {
   record Impl(List<Path> _path) implements VsalespersonsalesbyfiscalyearsViewFields, Relation<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow> {
     @Override
-    public OptField<Integer, VsalespersonsalesbyfiscalyearsViewRow> salesPersonID() {
-      return new OptField<Integer, VsalespersonsalesbyfiscalyearsViewRow>(_path, "SalesPersonID", VsalespersonsalesbyfiscalyearsViewRow::salesPersonID, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesPersonID(value), PgTypes.int4);
+    public Field<Integer, VsalespersonsalesbyfiscalyearsViewRow> salesPersonID() {
+      return new Field<Integer, VsalespersonsalesbyfiscalyearsViewRow>(_path, "SalesPersonID", VsalespersonsalesbyfiscalyearsViewRow::salesPersonID, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesPersonID(value), PgTypes.int4);
     };
 
     @Override
-    public OptField<String, VsalespersonsalesbyfiscalyearsViewRow> fullName() {
-      return new OptField<String, VsalespersonsalesbyfiscalyearsViewRow>(_path, "FullName", VsalespersonsalesbyfiscalyearsViewRow::fullName, Optional.empty(), Optional.empty(), (row, value) -> row.withFullName(value), PgTypes.text);
+    public Field<String, VsalespersonsalesbyfiscalyearsViewRow> fullName() {
+      return new Field<String, VsalespersonsalesbyfiscalyearsViewRow>(_path, "FullName", VsalespersonsalesbyfiscalyearsViewRow::fullName, Optional.empty(), Optional.empty(), (row, value) -> row.withFullName(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VsalespersonsalesbyfiscalyearsViewRow> jobTitle() {
-      return new OptField<String, VsalespersonsalesbyfiscalyearsViewRow>(_path, "JobTitle", VsalespersonsalesbyfiscalyearsViewRow::jobTitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobTitle(value), PgTypes.text);
+    public Field<String, VsalespersonsalesbyfiscalyearsViewRow> jobTitle() {
+      return new Field<String, VsalespersonsalesbyfiscalyearsViewRow>(_path, "JobTitle", VsalespersonsalesbyfiscalyearsViewRow::jobTitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobTitle(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VsalespersonsalesbyfiscalyearsViewRow> salesTerritory() {
-      return new OptField<String, VsalespersonsalesbyfiscalyearsViewRow>(_path, "SalesTerritory", VsalespersonsalesbyfiscalyearsViewRow::salesTerritory, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesTerritory(value), PgTypes.text);
+    public Field<String, VsalespersonsalesbyfiscalyearsViewRow> salesTerritory() {
+      return new Field<String, VsalespersonsalesbyfiscalyearsViewRow>(_path, "SalesTerritory", VsalespersonsalesbyfiscalyearsViewRow::salesTerritory, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesTerritory(value), PgTypes.text);
     };
 
     @Override
-    public OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2012() {
-      return new OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow>(_path, "2012", VsalespersonsalesbyfiscalyearsViewRow::_2012, Optional.empty(), Optional.empty(), (row, value) -> row.with2012(value), PgTypes.numeric);
+    public Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2012() {
+      return new Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow>(_path, "2012", VsalespersonsalesbyfiscalyearsViewRow::_2012, Optional.empty(), Optional.empty(), (row, value) -> row.with2012(value), PgTypes.numeric);
     };
 
     @Override
-    public OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2013() {
-      return new OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow>(_path, "2013", VsalespersonsalesbyfiscalyearsViewRow::_2013, Optional.empty(), Optional.empty(), (row, value) -> row.with2013(value), PgTypes.numeric);
+    public Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2013() {
+      return new Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow>(_path, "2013", VsalespersonsalesbyfiscalyearsViewRow::_2013, Optional.empty(), Optional.empty(), (row, value) -> row.with2013(value), PgTypes.numeric);
     };
 
     @Override
-    public OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2014() {
-      return new OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow>(_path, "2014", VsalespersonsalesbyfiscalyearsViewRow::_2014, Optional.empty(), Optional.empty(), (row, value) -> row.with2014(value), PgTypes.numeric);
+    public Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2014() {
+      return new Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow>(_path, "2014", VsalespersonsalesbyfiscalyearsViewRow::_2014, Optional.empty(), Optional.empty(), (row, value) -> row.with2014(value), PgTypes.numeric);
     };
 
     @Override
@@ -68,19 +68,19 @@ public interface VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr<Vsa
     return new Impl(List.of());
   };
 
-  OptField<Integer, VsalespersonsalesbyfiscalyearsViewRow> salesPersonID();
+  Field<Integer, VsalespersonsalesbyfiscalyearsViewRow> salesPersonID();
 
-  OptField<String, VsalespersonsalesbyfiscalyearsViewRow> fullName();
+  Field<String, VsalespersonsalesbyfiscalyearsViewRow> fullName();
 
-  OptField<String, VsalespersonsalesbyfiscalyearsViewRow> jobTitle();
+  Field<String, VsalespersonsalesbyfiscalyearsViewRow> jobTitle();
 
-  OptField<String, VsalespersonsalesbyfiscalyearsViewRow> salesTerritory();
+  Field<String, VsalespersonsalesbyfiscalyearsViewRow> salesTerritory();
 
-  OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2012();
+  Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2012();
 
-  OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2013();
+  Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2013();
 
-  OptField<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2014();
+  Field<BigDecimal, VsalespersonsalesbyfiscalyearsViewRow> _2014();
 
   @Override
   List<FieldLike<?, VsalespersonsalesbyfiscalyearsViewRow>> columns();

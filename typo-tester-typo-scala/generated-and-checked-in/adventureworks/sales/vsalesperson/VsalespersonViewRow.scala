@@ -31,9 +31,9 @@ case class VsalespersonViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Optional[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Optional[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Optional[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -51,9 +51,9 @@ case class VsalespersonViewRow(
   /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
-  territoryname: Optional[Name],
+  territoryname: Name,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.group]] */
-  territorygroup: Optional[/* max 50 chars */ String],
+  territorygroup: /* max 50 chars */ String,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesquota]] */
   salesquota: Optional[java.math.BigDecimal],
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesytd]] */
@@ -63,5 +63,5 @@ case class VsalespersonViewRow(
 )
 
 object VsalespersonViewRow {
-  val `_rowParser`: RowParser[VsalespersonViewRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.text, Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, Name.pgType.opt(), PgTypes.text.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, VsalespersonViewRow.apply, row => Array[Object](row.businessentityid.asInstanceOf[Object], row.title.asInstanceOf[Object], row.firstname.asInstanceOf[Object], row.middlename.asInstanceOf[Object], row.lastname.asInstanceOf[Object], row.suffix.asInstanceOf[Object], row.jobtitle.asInstanceOf[Object], row.phonenumber.asInstanceOf[Object], row.phonenumbertype.asInstanceOf[Object], row.emailaddress.asInstanceOf[Object], row.emailpromotion.asInstanceOf[Object], row.addressline1.asInstanceOf[Object], row.addressline2.asInstanceOf[Object], row.city.asInstanceOf[Object], row.stateprovincename.asInstanceOf[Object], row.postalcode.asInstanceOf[Object], row.countryregionname.asInstanceOf[Object], row.territoryname.asInstanceOf[Object], row.territorygroup.asInstanceOf[Object], row.salesquota.asInstanceOf[Object], row.salesytd.asInstanceOf[Object], row.saleslastyear.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VsalespersonViewRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.text, Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, Name.pgType, PgTypes.text, PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, VsalespersonViewRow.apply, row => Array[Object](row.businessentityid.asInstanceOf[Object], row.title.asInstanceOf[Object], row.firstname.asInstanceOf[Object], row.middlename.asInstanceOf[Object], row.lastname.asInstanceOf[Object], row.suffix.asInstanceOf[Object], row.jobtitle.asInstanceOf[Object], row.phonenumber.asInstanceOf[Object], row.phonenumbertype.asInstanceOf[Object], row.emailaddress.asInstanceOf[Object], row.emailpromotion.asInstanceOf[Object], row.addressline1.asInstanceOf[Object], row.addressline2.asInstanceOf[Object], row.city.asInstanceOf[Object], row.stateprovincename.asInstanceOf[Object], row.postalcode.asInstanceOf[Object], row.countryregionname.asInstanceOf[Object], row.territoryname.asInstanceOf[Object], row.territorygroup.asInstanceOf[Object], row.salesquota.asInstanceOf[Object], row.salesytd.asInstanceOf[Object], row.saleslastyear.asInstanceOf[Object]))
 }

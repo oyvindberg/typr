@@ -14,7 +14,6 @@ import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
 import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -32,53 +31,53 @@ public interface VstorewithdemographicsViewFields extends FieldsExpr<Vstorewithd
     };
 
     @Override
-    public OptField<TypoMoney, VstorewithdemographicsViewRow> annualSales() {
-      return new OptField<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualSales", VstorewithdemographicsViewRow::annualSales, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualSales(value), TypoMoney.pgType);
+    public Field<TypoMoney, VstorewithdemographicsViewRow> annualSales() {
+      return new Field<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualSales", VstorewithdemographicsViewRow::annualSales, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualSales(value), TypoMoney.pgType);
     };
 
     @Override
-    public OptField<TypoMoney, VstorewithdemographicsViewRow> annualRevenue() {
-      return new OptField<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualRevenue", VstorewithdemographicsViewRow::annualRevenue, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualRevenue(value), TypoMoney.pgType);
+    public Field<TypoMoney, VstorewithdemographicsViewRow> annualRevenue() {
+      return new Field<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualRevenue", VstorewithdemographicsViewRow::annualRevenue, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualRevenue(value), TypoMoney.pgType);
     };
 
     @Override
-    public OptField</* max 50 chars */ String, VstorewithdemographicsViewRow> bankName() {
-      return new OptField</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "BankName", VstorewithdemographicsViewRow::bankName, Optional.empty(), Optional.empty(), (row, value) -> row.withBankName(value), PgTypes.text);
+    public Field</* max 50 chars */ String, VstorewithdemographicsViewRow> bankName() {
+      return new Field</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "BankName", VstorewithdemographicsViewRow::bankName, Optional.empty(), Optional.empty(), (row, value) -> row.withBankName(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 5 chars */ String, VstorewithdemographicsViewRow> businessType() {
-      return new OptField</* max 5 chars */ String, VstorewithdemographicsViewRow>(_path, "BusinessType", VstorewithdemographicsViewRow::businessType, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessType(value), PgTypes.text);
+    public Field</* max 5 chars */ String, VstorewithdemographicsViewRow> businessType() {
+      return new Field</* max 5 chars */ String, VstorewithdemographicsViewRow>(_path, "BusinessType", VstorewithdemographicsViewRow::businessType, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessType(value), PgTypes.text);
     };
 
     @Override
-    public OptField<Integer, VstorewithdemographicsViewRow> yearOpened() {
-      return new OptField<Integer, VstorewithdemographicsViewRow>(_path, "YearOpened", VstorewithdemographicsViewRow::yearOpened, Optional.empty(), Optional.empty(), (row, value) -> row.withYearOpened(value), PgTypes.int4);
+    public Field<Integer, VstorewithdemographicsViewRow> yearOpened() {
+      return new Field<Integer, VstorewithdemographicsViewRow>(_path, "YearOpened", VstorewithdemographicsViewRow::yearOpened, Optional.empty(), Optional.empty(), (row, value) -> row.withYearOpened(value), PgTypes.int4);
     };
 
     @Override
-    public OptField</* max 50 chars */ String, VstorewithdemographicsViewRow> specialty() {
-      return new OptField</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "Specialty", VstorewithdemographicsViewRow::specialty, Optional.empty(), Optional.empty(), (row, value) -> row.withSpecialty(value), PgTypes.text);
+    public Field</* max 50 chars */ String, VstorewithdemographicsViewRow> specialty() {
+      return new Field</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "Specialty", VstorewithdemographicsViewRow::specialty, Optional.empty(), Optional.empty(), (row, value) -> row.withSpecialty(value), PgTypes.text);
     };
 
     @Override
-    public OptField<Integer, VstorewithdemographicsViewRow> squareFeet() {
-      return new OptField<Integer, VstorewithdemographicsViewRow>(_path, "SquareFeet", VstorewithdemographicsViewRow::squareFeet, Optional.empty(), Optional.empty(), (row, value) -> row.withSquareFeet(value), PgTypes.int4);
+    public Field<Integer, VstorewithdemographicsViewRow> squareFeet() {
+      return new Field<Integer, VstorewithdemographicsViewRow>(_path, "SquareFeet", VstorewithdemographicsViewRow::squareFeet, Optional.empty(), Optional.empty(), (row, value) -> row.withSquareFeet(value), PgTypes.int4);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VstorewithdemographicsViewRow> brands() {
-      return new OptField</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Brands", VstorewithdemographicsViewRow::brands, Optional.empty(), Optional.empty(), (row, value) -> row.withBrands(value), PgTypes.text);
+    public Field</* max 30 chars */ String, VstorewithdemographicsViewRow> brands() {
+      return new Field</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Brands", VstorewithdemographicsViewRow::brands, Optional.empty(), Optional.empty(), (row, value) -> row.withBrands(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VstorewithdemographicsViewRow> internet() {
-      return new OptField</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Internet", VstorewithdemographicsViewRow::internet, Optional.empty(), Optional.empty(), (row, value) -> row.withInternet(value), PgTypes.text);
+    public Field</* max 30 chars */ String, VstorewithdemographicsViewRow> internet() {
+      return new Field</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Internet", VstorewithdemographicsViewRow::internet, Optional.empty(), Optional.empty(), (row, value) -> row.withInternet(value), PgTypes.text);
     };
 
     @Override
-    public OptField<Integer, VstorewithdemographicsViewRow> numberEmployees() {
-      return new OptField<Integer, VstorewithdemographicsViewRow>(_path, "NumberEmployees", VstorewithdemographicsViewRow::numberEmployees, Optional.empty(), Optional.empty(), (row, value) -> row.withNumberEmployees(value), PgTypes.int4);
+    public Field<Integer, VstorewithdemographicsViewRow> numberEmployees() {
+      return new Field<Integer, VstorewithdemographicsViewRow>(_path, "NumberEmployees", VstorewithdemographicsViewRow::numberEmployees, Optional.empty(), Optional.empty(), (row, value) -> row.withNumberEmployees(value), PgTypes.int4);
     };
 
     @Override
@@ -100,25 +99,25 @@ public interface VstorewithdemographicsViewFields extends FieldsExpr<Vstorewithd
 
   Field<Name, VstorewithdemographicsViewRow> name();
 
-  OptField<TypoMoney, VstorewithdemographicsViewRow> annualSales();
+  Field<TypoMoney, VstorewithdemographicsViewRow> annualSales();
 
-  OptField<TypoMoney, VstorewithdemographicsViewRow> annualRevenue();
+  Field<TypoMoney, VstorewithdemographicsViewRow> annualRevenue();
 
-  OptField</* max 50 chars */ String, VstorewithdemographicsViewRow> bankName();
+  Field</* max 50 chars */ String, VstorewithdemographicsViewRow> bankName();
 
-  OptField</* max 5 chars */ String, VstorewithdemographicsViewRow> businessType();
+  Field</* max 5 chars */ String, VstorewithdemographicsViewRow> businessType();
 
-  OptField<Integer, VstorewithdemographicsViewRow> yearOpened();
+  Field<Integer, VstorewithdemographicsViewRow> yearOpened();
 
-  OptField</* max 50 chars */ String, VstorewithdemographicsViewRow> specialty();
+  Field</* max 50 chars */ String, VstorewithdemographicsViewRow> specialty();
 
-  OptField<Integer, VstorewithdemographicsViewRow> squareFeet();
+  Field<Integer, VstorewithdemographicsViewRow> squareFeet();
 
-  OptField</* max 30 chars */ String, VstorewithdemographicsViewRow> brands();
+  Field</* max 30 chars */ String, VstorewithdemographicsViewRow> brands();
 
-  OptField</* max 30 chars */ String, VstorewithdemographicsViewRow> internet();
+  Field</* max 30 chars */ String, VstorewithdemographicsViewRow> internet();
 
-  OptField<Integer, VstorewithdemographicsViewRow> numberEmployees();
+  Field<Integer, VstorewithdemographicsViewRow> numberEmployees();
 
   @Override
   List<FieldLike<?, VstorewithdemographicsViewRow>> columns();

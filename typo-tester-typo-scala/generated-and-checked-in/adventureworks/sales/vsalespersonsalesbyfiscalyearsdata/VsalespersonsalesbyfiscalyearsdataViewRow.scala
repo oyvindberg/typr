@@ -16,15 +16,15 @@ import typo.runtime.RowParsers
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
   salespersonid: Optional[BusinessentityId],
-  fullname: /* nullability unknown */ Optional[String],
+  fullname: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: /* nullability unknown */ Optional[java.math.BigDecimal],
-  fiscalyear: /* nullability unknown */ Optional[java.math.BigDecimal]
+  fiscalyear: java.math.BigDecimal
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
-  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsdataViewRow] = RowParsers.of(BusinessentityId.pgType.opt(), PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.numeric.opt(), VsalespersonsalesbyfiscalyearsdataViewRow.apply, row => Array[Object](row.salespersonid.asInstanceOf[Object], row.fullname.asInstanceOf[Object], row.jobtitle.asInstanceOf[Object], row.salesterritory.asInstanceOf[Object], row.salestotal.asInstanceOf[Object], row.fiscalyear.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsdataViewRow] = RowParsers.of(BusinessentityId.pgType.opt(), PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.numeric, VsalespersonsalesbyfiscalyearsdataViewRow.apply, row => Array[Object](row.salespersonid.asInstanceOf[Object], row.fullname.asInstanceOf[Object], row.jobtitle.asInstanceOf[Object], row.salesterritory.asInstanceOf[Object], row.salestotal.asInstanceOf[Object], row.fiscalyear.asInstanceOf[Object]))
 }

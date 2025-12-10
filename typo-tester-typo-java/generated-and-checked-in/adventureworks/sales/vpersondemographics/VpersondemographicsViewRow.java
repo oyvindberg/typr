@@ -17,69 +17,69 @@ import typo.runtime.RowParsers;
 public record VpersondemographicsViewRow(
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   BusinessentityId businessentityid,
-  /* nullability unknown */ Optional<TypoMoney> totalpurchaseytd,
-  /* nullability unknown */ Optional<TypoLocalDate> datefirstpurchase,
-  /* nullability unknown */ Optional<TypoLocalDate> birthdate,
-  /* nullability unknown */ Optional</* max 1 chars */ String> maritalstatus,
-  /* nullability unknown */ Optional</* max 30 chars */ String> yearlyincome,
-  /* nullability unknown */ Optional</* max 1 chars */ String> gender,
-  /* nullability unknown */ Optional<Integer> totalchildren,
-  /* nullability unknown */ Optional<Integer> numberchildrenathome,
-  /* nullability unknown */ Optional</* max 30 chars */ String> education,
-  /* nullability unknown */ Optional</* max 30 chars */ String> occupation,
-  /* nullability unknown */ Optional<Boolean> homeownerflag,
-  /* nullability unknown */ Optional<Integer> numbercarsowned
+  Optional<TypoMoney> totalpurchaseytd,
+  Optional<TypoLocalDate> datefirstpurchase,
+  Optional<TypoLocalDate> birthdate,
+  Optional</* max 1 chars */ String> maritalstatus,
+  Optional</* max 30 chars */ String> yearlyincome,
+  Optional</* max 1 chars */ String> gender,
+  Optional<Integer> totalchildren,
+  Optional<Integer> numberchildrenathome,
+  Optional</* max 30 chars */ String> education,
+  Optional</* max 30 chars */ String> occupation,
+  Optional<Boolean> homeownerflag,
+  Optional<Integer> numbercarsowned
 ) {
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   public VpersondemographicsViewRow withBusinessentityid(BusinessentityId businessentityid) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withTotalpurchaseytd(/* nullability unknown */ Optional<TypoMoney> totalpurchaseytd) {
+  public VpersondemographicsViewRow withTotalpurchaseytd(Optional<TypoMoney> totalpurchaseytd) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withDatefirstpurchase(/* nullability unknown */ Optional<TypoLocalDate> datefirstpurchase) {
+  public VpersondemographicsViewRow withDatefirstpurchase(Optional<TypoLocalDate> datefirstpurchase) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withBirthdate(/* nullability unknown */ Optional<TypoLocalDate> birthdate) {
+  public VpersondemographicsViewRow withBirthdate(Optional<TypoLocalDate> birthdate) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withMaritalstatus(/* nullability unknown */ Optional</* max 1 chars */ String> maritalstatus) {
+  public VpersondemographicsViewRow withMaritalstatus(Optional</* max 1 chars */ String> maritalstatus) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withYearlyincome(/* nullability unknown */ Optional</* max 30 chars */ String> yearlyincome) {
+  public VpersondemographicsViewRow withYearlyincome(Optional</* max 30 chars */ String> yearlyincome) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withGender(/* nullability unknown */ Optional</* max 1 chars */ String> gender) {
+  public VpersondemographicsViewRow withGender(Optional</* max 1 chars */ String> gender) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withTotalchildren(/* nullability unknown */ Optional<Integer> totalchildren) {
+  public VpersondemographicsViewRow withTotalchildren(Optional<Integer> totalchildren) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withNumberchildrenathome(/* nullability unknown */ Optional<Integer> numberchildrenathome) {
+  public VpersondemographicsViewRow withNumberchildrenathome(Optional<Integer> numberchildrenathome) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withEducation(/* nullability unknown */ Optional</* max 30 chars */ String> education) {
+  public VpersondemographicsViewRow withEducation(Optional</* max 30 chars */ String> education) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withOccupation(/* nullability unknown */ Optional</* max 30 chars */ String> occupation) {
+  public VpersondemographicsViewRow withOccupation(Optional</* max 30 chars */ String> occupation) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withHomeownerflag(/* nullability unknown */ Optional<Boolean> homeownerflag) {
+  public VpersondemographicsViewRow withHomeownerflag(Optional<Boolean> homeownerflag) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 
-  public VpersondemographicsViewRow withNumbercarsowned(/* nullability unknown */ Optional<Integer> numbercarsowned) {
+  public VpersondemographicsViewRow withNumbercarsowned(Optional<Integer> numbercarsowned) {
     return new VpersondemographicsViewRow(businessentityid, totalpurchaseytd, datefirstpurchase, birthdate, maritalstatus, yearlyincome, gender, totalchildren, numberchildrenathome, education, occupation, homeownerflag, numbercarsowned);
   };
 

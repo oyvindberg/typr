@@ -24,18 +24,18 @@ import scala.util.Try
 case class VpersondemographicsViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  totalpurchaseytd: /* nullability unknown */ Option[TypoMoney],
-  datefirstpurchase: /* nullability unknown */ Option[TypoLocalDate],
-  birthdate: /* nullability unknown */ Option[TypoLocalDate],
-  maritalstatus: /* nullability unknown */ Option[/* max 1 chars */ String],
-  yearlyincome: /* nullability unknown */ Option[/* max 30 chars */ String],
-  gender: /* nullability unknown */ Option[/* max 1 chars */ String],
-  totalchildren: /* nullability unknown */ Option[Int],
-  numberchildrenathome: /* nullability unknown */ Option[Int],
-  education: /* nullability unknown */ Option[/* max 30 chars */ String],
-  occupation: /* nullability unknown */ Option[/* max 30 chars */ String],
-  homeownerflag: /* nullability unknown */ Option[Boolean],
-  numbercarsowned: /* nullability unknown */ Option[Int]
+  totalpurchaseytd: Option[TypoMoney],
+  datefirstpurchase: Option[TypoLocalDate],
+  birthdate: Option[TypoLocalDate],
+  maritalstatus: Option[/* max 1 chars */ String],
+  yearlyincome: Option[/* max 30 chars */ String],
+  gender: Option[/* max 1 chars */ String],
+  totalchildren: Option[Int],
+  numberchildrenathome: Option[Int],
+  education: Option[/* max 30 chars */ String],
+  occupation: Option[/* max 30 chars */ String],
+  homeownerflag: Option[Boolean],
+  numbercarsowned: Option[Int]
 )
 
 object VpersondemographicsViewRow {

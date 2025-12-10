@@ -6,22 +6,21 @@
 package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 import typo.runtime.RowParsers
 
 /** View: sales.vsalespersonsalesbyfiscalyears */
 case class VsalespersonsalesbyfiscalyearsViewRow(
-  @JsonProperty("SalesPersonID") salesPersonID: /* nullability unknown */ Optional[Integer],
-  @JsonProperty("FullName") fullName: /* nullability unknown */ Optional[String],
-  @JsonProperty("JobTitle") jobTitle: /* nullability unknown */ Optional[String],
-  @JsonProperty("SalesTerritory") salesTerritory: /* nullability unknown */ Optional[String],
-  `2012`: /* nullability unknown */ Optional[java.math.BigDecimal],
-  `2013`: /* nullability unknown */ Optional[java.math.BigDecimal],
-  `2014`: /* nullability unknown */ Optional[java.math.BigDecimal]
+  @JsonProperty("SalesPersonID") salesPersonID: Integer,
+  @JsonProperty("FullName") fullName: String,
+  @JsonProperty("JobTitle") jobTitle: String,
+  @JsonProperty("SalesTerritory") salesTerritory: String,
+  `2012`: java.math.BigDecimal,
+  `2013`: java.math.BigDecimal,
+  `2014`: java.math.BigDecimal
 )
 
 object VsalespersonsalesbyfiscalyearsViewRow {
-  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsViewRow] = RowParsers.of(PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), VsalespersonsalesbyfiscalyearsViewRow.apply, row => Array[Object](row.salesPersonID.asInstanceOf[Object], row.fullName.asInstanceOf[Object], row.jobTitle.asInstanceOf[Object], row.salesTerritory.asInstanceOf[Object], row.`2012`.asInstanceOf[Object], row.`2013`.asInstanceOf[Object], row.`2014`.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsViewRow] = RowParsers.of(PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, VsalespersonsalesbyfiscalyearsViewRow.apply, row => Array[Object](row.salesPersonID.asInstanceOf[Object], row.fullName.asInstanceOf[Object], row.jobTitle.asInstanceOf[Object], row.salesTerritory.asInstanceOf[Object], row.`2012`.asInstanceOf[Object], row.`2013`.asInstanceOf[Object], row.`2014`.asInstanceOf[Object]))
 }

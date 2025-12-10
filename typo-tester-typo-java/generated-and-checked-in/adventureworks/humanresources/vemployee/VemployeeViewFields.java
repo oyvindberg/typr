@@ -59,13 +59,13 @@ public interface VemployeeViewFields extends FieldsExpr<VemployeeViewRow> {
     };
 
     @Override
-    public OptField<Phone, VemployeeViewRow> phonenumber() {
-      return new OptField<Phone, VemployeeViewRow>(_path, "phonenumber", VemployeeViewRow::phonenumber, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumber(value), Phone.pgType);
+    public Field<Phone, VemployeeViewRow> phonenumber() {
+      return new Field<Phone, VemployeeViewRow>(_path, "phonenumber", VemployeeViewRow::phonenumber, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumber(value), Phone.pgType);
     };
 
     @Override
-    public OptField<Name, VemployeeViewRow> phonenumbertype() {
-      return new OptField<Name, VemployeeViewRow>(_path, "phonenumbertype", VemployeeViewRow::phonenumbertype, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumbertype(value), Name.pgType);
+    public Field<Name, VemployeeViewRow> phonenumbertype() {
+      return new Field<Name, VemployeeViewRow>(_path, "phonenumbertype", VemployeeViewRow::phonenumbertype, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumbertype(value), Name.pgType);
     };
 
     @Override
@@ -142,9 +142,9 @@ public interface VemployeeViewFields extends FieldsExpr<VemployeeViewRow> {
 
   Field</* max 50 chars */ String, VemployeeViewRow> jobtitle();
 
-  OptField<Phone, VemployeeViewRow> phonenumber();
+  Field<Phone, VemployeeViewRow> phonenumber();
 
-  OptField<Name, VemployeeViewRow> phonenumbertype();
+  Field<Name, VemployeeViewRow> phonenumbertype();
 
   OptField</* max 50 chars */ String, VemployeeViewRow> emailaddress();
 

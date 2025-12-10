@@ -19,12 +19,12 @@ trait VproductmodelinstructionsViewFields {
   def productmodelid: Field[ProductmodelId, VproductmodelinstructionsViewRow]
   def name: Field[Name, VproductmodelinstructionsViewRow]
   def instructions: OptField[String, VproductmodelinstructionsViewRow]
-  def locationID: OptField[Int, VproductmodelinstructionsViewRow]
-  def setupHours: OptField[BigDecimal, VproductmodelinstructionsViewRow]
-  def machineHours: OptField[BigDecimal, VproductmodelinstructionsViewRow]
-  def laborHours: OptField[BigDecimal, VproductmodelinstructionsViewRow]
-  def lotSize: OptField[Int, VproductmodelinstructionsViewRow]
-  def step: OptField[/* max 1024 chars */ String, VproductmodelinstructionsViewRow]
+  def locationID: Field[Int, VproductmodelinstructionsViewRow]
+  def setupHours: Field[BigDecimal, VproductmodelinstructionsViewRow]
+  def machineHours: Field[BigDecimal, VproductmodelinstructionsViewRow]
+  def laborHours: Field[BigDecimal, VproductmodelinstructionsViewRow]
+  def lotSize: Field[Int, VproductmodelinstructionsViewRow]
+  def step: Field[/* max 1024 chars */ String, VproductmodelinstructionsViewRow]
   def rowguid: Field[TypoUUID, VproductmodelinstructionsViewRow]
   def modifieddate: Field[TypoLocalDateTime, VproductmodelinstructionsViewRow]
 }
@@ -40,12 +40,12 @@ object VproductmodelinstructionsViewFields {
       override def productmodelid = Field[ProductmodelId, VproductmodelinstructionsViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def name = Field[Name, VproductmodelinstructionsViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
       override def instructions = OptField[String, VproductmodelinstructionsViewRow](_path, "instructions", None, None, x => x.instructions, (row, value) => row.copy(instructions = value))
-      override def locationID = OptField[Int, VproductmodelinstructionsViewRow](_path, "LocationID", None, None, x => x.locationID, (row, value) => row.copy(locationID = value))
-      override def setupHours = OptField[BigDecimal, VproductmodelinstructionsViewRow](_path, "SetupHours", None, None, x => x.setupHours, (row, value) => row.copy(setupHours = value))
-      override def machineHours = OptField[BigDecimal, VproductmodelinstructionsViewRow](_path, "MachineHours", None, None, x => x.machineHours, (row, value) => row.copy(machineHours = value))
-      override def laborHours = OptField[BigDecimal, VproductmodelinstructionsViewRow](_path, "LaborHours", None, None, x => x.laborHours, (row, value) => row.copy(laborHours = value))
-      override def lotSize = OptField[Int, VproductmodelinstructionsViewRow](_path, "LotSize", None, None, x => x.lotSize, (row, value) => row.copy(lotSize = value))
-      override def step = OptField[/* max 1024 chars */ String, VproductmodelinstructionsViewRow](_path, "Step", None, None, x => x.step, (row, value) => row.copy(step = value))
+      override def locationID = Field[Int, VproductmodelinstructionsViewRow](_path, "LocationID", None, None, x => x.locationID, (row, value) => row.copy(locationID = value))
+      override def setupHours = Field[BigDecimal, VproductmodelinstructionsViewRow](_path, "SetupHours", None, None, x => x.setupHours, (row, value) => row.copy(setupHours = value))
+      override def machineHours = Field[BigDecimal, VproductmodelinstructionsViewRow](_path, "MachineHours", None, None, x => x.machineHours, (row, value) => row.copy(machineHours = value))
+      override def laborHours = Field[BigDecimal, VproductmodelinstructionsViewRow](_path, "LaborHours", None, None, x => x.laborHours, (row, value) => row.copy(laborHours = value))
+      override def lotSize = Field[Int, VproductmodelinstructionsViewRow](_path, "LotSize", None, None, x => x.lotSize, (row, value) => row.copy(lotSize = value))
+      override def step = Field[/* max 1024 chars */ String, VproductmodelinstructionsViewRow](_path, "Step", None, None, x => x.step, (row, value) => row.copy(step = value))
       override def rowguid = Field[TypoUUID, VproductmodelinstructionsViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, VproductmodelinstructionsViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

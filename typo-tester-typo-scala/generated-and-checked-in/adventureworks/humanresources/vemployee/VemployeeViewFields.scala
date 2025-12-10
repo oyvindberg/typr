@@ -35,9 +35,9 @@ trait VemployeeViewFields extends FieldsExpr[VemployeeViewRow] {
 
   def jobtitle: Field[/* max 50 chars */ String, VemployeeViewRow]
 
-  def phonenumber: OptField[Phone, VemployeeViewRow]
+  def phonenumber: Field[Phone, VemployeeViewRow]
 
-  def phonenumbertype: OptField[Name, VemployeeViewRow]
+  def phonenumbertype: Field[Name, VemployeeViewRow]
 
   def emailaddress: OptField[/* max 50 chars */ String, VemployeeViewRow]
 
@@ -149,8 +149,8 @@ object VemployeeViewFields {
       )
     }
 
-    override def phonenumber: OptField[Phone, VemployeeViewRow] = {
-      new OptField[Phone, VemployeeViewRow](
+    override def phonenumber: Field[Phone, VemployeeViewRow] = {
+      new Field[Phone, VemployeeViewRow](
         _path,
         "phonenumber",
         _.phonenumber,
@@ -161,8 +161,8 @@ object VemployeeViewFields {
       )
     }
 
-    override def phonenumbertype: OptField[Name, VemployeeViewRow] = {
-      new OptField[Name, VemployeeViewRow](
+    override def phonenumbertype: Field[Name, VemployeeViewRow] = {
+      new Field[Name, VemployeeViewRow](
         _path,
         "phonenumbertype",
         _.phonenumbertype,

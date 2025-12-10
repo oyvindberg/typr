@@ -37,9 +37,9 @@ case class VindividualcustomerViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
   suffix: Option[/* max 10 chars */ String],
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -73,8 +73,8 @@ object VindividualcustomerViewRow {
             middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
             lastname = json.\("lastname").as(Name.reads),
             suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-            phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
-            phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
+            phonenumber = json.\("phonenumber").as(Phone.reads),
+            phonenumbertype = json.\("phonenumbertype").as(Name.reads),
             emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
             emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
             addresstype = json.\("addresstype").as(Name.reads),
@@ -101,8 +101,8 @@ object VindividualcustomerViewRow {
           middlename = row(idx + 3)(using Column.columnToOption(using Name.column)),
           lastname = row(idx + 4)(using Name.column),
           suffix = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
-          phonenumber = row(idx + 6)(using Column.columnToOption(using Phone.column)),
-          phonenumbertype = row(idx + 7)(using Column.columnToOption(using Name.column)),
+          phonenumber = row(idx + 6)(using Phone.column),
+          phonenumbertype = row(idx + 7)(using Name.column),
           emailaddress = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
           emailpromotion = row(idx + 9)(using Column.columnToInt),
           addresstype = row(idx + 10)(using Name.column),
@@ -127,8 +127,8 @@ object VindividualcustomerViewRow {
         "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
         "lastname" -> Name.writes.writes(o.lastname),
         "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
-        "phonenumber" -> Writes.OptionWrites(using Phone.writes).writes(o.phonenumber),
-        "phonenumbertype" -> Writes.OptionWrites(using Name.writes).writes(o.phonenumbertype),
+        "phonenumber" -> Phone.writes.writes(o.phonenumber),
+        "phonenumbertype" -> Name.writes.writes(o.phonenumbertype),
         "emailaddress" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.emailaddress),
         "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
         "addresstype" -> Name.writes.writes(o.addresstype),

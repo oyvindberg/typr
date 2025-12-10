@@ -40,9 +40,9 @@ case class VstorewithcontactsViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
   suffix: Option[/* max 10 chars */ String],
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -62,8 +62,8 @@ object VstorewithcontactsViewRow {
             middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
             lastname = json.\("lastname").as(Name.reads),
             suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-            phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
-            phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
+            phonenumber = json.\("phonenumber").as(Phone.reads),
+            phonenumbertype = json.\("phonenumbertype").as(Name.reads),
             emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
             emailpromotion = json.\("emailpromotion").as(Reads.IntReads)
           )
@@ -84,8 +84,8 @@ object VstorewithcontactsViewRow {
           middlename = row(idx + 5)(Column.columnToOption(Name.column)),
           lastname = row(idx + 6)(Name.column),
           suffix = row(idx + 7)(Column.columnToOption(Column.columnToString)),
-          phonenumber = row(idx + 8)(Column.columnToOption(Phone.column)),
-          phonenumbertype = row(idx + 9)(Column.columnToOption(Name.column)),
+          phonenumber = row(idx + 8)(Phone.column),
+          phonenumbertype = row(idx + 9)(Name.column),
           emailaddress = row(idx + 10)(Column.columnToOption(Column.columnToString)),
           emailpromotion = row(idx + 11)(Column.columnToInt)
         )
@@ -104,8 +104,8 @@ object VstorewithcontactsViewRow {
         "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
         "lastname" -> Name.writes.writes(o.lastname),
         "suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.suffix),
-        "phonenumber" -> Writes.OptionWrites(Phone.writes).writes(o.phonenumber),
-        "phonenumbertype" -> Writes.OptionWrites(Name.writes).writes(o.phonenumbertype),
+        "phonenumber" -> Phone.writes.writes(o.phonenumber),
+        "phonenumbertype" -> Name.writes.writes(o.phonenumbertype),
         "emailaddress" -> Writes.OptionWrites(Writes.StringWrites).writes(o.emailaddress),
         "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion)
       ))

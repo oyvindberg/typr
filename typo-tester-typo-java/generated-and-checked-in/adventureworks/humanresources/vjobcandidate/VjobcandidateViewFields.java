@@ -57,8 +57,8 @@ public interface VjobcandidateViewFields extends FieldsExpr<VjobcandidateViewRow
     };
 
     @Override
-    public OptField<String, VjobcandidateViewRow> skills() {
-      return new OptField<String, VjobcandidateViewRow>(_path, "Skills", VjobcandidateViewRow::skills, Optional.empty(), Optional.empty(), (row, value) -> row.withSkills(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> skills() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Skills", VjobcandidateViewRow::skills, Optional.empty(), Optional.empty(), (row, value) -> row.withSkills(value), PgTypes.text);
     };
 
     @Override
@@ -87,13 +87,13 @@ public interface VjobcandidateViewFields extends FieldsExpr<VjobcandidateViewRow
     };
 
     @Override
-    public OptField<String, VjobcandidateViewRow> eMail() {
-      return new OptField<String, VjobcandidateViewRow>(_path, "EMail", VjobcandidateViewRow::eMail, Optional.empty(), Optional.empty(), (row, value) -> row.withEMail(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> eMail() {
+      return new Field<String, VjobcandidateViewRow>(_path, "EMail", VjobcandidateViewRow::eMail, Optional.empty(), Optional.empty(), (row, value) -> row.withEMail(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VjobcandidateViewRow> webSite() {
-      return new OptField<String, VjobcandidateViewRow>(_path, "WebSite", VjobcandidateViewRow::webSite, Optional.empty(), Optional.empty(), (row, value) -> row.withWebSite(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> webSite() {
+      return new Field<String, VjobcandidateViewRow>(_path, "WebSite", VjobcandidateViewRow::webSite, Optional.empty(), Optional.empty(), (row, value) -> row.withWebSite(value), PgTypes.text);
     };
 
     @Override
@@ -130,7 +130,7 @@ public interface VjobcandidateViewFields extends FieldsExpr<VjobcandidateViewRow
 
   OptField</* max 30 chars */ String, VjobcandidateViewRow> nameSuffix();
 
-  OptField<String, VjobcandidateViewRow> skills();
+  Field<String, VjobcandidateViewRow> skills();
 
   OptField</* max 30 chars */ String, VjobcandidateViewRow> addrType();
 
@@ -142,9 +142,9 @@ public interface VjobcandidateViewFields extends FieldsExpr<VjobcandidateViewRow
 
   OptField</* max 20 chars */ String, VjobcandidateViewRow> addrPostalCode();
 
-  OptField<String, VjobcandidateViewRow> eMail();
+  Field<String, VjobcandidateViewRow> eMail();
 
-  OptField<String, VjobcandidateViewRow> webSite();
+  Field<String, VjobcandidateViewRow> webSite();
 
   Field<TypoLocalDateTime, VjobcandidateViewRow> modifieddate();
 

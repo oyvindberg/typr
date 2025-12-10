@@ -48,9 +48,9 @@ interface VemployeeViewFields : FieldsExpr<VemployeeViewRow> {
 
   fun middlename(): OptField<Name, VemployeeViewRow>
 
-  fun phonenumber(): OptField<Phone, VemployeeViewRow>
+  fun phonenumber(): Field<Phone, VemployeeViewRow>
 
-  fun phonenumbertype(): OptField<Name, VemployeeViewRow>
+  fun phonenumbertype(): Field<Name, VemployeeViewRow>
 
   fun postalcode(): Field</* max 15 chars */ String, VemployeeViewRow>
 
@@ -78,9 +78,9 @@ interface VemployeeViewFields : FieldsExpr<VemployeeViewRow> {
 
       override fun jobtitle(): Field</* max 50 chars */ String, VemployeeViewRow> = Field</* max 50 chars */ String, VemployeeViewRow>(_path, "jobtitle", VemployeeViewRow::jobtitle, Optional.empty(), Optional.empty(), { row, value -> row.copy(jobtitle = value) }, PgTypes.text)
 
-      override fun phonenumber(): OptField<Phone, VemployeeViewRow> = OptField<Phone, VemployeeViewRow>(_path, "phonenumber", VemployeeViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
+      override fun phonenumber(): Field<Phone, VemployeeViewRow> = Field<Phone, VemployeeViewRow>(_path, "phonenumber", VemployeeViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
 
-      override fun phonenumbertype(): OptField<Name, VemployeeViewRow> = OptField<Name, VemployeeViewRow>(_path, "phonenumbertype", VemployeeViewRow::phonenumbertype, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
+      override fun phonenumbertype(): Field<Name, VemployeeViewRow> = Field<Name, VemployeeViewRow>(_path, "phonenumbertype", VemployeeViewRow::phonenumbertype, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
 
       override fun emailaddress(): OptField</* max 50 chars */ String, VemployeeViewRow> = OptField</* max 50 chars */ String, VemployeeViewRow>(_path, "emailaddress", VemployeeViewRow::emailaddress, Optional.empty(), Optional.empty(), { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
 

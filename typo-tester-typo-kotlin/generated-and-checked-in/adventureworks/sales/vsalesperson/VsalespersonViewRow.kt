@@ -32,9 +32,9 @@ data class VsalespersonViewRow(
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.jobtitle] */
   val jobtitle: /* max 50 chars */ String,
   /** Points to [adventureworks.person.personphone.PersonphoneRow.phonenumber] */
-  val phonenumber: Optional<Phone>,
+  val phonenumber: Phone,
   /** Points to [adventureworks.person.phonenumbertype.PhonenumbertypeRow.name] */
-  val phonenumbertype: Optional<Name>,
+  val phonenumbertype: Name,
   /** Points to [adventureworks.person.emailaddress.EmailaddressRow.emailaddress] */
   val emailaddress: Optional</* max 50 chars */ String>,
   /** Points to [adventureworks.person.person.PersonRow.emailpromotion] */
@@ -52,9 +52,9 @@ data class VsalespersonViewRow(
   /** Points to [adventureworks.person.countryregion.CountryregionRow.name] */
   val countryregionname: Name,
   /** Points to [adventureworks.sales.salesterritory.SalesterritoryRow.name] */
-  val territoryname: Optional<Name>,
+  val territoryname: Name,
   /** Points to [adventureworks.sales.salesterritory.SalesterritoryRow.group] */
-  val territorygroup: Optional</* max 50 chars */ String>,
+  val territorygroup: /* max 50 chars */ String,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.salesquota] */
   val salesquota: Optional<BigDecimal>,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.salesytd] */
@@ -63,6 +63,6 @@ data class VsalespersonViewRow(
   val saleslastyear: BigDecimal
 ) {
   companion object {
-    val _rowParser: RowParser<VsalespersonViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.text, Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, Name.pgType.opt(), PgTypes.text.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21 -> VsalespersonViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.territoryname, row.territorygroup, row.salesquota, row.salesytd, row.saleslastyear) })
+    val _rowParser: RowParser<VsalespersonViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.text, Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, Name.pgType, PgTypes.text, PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21 -> VsalespersonViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.territoryname, row.territorygroup, row.salesquota, row.salesytd, row.saleslastyear) })
   }
 }

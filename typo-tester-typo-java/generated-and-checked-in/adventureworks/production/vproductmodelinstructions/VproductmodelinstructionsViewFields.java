@@ -39,33 +39,33 @@ public interface VproductmodelinstructionsViewFields extends FieldsExpr<Vproduct
     };
 
     @Override
-    public OptField<Integer, VproductmodelinstructionsViewRow> locationID() {
-      return new OptField<Integer, VproductmodelinstructionsViewRow>(_path, "LocationID", VproductmodelinstructionsViewRow::locationID, Optional.empty(), Optional.empty(), (row, value) -> row.withLocationID(value), PgTypes.int4);
+    public Field<Integer, VproductmodelinstructionsViewRow> locationID() {
+      return new Field<Integer, VproductmodelinstructionsViewRow>(_path, "LocationID", VproductmodelinstructionsViewRow::locationID, Optional.empty(), Optional.empty(), (row, value) -> row.withLocationID(value), PgTypes.int4);
     };
 
     @Override
-    public OptField<BigDecimal, VproductmodelinstructionsViewRow> setupHours() {
-      return new OptField<BigDecimal, VproductmodelinstructionsViewRow>(_path, "SetupHours", VproductmodelinstructionsViewRow::setupHours, Optional.empty(), Optional.empty(), (row, value) -> row.withSetupHours(value), PgTypes.numeric);
+    public Field<BigDecimal, VproductmodelinstructionsViewRow> setupHours() {
+      return new Field<BigDecimal, VproductmodelinstructionsViewRow>(_path, "SetupHours", VproductmodelinstructionsViewRow::setupHours, Optional.empty(), Optional.empty(), (row, value) -> row.withSetupHours(value), PgTypes.numeric);
     };
 
     @Override
-    public OptField<BigDecimal, VproductmodelinstructionsViewRow> machineHours() {
-      return new OptField<BigDecimal, VproductmodelinstructionsViewRow>(_path, "MachineHours", VproductmodelinstructionsViewRow::machineHours, Optional.empty(), Optional.empty(), (row, value) -> row.withMachineHours(value), PgTypes.numeric);
+    public Field<BigDecimal, VproductmodelinstructionsViewRow> machineHours() {
+      return new Field<BigDecimal, VproductmodelinstructionsViewRow>(_path, "MachineHours", VproductmodelinstructionsViewRow::machineHours, Optional.empty(), Optional.empty(), (row, value) -> row.withMachineHours(value), PgTypes.numeric);
     };
 
     @Override
-    public OptField<BigDecimal, VproductmodelinstructionsViewRow> laborHours() {
-      return new OptField<BigDecimal, VproductmodelinstructionsViewRow>(_path, "LaborHours", VproductmodelinstructionsViewRow::laborHours, Optional.empty(), Optional.empty(), (row, value) -> row.withLaborHours(value), PgTypes.numeric);
+    public Field<BigDecimal, VproductmodelinstructionsViewRow> laborHours() {
+      return new Field<BigDecimal, VproductmodelinstructionsViewRow>(_path, "LaborHours", VproductmodelinstructionsViewRow::laborHours, Optional.empty(), Optional.empty(), (row, value) -> row.withLaborHours(value), PgTypes.numeric);
     };
 
     @Override
-    public OptField<Integer, VproductmodelinstructionsViewRow> lotSize() {
-      return new OptField<Integer, VproductmodelinstructionsViewRow>(_path, "LotSize", VproductmodelinstructionsViewRow::lotSize, Optional.empty(), Optional.empty(), (row, value) -> row.withLotSize(value), PgTypes.int4);
+    public Field<Integer, VproductmodelinstructionsViewRow> lotSize() {
+      return new Field<Integer, VproductmodelinstructionsViewRow>(_path, "LotSize", VproductmodelinstructionsViewRow::lotSize, Optional.empty(), Optional.empty(), (row, value) -> row.withLotSize(value), PgTypes.int4);
     };
 
     @Override
-    public OptField</* max 1024 chars */ String, VproductmodelinstructionsViewRow> step() {
-      return new OptField</* max 1024 chars */ String, VproductmodelinstructionsViewRow>(_path, "Step", VproductmodelinstructionsViewRow::step, Optional.empty(), Optional.empty(), (row, value) -> row.withStep(value), PgTypes.text);
+    public Field</* max 1024 chars */ String, VproductmodelinstructionsViewRow> step() {
+      return new Field</* max 1024 chars */ String, VproductmodelinstructionsViewRow>(_path, "Step", VproductmodelinstructionsViewRow::step, Optional.empty(), Optional.empty(), (row, value) -> row.withStep(value), PgTypes.text);
     };
 
     @Override
@@ -99,17 +99,17 @@ public interface VproductmodelinstructionsViewFields extends FieldsExpr<Vproduct
 
   OptField<String, VproductmodelinstructionsViewRow> instructions();
 
-  OptField<Integer, VproductmodelinstructionsViewRow> locationID();
+  Field<Integer, VproductmodelinstructionsViewRow> locationID();
 
-  OptField<BigDecimal, VproductmodelinstructionsViewRow> setupHours();
+  Field<BigDecimal, VproductmodelinstructionsViewRow> setupHours();
 
-  OptField<BigDecimal, VproductmodelinstructionsViewRow> machineHours();
+  Field<BigDecimal, VproductmodelinstructionsViewRow> machineHours();
 
-  OptField<BigDecimal, VproductmodelinstructionsViewRow> laborHours();
+  Field<BigDecimal, VproductmodelinstructionsViewRow> laborHours();
 
-  OptField<Integer, VproductmodelinstructionsViewRow> lotSize();
+  Field<Integer, VproductmodelinstructionsViewRow> lotSize();
 
-  OptField</* max 1024 chars */ String, VproductmodelinstructionsViewRow> step();
+  Field</* max 1024 chars */ String, VproductmodelinstructionsViewRow> step();
 
   Field<TypoUUID, VproductmodelinstructionsViewRow> rowguid();
 

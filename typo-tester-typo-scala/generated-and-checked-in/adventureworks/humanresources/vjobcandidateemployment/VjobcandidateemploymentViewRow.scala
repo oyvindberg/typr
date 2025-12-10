@@ -17,16 +17,16 @@ import typo.runtime.RowParsers
 case class VjobcandidateemploymentViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  @JsonProperty("Emp.StartDate") empStartDate: /* nullability unknown */ Optional[TypoLocalDate],
-  @JsonProperty("Emp.EndDate") empEndDate: /* nullability unknown */ Optional[TypoLocalDate],
-  @JsonProperty("Emp.OrgName") empOrgName: /* nullability unknown */ Optional[/* max 100 chars */ String],
-  @JsonProperty("Emp.JobTitle") empJobTitle: /* nullability unknown */ Optional[/* max 100 chars */ String],
-  @JsonProperty("Emp.Responsibility") empResponsibility: /* nullability unknown */ Optional[String],
-  @JsonProperty("Emp.FunctionCategory") empFunctionCategory: /* nullability unknown */ Optional[String],
-  @JsonProperty("Emp.IndustryCategory") empIndustryCategory: /* nullability unknown */ Optional[String],
-  @JsonProperty("Emp.Loc.CountryRegion") empLocCountryRegion: /* nullability unknown */ Optional[String],
-  @JsonProperty("Emp.Loc.State") empLocState: /* nullability unknown */ Optional[String],
-  @JsonProperty("Emp.Loc.City") empLocCity: /* nullability unknown */ Optional[String]
+  @JsonProperty("Emp.StartDate") empStartDate: Optional[TypoLocalDate],
+  @JsonProperty("Emp.EndDate") empEndDate: Optional[TypoLocalDate],
+  @JsonProperty("Emp.OrgName") empOrgName: Optional[/* max 100 chars */ String],
+  @JsonProperty("Emp.JobTitle") empJobTitle: Optional[/* max 100 chars */ String],
+  @JsonProperty("Emp.Responsibility") empResponsibility: Optional[String],
+  @JsonProperty("Emp.FunctionCategory") empFunctionCategory: Optional[String],
+  @JsonProperty("Emp.IndustryCategory") empIndustryCategory: Optional[String],
+  @JsonProperty("Emp.Loc.CountryRegion") empLocCountryRegion: Optional[String],
+  @JsonProperty("Emp.Loc.State") empLocState: Optional[String],
+  @JsonProperty("Emp.Loc.City") empLocCity: Optional[String]
 )
 
 object VjobcandidateemploymentViewRow {

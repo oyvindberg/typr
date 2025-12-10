@@ -26,16 +26,16 @@ case class VstorewithdemographicsViewRow(
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.sales.store.StoreRow.name]] */
   name: Name,
-  annualSales: /* nullability unknown */ Option[TypoMoney],
-  annualRevenue: /* nullability unknown */ Option[TypoMoney],
-  bankName: /* nullability unknown */ Option[/* max 50 chars */ String],
-  businessType: /* nullability unknown */ Option[/* max 5 chars */ String],
-  yearOpened: /* nullability unknown */ Option[Int],
-  specialty: /* nullability unknown */ Option[/* max 50 chars */ String],
-  squareFeet: /* nullability unknown */ Option[Int],
-  brands: /* nullability unknown */ Option[/* max 30 chars */ String],
-  internet: /* nullability unknown */ Option[/* max 30 chars */ String],
-  numberEmployees: /* nullability unknown */ Option[Int]
+  annualSales: TypoMoney,
+  annualRevenue: TypoMoney,
+  bankName: /* max 50 chars */ String,
+  businessType: /* max 5 chars */ String,
+  yearOpened: Int,
+  specialty: /* max 50 chars */ String,
+  squareFeet: Int,
+  brands: /* max 30 chars */ String,
+  internet: /* max 30 chars */ String,
+  numberEmployees: Int
 )
 
 object VstorewithdemographicsViewRow {
@@ -45,16 +45,16 @@ object VstorewithdemographicsViewRow {
           VstorewithdemographicsViewRow(
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
             name = json.\("name").as(Name.reads),
-            annualSales = json.\("AnnualSales").toOption.map(_.as(TypoMoney.reads)),
-            annualRevenue = json.\("AnnualRevenue").toOption.map(_.as(TypoMoney.reads)),
-            bankName = json.\("BankName").toOption.map(_.as(Reads.StringReads)),
-            businessType = json.\("BusinessType").toOption.map(_.as(Reads.StringReads)),
-            yearOpened = json.\("YearOpened").toOption.map(_.as(Reads.IntReads)),
-            specialty = json.\("Specialty").toOption.map(_.as(Reads.StringReads)),
-            squareFeet = json.\("SquareFeet").toOption.map(_.as(Reads.IntReads)),
-            brands = json.\("Brands").toOption.map(_.as(Reads.StringReads)),
-            internet = json.\("Internet").toOption.map(_.as(Reads.StringReads)),
-            numberEmployees = json.\("NumberEmployees").toOption.map(_.as(Reads.IntReads))
+            annualSales = json.\("AnnualSales").as(TypoMoney.reads),
+            annualRevenue = json.\("AnnualRevenue").as(TypoMoney.reads),
+            bankName = json.\("BankName").as(Reads.StringReads),
+            businessType = json.\("BusinessType").as(Reads.StringReads),
+            yearOpened = json.\("YearOpened").as(Reads.IntReads),
+            specialty = json.\("Specialty").as(Reads.StringReads),
+            squareFeet = json.\("SquareFeet").as(Reads.IntReads),
+            brands = json.\("Brands").as(Reads.StringReads),
+            internet = json.\("Internet").as(Reads.StringReads),
+            numberEmployees = json.\("NumberEmployees").as(Reads.IntReads)
           )
         )
       ),
@@ -67,16 +67,16 @@ object VstorewithdemographicsViewRow {
         VstorewithdemographicsViewRow(
           businessentityid = row(idx + 0)(BusinessentityId.column),
           name = row(idx + 1)(Name.column),
-          annualSales = row(idx + 2)(Column.columnToOption(TypoMoney.column)),
-          annualRevenue = row(idx + 3)(Column.columnToOption(TypoMoney.column)),
-          bankName = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-          businessType = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-          yearOpened = row(idx + 6)(Column.columnToOption(Column.columnToInt)),
-          specialty = row(idx + 7)(Column.columnToOption(Column.columnToString)),
-          squareFeet = row(idx + 8)(Column.columnToOption(Column.columnToInt)),
-          brands = row(idx + 9)(Column.columnToOption(Column.columnToString)),
-          internet = row(idx + 10)(Column.columnToOption(Column.columnToString)),
-          numberEmployees = row(idx + 11)(Column.columnToOption(Column.columnToInt))
+          annualSales = row(idx + 2)(TypoMoney.column),
+          annualRevenue = row(idx + 3)(TypoMoney.column),
+          bankName = row(idx + 4)(Column.columnToString),
+          businessType = row(idx + 5)(Column.columnToString),
+          yearOpened = row(idx + 6)(Column.columnToInt),
+          specialty = row(idx + 7)(Column.columnToString),
+          squareFeet = row(idx + 8)(Column.columnToInt),
+          brands = row(idx + 9)(Column.columnToString),
+          internet = row(idx + 10)(Column.columnToString),
+          numberEmployees = row(idx + 11)(Column.columnToInt)
         )
       )
     }
@@ -87,16 +87,16 @@ object VstorewithdemographicsViewRow {
       new JsObject(ListMap[String, JsValue](
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
         "name" -> Name.writes.writes(o.name),
-        "AnnualSales" -> Writes.OptionWrites(TypoMoney.writes).writes(o.annualSales),
-        "AnnualRevenue" -> Writes.OptionWrites(TypoMoney.writes).writes(o.annualRevenue),
-        "BankName" -> Writes.OptionWrites(Writes.StringWrites).writes(o.bankName),
-        "BusinessType" -> Writes.OptionWrites(Writes.StringWrites).writes(o.businessType),
-        "YearOpened" -> Writes.OptionWrites(Writes.IntWrites).writes(o.yearOpened),
-        "Specialty" -> Writes.OptionWrites(Writes.StringWrites).writes(o.specialty),
-        "SquareFeet" -> Writes.OptionWrites(Writes.IntWrites).writes(o.squareFeet),
-        "Brands" -> Writes.OptionWrites(Writes.StringWrites).writes(o.brands),
-        "Internet" -> Writes.OptionWrites(Writes.StringWrites).writes(o.internet),
-        "NumberEmployees" -> Writes.OptionWrites(Writes.IntWrites).writes(o.numberEmployees)
+        "AnnualSales" -> TypoMoney.writes.writes(o.annualSales),
+        "AnnualRevenue" -> TypoMoney.writes.writes(o.annualRevenue),
+        "BankName" -> Writes.StringWrites.writes(o.bankName),
+        "BusinessType" -> Writes.StringWrites.writes(o.businessType),
+        "YearOpened" -> Writes.IntWrites.writes(o.yearOpened),
+        "Specialty" -> Writes.StringWrites.writes(o.specialty),
+        "SquareFeet" -> Writes.IntWrites.writes(o.squareFeet),
+        "Brands" -> Writes.StringWrites.writes(o.brands),
+        "Internet" -> Writes.StringWrites.writes(o.internet),
+        "NumberEmployees" -> Writes.IntWrites.writes(o.numberEmployees)
       ))
     )
   }

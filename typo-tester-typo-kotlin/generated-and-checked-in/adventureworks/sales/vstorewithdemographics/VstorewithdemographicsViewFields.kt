@@ -14,39 +14,38 @@ import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VstorewithdemographicsViewFields : FieldsExpr<VstorewithdemographicsViewRow> {
-  fun annualRevenue(): OptField<TypoMoney, VstorewithdemographicsViewRow>
+  fun annualRevenue(): Field<TypoMoney, VstorewithdemographicsViewRow>
 
-  fun annualSales(): OptField<TypoMoney, VstorewithdemographicsViewRow>
+  fun annualSales(): Field<TypoMoney, VstorewithdemographicsViewRow>
 
-  fun bankName(): OptField</* max 50 chars */ String, VstorewithdemographicsViewRow>
+  fun bankName(): Field</* max 50 chars */ String, VstorewithdemographicsViewRow>
 
-  fun brands(): OptField</* max 30 chars */ String, VstorewithdemographicsViewRow>
+  fun brands(): Field</* max 30 chars */ String, VstorewithdemographicsViewRow>
 
-  fun businessType(): OptField</* max 5 chars */ String, VstorewithdemographicsViewRow>
+  fun businessType(): Field</* max 5 chars */ String, VstorewithdemographicsViewRow>
 
   fun businessentityid(): Field<BusinessentityId, VstorewithdemographicsViewRow>
 
   override fun columns(): List<FieldLike<*, VstorewithdemographicsViewRow>>
 
-  fun internet(): OptField</* max 30 chars */ String, VstorewithdemographicsViewRow>
+  fun internet(): Field</* max 30 chars */ String, VstorewithdemographicsViewRow>
 
   fun name(): Field<Name, VstorewithdemographicsViewRow>
 
-  fun numberEmployees(): OptField<Int, VstorewithdemographicsViewRow>
+  fun numberEmployees(): Field<Int, VstorewithdemographicsViewRow>
 
   override fun rowParser(): RowParser<VstorewithdemographicsViewRow> = VstorewithdemographicsViewRow._rowParser
 
-  fun specialty(): OptField</* max 50 chars */ String, VstorewithdemographicsViewRow>
+  fun specialty(): Field</* max 50 chars */ String, VstorewithdemographicsViewRow>
 
-  fun squareFeet(): OptField<Int, VstorewithdemographicsViewRow>
+  fun squareFeet(): Field<Int, VstorewithdemographicsViewRow>
 
-  fun yearOpened(): OptField<Int, VstorewithdemographicsViewRow>
+  fun yearOpened(): Field<Int, VstorewithdemographicsViewRow>
 
   companion object {
     data class Impl(val _path: List<Path>) : VstorewithdemographicsViewFields, Relation<VstorewithdemographicsViewFields, VstorewithdemographicsViewRow> {
@@ -54,25 +53,25 @@ interface VstorewithdemographicsViewFields : FieldsExpr<VstorewithdemographicsVi
 
       override fun name(): Field<Name, VstorewithdemographicsViewRow> = Field<Name, VstorewithdemographicsViewRow>(_path, "name", VstorewithdemographicsViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun annualSales(): OptField<TypoMoney, VstorewithdemographicsViewRow> = OptField<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualSales", VstorewithdemographicsViewRow::annualSales, Optional.of("numeric"), Optional.empty(), { row, value -> row.copy(annualSales = value) }, TypoMoney.pgType)
+      override fun annualSales(): Field<TypoMoney, VstorewithdemographicsViewRow> = Field<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualSales", VstorewithdemographicsViewRow::annualSales, Optional.of("numeric"), Optional.empty(), { row, value -> row.copy(annualSales = value) }, TypoMoney.pgType)
 
-      override fun annualRevenue(): OptField<TypoMoney, VstorewithdemographicsViewRow> = OptField<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualRevenue", VstorewithdemographicsViewRow::annualRevenue, Optional.of("numeric"), Optional.empty(), { row, value -> row.copy(annualRevenue = value) }, TypoMoney.pgType)
+      override fun annualRevenue(): Field<TypoMoney, VstorewithdemographicsViewRow> = Field<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualRevenue", VstorewithdemographicsViewRow::annualRevenue, Optional.of("numeric"), Optional.empty(), { row, value -> row.copy(annualRevenue = value) }, TypoMoney.pgType)
 
-      override fun bankName(): OptField</* max 50 chars */ String, VstorewithdemographicsViewRow> = OptField</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "BankName", VstorewithdemographicsViewRow::bankName, Optional.empty(), Optional.empty(), { row, value -> row.copy(bankName = value) }, PgTypes.text)
+      override fun bankName(): Field</* max 50 chars */ String, VstorewithdemographicsViewRow> = Field</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "BankName", VstorewithdemographicsViewRow::bankName, Optional.empty(), Optional.empty(), { row, value -> row.copy(bankName = value) }, PgTypes.text)
 
-      override fun businessType(): OptField</* max 5 chars */ String, VstorewithdemographicsViewRow> = OptField</* max 5 chars */ String, VstorewithdemographicsViewRow>(_path, "BusinessType", VstorewithdemographicsViewRow::businessType, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessType = value) }, PgTypes.text)
+      override fun businessType(): Field</* max 5 chars */ String, VstorewithdemographicsViewRow> = Field</* max 5 chars */ String, VstorewithdemographicsViewRow>(_path, "BusinessType", VstorewithdemographicsViewRow::businessType, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessType = value) }, PgTypes.text)
 
-      override fun yearOpened(): OptField<Int, VstorewithdemographicsViewRow> = OptField<Int, VstorewithdemographicsViewRow>(_path, "YearOpened", VstorewithdemographicsViewRow::yearOpened, Optional.empty(), Optional.empty(), { row, value -> row.copy(yearOpened = value) }, PgTypes.int4)
+      override fun yearOpened(): Field<Int, VstorewithdemographicsViewRow> = Field<Int, VstorewithdemographicsViewRow>(_path, "YearOpened", VstorewithdemographicsViewRow::yearOpened, Optional.empty(), Optional.empty(), { row, value -> row.copy(yearOpened = value) }, PgTypes.int4)
 
-      override fun specialty(): OptField</* max 50 chars */ String, VstorewithdemographicsViewRow> = OptField</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "Specialty", VstorewithdemographicsViewRow::specialty, Optional.empty(), Optional.empty(), { row, value -> row.copy(specialty = value) }, PgTypes.text)
+      override fun specialty(): Field</* max 50 chars */ String, VstorewithdemographicsViewRow> = Field</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "Specialty", VstorewithdemographicsViewRow::specialty, Optional.empty(), Optional.empty(), { row, value -> row.copy(specialty = value) }, PgTypes.text)
 
-      override fun squareFeet(): OptField<Int, VstorewithdemographicsViewRow> = OptField<Int, VstorewithdemographicsViewRow>(_path, "SquareFeet", VstorewithdemographicsViewRow::squareFeet, Optional.empty(), Optional.empty(), { row, value -> row.copy(squareFeet = value) }, PgTypes.int4)
+      override fun squareFeet(): Field<Int, VstorewithdemographicsViewRow> = Field<Int, VstorewithdemographicsViewRow>(_path, "SquareFeet", VstorewithdemographicsViewRow::squareFeet, Optional.empty(), Optional.empty(), { row, value -> row.copy(squareFeet = value) }, PgTypes.int4)
 
-      override fun brands(): OptField</* max 30 chars */ String, VstorewithdemographicsViewRow> = OptField</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Brands", VstorewithdemographicsViewRow::brands, Optional.empty(), Optional.empty(), { row, value -> row.copy(brands = value) }, PgTypes.text)
+      override fun brands(): Field</* max 30 chars */ String, VstorewithdemographicsViewRow> = Field</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Brands", VstorewithdemographicsViewRow::brands, Optional.empty(), Optional.empty(), { row, value -> row.copy(brands = value) }, PgTypes.text)
 
-      override fun internet(): OptField</* max 30 chars */ String, VstorewithdemographicsViewRow> = OptField</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Internet", VstorewithdemographicsViewRow::internet, Optional.empty(), Optional.empty(), { row, value -> row.copy(internet = value) }, PgTypes.text)
+      override fun internet(): Field</* max 30 chars */ String, VstorewithdemographicsViewRow> = Field</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Internet", VstorewithdemographicsViewRow::internet, Optional.empty(), Optional.empty(), { row, value -> row.copy(internet = value) }, PgTypes.text)
 
-      override fun numberEmployees(): OptField<Int, VstorewithdemographicsViewRow> = OptField<Int, VstorewithdemographicsViewRow>(_path, "NumberEmployees", VstorewithdemographicsViewRow::numberEmployees, Optional.empty(), Optional.empty(), { row, value -> row.copy(numberEmployees = value) }, PgTypes.int4)
+      override fun numberEmployees(): Field<Int, VstorewithdemographicsViewRow> = Field<Int, VstorewithdemographicsViewRow>(_path, "NumberEmployees", VstorewithdemographicsViewRow::numberEmployees, Optional.empty(), Optional.empty(), { row, value -> row.copy(numberEmployees = value) }, PgTypes.int4)
 
       override fun columns(): List<FieldLike<*, VstorewithdemographicsViewRow>> = listOf(this.businessentityid(), this.name(), this.annualSales(), this.annualRevenue(), this.bankName(), this.businessType(), this.yearOpened(), this.specialty(), this.squareFeet(), this.brands(), this.internet(), this.numberEmployees())
 

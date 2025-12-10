@@ -59,13 +59,13 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public OptField<Phone, VsalespersonViewRow> phonenumber() {
-      return new OptField<Phone, VsalespersonViewRow>(_path, "phonenumber", VsalespersonViewRow::phonenumber, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumber(value), Phone.pgType);
+    public Field<Phone, VsalespersonViewRow> phonenumber() {
+      return new Field<Phone, VsalespersonViewRow>(_path, "phonenumber", VsalespersonViewRow::phonenumber, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumber(value), Phone.pgType);
     };
 
     @Override
-    public OptField<Name, VsalespersonViewRow> phonenumbertype() {
-      return new OptField<Name, VsalespersonViewRow>(_path, "phonenumbertype", VsalespersonViewRow::phonenumbertype, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumbertype(value), Name.pgType);
+    public Field<Name, VsalespersonViewRow> phonenumbertype() {
+      return new Field<Name, VsalespersonViewRow>(_path, "phonenumbertype", VsalespersonViewRow::phonenumbertype, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumbertype(value), Name.pgType);
     };
 
     @Override
@@ -109,13 +109,13 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public OptField<Name, VsalespersonViewRow> territoryname() {
-      return new OptField<Name, VsalespersonViewRow>(_path, "territoryname", VsalespersonViewRow::territoryname, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritoryname(value), Name.pgType);
+    public Field<Name, VsalespersonViewRow> territoryname() {
+      return new Field<Name, VsalespersonViewRow>(_path, "territoryname", VsalespersonViewRow::territoryname, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritoryname(value), Name.pgType);
     };
 
     @Override
-    public OptField</* max 50 chars */ String, VsalespersonViewRow> territorygroup() {
-      return new OptField</* max 50 chars */ String, VsalespersonViewRow>(_path, "territorygroup", VsalespersonViewRow::territorygroup, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritorygroup(value), PgTypes.text);
+    public Field</* max 50 chars */ String, VsalespersonViewRow> territorygroup() {
+      return new Field</* max 50 chars */ String, VsalespersonViewRow>(_path, "territorygroup", VsalespersonViewRow::territorygroup, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritorygroup(value), PgTypes.text);
     };
 
     @Override
@@ -162,9 +162,9 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
 
   Field</* max 50 chars */ String, VsalespersonViewRow> jobtitle();
 
-  OptField<Phone, VsalespersonViewRow> phonenumber();
+  Field<Phone, VsalespersonViewRow> phonenumber();
 
-  OptField<Name, VsalespersonViewRow> phonenumbertype();
+  Field<Name, VsalespersonViewRow> phonenumbertype();
 
   OptField</* max 50 chars */ String, VsalespersonViewRow> emailaddress();
 
@@ -182,9 +182,9 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
 
   Field<Name, VsalespersonViewRow> countryregionname();
 
-  OptField<Name, VsalespersonViewRow> territoryname();
+  Field<Name, VsalespersonViewRow> territoryname();
 
-  OptField</* max 50 chars */ String, VsalespersonViewRow> territorygroup();
+  Field</* max 50 chars */ String, VsalespersonViewRow> territorygroup();
 
   OptField<BigDecimal, VsalespersonViewRow> salesquota();
 

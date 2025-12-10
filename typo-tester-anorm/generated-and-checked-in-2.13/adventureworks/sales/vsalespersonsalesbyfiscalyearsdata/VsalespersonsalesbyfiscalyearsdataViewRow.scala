@@ -23,13 +23,13 @@ import scala.util.Try
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
   salespersonid: Option[BusinessentityId],
-  fullname: /* nullability unknown */ Option[String],
+  fullname: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: /* nullability unknown */ Option[BigDecimal],
-  fiscalyear: /* nullability unknown */ Option[BigDecimal]
+  fiscalyear: BigDecimal
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
@@ -38,11 +38,11 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         Try(
           VsalespersonsalesbyfiscalyearsdataViewRow(
             salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
-            fullname = json.\("fullname").toOption.map(_.as(Reads.StringReads)),
+            fullname = json.\("fullname").as(Reads.StringReads),
             jobtitle = json.\("jobtitle").as(Reads.StringReads),
             salesterritory = json.\("salesterritory").as(Name.reads),
             salestotal = json.\("salestotal").toOption.map(_.as(Reads.bigDecReads)),
-            fiscalyear = json.\("fiscalyear").toOption.map(_.as(Reads.bigDecReads))
+            fiscalyear = json.\("fiscalyear").as(Reads.bigDecReads)
           )
         )
       ),
@@ -54,11 +54,11 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
       Success(
         VsalespersonsalesbyfiscalyearsdataViewRow(
           salespersonid = row(idx + 0)(Column.columnToOption(BusinessentityId.column)),
-          fullname = row(idx + 1)(Column.columnToOption(Column.columnToString)),
+          fullname = row(idx + 1)(Column.columnToString),
           jobtitle = row(idx + 2)(Column.columnToString),
           salesterritory = row(idx + 3)(Name.column),
           salestotal = row(idx + 4)(Column.columnToOption(Column.columnToScalaBigDecimal)),
-          fiscalyear = row(idx + 5)(Column.columnToOption(Column.columnToScalaBigDecimal))
+          fiscalyear = row(idx + 5)(Column.columnToScalaBigDecimal)
         )
       )
     }
@@ -68,11 +68,11 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
     OWrites[VsalespersonsalesbyfiscalyearsdataViewRow](o =>
       new JsObject(ListMap[String, JsValue](
         "salespersonid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.salespersonid),
-        "fullname" -> Writes.OptionWrites(Writes.StringWrites).writes(o.fullname),
+        "fullname" -> Writes.StringWrites.writes(o.fullname),
         "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
         "salesterritory" -> Name.writes.writes(o.salesterritory),
         "salestotal" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.salestotal),
-        "fiscalyear" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.fiscalyear)
+        "fiscalyear" -> Writes.BigDecimalWrites.writes(o.fiscalyear)
       ))
     )
   }

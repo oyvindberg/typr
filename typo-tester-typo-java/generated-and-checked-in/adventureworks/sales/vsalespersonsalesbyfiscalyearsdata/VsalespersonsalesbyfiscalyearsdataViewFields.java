@@ -27,8 +27,8 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr
     };
 
     @Override
-    public OptField<String, VsalespersonsalesbyfiscalyearsdataViewRow> fullname() {
-      return new OptField<String, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "fullname", VsalespersonsalesbyfiscalyearsdataViewRow::fullname, Optional.empty(), Optional.empty(), (row, value) -> row.withFullname(value), PgTypes.text);
+    public Field<String, VsalespersonsalesbyfiscalyearsdataViewRow> fullname() {
+      return new Field<String, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "fullname", VsalespersonsalesbyfiscalyearsdataViewRow::fullname, Optional.empty(), Optional.empty(), (row, value) -> row.withFullname(value), PgTypes.text);
     };
 
     @Override
@@ -47,8 +47,8 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr
     };
 
     @Override
-    public OptField<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear() {
-      return new OptField<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "fiscalyear", VsalespersonsalesbyfiscalyearsdataViewRow::fiscalyear, Optional.empty(), Optional.empty(), (row, value) -> row.withFiscalyear(value), PgTypes.numeric);
+    public Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear() {
+      return new Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "fiscalyear", VsalespersonsalesbyfiscalyearsdataViewRow::fiscalyear, Optional.empty(), Optional.empty(), (row, value) -> row.withFiscalyear(value), PgTypes.numeric);
     };
 
     @Override
@@ -68,7 +68,7 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr
 
   OptField<BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow> salespersonid();
 
-  OptField<String, VsalespersonsalesbyfiscalyearsdataViewRow> fullname();
+  Field<String, VsalespersonsalesbyfiscalyearsdataViewRow> fullname();
 
   Field</* max 50 chars */ String, VsalespersonsalesbyfiscalyearsdataViewRow> jobtitle();
 
@@ -76,7 +76,7 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr
 
   OptField<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> salestotal();
 
-  OptField<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear();
+  Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear();
 
   @Override
   List<FieldLike<?, VsalespersonsalesbyfiscalyearsdataViewRow>> columns();

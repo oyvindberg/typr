@@ -376,3 +376,4 @@ When working on Typo issues, follow this workflow:
 - **NEVER REPORT SUCCESS IF ITS NOT A SUCCESS.**
 - never ever use default parameters for anything
 - UNDER NO CIRCUMSTANCES ARE YOU USING UNTYPED HTTP CLIENTS WHEN IMPLEMENTING INTEGRATION TESTS. WE ARE TESTING GENERATED CODE IN BOTH ENDS HERE
+- always run bleep with --no-color

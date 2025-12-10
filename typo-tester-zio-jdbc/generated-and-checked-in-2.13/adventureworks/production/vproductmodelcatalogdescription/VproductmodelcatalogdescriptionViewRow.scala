@@ -22,27 +22,27 @@ case class VproductmodelcatalogdescriptionViewRow(
   productmodelid: ProductmodelId,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
-  summary: /* nullability unknown */ Option[String],
-  manufacturer: /* nullability unknown */ Option[String],
-  copyright: /* nullability unknown */ Option[/* max 30 chars */ String],
-  producturl: /* nullability unknown */ Option[/* max 256 chars */ String],
-  warrantyperiod: /* nullability unknown */ Option[/* max 256 chars */ String],
-  warrantydescription: /* nullability unknown */ Option[/* max 256 chars */ String],
-  noofyears: /* nullability unknown */ Option[/* max 256 chars */ String],
-  maintenancedescription: /* nullability unknown */ Option[/* max 256 chars */ String],
-  wheel: /* nullability unknown */ Option[/* max 256 chars */ String],
-  saddle: /* nullability unknown */ Option[/* max 256 chars */ String],
-  pedal: /* nullability unknown */ Option[/* max 256 chars */ String],
-  bikeframe: /* nullability unknown */ Option[String],
-  crankset: /* nullability unknown */ Option[/* max 256 chars */ String],
-  pictureangle: /* nullability unknown */ Option[/* max 256 chars */ String],
-  picturesize: /* nullability unknown */ Option[/* max 256 chars */ String],
-  productphotoid: /* nullability unknown */ Option[/* max 256 chars */ String],
-  material: /* nullability unknown */ Option[/* max 256 chars */ String],
-  color: /* nullability unknown */ Option[/* max 256 chars */ String],
-  productline: /* nullability unknown */ Option[/* max 256 chars */ String],
-  style: /* nullability unknown */ Option[/* max 256 chars */ String],
-  riderexperience: /* nullability unknown */ Option[/* max 1024 chars */ String],
+  summary: String,
+  manufacturer: Option[String],
+  copyright: Option[/* max 30 chars */ String],
+  producturl: Option[/* max 256 chars */ String],
+  warrantyperiod: Option[/* max 256 chars */ String],
+  warrantydescription: Option[/* max 256 chars */ String],
+  noofyears: Option[/* max 256 chars */ String],
+  maintenancedescription: Option[/* max 256 chars */ String],
+  wheel: Option[/* max 256 chars */ String],
+  saddle: Option[/* max 256 chars */ String],
+  pedal: Option[/* max 256 chars */ String],
+  bikeframe: Option[String],
+  crankset: Option[/* max 256 chars */ String],
+  pictureangle: Option[/* max 256 chars */ String],
+  picturesize: Option[/* max 256 chars */ String],
+  productphotoid: Option[/* max 256 chars */ String],
+  material: Option[/* max 256 chars */ String],
+  color: Option[/* max 256 chars */ String],
+  productline: Option[/* max 256 chars */ String],
+  style: Option[/* max 256 chars */ String],
+  riderexperience: Option[/* max 1024 chars */ String],
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -57,7 +57,7 @@ object VproductmodelcatalogdescriptionViewRow {
           VproductmodelcatalogdescriptionViewRow(
             productmodelid = ProductmodelId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             name = Name.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-            summary = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            summary = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2,
             manufacturer = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
             copyright = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 4, rs)._2,
             producturl = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
@@ -88,7 +88,7 @@ object VproductmodelcatalogdescriptionViewRow {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(ProductmodelId.jsonDecoder))
       val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-      val summary = jsonObj.get("Summary").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val summary = jsonObj.get("Summary").toRight("Missing field 'Summary'").flatMap(_.as(JsonDecoder.string))
       val manufacturer = jsonObj.get("manufacturer").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
       val copyright = jsonObj.get("copyright").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
       val producturl = jsonObj.get("producturl").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
@@ -128,7 +128,7 @@ object VproductmodelcatalogdescriptionViewRow {
         Name.jsonEncoder.unsafeEncode(a.name, indent, out)
         out.write(",")
         out.write(""""Summary":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.summary, indent, out)
+        JsonEncoder.string.unsafeEncode(a.summary, indent, out)
         out.write(",")
         out.write(""""manufacturer":""")
         JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.manufacturer, indent, out)

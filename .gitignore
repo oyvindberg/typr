@@ -15,3 +15,5 @@ frontpage-generated/
 .kotlin
 out/
 build/
+.typo/
+__pycache__/

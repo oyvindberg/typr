@@ -7,22 +7,21 @@ package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
-import java.util.Optional
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 import typo.runtime.RowParsers
 
 /** View: sales.vsalespersonsalesbyfiscalyears */
 data class VsalespersonsalesbyfiscalyearsViewRow(
-  @JsonProperty("SalesPersonID") val salesPersonID: /* nullability unknown */ Optional<Int>,
-  @JsonProperty("FullName") val fullName: /* nullability unknown */ Optional<String>,
-  @JsonProperty("JobTitle") val jobTitle: /* nullability unknown */ Optional<String>,
-  @JsonProperty("SalesTerritory") val salesTerritory: /* nullability unknown */ Optional<String>,
-  val _2012: /* nullability unknown */ Optional<BigDecimal>,
-  val _2013: /* nullability unknown */ Optional<BigDecimal>,
-  val _2014: /* nullability unknown */ Optional<BigDecimal>
+  @JsonProperty("SalesPersonID") val salesPersonID: Int,
+  @JsonProperty("FullName") val fullName: String,
+  @JsonProperty("JobTitle") val jobTitle: String,
+  @JsonProperty("SalesTerritory") val salesTerritory: String,
+  val _2012: BigDecimal,
+  val _2013: BigDecimal,
+  val _2014: BigDecimal
 ) {
   companion object {
-    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsViewRow> = RowParsers.of(PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), { t0, t1, t2, t3, t4, t5, t6 -> VsalespersonsalesbyfiscalyearsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.salesPersonID, row.fullName, row.jobTitle, row.salesTerritory, row._2012, row._2013, row._2014) })
+    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsViewRow> = RowParsers.of(PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, { t0, t1, t2, t3, t4, t5, t6 -> VsalespersonsalesbyfiscalyearsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.salesPersonID, row.fullName, row.jobTitle, row.salesTerritory, row._2012, row._2013, row._2014) })
   }
 }

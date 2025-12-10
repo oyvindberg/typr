@@ -36,9 +36,9 @@ trait VstorewithcontactsViewFields extends FieldsExpr[VstorewithcontactsViewRow]
 
   def suffix: OptField[/* max 10 chars */ String, VstorewithcontactsViewRow]
 
-  def phonenumber: OptField[Phone, VstorewithcontactsViewRow]
+  def phonenumber: Field[Phone, VstorewithcontactsViewRow]
 
-  def phonenumbertype: OptField[Name, VstorewithcontactsViewRow]
+  def phonenumbertype: Field[Name, VstorewithcontactsViewRow]
 
   def emailaddress: OptField[/* max 50 chars */ String, VstorewithcontactsViewRow]
 
@@ -148,8 +148,8 @@ object VstorewithcontactsViewFields {
       )
     }
 
-    override def phonenumber: OptField[Phone, VstorewithcontactsViewRow] = {
-      new OptField[Phone, VstorewithcontactsViewRow](
+    override def phonenumber: Field[Phone, VstorewithcontactsViewRow] = {
+      new Field[Phone, VstorewithcontactsViewRow](
         _path,
         "phonenumber",
         _.phonenumber,
@@ -160,8 +160,8 @@ object VstorewithcontactsViewFields {
       )
     }
 
-    override def phonenumbertype: OptField[Name, VstorewithcontactsViewRow] = {
-      new OptField[Name, VstorewithcontactsViewRow](
+    override def phonenumbertype: Field[Name, VstorewithcontactsViewRow] = {
+      new Field[Name, VstorewithcontactsViewRow](
         _path,
         "phonenumbertype",
         _.phonenumbertype,

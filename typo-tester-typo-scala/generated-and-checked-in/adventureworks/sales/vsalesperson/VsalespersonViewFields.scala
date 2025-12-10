@@ -34,9 +34,9 @@ trait VsalespersonViewFields extends FieldsExpr[VsalespersonViewRow] {
 
   def jobtitle: Field[/* max 50 chars */ String, VsalespersonViewRow]
 
-  def phonenumber: OptField[Phone, VsalespersonViewRow]
+  def phonenumber: Field[Phone, VsalespersonViewRow]
 
-  def phonenumbertype: OptField[Name, VsalespersonViewRow]
+  def phonenumbertype: Field[Name, VsalespersonViewRow]
 
   def emailaddress: OptField[/* max 50 chars */ String, VsalespersonViewRow]
 
@@ -54,9 +54,9 @@ trait VsalespersonViewFields extends FieldsExpr[VsalespersonViewRow] {
 
   def countryregionname: Field[Name, VsalespersonViewRow]
 
-  def territoryname: OptField[Name, VsalespersonViewRow]
+  def territoryname: Field[Name, VsalespersonViewRow]
 
-  def territorygroup: OptField[/* max 50 chars */ String, VsalespersonViewRow]
+  def territorygroup: Field[/* max 50 chars */ String, VsalespersonViewRow]
 
   def salesquota: OptField[java.math.BigDecimal, VsalespersonViewRow]
 
@@ -156,8 +156,8 @@ object VsalespersonViewFields {
       )
     }
 
-    override def phonenumber: OptField[Phone, VsalespersonViewRow] = {
-      new OptField[Phone, VsalespersonViewRow](
+    override def phonenumber: Field[Phone, VsalespersonViewRow] = {
+      new Field[Phone, VsalespersonViewRow](
         _path,
         "phonenumber",
         _.phonenumber,
@@ -168,8 +168,8 @@ object VsalespersonViewFields {
       )
     }
 
-    override def phonenumbertype: OptField[Name, VsalespersonViewRow] = {
-      new OptField[Name, VsalespersonViewRow](
+    override def phonenumbertype: Field[Name, VsalespersonViewRow] = {
+      new Field[Name, VsalespersonViewRow](
         _path,
         "phonenumbertype",
         _.phonenumbertype,
@@ -276,8 +276,8 @@ object VsalespersonViewFields {
       )
     }
 
-    override def territoryname: OptField[Name, VsalespersonViewRow] = {
-      new OptField[Name, VsalespersonViewRow](
+    override def territoryname: Field[Name, VsalespersonViewRow] = {
+      new Field[Name, VsalespersonViewRow](
         _path,
         "territoryname",
         _.territoryname,
@@ -288,8 +288,8 @@ object VsalespersonViewFields {
       )
     }
 
-    override def territorygroup: OptField[/* max 50 chars */ String, VsalespersonViewRow] = {
-      new OptField[/* max 50 chars */ String, VsalespersonViewRow](
+    override def territorygroup: Field[/* max 50 chars */ String, VsalespersonViewRow] = {
+      new Field[/* max 50 chars */ String, VsalespersonViewRow](
         _path,
         "territorygroup",
         _.territorygroup,

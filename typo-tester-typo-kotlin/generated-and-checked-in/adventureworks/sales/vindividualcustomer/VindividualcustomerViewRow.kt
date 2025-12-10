@@ -30,9 +30,9 @@ data class VindividualcustomerViewRow(
   /** Points to [adventureworks.person.person.PersonRow.suffix] */
   val suffix: Optional</* max 10 chars */ String>,
   /** Points to [adventureworks.person.personphone.PersonphoneRow.phonenumber] */
-  val phonenumber: Optional<Phone>,
+  val phonenumber: Phone,
   /** Points to [adventureworks.person.phonenumbertype.PhonenumbertypeRow.name] */
-  val phonenumbertype: Optional<Name>,
+  val phonenumbertype: Name,
   /** Points to [adventureworks.person.emailaddress.EmailaddressRow.emailaddress] */
   val emailaddress: Optional</* max 50 chars */ String>,
   /** Points to [adventureworks.person.person.PersonRow.emailpromotion] */
@@ -55,6 +55,6 @@ data class VindividualcustomerViewRow(
   val demographics: Optional<TypoXml>
 ) {
   companion object {
-    val _rowParser: RowParser<VindividualcustomerViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, TypoXml.pgType.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> VindividualcustomerViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addresstype, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.demographics) })
+    val _rowParser: RowParser<VindividualcustomerViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, TypoXml.pgType.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> VindividualcustomerViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addresstype, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.demographics) })
   }
 }

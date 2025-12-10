@@ -33,8 +33,8 @@ public interface VproductmodelcatalogdescriptionViewFields extends FieldsExpr<Vp
     };
 
     @Override
-    public OptField<String, VproductmodelcatalogdescriptionViewRow> summary() {
-      return new OptField<String, VproductmodelcatalogdescriptionViewRow>(_path, "Summary", VproductmodelcatalogdescriptionViewRow::summary, Optional.empty(), Optional.empty(), (row, value) -> row.withSummary(value), PgTypes.text);
+    public Field<String, VproductmodelcatalogdescriptionViewRow> summary() {
+      return new Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "Summary", VproductmodelcatalogdescriptionViewRow::summary, Optional.empty(), Optional.empty(), (row, value) -> row.withSummary(value), PgTypes.text);
     };
 
     @Override
@@ -166,7 +166,7 @@ public interface VproductmodelcatalogdescriptionViewFields extends FieldsExpr<Vp
 
   Field<Name, VproductmodelcatalogdescriptionViewRow> name();
 
-  OptField<String, VproductmodelcatalogdescriptionViewRow> summary();
+  Field<String, VproductmodelcatalogdescriptionViewRow> summary();
 
   OptField<String, VproductmodelcatalogdescriptionViewRow> manufacturer();
 

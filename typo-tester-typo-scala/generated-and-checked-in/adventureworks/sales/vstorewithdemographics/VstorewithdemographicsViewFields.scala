@@ -13,7 +13,6 @@ import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
@@ -23,25 +22,25 @@ trait VstorewithdemographicsViewFields extends FieldsExpr[Vstorewithdemographics
 
   def name: Field[Name, VstorewithdemographicsViewRow]
 
-  def annualSales: OptField[TypoMoney, VstorewithdemographicsViewRow]
+  def annualSales: Field[TypoMoney, VstorewithdemographicsViewRow]
 
-  def annualRevenue: OptField[TypoMoney, VstorewithdemographicsViewRow]
+  def annualRevenue: Field[TypoMoney, VstorewithdemographicsViewRow]
 
-  def bankName: OptField[/* max 50 chars */ String, VstorewithdemographicsViewRow]
+  def bankName: Field[/* max 50 chars */ String, VstorewithdemographicsViewRow]
 
-  def businessType: OptField[/* max 5 chars */ String, VstorewithdemographicsViewRow]
+  def businessType: Field[/* max 5 chars */ String, VstorewithdemographicsViewRow]
 
-  def yearOpened: OptField[Integer, VstorewithdemographicsViewRow]
+  def yearOpened: Field[Integer, VstorewithdemographicsViewRow]
 
-  def specialty: OptField[/* max 50 chars */ String, VstorewithdemographicsViewRow]
+  def specialty: Field[/* max 50 chars */ String, VstorewithdemographicsViewRow]
 
-  def squareFeet: OptField[Integer, VstorewithdemographicsViewRow]
+  def squareFeet: Field[Integer, VstorewithdemographicsViewRow]
 
-  def brands: OptField[/* max 30 chars */ String, VstorewithdemographicsViewRow]
+  def brands: Field[/* max 30 chars */ String, VstorewithdemographicsViewRow]
 
-  def internet: OptField[/* max 30 chars */ String, VstorewithdemographicsViewRow]
+  def internet: Field[/* max 30 chars */ String, VstorewithdemographicsViewRow]
 
-  def numberEmployees: OptField[Integer, VstorewithdemographicsViewRow]
+  def numberEmployees: Field[Integer, VstorewithdemographicsViewRow]
 
   override def columns: java.util.List[FieldLike[?, VstorewithdemographicsViewRow]]
 
@@ -75,8 +74,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def annualSales: OptField[TypoMoney, VstorewithdemographicsViewRow] = {
-      new OptField[TypoMoney, VstorewithdemographicsViewRow](
+    override def annualSales: Field[TypoMoney, VstorewithdemographicsViewRow] = {
+      new Field[TypoMoney, VstorewithdemographicsViewRow](
         _path,
         "AnnualSales",
         _.annualSales,
@@ -87,8 +86,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def annualRevenue: OptField[TypoMoney, VstorewithdemographicsViewRow] = {
-      new OptField[TypoMoney, VstorewithdemographicsViewRow](
+    override def annualRevenue: Field[TypoMoney, VstorewithdemographicsViewRow] = {
+      new Field[TypoMoney, VstorewithdemographicsViewRow](
         _path,
         "AnnualRevenue",
         _.annualRevenue,
@@ -99,8 +98,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def bankName: OptField[/* max 50 chars */ String, VstorewithdemographicsViewRow] = {
-      new OptField[/* max 50 chars */ String, VstorewithdemographicsViewRow](
+    override def bankName: Field[/* max 50 chars */ String, VstorewithdemographicsViewRow] = {
+      new Field[/* max 50 chars */ String, VstorewithdemographicsViewRow](
         _path,
         "BankName",
         _.bankName,
@@ -111,8 +110,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def businessType: OptField[/* max 5 chars */ String, VstorewithdemographicsViewRow] = {
-      new OptField[/* max 5 chars */ String, VstorewithdemographicsViewRow](
+    override def businessType: Field[/* max 5 chars */ String, VstorewithdemographicsViewRow] = {
+      new Field[/* max 5 chars */ String, VstorewithdemographicsViewRow](
         _path,
         "BusinessType",
         _.businessType,
@@ -123,8 +122,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def yearOpened: OptField[Integer, VstorewithdemographicsViewRow] = {
-      new OptField[Integer, VstorewithdemographicsViewRow](
+    override def yearOpened: Field[Integer, VstorewithdemographicsViewRow] = {
+      new Field[Integer, VstorewithdemographicsViewRow](
         _path,
         "YearOpened",
         _.yearOpened,
@@ -135,8 +134,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def specialty: OptField[/* max 50 chars */ String, VstorewithdemographicsViewRow] = {
-      new OptField[/* max 50 chars */ String, VstorewithdemographicsViewRow](
+    override def specialty: Field[/* max 50 chars */ String, VstorewithdemographicsViewRow] = {
+      new Field[/* max 50 chars */ String, VstorewithdemographicsViewRow](
         _path,
         "Specialty",
         _.specialty,
@@ -147,8 +146,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def squareFeet: OptField[Integer, VstorewithdemographicsViewRow] = {
-      new OptField[Integer, VstorewithdemographicsViewRow](
+    override def squareFeet: Field[Integer, VstorewithdemographicsViewRow] = {
+      new Field[Integer, VstorewithdemographicsViewRow](
         _path,
         "SquareFeet",
         _.squareFeet,
@@ -159,8 +158,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def brands: OptField[/* max 30 chars */ String, VstorewithdemographicsViewRow] = {
-      new OptField[/* max 30 chars */ String, VstorewithdemographicsViewRow](
+    override def brands: Field[/* max 30 chars */ String, VstorewithdemographicsViewRow] = {
+      new Field[/* max 30 chars */ String, VstorewithdemographicsViewRow](
         _path,
         "Brands",
         _.brands,
@@ -171,8 +170,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def internet: OptField[/* max 30 chars */ String, VstorewithdemographicsViewRow] = {
-      new OptField[/* max 30 chars */ String, VstorewithdemographicsViewRow](
+    override def internet: Field[/* max 30 chars */ String, VstorewithdemographicsViewRow] = {
+      new Field[/* max 30 chars */ String, VstorewithdemographicsViewRow](
         _path,
         "Internet",
         _.internet,
@@ -183,8 +182,8 @@ object VstorewithdemographicsViewFields {
       )
     }
 
-    override def numberEmployees: OptField[Integer, VstorewithdemographicsViewRow] = {
-      new OptField[Integer, VstorewithdemographicsViewRow](
+    override def numberEmployees: Field[Integer, VstorewithdemographicsViewRow] = {
+      new Field[Integer, VstorewithdemographicsViewRow](
         _path,
         "NumberEmployees",
         _.numberEmployees,

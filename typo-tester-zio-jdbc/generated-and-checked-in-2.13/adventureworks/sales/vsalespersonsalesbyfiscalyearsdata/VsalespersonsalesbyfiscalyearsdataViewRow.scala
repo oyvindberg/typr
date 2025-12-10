@@ -18,13 +18,13 @@ import zio.json.internal.Write
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
   salespersonid: Option[BusinessentityId],
-  fullname: /* nullability unknown */ Option[String],
+  fullname: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: /* nullability unknown */ Option[BigDecimal],
-  fiscalyear: /* nullability unknown */ Option[BigDecimal]
+  fiscalyear: BigDecimal
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
@@ -34,11 +34,11 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         columIndex + 5 ->
           VsalespersonsalesbyfiscalyearsdataViewRow(
             salespersonid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 0, rs)._2,
-            fullname = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 1, rs)._2,
+            fullname = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2,
             jobtitle = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2,
             salesterritory = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             salestotal = JdbcDecoder.optionDecoder(JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 4, rs)._2,
-            fiscalyear = JdbcDecoder.optionDecoder(JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 5, rs)._2
+            fiscalyear = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 5, rs)._2
           )
     }
   }
@@ -46,11 +46,11 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
   implicit lazy val jsonDecoder: JsonDecoder[VsalespersonsalesbyfiscalyearsdataViewRow] = {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-      val fullname = jsonObj.get("fullname").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val fullname = jsonObj.get("fullname").toRight("Missing field 'fullname'").flatMap(_.as(JsonDecoder.string))
       val jobtitle = jsonObj.get("jobtitle").toRight("Missing field 'jobtitle'").flatMap(_.as(JsonDecoder.string))
       val salesterritory = jsonObj.get("salesterritory").toRight("Missing field 'salesterritory'").flatMap(_.as(Name.jsonDecoder))
       val salestotal = jsonObj.get("salestotal").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.scalaBigDecimal)))
-      val fiscalyear = jsonObj.get("fiscalyear").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.scalaBigDecimal)))
+      val fiscalyear = jsonObj.get("fiscalyear").toRight("Missing field 'fiscalyear'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
       if (salespersonid.isRight && fullname.isRight && jobtitle.isRight && salesterritory.isRight && salestotal.isRight && fiscalyear.isRight)
         Right(VsalespersonsalesbyfiscalyearsdataViewRow(salespersonid = salespersonid.toOption.get, fullname = fullname.toOption.get, jobtitle = jobtitle.toOption.get, salesterritory = salesterritory.toOption.get, salestotal = salestotal.toOption.get, fiscalyear = fiscalyear.toOption.get))
       else Left(List[Either[String, Any]](salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear).flatMap(_.left.toOption).mkString(", "))
@@ -65,7 +65,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
         out.write(",")
         out.write(""""fullname":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.fullname, indent, out)
+        JsonEncoder.string.unsafeEncode(a.fullname, indent, out)
         out.write(",")
         out.write(""""jobtitle":""")
         JsonEncoder.string.unsafeEncode(a.jobtitle, indent, out)
@@ -77,7 +77,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         JsonEncoder.option(JsonEncoder.scalaBigDecimal).unsafeEncode(a.salestotal, indent, out)
         out.write(",")
         out.write(""""fiscalyear":""")
-        JsonEncoder.option(JsonEncoder.scalaBigDecimal).unsafeEncode(a.fiscalyear, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.fiscalyear, indent, out)
         out.write("}")
       }
     }

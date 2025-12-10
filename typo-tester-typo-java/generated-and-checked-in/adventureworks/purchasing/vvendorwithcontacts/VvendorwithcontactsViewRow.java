@@ -33,9 +33,9 @@ public record VvendorwithcontactsViewRow(
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
   Optional</* max 10 chars */ String> suffix,
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumber()} */
-  Optional<Phone> phonenumber,
+  Phone phonenumber,
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
-  Optional<Name> phonenumbertype,
+  Name phonenumbertype,
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddress()} */
   Optional</* max 50 chars */ String> emailaddress,
   /** Points to {@link adventureworks.person.person.PersonRow#emailpromotion()} */
@@ -82,12 +82,12 @@ public record VvendorwithcontactsViewRow(
   };
 
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumber()} */
-  public VvendorwithcontactsViewRow withPhonenumber(Optional<Phone> phonenumber) {
+  public VvendorwithcontactsViewRow withPhonenumber(Phone phonenumber) {
     return new VvendorwithcontactsViewRow(businessentityid, name, contacttype, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion);
   };
 
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
-  public VvendorwithcontactsViewRow withPhonenumbertype(Optional<Name> phonenumbertype) {
+  public VvendorwithcontactsViewRow withPhonenumbertype(Name phonenumbertype) {
     return new VvendorwithcontactsViewRow(businessentityid, name, contacttype, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion);
   };
 
@@ -101,5 +101,5 @@ public record VvendorwithcontactsViewRow(
     return new VvendorwithcontactsViewRow(businessentityid, name, contacttype, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion);
   };
 
-  static RowParser<VvendorwithcontactsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, VvendorwithcontactsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.contacttype(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion()});;
+  static RowParser<VvendorwithcontactsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, VvendorwithcontactsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.contacttype(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion()});;
 }

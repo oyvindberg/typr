@@ -33,15 +33,15 @@ data class VvendorwithcontactsViewRow(
   /** Points to [adventureworks.person.person.PersonRow.suffix] */
   val suffix: Optional</* max 10 chars */ String>,
   /** Points to [adventureworks.person.personphone.PersonphoneRow.phonenumber] */
-  val phonenumber: Optional<Phone>,
+  val phonenumber: Phone,
   /** Points to [adventureworks.person.phonenumbertype.PhonenumbertypeRow.name] */
-  val phonenumbertype: Optional<Name>,
+  val phonenumbertype: Name,
   /** Points to [adventureworks.person.emailaddress.EmailaddressRow.emailaddress] */
   val emailaddress: Optional</* max 50 chars */ String>,
   /** Points to [adventureworks.person.person.PersonRow.emailpromotion] */
   val emailpromotion: Int
 ) {
   companion object {
-    val _rowParser: RowParser<VvendorwithcontactsViewRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> VvendorwithcontactsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.contacttype, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion) })
+    val _rowParser: RowParser<VvendorwithcontactsViewRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> VvendorwithcontactsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.contacttype, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion) })
   }
 }

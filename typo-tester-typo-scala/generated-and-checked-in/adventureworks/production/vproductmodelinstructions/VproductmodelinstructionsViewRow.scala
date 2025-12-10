@@ -22,12 +22,12 @@ case class VproductmodelinstructionsViewRow(
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
   instructions: /* nullability unknown */ Optional[String],
-  @JsonProperty("LocationID") locationID: /* nullability unknown */ Optional[Integer],
-  @JsonProperty("SetupHours") setupHours: /* nullability unknown */ Optional[java.math.BigDecimal],
-  @JsonProperty("MachineHours") machineHours: /* nullability unknown */ Optional[java.math.BigDecimal],
-  @JsonProperty("LaborHours") laborHours: /* nullability unknown */ Optional[java.math.BigDecimal],
-  @JsonProperty("LotSize") lotSize: /* nullability unknown */ Optional[Integer],
-  @JsonProperty("Step") step: /* nullability unknown */ Optional[/* max 1024 chars */ String],
+  @JsonProperty("LocationID") locationID: Integer,
+  @JsonProperty("SetupHours") setupHours: java.math.BigDecimal,
+  @JsonProperty("MachineHours") machineHours: java.math.BigDecimal,
+  @JsonProperty("LaborHours") laborHours: java.math.BigDecimal,
+  @JsonProperty("LotSize") lotSize: Integer,
+  @JsonProperty("Step") step: /* max 1024 chars */ String,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -35,5 +35,5 @@ case class VproductmodelinstructionsViewRow(
 )
 
 object VproductmodelinstructionsViewRow {
-  val `_rowParser`: RowParser[VproductmodelinstructionsViewRow] = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, VproductmodelinstructionsViewRow.apply, row => Array[Object](row.productmodelid.asInstanceOf[Object], row.name.asInstanceOf[Object], row.instructions.asInstanceOf[Object], row.locationID.asInstanceOf[Object], row.setupHours.asInstanceOf[Object], row.machineHours.asInstanceOf[Object], row.laborHours.asInstanceOf[Object], row.lotSize.asInstanceOf[Object], row.step.asInstanceOf[Object], row.rowguid.asInstanceOf[Object], row.modifieddate.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VproductmodelinstructionsViewRow] = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.int4, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, VproductmodelinstructionsViewRow.apply, row => Array[Object](row.productmodelid.asInstanceOf[Object], row.name.asInstanceOf[Object], row.instructions.asInstanceOf[Object], row.locationID.asInstanceOf[Object], row.setupHours.asInstanceOf[Object], row.machineHours.asInstanceOf[Object], row.laborHours.asInstanceOf[Object], row.lotSize.asInstanceOf[Object], row.step.asInstanceOf[Object], row.rowguid.asInstanceOf[Object], row.modifieddate.asInstanceOf[Object]))
 }

@@ -24,7 +24,7 @@ trait VproductmodelcatalogdescriptionViewFields extends FieldsExpr[Vproductmodel
 
   def name: Field[Name, VproductmodelcatalogdescriptionViewRow]
 
-  def summary: OptField[String, VproductmodelcatalogdescriptionViewRow]
+  def summary: Field[String, VproductmodelcatalogdescriptionViewRow]
 
   def manufacturer: OptField[String, VproductmodelcatalogdescriptionViewRow]
 
@@ -102,8 +102,8 @@ object VproductmodelcatalogdescriptionViewFields {
       )
     }
 
-    override def summary: OptField[String, VproductmodelcatalogdescriptionViewRow] = {
-      new OptField[String, VproductmodelcatalogdescriptionViewRow](
+    override def summary: Field[String, VproductmodelcatalogdescriptionViewRow] = {
+      new Field[String, VproductmodelcatalogdescriptionViewRow](
         _path,
         "Summary",
         _.summary,

@@ -8,26 +8,26 @@ package adventureworks.sales.vsalespersonsalesbyfiscalyears
 import java.util.Optional
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
+import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
 import typo.dsl.Structure.Relation
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 trait VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr[VsalespersonsalesbyfiscalyearsViewRow] {
-  def salesPersonID: OptField[Integer, VsalespersonsalesbyfiscalyearsViewRow]
+  def salesPersonID: Field[Integer, VsalespersonsalesbyfiscalyearsViewRow]
 
-  def fullName: OptField[String, VsalespersonsalesbyfiscalyearsViewRow]
+  def fullName: Field[String, VsalespersonsalesbyfiscalyearsViewRow]
 
-  def jobTitle: OptField[String, VsalespersonsalesbyfiscalyearsViewRow]
+  def jobTitle: Field[String, VsalespersonsalesbyfiscalyearsViewRow]
 
-  def salesTerritory: OptField[String, VsalespersonsalesbyfiscalyearsViewRow]
+  def salesTerritory: Field[String, VsalespersonsalesbyfiscalyearsViewRow]
 
-  def `2012`: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow]
+  def `2012`: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow]
 
-  def `2013`: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow]
+  def `2013`: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow]
 
-  def `2014`: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow]
+  def `2014`: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow]
 
   override def columns: java.util.List[FieldLike[?, VsalespersonsalesbyfiscalyearsViewRow]]
 
@@ -37,8 +37,8 @@ trait VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr[Vsalespersonsa
 object VsalespersonsalesbyfiscalyearsViewFields {
   case class Impl(val `_path`: java.util.List[Path]) extends VsalespersonsalesbyfiscalyearsViewFields with Relation[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] {
 
-    override def salesPersonID: OptField[Integer, VsalespersonsalesbyfiscalyearsViewRow] = {
-      new OptField[Integer, VsalespersonsalesbyfiscalyearsViewRow](
+    override def salesPersonID: Field[Integer, VsalespersonsalesbyfiscalyearsViewRow] = {
+      new Field[Integer, VsalespersonsalesbyfiscalyearsViewRow](
         _path,
         "SalesPersonID",
         _.salesPersonID,
@@ -49,8 +49,8 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       )
     }
 
-    override def fullName: OptField[String, VsalespersonsalesbyfiscalyearsViewRow] = {
-      new OptField[String, VsalespersonsalesbyfiscalyearsViewRow](
+    override def fullName: Field[String, VsalespersonsalesbyfiscalyearsViewRow] = {
+      new Field[String, VsalespersonsalesbyfiscalyearsViewRow](
         _path,
         "FullName",
         _.fullName,
@@ -61,8 +61,8 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       )
     }
 
-    override def jobTitle: OptField[String, VsalespersonsalesbyfiscalyearsViewRow] = {
-      new OptField[String, VsalespersonsalesbyfiscalyearsViewRow](
+    override def jobTitle: Field[String, VsalespersonsalesbyfiscalyearsViewRow] = {
+      new Field[String, VsalespersonsalesbyfiscalyearsViewRow](
         _path,
         "JobTitle",
         _.jobTitle,
@@ -73,8 +73,8 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       )
     }
 
-    override def salesTerritory: OptField[String, VsalespersonsalesbyfiscalyearsViewRow] = {
-      new OptField[String, VsalespersonsalesbyfiscalyearsViewRow](
+    override def salesTerritory: Field[String, VsalespersonsalesbyfiscalyearsViewRow] = {
+      new Field[String, VsalespersonsalesbyfiscalyearsViewRow](
         _path,
         "SalesTerritory",
         _.salesTerritory,
@@ -85,8 +85,8 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       )
     }
 
-    override def `2012`: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow] = {
-      new OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](
+    override def `2012`: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow] = {
+      new Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](
         _path,
         "2012",
         _.`2012`,
@@ -97,8 +97,8 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       )
     }
 
-    override def `2013`: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow] = {
-      new OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](
+    override def `2013`: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow] = {
+      new Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](
         _path,
         "2013",
         _.`2013`,
@@ -109,8 +109,8 @@ object VsalespersonsalesbyfiscalyearsViewFields {
       )
     }
 
-    override def `2014`: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow] = {
-      new OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](
+    override def `2014`: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow] = {
+      new Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsViewRow](
         _path,
         "2014",
         _.`2014`,

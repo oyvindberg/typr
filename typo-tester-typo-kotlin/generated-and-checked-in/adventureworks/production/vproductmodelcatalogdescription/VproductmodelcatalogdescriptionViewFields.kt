@@ -67,7 +67,7 @@ interface VproductmodelcatalogdescriptionViewFields : FieldsExpr<Vproductmodelca
 
   fun style(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
 
-  fun summary(): OptField<String, VproductmodelcatalogdescriptionViewRow>
+  fun summary(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
   fun warrantydescription(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
 
@@ -81,7 +81,7 @@ interface VproductmodelcatalogdescriptionViewFields : FieldsExpr<Vproductmodelca
 
       override fun name(): Field<Name, VproductmodelcatalogdescriptionViewRow> = Field<Name, VproductmodelcatalogdescriptionViewRow>(_path, "name", VproductmodelcatalogdescriptionViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun summary(): OptField<String, VproductmodelcatalogdescriptionViewRow> = OptField<String, VproductmodelcatalogdescriptionViewRow>(_path, "Summary", VproductmodelcatalogdescriptionViewRow::summary, Optional.empty(), Optional.empty(), { row, value -> row.copy(summary = value) }, PgTypes.text)
+      override fun summary(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "Summary", VproductmodelcatalogdescriptionViewRow::summary, Optional.empty(), Optional.empty(), { row, value -> row.copy(summary = value) }, PgTypes.text)
 
       override fun manufacturer(): OptField<String, VproductmodelcatalogdescriptionViewRow> = OptField<String, VproductmodelcatalogdescriptionViewRow>(_path, "manufacturer", VproductmodelcatalogdescriptionViewRow::manufacturer, Optional.empty(), Optional.empty(), { row, value -> row.copy(manufacturer = value) }, PgTypes.text)
 

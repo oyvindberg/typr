@@ -23,18 +23,18 @@ data class VproductmodelinstructionsViewRow(
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.name] */
   val name: Name,
   val instructions: /* nullability unknown */ Optional<String>,
-  @JsonProperty("LocationID") val locationID: /* nullability unknown */ Optional<Int>,
-  @JsonProperty("SetupHours") val setupHours: /* nullability unknown */ Optional<BigDecimal>,
-  @JsonProperty("MachineHours") val machineHours: /* nullability unknown */ Optional<BigDecimal>,
-  @JsonProperty("LaborHours") val laborHours: /* nullability unknown */ Optional<BigDecimal>,
-  @JsonProperty("LotSize") val lotSize: /* nullability unknown */ Optional<Int>,
-  @JsonProperty("Step") val step: /* nullability unknown */ Optional</* max 1024 chars */ String>,
+  @JsonProperty("LocationID") val locationID: Int,
+  @JsonProperty("SetupHours") val setupHours: BigDecimal,
+  @JsonProperty("MachineHours") val machineHours: BigDecimal,
+  @JsonProperty("LaborHours") val laborHours: BigDecimal,
+  @JsonProperty("LotSize") val lotSize: Int,
+  @JsonProperty("Step") val step: /* max 1024 chars */ String,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.rowguid] */
   val rowguid: TypoUUID,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.modifieddate] */
   val modifieddate: TypoLocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<VproductmodelinstructionsViewRow> = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VproductmodelinstructionsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.name, row.instructions, row.locationID, row.setupHours, row.machineHours, row.laborHours, row.lotSize, row.step, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<VproductmodelinstructionsViewRow> = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.int4, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VproductmodelinstructionsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.name, row.instructions, row.locationID, row.setupHours, row.machineHours, row.laborHours, row.lotSize, row.step, row.rowguid, row.modifieddate) })
   }
 }

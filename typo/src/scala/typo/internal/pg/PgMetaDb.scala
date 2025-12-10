@@ -14,6 +14,8 @@ import typo.generated.information_schema.referential_constraints.{ReferentialCon
 import typo.generated.information_schema.table_constraints.{TableConstraintsViewRepoImpl, TableConstraintsViewRow}
 import typo.generated.information_schema.tables.{TablesViewRepoImpl, TablesViewRow}
 import typo.internal.analysis.*
+import typo.internal.external.ExternalTools
+import typo.internal.sqlglot.*
 
 import scala.collection.immutable.SortedSet
 import scala.concurrent.{ExecutionContext, Future}
@@ -75,45 +77,29 @@ object PgMetaDb {
     }
   }
 
+  /** Analyzed view data using sqlglot */
   case class AnalyzedView(
       row: ViewFindAllSqlRow,
       decomposedSql: DecomposedSql,
-      jdbcMetadata: JdbcMetadata,
-      nullabilityAnalysis: NullabilityFromExplain.NullableColumns
+      sqlglotResult: SqlglotFileResult
   )
 
   object Input {
-    def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode)(implicit ev: ExecutionContext): Future[Input] = {
+    def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode, externalTools: ExternalTools)(implicit ev: ExecutionContext): Future[Input] = {
       val tableConstraints = logger.timed("fetching tableConstraints")(ds.run(implicit c => (new TableConstraintsViewRepoImpl).selectAll))
       val keyColumnUsage = logger.timed("fetching keyColumnUsage")(ds.run(implicit c => (new KeyColumnUsageViewRepoImpl).selectAll))
       val referentialConstraints = logger.timed("fetching referentialConstraints")(ds.run(implicit c => (new ReferentialConstraintsViewRepoImpl).selectAll))
-      val pgEnums = logger.timed("fetching pgEnums")(ds.run(implicit c => (new EnumsSqlRepoImpl).apply()))
+      val pgEnums = logger.timed("fetching pgEnums")(ds.run(implicit c => (new EnumsSqlRepoImpl).apply(c)))
       val tables = logger.timed("fetching tables")(ds.run(implicit c => (new TablesViewRepoImpl).selectAll.filter(_.tableType.contains("BASE TABLE"))))
       val columns = logger.timed("fetching columns")(ds.run(implicit c => (new ColumnsViewRepoImpl).selectAll))
-      val views = logger.timed("fetching and analyzing views")(ds.run(implicit c => (new ViewFindAllSqlRepoImpl).apply())).flatMap { viewRows =>
-        val analyzedRows: List[Future[(db.RelationName, AnalyzedView)]] = viewRows.flatMap { viewRow =>
-          val name = db.RelationName(viewRow.tableSchema, viewRow.tableName.get)
-          if (viewRow.viewDefinition.isDefined && viewSelector.include(name)) Some {
-            val sqlContent = viewRow.viewDefinition.get
-            val decomposedSql = DecomposedSql.parse(sqlContent)
-            val jdbcMetadata = ds.run(implicit c => JdbcMetadata.from(sqlContent))
-            val nullabilityAnalysis = ds.run(implicit c => NullabilityFromExplain.from(decomposedSql, Nil))
-            for {
-              jdbcMetadata <- jdbcMetadata.map {
-                case Left(str)    => sys.error(str)
-                case Right(value) => value
-              }
-              nullabilityAnalysis <- nullabilityAnalysis
-            } yield name -> AnalyzedView(viewRow, decomposedSql, jdbcMetadata, nullabilityAnalysis)
-          }
-          else None
-        }
-        Future.sequence(analyzedRows).map(_.toMap)
-      }
-      val domains = logger.timed("fetching domains")(ds.run(implicit c => (new DomainsSqlRepoImpl).apply()))
-      val columnComments = logger.timed("fetching columnComments")(ds.run(implicit c => (new CommentsSqlRepoImpl).apply()))
-      val constraints = logger.timed("fetching constraints")(ds.run(implicit c => (new ConstraintsSqlRepoImpl).apply()))
-      val tableComments = logger.timed("fetching tableComments")(ds.run(implicit c => (new TableCommentsSqlRepoImpl).apply()))
+      val domains = logger.timed("fetching domains")(ds.run(implicit c => (new DomainsSqlRepoImpl).apply(c)))
+      val columnComments = logger.timed("fetching columnComments")(ds.run(implicit c => (new CommentsSqlRepoImpl).apply(c)))
+      val constraints = logger.timed("fetching constraints")(ds.run(implicit c => (new ConstraintsSqlRepoImpl).apply(c)))
+      val tableComments = logger.timed("fetching tableComments")(ds.run(implicit c => (new TableCommentsSqlRepoImpl).apply(c)))
+
+      // Fetch view rows - we'll analyze them with sqlglot after getting the schema
+      val viewRows = logger.timed("fetching view rows")(ds.run(implicit c => (new ViewFindAllSqlRepoImpl).apply(c)))
+
       for {
         tableConstraints <- tableConstraints
         keyColumnUsage <- keyColumnUsage
@@ -121,12 +107,18 @@ object PgMetaDb {
         pgEnums <- pgEnums
         tables <- tables
         columns <- columns
-        views <- views
+        viewRows <- viewRows
         domains <- domains
         columnComments <- columnComments
         constraints <- constraints
         tableComments <- tableComments
       } yield {
+        // Build schema for sqlglot from columns
+        val schema = buildSchemaForSqlglot(columns)
+
+        // Analyze views with sqlglot
+        val views = analyzeViewsWithSqlglot(logger, externalTools, schema, viewRows, viewSelector)
+
         val input = Input(
           tableConstraints,
           keyColumnUsage,
@@ -144,10 +136,97 @@ object PgMetaDb {
         input.filter(schemaMode)
       }
     }
+
+    /** Build schema map from columns for sqlglot */
+    private def buildSchemaForSqlglot(columns: List[ColumnsViewRow]): Map[String, Map[String, SqlglotColumnSchema]] = {
+      columns
+        .groupBy(c => {
+          val schema = c.tableSchema.getOrElse("public")
+          val table = c.tableName.get
+          s"$schema.$table"
+        })
+        .map { case (tableName, cols) =>
+          val columnMap = cols.map { c =>
+            val isNullable = c.isNullable.contains("YES")
+            // Keep original type name (lowercase) - sqlglot will normalize it but we'll get it back in source_type
+            c.columnName.get -> SqlglotColumnSchema(
+              `type` = c.udtName.getOrElse("text"),
+              nullable = isNullable,
+              primaryKey = false // We don't have PK info readily available here, but sqlglot doesn't need it for views
+            )
+          }.toMap
+          tableName -> columnMap
+        }
+    }
+
+    /** Analyze views using sqlglot */
+    private def analyzeViewsWithSqlglot(
+        logger: TypoLogger,
+        externalTools: ExternalTools,
+        schema: Map[String, Map[String, SqlglotColumnSchema]],
+        viewRows: List[ViewFindAllSqlRow],
+        viewSelector: Selector
+    ): Map[db.RelationName, AnalyzedView] = {
+      // Filter views that we want to analyze
+      val viewsToAnalyze = viewRows.flatMap { viewRow =>
+        val name = db.RelationName(viewRow.tableSchema, viewRow.tableName.get)
+        if (viewRow.viewDefinition.isDefined && viewSelector.include(name)) {
+          Some((name, viewRow))
+        } else None
+      }
+
+      if (viewsToAnalyze.isEmpty) {
+        return Map.empty
+      }
+
+      // Prepare inputs for sqlglot
+      val fileInputs = viewsToAnalyze.map { case (name, viewRow) =>
+        val sqlContent = viewRow.viewDefinition.get
+        SqlglotFileInput(name.value, sqlContent)
+      }
+
+      val config = SqlglotAnalyzer.configFromExternalTools(externalTools)
+      val input = SqlglotAnalysisInput(
+        dialect = "postgres",
+        schema = schema,
+        files = fileInputs
+      )
+
+      val sqlglotResults: Map[String, SqlglotFileResult] = SqlglotAnalyzer.analyze(config, input) match {
+        case SqlglotAnalyzer.AnalyzerResult.Success(output) =>
+          output.results.map(r => r.path -> r).toMap
+        case SqlglotAnalyzer.AnalyzerResult.PythonError(code, stderr) =>
+          logger.warn(s"sqlglot analysis for views failed with exit code $code: $stderr")
+          Map.empty
+        case SqlglotAnalyzer.AnalyzerResult.JsonParseError(_, error) =>
+          logger.warn(s"sqlglot analysis for views returned invalid JSON: $error")
+          Map.empty
+        case SqlglotAnalyzer.AnalyzerResult.ProcessError(msg) =>
+          logger.warn(s"sqlglot analysis for views process error: $msg")
+          Map.empty
+      }
+
+      // Build AnalyzedView from results
+      viewsToAnalyze.flatMap { case (name, viewRow) =>
+        val sqlContent = viewRow.viewDefinition.get
+        val decomposedSql = DecomposedSql.parse(sqlContent)
+
+        sqlglotResults.get(name.value) match {
+          case Some(result) if result.success =>
+            Some(name -> AnalyzedView(viewRow, decomposedSql, result))
+          case Some(result) =>
+            logger.warn(s"sqlglot failed to parse view ${name.value}: ${result.error.getOrElse("unknown error")}")
+            None
+          case None =>
+            logger.warn(s"No sqlglot result for view ${name.value}")
+            None
+        }
+      }.toMap
+    }
   }
 
-  def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode)(implicit ec: ExecutionContext): Future[MetaDb] =
-    Input.fromDb(logger, ds, viewSelector, schemaMode: SchemaMode).map(input => fromInput(logger, input))
+  def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode, externalTools: ExternalTools)(implicit ec: ExecutionContext): Future[MetaDb] =
+    Input.fromDb(logger, ds, viewSelector, schemaMode, externalTools).map(input => fromInput(logger, input))
 
   def fromInput(logger: TypoLogger, input: Input): MetaDb = {
     val foreignKeys = ForeignKeys(input.tableConstraints, input.keyColumnUsage, input.referentialConstraints)
@@ -192,48 +271,134 @@ object PgMetaDb {
       input.columns.groupBy(c => db.RelationName(c.tableSchema, c.tableName.get))
     val tableCommentsByTable: Map[db.RelationName, String] =
       input.tableComments.flatMap(c => c.description.map(d => (db.RelationName(c.schema, c.name), d))).toMap
+
+    // Helper to parse a table name into a RelationName
+    // sqlglot now returns fully qualified names like "schema.table"
+    def parseTableName(tableName: String): db.RelationName = {
+      if (tableName.contains(".")) {
+        val parts = tableName.split("\\.", 2)
+        db.RelationName(Some(parts(0)), parts(1))
+      } else {
+        db.RelationName(None, tableName)
+      }
+    }
+
+    // Build a set of known relation names (tables + views) for filtering column sources
+    // This is used to filter out CTE aliases and subquery aliases
+    val knownRelationNames: Set[db.RelationName] = columnsByTable.keySet ++ input.views.keySet
+
+    // Helper to check if a relation name exists (filters out CTE aliases and subquery aliases)
+    def relationExists(relName: db.RelationName): Boolean = {
+      knownRelationNames.contains(relName)
+    }
+
     val views: Map[db.RelationName, Lazy[db.View]] =
-      input.views.map { case (relationName, AnalyzedView(viewRow, decomposedSql, jdbcMetadata, nullabilityAnalysis)) =>
+      input.views.map { case (relationName, AnalyzedView(viewRow, decomposedSql, sqlglotResult)) =>
         val lazyAnalysis = Lazy {
+          // Build deps from sqlglot column lineage
           val deps: Map[db.ColName, List[(db.RelationName, db.ColName)]] =
-            jdbcMetadata.columns match {
-              case MaybeReturnsRows.Query(columns) =>
-                columns.toList.flatMap(col => col.baseRelationName.zip(col.baseColumnName).map(t => col.name -> List(t))).toMap
-              case MaybeReturnsRows.Update =>
-                Map.empty
-            }
+            sqlglotResult.columns.flatMap { col =>
+              val colName = db.ColName(col.alias.getOrElse(col.name))
 
-          val cols: NonEmptyList[(db.Col, ParsedName)] =
-            jdbcMetadata.columns match {
-              case MaybeReturnsRows.Query(metadataCols) =>
-                metadataCols.zipWithIndex.map { case (mdCol, idx) =>
-                  val nullability: Nullability =
-                    mdCol.parsedColumnName.nullability.getOrElse {
-                      if (nullabilityAnalysis.nullableIndices.exists(_.values(idx))) Nullability.Nullable
-                      else mdCol.isNullable.toNullability
-                    }
+              // Only include direct column references, not expressions like xpath() calls
+              // When isExpression is true, the column is computed (function, expression, etc.)
+              // and shouldn't generate "Points to" comments
+              if (!col.isExpression) {
+                // Filter out empty table/column names and subquery aliases
+                col.sourceTable.filter(_.nonEmpty).zip(col.sourceColumn.filter(_.nonEmpty)).flatMap { case (table, column) =>
+                  // Parse the fully qualified table name from sqlglot
+                  val parsedName = parseTableName(table)
 
-                  val dbType = typeMapperDb.dbTypeFrom(mdCol.columnTypeName, Some(mdCol.precision)) { () =>
-                    logger.warn(s"Couldn't translate type from view ${relationName.value} column ${mdCol.name.value} with type ${mdCol.columnTypeName}. Falling back to text")
+                  // Only include if the table actually exists (not a subquery alias like "granular")
+                  if (relationExists(parsedName)) {
+                    // sqlglot should now provide fully qualified names
+                    Some(colName -> List((parsedName, db.ColName(column))))
+                  } else {
+                    None
                   }
+                }
+              } else {
+                None
+              }
+            }.toMap
 
-                  val coord = (relationName, mdCol.name)
-                  val dbCol = db.Col(
-                    parsedName = mdCol.parsedColumnName,
-                    tpe = dbType,
-                    udtName = None,
-                    columnDefault = None,
-                    maybeGenerated = None,
-                    comment = comments.get(coord),
-                    jsonDescription = DebugJson(mdCol),
-                    nullability = nullability,
-                    constraints = constraints.getOrElse(coord, Nil)
-                  )
-                  (dbCol, mdCol.parsedColumnName)
+          // Build columns from sqlglot results
+          val cols: NonEmptyList[(db.Col, ParsedName)] = {
+            val colList = sqlglotResult.columns.map { col =>
+              val colName = col.alias.getOrElse(col.name)
+              val parsedName = ParsedName.of(colName)
+
+              // Determine nullability from sqlglot
+              // When column is an expression (function call, computation) without source column,
+              // we can't determine nullability, so default to nullable for safety
+              val nullability: Nullability =
+                parsedName.nullability.getOrElse {
+                  if (col.nullableFromJoin || col.nullableInSchema) Nullability.Nullable
+                  else if (col.isExpression && col.sourceColumn.isEmpty) Nullability.NullableUnknown
+                  else Nullability.NoNulls
                 }
 
-              case MaybeReturnsRows.Update => ???
+              // Hybrid type resolution strategy:
+              // 1. Try PostgreSQL metadata first (authoritative for views)
+              // 2. Fall back to sqlglot's inferredType for computed expressions
+              // 3. Otherwise use sourceType or text
+              // This approach matches SQL files - use authoritative PostgreSQL types, enriched with sqlglot nullability/lineage
+              val dbType = {
+                // First, try PostgreSQL metadata (authoritative for all view columns)
+                val dbMetadataType = columnsByTable.get(relationName).flatMap { viewCols =>
+                  viewCols.find(_.columnName.contains(colName)).flatMap { dbCol =>
+                    dbCol.udtName.map { udtName =>
+                      typeMapperDb.dbTypeFrom(udtName, dbCol.characterMaximumLength) { () =>
+                        logger.warn(s"Couldn't translate database type from view ${relationName.value} column $colName with udtName $udtName")
+                      }
+                    }
+                  }
+                }
+
+                dbMetadataType.getOrElse {
+                  // No PostgreSQL metadata - fall back to sqlglot inferred type
+                  col.inferredType match {
+                    case Some(inferredType) if inferredType.toUpperCase != "UNKNOWN" =>
+                      typeMapperDb.dbTypeFromSqlglot(inferredType, None) { () =>
+                        logger.warn(s"Couldn't translate inferred type from view ${relationName.value} column $colName with type $inferredType. Falling back to text")
+                      }
+                    case _ =>
+                      // No inferred type - try sourceType
+                      col.sourceType match {
+                        case Some(sourceType) =>
+                          typeMapperDb.dbTypeFrom(sourceType, None) { () =>
+                            logger.warn(s"Couldn't translate source type from view ${relationName.value} column $colName with type $sourceType. Falling back to text")
+                          }
+                        case None =>
+                          // No type information available, default to text
+                          logger.warn(s"No type information available for view ${relationName.value} column $colName. Falling back to text")
+                          typeMapperDb.dbTypeFromSqlglot("TEXT", None)(() => ())
+                      }
+                  }
+                }
+              }
+
+              val coord = (relationName, db.ColName(colName))
+              // Don't set udtName for views - it's only needed for custom types and the
+              // sourceType/inferredType contains builtin type names which would cause
+              // SqlCast.toPg to emit unnecessary casts like ::int4, ::timestamp
+              val dbCol = db.Col(
+                parsedName = parsedName,
+                tpe = dbType,
+                udtName = None,
+                columnDefault = None,
+                maybeGenerated = None,
+                comment = comments.get(coord),
+                jsonDescription = DebugJson(col),
+                nullability = nullability,
+                constraints = constraints.getOrElse(coord, Nil)
+              )
+              (dbCol, parsedName)
             }
+            NonEmptyList.fromList(colList).getOrElse {
+              sys.error(s"View ${relationName.value} has no columns from sqlglot analysis")
+            }
+          }
 
           db.View(relationName, tableCommentsByTable.get(relationName), decomposedSql, cols, deps, isMaterialized = viewRow.relkind == "m")
         }

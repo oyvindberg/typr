@@ -48,9 +48,9 @@ interface VindividualcustomerViewFields : FieldsExpr<VindividualcustomerViewRow>
 
   fun middlename(): OptField<Name, VindividualcustomerViewRow>
 
-  fun phonenumber(): OptField<Phone, VindividualcustomerViewRow>
+  fun phonenumber(): Field<Phone, VindividualcustomerViewRow>
 
-  fun phonenumbertype(): OptField<Name, VindividualcustomerViewRow>
+  fun phonenumbertype(): Field<Name, VindividualcustomerViewRow>
 
   fun postalcode(): Field</* max 15 chars */ String, VindividualcustomerViewRow>
 
@@ -76,9 +76,9 @@ interface VindividualcustomerViewFields : FieldsExpr<VindividualcustomerViewRow>
 
       override fun suffix(): OptField</* max 10 chars */ String, VindividualcustomerViewRow> = OptField</* max 10 chars */ String, VindividualcustomerViewRow>(_path, "suffix", VindividualcustomerViewRow::suffix, Optional.empty(), Optional.empty(), { row, value -> row.copy(suffix = value) }, PgTypes.text)
 
-      override fun phonenumber(): OptField<Phone, VindividualcustomerViewRow> = OptField<Phone, VindividualcustomerViewRow>(_path, "phonenumber", VindividualcustomerViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
+      override fun phonenumber(): Field<Phone, VindividualcustomerViewRow> = Field<Phone, VindividualcustomerViewRow>(_path, "phonenumber", VindividualcustomerViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
 
-      override fun phonenumbertype(): OptField<Name, VindividualcustomerViewRow> = OptField<Name, VindividualcustomerViewRow>(_path, "phonenumbertype", VindividualcustomerViewRow::phonenumbertype, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
+      override fun phonenumbertype(): Field<Name, VindividualcustomerViewRow> = Field<Name, VindividualcustomerViewRow>(_path, "phonenumbertype", VindividualcustomerViewRow::phonenumbertype, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
 
       override fun emailaddress(): OptField</* max 50 chars */ String, VindividualcustomerViewRow> = OptField</* max 50 chars */ String, VindividualcustomerViewRow>(_path, "emailaddress", VindividualcustomerViewRow::emailaddress, Optional.empty(), Optional.empty(), { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
 

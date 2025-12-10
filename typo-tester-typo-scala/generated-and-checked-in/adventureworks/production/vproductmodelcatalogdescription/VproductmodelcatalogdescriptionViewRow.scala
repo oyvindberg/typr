@@ -21,27 +21,27 @@ case class VproductmodelcatalogdescriptionViewRow(
   productmodelid: ProductmodelId,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
-  @JsonProperty("Summary") summary: /* nullability unknown */ Optional[String],
-  manufacturer: /* nullability unknown */ Optional[String],
-  copyright: /* nullability unknown */ Optional[/* max 30 chars */ String],
-  producturl: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  warrantyperiod: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  warrantydescription: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  noofyears: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  maintenancedescription: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  wheel: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  saddle: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  pedal: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  bikeframe: /* nullability unknown */ Optional[String],
-  crankset: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  pictureangle: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  picturesize: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  productphotoid: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  material: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  color: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  productline: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  style: /* nullability unknown */ Optional[/* max 256 chars */ String],
-  riderexperience: /* nullability unknown */ Optional[/* max 1024 chars */ String],
+  @JsonProperty("Summary") summary: String,
+  manufacturer: Optional[String],
+  copyright: Optional[/* max 30 chars */ String],
+  producturl: Optional[/* max 256 chars */ String],
+  warrantyperiod: Optional[/* max 256 chars */ String],
+  warrantydescription: Optional[/* max 256 chars */ String],
+  noofyears: Optional[/* max 256 chars */ String],
+  maintenancedescription: Optional[/* max 256 chars */ String],
+  wheel: Optional[/* max 256 chars */ String],
+  saddle: Optional[/* max 256 chars */ String],
+  pedal: Optional[/* max 256 chars */ String],
+  bikeframe: Optional[String],
+  crankset: Optional[/* max 256 chars */ String],
+  pictureangle: Optional[/* max 256 chars */ String],
+  picturesize: Optional[/* max 256 chars */ String],
+  productphotoid: Optional[/* max 256 chars */ String],
+  material: Optional[/* max 256 chars */ String],
+  color: Optional[/* max 256 chars */ String],
+  productline: Optional[/* max 256 chars */ String],
+  style: Optional[/* max 256 chars */ String],
+  riderexperience: Optional[/* max 1024 chars */ String],
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -49,5 +49,5 @@ case class VproductmodelcatalogdescriptionViewRow(
 )
 
 object VproductmodelcatalogdescriptionViewRow {
-  val `_rowParser`: RowParser[VproductmodelcatalogdescriptionViewRow] = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, VproductmodelcatalogdescriptionViewRow.apply, row => Array[Object](row.productmodelid.asInstanceOf[Object], row.name.asInstanceOf[Object], row.summary.asInstanceOf[Object], row.manufacturer.asInstanceOf[Object], row.copyright.asInstanceOf[Object], row.producturl.asInstanceOf[Object], row.warrantyperiod.asInstanceOf[Object], row.warrantydescription.asInstanceOf[Object], row.noofyears.asInstanceOf[Object], row.maintenancedescription.asInstanceOf[Object], row.wheel.asInstanceOf[Object], row.saddle.asInstanceOf[Object], row.pedal.asInstanceOf[Object], row.bikeframe.asInstanceOf[Object], row.crankset.asInstanceOf[Object], row.pictureangle.asInstanceOf[Object], row.picturesize.asInstanceOf[Object], row.productphotoid.asInstanceOf[Object], row.material.asInstanceOf[Object], row.color.asInstanceOf[Object], row.productline.asInstanceOf[Object], row.style.asInstanceOf[Object], row.riderexperience.asInstanceOf[Object], row.rowguid.asInstanceOf[Object], row.modifieddate.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VproductmodelcatalogdescriptionViewRow] = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, VproductmodelcatalogdescriptionViewRow.apply, row => Array[Object](row.productmodelid.asInstanceOf[Object], row.name.asInstanceOf[Object], row.summary.asInstanceOf[Object], row.manufacturer.asInstanceOf[Object], row.copyright.asInstanceOf[Object], row.producturl.asInstanceOf[Object], row.warrantyperiod.asInstanceOf[Object], row.warrantydescription.asInstanceOf[Object], row.noofyears.asInstanceOf[Object], row.maintenancedescription.asInstanceOf[Object], row.wheel.asInstanceOf[Object], row.saddle.asInstanceOf[Object], row.pedal.asInstanceOf[Object], row.bikeframe.asInstanceOf[Object], row.crankset.asInstanceOf[Object], row.pictureangle.asInstanceOf[Object], row.picturesize.asInstanceOf[Object], row.productphotoid.asInstanceOf[Object], row.material.asInstanceOf[Object], row.color.asInstanceOf[Object], row.productline.asInstanceOf[Object], row.style.asInstanceOf[Object], row.riderexperience.asInstanceOf[Object], row.rowguid.asInstanceOf[Object], row.modifieddate.asInstanceOf[Object]))
 }

@@ -12,38 +12,38 @@ import io.circe.Encoder
 
 /** View: sales.vsalespersonsalesbyfiscalyears */
 case class VsalespersonsalesbyfiscalyearsViewRow(
-  salesPersonID: /* nullability unknown */ Option[Int],
-  fullName: /* nullability unknown */ Option[String],
-  jobTitle: /* nullability unknown */ Option[String],
-  salesTerritory: /* nullability unknown */ Option[String],
-  `2012`: /* nullability unknown */ Option[BigDecimal],
-  `2013`: /* nullability unknown */ Option[BigDecimal],
-  `2014`: /* nullability unknown */ Option[BigDecimal]
+  salesPersonID: Int,
+  fullName: String,
+  jobTitle: String,
+  salesTerritory: String,
+  `2012`: BigDecimal,
+  `2013`: BigDecimal,
+  `2014`: BigDecimal
 )
 
 object VsalespersonsalesbyfiscalyearsViewRow {
-  given decoder: Decoder[VsalespersonsalesbyfiscalyearsViewRow] = Decoder.forProduct7[VsalespersonsalesbyfiscalyearsViewRow, /* nullability unknown */ Option[Int], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014")(VsalespersonsalesbyfiscalyearsViewRow.apply)(using Decoder.decodeOption(using Decoder.decodeInt), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeOption(using Decoder.decodeBigDecimal))
+  given decoder: Decoder[VsalespersonsalesbyfiscalyearsViewRow] = Decoder.forProduct7[VsalespersonsalesbyfiscalyearsViewRow, Int, String, String, String, BigDecimal, BigDecimal, BigDecimal]("SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014")(VsalespersonsalesbyfiscalyearsViewRow.apply)(using Decoder.decodeInt, Decoder.decodeString, Decoder.decodeString, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal)
 
-  given encoder: Encoder[VsalespersonsalesbyfiscalyearsViewRow] = Encoder.forProduct7[VsalespersonsalesbyfiscalyearsViewRow, /* nullability unknown */ Option[Int], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[String], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014")(x => (x.salesPersonID, x.fullName, x.jobTitle, x.salesTerritory, x.`2012`, x.`2013`, x.`2014`))(using Encoder.encodeOption(using Encoder.encodeInt), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeOption(using Encoder.encodeBigDecimal))
+  given encoder: Encoder[VsalespersonsalesbyfiscalyearsViewRow] = Encoder.forProduct7[VsalespersonsalesbyfiscalyearsViewRow, Int, String, String, String, BigDecimal, BigDecimal, BigDecimal]("SalesPersonID", "FullName", "JobTitle", "SalesTerritory", "2012", "2013", "2014")(x => (x.salesPersonID, x.fullName, x.jobTitle, x.salesTerritory, x.`2012`, x.`2013`, x.`2014`))(using Encoder.encodeInt, Encoder.encodeString, Encoder.encodeString, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal)
 
   given read: Read[VsalespersonsalesbyfiscalyearsViewRow] = {
     new Read.CompositeOfInstances(Array(
-      new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
+      new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VsalespersonsalesbyfiscalyearsViewRow(
-        salesPersonID = arr(0).asInstanceOf[/* nullability unknown */ Option[Int]],
-            fullName = arr(1).asInstanceOf[/* nullability unknown */ Option[String]],
-            jobTitle = arr(2).asInstanceOf[/* nullability unknown */ Option[String]],
-            salesTerritory = arr(3).asInstanceOf[/* nullability unknown */ Option[String]],
-            `2012` = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-            `2013` = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-            `2014` = arr(6).asInstanceOf[/* nullability unknown */ Option[BigDecimal]]
+        salesPersonID = arr(0).asInstanceOf[Int],
+            fullName = arr(1).asInstanceOf[String],
+            jobTitle = arr(2).asInstanceOf[String],
+            salesTerritory = arr(3).asInstanceOf[String],
+            `2012` = arr(4).asInstanceOf[BigDecimal],
+            `2013` = arr(5).asInstanceOf[BigDecimal],
+            `2014` = arr(6).asInstanceOf[BigDecimal]
       )
     }
   }

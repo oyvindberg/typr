@@ -33,9 +33,9 @@ public record VstorewithcontactsViewRow(
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
   Optional</* max 10 chars */ String> suffix,
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumber()} */
-  Optional<Phone> phonenumber,
+  Phone phonenumber,
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
-  Optional<Name> phonenumbertype,
+  Name phonenumbertype,
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddress()} */
   Optional</* max 50 chars */ String> emailaddress,
   /** Points to {@link adventureworks.person.person.PersonRow#emailpromotion()} */
@@ -82,12 +82,12 @@ public record VstorewithcontactsViewRow(
   };
 
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumber()} */
-  public VstorewithcontactsViewRow withPhonenumber(Optional<Phone> phonenumber) {
+  public VstorewithcontactsViewRow withPhonenumber(Phone phonenumber) {
     return new VstorewithcontactsViewRow(businessentityid, name, contacttype, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion);
   };
 
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
-  public VstorewithcontactsViewRow withPhonenumbertype(Optional<Name> phonenumbertype) {
+  public VstorewithcontactsViewRow withPhonenumbertype(Name phonenumbertype) {
     return new VstorewithcontactsViewRow(businessentityid, name, contacttype, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion);
   };
 
@@ -101,5 +101,5 @@ public record VstorewithcontactsViewRow(
     return new VstorewithcontactsViewRow(businessentityid, name, contacttype, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion);
   };
 
-  static RowParser<VstorewithcontactsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, VstorewithcontactsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.contacttype(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion()});;
+  static RowParser<VstorewithcontactsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, VstorewithcontactsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.contacttype(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion()});;
 }

@@ -33,9 +33,9 @@ trait VindividualcustomerViewFields extends FieldsExpr[VindividualcustomerViewRo
 
   def suffix: OptField[/* max 10 chars */ String, VindividualcustomerViewRow]
 
-  def phonenumber: OptField[Phone, VindividualcustomerViewRow]
+  def phonenumber: Field[Phone, VindividualcustomerViewRow]
 
-  def phonenumbertype: OptField[Name, VindividualcustomerViewRow]
+  def phonenumbertype: Field[Name, VindividualcustomerViewRow]
 
   def emailaddress: OptField[/* max 50 chars */ String, VindividualcustomerViewRow]
 
@@ -137,8 +137,8 @@ object VindividualcustomerViewFields {
       )
     }
 
-    override def phonenumber: OptField[Phone, VindividualcustomerViewRow] = {
-      new OptField[Phone, VindividualcustomerViewRow](
+    override def phonenumber: Field[Phone, VindividualcustomerViewRow] = {
+      new Field[Phone, VindividualcustomerViewRow](
         _path,
         "phonenumber",
         _.phonenumber,
@@ -149,8 +149,8 @@ object VindividualcustomerViewFields {
       )
     }
 
-    override def phonenumbertype: OptField[Name, VindividualcustomerViewRow] = {
-      new OptField[Name, VindividualcustomerViewRow](
+    override def phonenumbertype: Field[Name, VindividualcustomerViewRow] = {
+      new Field[Name, VindividualcustomerViewRow](
         _path,
         "phonenumbertype",
         _.phonenumbertype,

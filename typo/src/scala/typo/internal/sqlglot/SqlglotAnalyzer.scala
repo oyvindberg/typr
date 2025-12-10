@@ -4,6 +4,7 @@ package sqlglot
 
 import play.api.libs.json.Json
 import typo.internal.analysis.NullabilityFromExplain
+import typo.internal.external.ExternalTools
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
@@ -26,7 +27,8 @@ object SqlglotAnalyzer {
   /** Configuration for the analyzer */
   case class Config(
       pythonBinary: Path,
-      sqlglotScript: Path
+      sqlglotScript: Path,
+      pythonPath: Option[Path]
   )
 
   /** Extract Python script from resources to a temp file */
@@ -45,31 +47,16 @@ object SqlglotAnalyzer {
     }.toOption.flatten
   }
 
-  /** Create config using system Python and script from resources */
-  def defaultConfig(): Option[Config] = {
-    for {
-      pythonBinary <- findPython()
-      scriptPath <- extractScriptFromResources()
-    } yield Config(pythonBinary, scriptPath)
-  }
-
-  /** Find Python binary */
-  private def findPython(): Option[Path] = {
-    val pythonCandidates = List("python3", "python")
-    pythonCandidates.collectFirst {
-      case cmd if Try(s"which $cmd".!!.trim).toOption.exists(_.nonEmpty) =>
-        Path.of(s"which $cmd".!!.trim)
-    }
-  }
-
-  /** Create config using system Python */
-  def systemPythonConfig(scriptDir: Path): Option[Config] = {
-    findPython().map { python =>
-      Config(
-        pythonBinary = python,
-        sqlglotScript = scriptDir.resolve("sqlglot_analyze.py")
-      )
-    }
+  /** Create config from ExternalTools (downloaded Python + sqlglot) */
+  def configFromExternalTools(tools: ExternalTools): Config = {
+    val scriptPath = extractScriptFromResources().getOrElse(
+      throw new RuntimeException("Could not extract sqlglot_analyze.py from resources")
+    )
+    Config(
+      pythonBinary = tools.python.binary,
+      sqlglotScript = scriptPath,
+      pythonPath = Some(tools.sqlglot.pythonPath)
+    )
   }
 
   /** Run the sqlglot analyzer on a batch of SQL files */
@@ -80,17 +67,28 @@ object SqlglotAnalyzer {
     val stderr = new StringBuilder
 
     val processLogger = ProcessLogger(
-      (line: String) => { stdout.append(line).append("\n"): Unit },
-      (line: String) => { stderr.append(line).append("\n"): Unit }
+      (line: String) => {
+        stdout.append(line).append("\n"): Unit
+        // Don't print stdout in real-time since it's JSON
+      },
+      (line: String) => {
+        stderr.append(line).append("\n"): Unit
+        // Print stderr in real-time for debugging
+        System.err.println(line)
+      }
     )
 
     Try {
       val inputStream = new ByteArrayInputStream(inputJson.getBytes(StandardCharsets.UTF_8))
 
+      // Build environment variables
+      val envVars = List("PYTHONIOENCODING" -> "utf-8") ++
+        config.pythonPath.map(p => "PYTHONPATH" -> p.toString).toList
+
       val exitCode = Process(
         Seq(config.pythonBinary.toString, config.sqlglotScript.toString),
         None,
-        "PYTHONIOENCODING" -> "utf-8"
+        envVars: _*
       ).#<(inputStream).!(processLogger)
 
       exitCode
@@ -102,6 +100,7 @@ object SqlglotAnalyzer {
         AnalyzerResult.PythonError(exitCode, stderr.toString())
 
       case Success(_) =>
+        // stderr is already printed in real-time by ProcessLogger
         val outputJson = stdout.toString().trim
         if (outputJson.isEmpty) {
           AnalyzerResult.JsonParseError("", "Empty output from Python script")

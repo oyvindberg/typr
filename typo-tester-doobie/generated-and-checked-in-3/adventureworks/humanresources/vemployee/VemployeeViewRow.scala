@@ -32,9 +32,9 @@ case class VemployeeViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -56,9 +56,9 @@ case class VemployeeViewRow(
 )
 
 object VemployeeViewRow {
-  given decoder: Decoder[VemployeeViewRow] = Decoder.forProduct18[VemployeeViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], /* max 50 chars */ String, Option[Phone], Option[Name], Option[/* max 50 chars */ String], Int, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name, Option[TypoXml]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "additionalcontactinfo")(VemployeeViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Decoder.decodeOption(using Phone.decoder), Decoder.decodeOption(using Name.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Name.decoder, Decoder.decodeString, Name.decoder, Decoder.decodeOption(using TypoXml.decoder))
+  given decoder: Decoder[VemployeeViewRow] = Decoder.forProduct18[VemployeeViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], /* max 50 chars */ String, Phone, Name, Option[/* max 50 chars */ String], Int, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name, Option[TypoXml]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "additionalcontactinfo")(VemployeeViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Phone.decoder, Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Name.decoder, Decoder.decodeString, Name.decoder, Decoder.decodeOption(using TypoXml.decoder))
 
-  given encoder: Encoder[VemployeeViewRow] = Encoder.forProduct18[VemployeeViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], /* max 50 chars */ String, Option[Phone], Option[Name], Option[/* max 50 chars */ String], Int, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name, Option[TypoXml]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "additionalcontactinfo")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.jobtitle, x.phonenumber, x.phonenumbertype, x.emailaddress, x.emailpromotion, x.addressline1, x.addressline2, x.city, x.stateprovincename, x.postalcode, x.countryregionname, x.additionalcontactinfo))(using BusinessentityId.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Encoder.encodeOption(using Phone.encoder), Encoder.encodeOption(using Name.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Name.encoder, Encoder.encodeString, Name.encoder, Encoder.encodeOption(using TypoXml.encoder))
+  given encoder: Encoder[VemployeeViewRow] = Encoder.forProduct18[VemployeeViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], /* max 50 chars */ String, Phone, Name, Option[/* max 50 chars */ String], Int, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name, Option[TypoXml]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "additionalcontactinfo")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.jobtitle, x.phonenumber, x.phonenumbertype, x.emailaddress, x.emailpromotion, x.addressline1, x.addressline2, x.city, x.stateprovincename, x.postalcode, x.countryregionname, x.additionalcontactinfo))(using BusinessentityId.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Phone.encoder, Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Name.encoder, Encoder.encodeString, Name.encoder, Encoder.encodeOption(using TypoXml.encoder))
 
   given read: Read[VemployeeViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -69,8 +69,8 @@ object VemployeeViewRow {
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Phone.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Phone.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
@@ -89,8 +89,8 @@ object VemployeeViewRow {
             lastname = arr(4).asInstanceOf[Name],
             suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
             jobtitle = arr(6).asInstanceOf[/* max 50 chars */ String],
-            phonenumber = arr(7).asInstanceOf[Option[Phone]],
-            phonenumbertype = arr(8).asInstanceOf[Option[Name]],
+            phonenumber = arr(7).asInstanceOf[Phone],
+            phonenumbertype = arr(8).asInstanceOf[Name],
             emailaddress = arr(9).asInstanceOf[Option[/* max 50 chars */ String]],
             emailpromotion = arr(10).asInstanceOf[Int],
             addressline1 = arr(11).asInstanceOf[/* max 60 chars */ String],

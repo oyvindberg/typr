@@ -3,8 +3,9 @@ package scripts
 import bleep.{FileWatching, cli}
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typo.*
-import typo.internal.pg.OpenEnum
 import typo.internal.codegen.*
+import typo.internal.external.{ExternalTools, ExternalToolsConfig}
+import typo.internal.pg.OpenEnum
 import typo.internal.sqlfiles.SqlFileReader
 import typo.internal.{FileSync, generate}
 
@@ -28,7 +29,8 @@ object GeneratedAdventureWorks {
         val scriptsPath = buildDir.resolve("adventureworks_sql")
         val selector = Selector.ExcludePostgresInternal and !Selector.schemas("frontpage")
         val typoLogger = TypoLogger.Console
-        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.MultiSchema), Duration.Inf)
+        val externalTools = ExternalTools.init(typoLogger, ExternalToolsConfig.default)
+        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.MultiSchema, externalTools), Duration.Inf)
         val openEnumSelector = Selector.relationNames("title", "title_domain", "issue142")
         val relationNameToOpenEnum = Await.result(
           OpenEnum.find(
@@ -53,7 +55,7 @@ object GeneratedAdventureWorks {
         )
 
         def go(): Unit = {
-          val newSqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds), Duration.Inf)
+          val newSqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds, externalTools), Duration.Inf)
 
           variants.foreach { case (lang, dbLib, jsonLib, projectPath, suffix) =>
             val options = Options(

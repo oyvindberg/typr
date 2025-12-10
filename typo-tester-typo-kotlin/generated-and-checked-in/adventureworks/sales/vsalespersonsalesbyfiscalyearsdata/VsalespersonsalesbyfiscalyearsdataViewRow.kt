@@ -17,15 +17,15 @@ import typo.runtime.RowParsers
 data class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid] */
   val salespersonid: Optional<BusinessentityId>,
-  val fullname: /* nullability unknown */ Optional<String>,
+  val fullname: String,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.jobtitle] */
   val jobtitle: /* max 50 chars */ String,
   /** Points to [adventureworks.sales.salesterritory.SalesterritoryRow.name] */
   val salesterritory: Name,
   val salestotal: /* nullability unknown */ Optional<BigDecimal>,
-  val fiscalyear: /* nullability unknown */ Optional<BigDecimal>
+  val fiscalyear: BigDecimal
 ) {
   companion object {
-    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> = RowParsers.of(BusinessentityId.pgType.opt(), PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.numeric.opt(), { t0, t1, t2, t3, t4, t5 -> VsalespersonsalesbyfiscalyearsdataViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear) })
+    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> = RowParsers.of(BusinessentityId.pgType.opt(), PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.numeric, { t0, t1, t2, t3, t4, t5 -> VsalespersonsalesbyfiscalyearsdataViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear) })
   }
 }

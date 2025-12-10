@@ -26,19 +26,19 @@ case class VjobcandidateViewRow(
   jobcandidateid: JobcandidateId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
   businessentityid: Option[BusinessentityId],
-  namePrefix: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameFirst: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameMiddle: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameLast: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameSuffix: /* nullability unknown */ Option[/* max 30 chars */ String],
-  skills: /* nullability unknown */ Option[String],
-  addrType: /* nullability unknown */ Option[/* max 30 chars */ String],
-  addrLocCountryRegion: /* nullability unknown */ Option[/* max 100 chars */ String],
-  addrLocState: /* nullability unknown */ Option[/* max 100 chars */ String],
-  addrLocCity: /* nullability unknown */ Option[/* max 100 chars */ String],
-  addrPostalCode: /* nullability unknown */ Option[/* max 20 chars */ String],
-  eMail: /* nullability unknown */ Option[String],
-  webSite: /* nullability unknown */ Option[String],
+  namePrefix: Option[/* max 30 chars */ String],
+  nameFirst: Option[/* max 30 chars */ String],
+  nameMiddle: Option[/* max 30 chars */ String],
+  nameLast: Option[/* max 30 chars */ String],
+  nameSuffix: Option[/* max 30 chars */ String],
+  skills: String,
+  addrType: Option[/* max 30 chars */ String],
+  addrLocCountryRegion: Option[/* max 100 chars */ String],
+  addrLocState: Option[/* max 100 chars */ String],
+  addrLocCity: Option[/* max 100 chars */ String],
+  addrPostalCode: Option[/* max 20 chars */ String],
+  eMail: String,
+  webSite: String,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -55,14 +55,14 @@ object VjobcandidateViewRow {
             nameMiddle = json.\("Name.Middle").toOption.map(_.as(Reads.StringReads)),
             nameLast = json.\("Name.Last").toOption.map(_.as(Reads.StringReads)),
             nameSuffix = json.\("Name.Suffix").toOption.map(_.as(Reads.StringReads)),
-            skills = json.\("Skills").toOption.map(_.as(Reads.StringReads)),
+            skills = json.\("Skills").as(Reads.StringReads),
             addrType = json.\("Addr.Type").toOption.map(_.as(Reads.StringReads)),
             addrLocCountryRegion = json.\("Addr.Loc.CountryRegion").toOption.map(_.as(Reads.StringReads)),
             addrLocState = json.\("Addr.Loc.State").toOption.map(_.as(Reads.StringReads)),
             addrLocCity = json.\("Addr.Loc.City").toOption.map(_.as(Reads.StringReads)),
             addrPostalCode = json.\("Addr.PostalCode").toOption.map(_.as(Reads.StringReads)),
-            eMail = json.\("EMail").toOption.map(_.as(Reads.StringReads)),
-            webSite = json.\("WebSite").toOption.map(_.as(Reads.StringReads)),
+            eMail = json.\("EMail").as(Reads.StringReads),
+            webSite = json.\("WebSite").as(Reads.StringReads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
         )
@@ -81,14 +81,14 @@ object VjobcandidateViewRow {
           nameMiddle = row(idx + 4)(Column.columnToOption(Column.columnToString)),
           nameLast = row(idx + 5)(Column.columnToOption(Column.columnToString)),
           nameSuffix = row(idx + 6)(Column.columnToOption(Column.columnToString)),
-          skills = row(idx + 7)(Column.columnToOption(Column.columnToString)),
+          skills = row(idx + 7)(Column.columnToString),
           addrType = row(idx + 8)(Column.columnToOption(Column.columnToString)),
           addrLocCountryRegion = row(idx + 9)(Column.columnToOption(Column.columnToString)),
           addrLocState = row(idx + 10)(Column.columnToOption(Column.columnToString)),
           addrLocCity = row(idx + 11)(Column.columnToOption(Column.columnToString)),
           addrPostalCode = row(idx + 12)(Column.columnToOption(Column.columnToString)),
-          eMail = row(idx + 13)(Column.columnToOption(Column.columnToString)),
-          webSite = row(idx + 14)(Column.columnToOption(Column.columnToString)),
+          eMail = row(idx + 13)(Column.columnToString),
+          webSite = row(idx + 14)(Column.columnToString),
           modifieddate = row(idx + 15)(TypoLocalDateTime.column)
         )
       )
@@ -105,14 +105,14 @@ object VjobcandidateViewRow {
         "Name.Middle" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameMiddle),
         "Name.Last" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameLast),
         "Name.Suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nameSuffix),
-        "Skills" -> Writes.OptionWrites(Writes.StringWrites).writes(o.skills),
+        "Skills" -> Writes.StringWrites.writes(o.skills),
         "Addr.Type" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrType),
         "Addr.Loc.CountryRegion" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocCountryRegion),
         "Addr.Loc.State" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocState),
         "Addr.Loc.City" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrLocCity),
         "Addr.PostalCode" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addrPostalCode),
-        "EMail" -> Writes.OptionWrites(Writes.StringWrites).writes(o.eMail),
-        "WebSite" -> Writes.OptionWrites(Writes.StringWrites).writes(o.webSite),
+        "EMail" -> Writes.StringWrites.writes(o.eMail),
+        "WebSite" -> Writes.StringWrites.writes(o.webSite),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))
     )

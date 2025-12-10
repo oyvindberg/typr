@@ -17,18 +17,18 @@ import typo.runtime.RowParsers
 data class VpersondemographicsViewRow(
   /** Points to [adventureworks.person.person.PersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
-  val totalpurchaseytd: /* nullability unknown */ Optional<TypoMoney>,
-  val datefirstpurchase: /* nullability unknown */ Optional<TypoLocalDate>,
-  val birthdate: /* nullability unknown */ Optional<TypoLocalDate>,
-  val maritalstatus: /* nullability unknown */ Optional</* max 1 chars */ String>,
-  val yearlyincome: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  val gender: /* nullability unknown */ Optional</* max 1 chars */ String>,
-  val totalchildren: /* nullability unknown */ Optional<Int>,
-  val numberchildrenathome: /* nullability unknown */ Optional<Int>,
-  val education: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  val occupation: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  val homeownerflag: /* nullability unknown */ Optional<Boolean>,
-  val numbercarsowned: /* nullability unknown */ Optional<Int>
+  val totalpurchaseytd: Optional<TypoMoney>,
+  val datefirstpurchase: Optional<TypoLocalDate>,
+  val birthdate: Optional<TypoLocalDate>,
+  val maritalstatus: Optional</* max 1 chars */ String>,
+  val yearlyincome: Optional</* max 30 chars */ String>,
+  val gender: Optional</* max 1 chars */ String>,
+  val totalchildren: Optional<Int>,
+  val numberchildrenathome: Optional<Int>,
+  val education: Optional</* max 30 chars */ String>,
+  val occupation: Optional</* max 30 chars */ String>,
+  val homeownerflag: Optional<Boolean>,
+  val numbercarsowned: Optional<Int>
 ) {
   companion object {
     val _rowParser: RowParser<VpersondemographicsViewRow> = RowParsers.of(BusinessentityId.pgType, TypoMoney.pgType.opt(), TypoLocalDate.pgType.opt(), TypoLocalDate.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.bool.opt(), PgTypes.int4.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> VpersondemographicsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.totalpurchaseytd, row.datefirstpurchase, row.birthdate, row.maritalstatus, row.yearlyincome, row.gender, row.totalchildren, row.numberchildrenathome, row.education, row.occupation, row.homeownerflag, row.numbercarsowned) })

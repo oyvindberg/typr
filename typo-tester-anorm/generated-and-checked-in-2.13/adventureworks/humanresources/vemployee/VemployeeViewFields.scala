@@ -24,8 +24,8 @@ trait VemployeeViewFields {
   def lastname: Field[Name, VemployeeViewRow]
   def suffix: OptField[/* max 10 chars */ String, VemployeeViewRow]
   def jobtitle: Field[/* max 50 chars */ String, VemployeeViewRow]
-  def phonenumber: OptField[Phone, VemployeeViewRow]
-  def phonenumbertype: OptField[Name, VemployeeViewRow]
+  def phonenumber: Field[Phone, VemployeeViewRow]
+  def phonenumbertype: Field[Name, VemployeeViewRow]
   def emailaddress: OptField[/* max 50 chars */ String, VemployeeViewRow]
   def emailpromotion: Field[Int, VemployeeViewRow]
   def addressline1: Field[/* max 60 chars */ String, VemployeeViewRow]
@@ -52,8 +52,8 @@ object VemployeeViewFields {
       override def lastname = Field[Name, VemployeeViewRow](_path, "lastname", None, None, x => x.lastname, (row, value) => row.copy(lastname = value))
       override def suffix = OptField[/* max 10 chars */ String, VemployeeViewRow](_path, "suffix", None, None, x => x.suffix, (row, value) => row.copy(suffix = value))
       override def jobtitle = Field[/* max 50 chars */ String, VemployeeViewRow](_path, "jobtitle", None, None, x => x.jobtitle, (row, value) => row.copy(jobtitle = value))
-      override def phonenumber = OptField[Phone, VemployeeViewRow](_path, "phonenumber", None, None, x => x.phonenumber, (row, value) => row.copy(phonenumber = value))
-      override def phonenumbertype = OptField[Name, VemployeeViewRow](_path, "phonenumbertype", None, None, x => x.phonenumbertype, (row, value) => row.copy(phonenumbertype = value))
+      override def phonenumber = Field[Phone, VemployeeViewRow](_path, "phonenumber", None, None, x => x.phonenumber, (row, value) => row.copy(phonenumber = value))
+      override def phonenumbertype = Field[Name, VemployeeViewRow](_path, "phonenumbertype", None, None, x => x.phonenumbertype, (row, value) => row.copy(phonenumbertype = value))
       override def emailaddress = OptField[/* max 50 chars */ String, VemployeeViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
       override def emailpromotion = Field[Int, VemployeeViewRow](_path, "emailpromotion", None, None, x => x.emailpromotion, (row, value) => row.copy(emailpromotion = value))
       override def addressline1 = Field[/* max 60 chars */ String, VemployeeViewRow](_path, "addressline1", None, None, x => x.addressline1, (row, value) => row.copy(addressline1 = value))

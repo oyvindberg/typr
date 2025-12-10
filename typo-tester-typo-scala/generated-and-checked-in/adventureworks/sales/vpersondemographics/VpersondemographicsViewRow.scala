@@ -17,18 +17,18 @@ import typo.runtime.RowParsers
 case class VpersondemographicsViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  totalpurchaseytd: /* nullability unknown */ Optional[TypoMoney],
-  datefirstpurchase: /* nullability unknown */ Optional[TypoLocalDate],
-  birthdate: /* nullability unknown */ Optional[TypoLocalDate],
-  maritalstatus: /* nullability unknown */ Optional[/* max 1 chars */ String],
-  yearlyincome: /* nullability unknown */ Optional[/* max 30 chars */ String],
-  gender: /* nullability unknown */ Optional[/* max 1 chars */ String],
-  totalchildren: /* nullability unknown */ Optional[Integer],
-  numberchildrenathome: /* nullability unknown */ Optional[Integer],
-  education: /* nullability unknown */ Optional[/* max 30 chars */ String],
-  occupation: /* nullability unknown */ Optional[/* max 30 chars */ String],
-  homeownerflag: /* nullability unknown */ Optional[java.lang.Boolean],
-  numbercarsowned: /* nullability unknown */ Optional[Integer]
+  totalpurchaseytd: Optional[TypoMoney],
+  datefirstpurchase: Optional[TypoLocalDate],
+  birthdate: Optional[TypoLocalDate],
+  maritalstatus: Optional[/* max 1 chars */ String],
+  yearlyincome: Optional[/* max 30 chars */ String],
+  gender: Optional[/* max 1 chars */ String],
+  totalchildren: Optional[Integer],
+  numberchildrenathome: Optional[Integer],
+  education: Optional[/* max 30 chars */ String],
+  occupation: Optional[/* max 30 chars */ String],
+  homeownerflag: Optional[java.lang.Boolean],
+  numbercarsowned: Optional[Integer]
 )
 
 object VpersondemographicsViewRow {

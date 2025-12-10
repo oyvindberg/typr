@@ -20,7 +20,7 @@ import typo.runtime.RowParser
 trait VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr[VsalespersonsalesbyfiscalyearsdataViewRow] {
   def salespersonid: OptField[BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow]
 
-  def fullname: OptField[String, VsalespersonsalesbyfiscalyearsdataViewRow]
+  def fullname: Field[String, VsalespersonsalesbyfiscalyearsdataViewRow]
 
   def jobtitle: Field[/* max 50 chars */ String, VsalespersonsalesbyfiscalyearsdataViewRow]
 
@@ -28,7 +28,7 @@ trait VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr[Vsalespers
 
   def salestotal: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
 
-  def fiscalyear: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
+  def fiscalyear: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
 
   override def columns: java.util.List[FieldLike[?, VsalespersonsalesbyfiscalyearsdataViewRow]]
 
@@ -50,8 +50,8 @@ object VsalespersonsalesbyfiscalyearsdataViewFields {
       )
     }
 
-    override def fullname: OptField[String, VsalespersonsalesbyfiscalyearsdataViewRow] = {
-      new OptField[String, VsalespersonsalesbyfiscalyearsdataViewRow](
+    override def fullname: Field[String, VsalespersonsalesbyfiscalyearsdataViewRow] = {
+      new Field[String, VsalespersonsalesbyfiscalyearsdataViewRow](
         _path,
         "fullname",
         _.fullname,
@@ -98,8 +98,8 @@ object VsalespersonsalesbyfiscalyearsdataViewFields {
       )
     }
 
-    override def fiscalyear: OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow] = {
-      new OptField[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](
+    override def fiscalyear: Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow] = {
+      new Field[java.math.BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](
         _path,
         "fiscalyear",
         _.fiscalyear,

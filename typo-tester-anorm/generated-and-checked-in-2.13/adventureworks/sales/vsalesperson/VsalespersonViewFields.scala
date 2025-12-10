@@ -23,8 +23,8 @@ trait VsalespersonViewFields {
   def lastname: Field[Name, VsalespersonViewRow]
   def suffix: OptField[/* max 10 chars */ String, VsalespersonViewRow]
   def jobtitle: Field[/* max 50 chars */ String, VsalespersonViewRow]
-  def phonenumber: OptField[Phone, VsalespersonViewRow]
-  def phonenumbertype: OptField[Name, VsalespersonViewRow]
+  def phonenumber: Field[Phone, VsalespersonViewRow]
+  def phonenumbertype: Field[Name, VsalespersonViewRow]
   def emailaddress: OptField[/* max 50 chars */ String, VsalespersonViewRow]
   def emailpromotion: Field[Int, VsalespersonViewRow]
   def addressline1: Field[/* max 60 chars */ String, VsalespersonViewRow]
@@ -33,8 +33,8 @@ trait VsalespersonViewFields {
   def stateprovincename: Field[Name, VsalespersonViewRow]
   def postalcode: Field[/* max 15 chars */ String, VsalespersonViewRow]
   def countryregionname: Field[Name, VsalespersonViewRow]
-  def territoryname: OptField[Name, VsalespersonViewRow]
-  def territorygroup: OptField[/* max 50 chars */ String, VsalespersonViewRow]
+  def territoryname: Field[Name, VsalespersonViewRow]
+  def territorygroup: Field[/* max 50 chars */ String, VsalespersonViewRow]
   def salesquota: OptField[BigDecimal, VsalespersonViewRow]
   def salesytd: Field[BigDecimal, VsalespersonViewRow]
   def saleslastyear: Field[BigDecimal, VsalespersonViewRow]
@@ -55,8 +55,8 @@ object VsalespersonViewFields {
       override def lastname = Field[Name, VsalespersonViewRow](_path, "lastname", None, None, x => x.lastname, (row, value) => row.copy(lastname = value))
       override def suffix = OptField[/* max 10 chars */ String, VsalespersonViewRow](_path, "suffix", None, None, x => x.suffix, (row, value) => row.copy(suffix = value))
       override def jobtitle = Field[/* max 50 chars */ String, VsalespersonViewRow](_path, "jobtitle", None, None, x => x.jobtitle, (row, value) => row.copy(jobtitle = value))
-      override def phonenumber = OptField[Phone, VsalespersonViewRow](_path, "phonenumber", None, None, x => x.phonenumber, (row, value) => row.copy(phonenumber = value))
-      override def phonenumbertype = OptField[Name, VsalespersonViewRow](_path, "phonenumbertype", None, None, x => x.phonenumbertype, (row, value) => row.copy(phonenumbertype = value))
+      override def phonenumber = Field[Phone, VsalespersonViewRow](_path, "phonenumber", None, None, x => x.phonenumber, (row, value) => row.copy(phonenumber = value))
+      override def phonenumbertype = Field[Name, VsalespersonViewRow](_path, "phonenumbertype", None, None, x => x.phonenumbertype, (row, value) => row.copy(phonenumbertype = value))
       override def emailaddress = OptField[/* max 50 chars */ String, VsalespersonViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
       override def emailpromotion = Field[Int, VsalespersonViewRow](_path, "emailpromotion", None, None, x => x.emailpromotion, (row, value) => row.copy(emailpromotion = value))
       override def addressline1 = Field[/* max 60 chars */ String, VsalespersonViewRow](_path, "addressline1", None, None, x => x.addressline1, (row, value) => row.copy(addressline1 = value))
@@ -65,8 +65,8 @@ object VsalespersonViewFields {
       override def stateprovincename = Field[Name, VsalespersonViewRow](_path, "stateprovincename", None, None, x => x.stateprovincename, (row, value) => row.copy(stateprovincename = value))
       override def postalcode = Field[/* max 15 chars */ String, VsalespersonViewRow](_path, "postalcode", None, None, x => x.postalcode, (row, value) => row.copy(postalcode = value))
       override def countryregionname = Field[Name, VsalespersonViewRow](_path, "countryregionname", None, None, x => x.countryregionname, (row, value) => row.copy(countryregionname = value))
-      override def territoryname = OptField[Name, VsalespersonViewRow](_path, "territoryname", None, None, x => x.territoryname, (row, value) => row.copy(territoryname = value))
-      override def territorygroup = OptField[/* max 50 chars */ String, VsalespersonViewRow](_path, "territorygroup", None, None, x => x.territorygroup, (row, value) => row.copy(territorygroup = value))
+      override def territoryname = Field[Name, VsalespersonViewRow](_path, "territoryname", None, None, x => x.territoryname, (row, value) => row.copy(territoryname = value))
+      override def territorygroup = Field[/* max 50 chars */ String, VsalespersonViewRow](_path, "territorygroup", None, None, x => x.territorygroup, (row, value) => row.copy(territorygroup = value))
       override def salesquota = OptField[BigDecimal, VsalespersonViewRow](_path, "salesquota", None, None, x => x.salesquota, (row, value) => row.copy(salesquota = value))
       override def salesytd = Field[BigDecimal, VsalespersonViewRow](_path, "salesytd", None, None, x => x.salesytd, (row, value) => row.copy(salesytd = value))
       override def saleslastyear = Field[BigDecimal, VsalespersonViewRow](_path, "saleslastyear", None, None, x => x.saleslastyear, (row, value) => row.copy(saleslastyear = value))

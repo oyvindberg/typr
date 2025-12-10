@@ -30,9 +30,9 @@ public record VindividualcustomerViewRow(
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
   Optional</* max 10 chars */ String> suffix,
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumber()} */
-  Optional<Phone> phonenumber,
+  Phone phonenumber,
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
-  Optional<Name> phonenumbertype,
+  Name phonenumbertype,
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddress()} */
   Optional</* max 50 chars */ String> emailaddress,
   /** Points to {@link adventureworks.person.person.PersonRow#emailpromotion()} */
@@ -85,12 +85,12 @@ public record VindividualcustomerViewRow(
   };
 
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumber()} */
-  public VindividualcustomerViewRow withPhonenumber(Optional<Phone> phonenumber) {
+  public VindividualcustomerViewRow withPhonenumber(Phone phonenumber) {
     return new VindividualcustomerViewRow(businessentityid, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, demographics);
   };
 
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
-  public VindividualcustomerViewRow withPhonenumbertype(Optional<Name> phonenumbertype) {
+  public VindividualcustomerViewRow withPhonenumbertype(Name phonenumbertype) {
     return new VindividualcustomerViewRow(businessentityid, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, demographics);
   };
 
@@ -144,5 +144,5 @@ public record VindividualcustomerViewRow(
     return new VindividualcustomerViewRow(businessentityid, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, demographics);
   };
 
-  static RowParser<VindividualcustomerViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, TypoXml.pgType.opt(), VindividualcustomerViewRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion(), row.addresstype(), row.addressline1(), row.addressline2(), row.city(), row.stateprovincename(), row.postalcode(), row.countryregionname(), row.demographics()});;
+  static RowParser<VindividualcustomerViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, TypoXml.pgType.opt(), VindividualcustomerViewRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion(), row.addresstype(), row.addressline1(), row.addressline2(), row.city(), row.stateprovincename(), row.postalcode(), row.countryregionname(), row.demographics()});;
 }

@@ -39,9 +39,9 @@ case class VemployeeViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -74,8 +74,8 @@ object VemployeeViewRow {
             lastname = json.\("lastname").as(Name.reads),
             suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
             jobtitle = json.\("jobtitle").as(Reads.StringReads),
-            phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
-            phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
+            phonenumber = json.\("phonenumber").as(Phone.reads),
+            phonenumbertype = json.\("phonenumbertype").as(Name.reads),
             emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
             emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
             addressline1 = json.\("addressline1").as(Reads.StringReads),
@@ -102,8 +102,8 @@ object VemployeeViewRow {
           lastname = row(idx + 4)(using Name.column),
           suffix = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
           jobtitle = row(idx + 6)(using Column.columnToString),
-          phonenumber = row(idx + 7)(using Column.columnToOption(using Phone.column)),
-          phonenumbertype = row(idx + 8)(using Column.columnToOption(using Name.column)),
+          phonenumber = row(idx + 7)(using Phone.column),
+          phonenumbertype = row(idx + 8)(using Name.column),
           emailaddress = row(idx + 9)(using Column.columnToOption(using Column.columnToString)),
           emailpromotion = row(idx + 10)(using Column.columnToInt),
           addressline1 = row(idx + 11)(using Column.columnToString),
@@ -128,8 +128,8 @@ object VemployeeViewRow {
         "lastname" -> Name.writes.writes(o.lastname),
         "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
         "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
-        "phonenumber" -> Writes.OptionWrites(using Phone.writes).writes(o.phonenumber),
-        "phonenumbertype" -> Writes.OptionWrites(using Name.writes).writes(o.phonenumbertype),
+        "phonenumber" -> Phone.writes.writes(o.phonenumber),
+        "phonenumbertype" -> Name.writes.writes(o.phonenumbertype),
         "emailaddress" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.emailaddress),
         "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
         "addressline1" -> Writes.StringWrites.writes(o.addressline1),

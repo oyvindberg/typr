@@ -33,9 +33,9 @@ case class VstorewithcontactsViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
   suffix: Optional[/* max 10 chars */ String],
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Optional[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Optional[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Optional[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -43,5 +43,5 @@ case class VstorewithcontactsViewRow(
 )
 
 object VstorewithcontactsViewRow {
-  val `_rowParser`: RowParser[VstorewithcontactsViewRow] = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType.opt(), Name.pgType.opt(), PgTypes.text.opt(), PgTypes.int4, VstorewithcontactsViewRow.apply, row => Array[Object](row.businessentityid.asInstanceOf[Object], row.name.asInstanceOf[Object], row.contacttype.asInstanceOf[Object], row.title.asInstanceOf[Object], row.firstname.asInstanceOf[Object], row.middlename.asInstanceOf[Object], row.lastname.asInstanceOf[Object], row.suffix.asInstanceOf[Object], row.phonenumber.asInstanceOf[Object], row.phonenumbertype.asInstanceOf[Object], row.emailaddress.asInstanceOf[Object], row.emailpromotion.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VstorewithcontactsViewRow] = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, VstorewithcontactsViewRow.apply, row => Array[Object](row.businessentityid.asInstanceOf[Object], row.name.asInstanceOf[Object], row.contacttype.asInstanceOf[Object], row.title.asInstanceOf[Object], row.firstname.asInstanceOf[Object], row.middlename.asInstanceOf[Object], row.lastname.asInstanceOf[Object], row.suffix.asInstanceOf[Object], row.phonenumber.asInstanceOf[Object], row.phonenumbertype.asInstanceOf[Object], row.emailaddress.asInstanceOf[Object], row.emailpromotion.asInstanceOf[Object]))
 }

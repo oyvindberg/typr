@@ -33,9 +33,9 @@ case class VsalespersonViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
   emailaddress: Option[/* max 50 chars */ String],
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
@@ -53,9 +53,9 @@ case class VsalespersonViewRow(
   /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
-  territoryname: Option[Name],
+  territoryname: Name,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.group]] */
-  territorygroup: Option[/* max 50 chars */ String],
+  territorygroup: /* max 50 chars */ String,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesquota]] */
   salesquota: Option[BigDecimal],
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesytd]] */
@@ -77,8 +77,8 @@ object VsalespersonViewRow {
             lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             suffix = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
             jobtitle = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 6, rs)._2,
-            phonenumber = JdbcDecoder.optionDecoder(Phone.jdbcDecoder).unsafeDecode(columIndex + 7, rs)._2,
-            phonenumbertype = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
+            phonenumber = Phone.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
+            phonenumbertype = Name.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
             emailaddress = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 9, rs)._2,
             emailpromotion = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 10, rs)._2,
             addressline1 = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 11, rs)._2,
@@ -87,8 +87,8 @@ object VsalespersonViewRow {
             stateprovincename = Name.jdbcDecoder.unsafeDecode(columIndex + 14, rs)._2,
             postalcode = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 15, rs)._2,
             countryregionname = Name.jdbcDecoder.unsafeDecode(columIndex + 16, rs)._2,
-            territoryname = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 17, rs)._2,
-            territorygroup = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 18, rs)._2,
+            territoryname = Name.jdbcDecoder.unsafeDecode(columIndex + 17, rs)._2,
+            territorygroup = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 18, rs)._2,
             salesquota = JdbcDecoder.optionDecoder(JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 19, rs)._2,
             salesytd = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 20, rs)._2,
             saleslastyear = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 21, rs)._2
@@ -105,8 +105,8 @@ object VsalespersonViewRow {
       val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
       val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
       val jobtitle = jsonObj.get("jobtitle").toRight("Missing field 'jobtitle'").flatMap(_.as(JsonDecoder.string))
-      val phonenumber = jsonObj.get("phonenumber").fold[Either[String, Option[Phone]]](Right(None))(_.as(JsonDecoder.option(Phone.jsonDecoder)))
-      val phonenumbertype = jsonObj.get("phonenumbertype").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
+      val phonenumber = jsonObj.get("phonenumber").toRight("Missing field 'phonenumber'").flatMap(_.as(Phone.jsonDecoder))
+      val phonenumbertype = jsonObj.get("phonenumbertype").toRight("Missing field 'phonenumbertype'").flatMap(_.as(Name.jsonDecoder))
       val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
       val emailpromotion = jsonObj.get("emailpromotion").toRight("Missing field 'emailpromotion'").flatMap(_.as(JsonDecoder.int))
       val addressline1 = jsonObj.get("addressline1").toRight("Missing field 'addressline1'").flatMap(_.as(JsonDecoder.string))
@@ -115,8 +115,8 @@ object VsalespersonViewRow {
       val stateprovincename = jsonObj.get("stateprovincename").toRight("Missing field 'stateprovincename'").flatMap(_.as(Name.jsonDecoder))
       val postalcode = jsonObj.get("postalcode").toRight("Missing field 'postalcode'").flatMap(_.as(JsonDecoder.string))
       val countryregionname = jsonObj.get("countryregionname").toRight("Missing field 'countryregionname'").flatMap(_.as(Name.jsonDecoder))
-      val territoryname = jsonObj.get("territoryname").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
-      val territorygroup = jsonObj.get("territorygroup").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val territoryname = jsonObj.get("territoryname").toRight("Missing field 'territoryname'").flatMap(_.as(Name.jsonDecoder))
+      val territorygroup = jsonObj.get("territorygroup").toRight("Missing field 'territorygroup'").flatMap(_.as(JsonDecoder.string))
       val salesquota = jsonObj.get("salesquota").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.scalaBigDecimal)))
       val salesytd = jsonObj.get("salesytd").toRight("Missing field 'salesytd'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
       val saleslastyear = jsonObj.get("saleslastyear").toRight("Missing field 'saleslastyear'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
@@ -152,10 +152,10 @@ object VsalespersonViewRow {
         JsonEncoder.string.unsafeEncode(a.jobtitle, indent, out)
         out.write(",")
         out.write(""""phonenumber":""")
-        JsonEncoder.option(Phone.jsonEncoder).unsafeEncode(a.phonenumber, indent, out)
+        Phone.jsonEncoder.unsafeEncode(a.phonenumber, indent, out)
         out.write(",")
         out.write(""""phonenumbertype":""")
-        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.phonenumbertype, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.phonenumbertype, indent, out)
         out.write(",")
         out.write(""""emailaddress":""")
         JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
@@ -182,10 +182,10 @@ object VsalespersonViewRow {
         Name.jsonEncoder.unsafeEncode(a.countryregionname, indent, out)
         out.write(",")
         out.write(""""territoryname":""")
-        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.territoryname, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.territoryname, indent, out)
         out.write(",")
         out.write(""""territorygroup":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.territorygroup, indent, out)
+        JsonEncoder.string.unsafeEncode(a.territorygroup, indent, out)
         out.write(",")
         out.write(""""salesquota":""")
         JsonEncoder.option(JsonEncoder.scalaBigDecimal).unsafeEncode(a.salesquota, indent, out)

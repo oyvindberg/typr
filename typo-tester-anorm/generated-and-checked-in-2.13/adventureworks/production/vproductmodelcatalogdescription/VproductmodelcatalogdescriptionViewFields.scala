@@ -18,7 +18,7 @@ import typo.dsl.Structure.Relation
 trait VproductmodelcatalogdescriptionViewFields {
   def productmodelid: Field[ProductmodelId, VproductmodelcatalogdescriptionViewRow]
   def name: Field[Name, VproductmodelcatalogdescriptionViewRow]
-  def summary: OptField[String, VproductmodelcatalogdescriptionViewRow]
+  def summary: Field[String, VproductmodelcatalogdescriptionViewRow]
   def manufacturer: OptField[String, VproductmodelcatalogdescriptionViewRow]
   def copyright: OptField[/* max 30 chars */ String, VproductmodelcatalogdescriptionViewRow]
   def producturl: OptField[/* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow]
@@ -53,7 +53,7 @@ object VproductmodelcatalogdescriptionViewFields {
     override lazy val fields: VproductmodelcatalogdescriptionViewFields = new VproductmodelcatalogdescriptionViewFields {
       override def productmodelid = Field[ProductmodelId, VproductmodelcatalogdescriptionViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def name = Field[Name, VproductmodelcatalogdescriptionViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
-      override def summary = OptField[String, VproductmodelcatalogdescriptionViewRow](_path, "Summary", None, None, x => x.summary, (row, value) => row.copy(summary = value))
+      override def summary = Field[String, VproductmodelcatalogdescriptionViewRow](_path, "Summary", None, None, x => x.summary, (row, value) => row.copy(summary = value))
       override def manufacturer = OptField[String, VproductmodelcatalogdescriptionViewRow](_path, "manufacturer", None, None, x => x.manufacturer, (row, value) => row.copy(manufacturer = value))
       override def copyright = OptField[/* max 30 chars */ String, VproductmodelcatalogdescriptionViewRow](_path, "copyright", None, None, x => x.copyright, (row, value) => row.copy(copyright = value))
       override def producturl = OptField[/* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow](_path, "producturl", None, None, x => x.producturl, (row, value) => row.copy(producturl = value))

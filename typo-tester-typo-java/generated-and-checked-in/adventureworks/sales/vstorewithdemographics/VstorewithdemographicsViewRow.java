@@ -9,7 +9,6 @@ import adventureworks.customtypes.TypoMoney;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Optional;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -20,16 +19,16 @@ public record VstorewithdemographicsViewRow(
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.sales.store.StoreRow#name()} */
   Name name,
-  @JsonProperty("AnnualSales") /* nullability unknown */ Optional<TypoMoney> annualSales,
-  @JsonProperty("AnnualRevenue") /* nullability unknown */ Optional<TypoMoney> annualRevenue,
-  @JsonProperty("BankName") /* nullability unknown */ Optional</* max 50 chars */ String> bankName,
-  @JsonProperty("BusinessType") /* nullability unknown */ Optional</* max 5 chars */ String> businessType,
-  @JsonProperty("YearOpened") /* nullability unknown */ Optional<Integer> yearOpened,
-  @JsonProperty("Specialty") /* nullability unknown */ Optional</* max 50 chars */ String> specialty,
-  @JsonProperty("SquareFeet") /* nullability unknown */ Optional<Integer> squareFeet,
-  @JsonProperty("Brands") /* nullability unknown */ Optional</* max 30 chars */ String> brands,
-  @JsonProperty("Internet") /* nullability unknown */ Optional</* max 30 chars */ String> internet,
-  @JsonProperty("NumberEmployees") /* nullability unknown */ Optional<Integer> numberEmployees
+  @JsonProperty("AnnualSales") TypoMoney annualSales,
+  @JsonProperty("AnnualRevenue") TypoMoney annualRevenue,
+  @JsonProperty("BankName") /* max 50 chars */ String bankName,
+  @JsonProperty("BusinessType") /* max 5 chars */ String businessType,
+  @JsonProperty("YearOpened") Integer yearOpened,
+  @JsonProperty("Specialty") /* max 50 chars */ String specialty,
+  @JsonProperty("SquareFeet") Integer squareFeet,
+  @JsonProperty("Brands") /* max 30 chars */ String brands,
+  @JsonProperty("Internet") /* max 30 chars */ String internet,
+  @JsonProperty("NumberEmployees") Integer numberEmployees
 ) {
   /** Points to {@link adventureworks.sales.store.StoreRow#businessentityid()} */
   public VstorewithdemographicsViewRow withBusinessentityid(BusinessentityId businessentityid) {
@@ -41,45 +40,45 @@ public record VstorewithdemographicsViewRow(
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withAnnualSales(/* nullability unknown */ Optional<TypoMoney> annualSales) {
+  public VstorewithdemographicsViewRow withAnnualSales(TypoMoney annualSales) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withAnnualRevenue(/* nullability unknown */ Optional<TypoMoney> annualRevenue) {
+  public VstorewithdemographicsViewRow withAnnualRevenue(TypoMoney annualRevenue) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withBankName(/* nullability unknown */ Optional</* max 50 chars */ String> bankName) {
+  public VstorewithdemographicsViewRow withBankName(/* max 50 chars */ String bankName) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withBusinessType(/* nullability unknown */ Optional</* max 5 chars */ String> businessType) {
+  public VstorewithdemographicsViewRow withBusinessType(/* max 5 chars */ String businessType) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withYearOpened(/* nullability unknown */ Optional<Integer> yearOpened) {
+  public VstorewithdemographicsViewRow withYearOpened(Integer yearOpened) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withSpecialty(/* nullability unknown */ Optional</* max 50 chars */ String> specialty) {
+  public VstorewithdemographicsViewRow withSpecialty(/* max 50 chars */ String specialty) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withSquareFeet(/* nullability unknown */ Optional<Integer> squareFeet) {
+  public VstorewithdemographicsViewRow withSquareFeet(Integer squareFeet) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withBrands(/* nullability unknown */ Optional</* max 30 chars */ String> brands) {
+  public VstorewithdemographicsViewRow withBrands(/* max 30 chars */ String brands) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withInternet(/* nullability unknown */ Optional</* max 30 chars */ String> internet) {
+  public VstorewithdemographicsViewRow withInternet(/* max 30 chars */ String internet) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withNumberEmployees(/* nullability unknown */ Optional<Integer> numberEmployees) {
+  public VstorewithdemographicsViewRow withNumberEmployees(Integer numberEmployees) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  static RowParser<VstorewithdemographicsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, TypoMoney.pgType.opt(), TypoMoney.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), VstorewithdemographicsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.annualSales(), row.annualRevenue(), row.bankName(), row.businessType(), row.yearOpened(), row.specialty(), row.squareFeet(), row.brands(), row.internet(), row.numberEmployees()});;
+  static RowParser<VstorewithdemographicsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, TypoMoney.pgType, TypoMoney.pgType, PgTypes.text, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.int4, VstorewithdemographicsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.annualSales(), row.annualRevenue(), row.bankName(), row.businessType(), row.yearOpened(), row.specialty(), row.squareFeet(), row.brands(), row.internet(), row.numberEmployees()});;
 }

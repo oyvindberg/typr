@@ -63,13 +63,13 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
     };
 
     @Override
-    public OptField<Phone, VstorewithcontactsViewRow> phonenumber() {
-      return new OptField<Phone, VstorewithcontactsViewRow>(_path, "phonenumber", VstorewithcontactsViewRow::phonenumber, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumber(value), Phone.pgType);
+    public Field<Phone, VstorewithcontactsViewRow> phonenumber() {
+      return new Field<Phone, VstorewithcontactsViewRow>(_path, "phonenumber", VstorewithcontactsViewRow::phonenumber, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumber(value), Phone.pgType);
     };
 
     @Override
-    public OptField<Name, VstorewithcontactsViewRow> phonenumbertype() {
-      return new OptField<Name, VstorewithcontactsViewRow>(_path, "phonenumbertype", VstorewithcontactsViewRow::phonenumbertype, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumbertype(value), Name.pgType);
+    public Field<Name, VstorewithcontactsViewRow> phonenumbertype() {
+      return new Field<Name, VstorewithcontactsViewRow>(_path, "phonenumbertype", VstorewithcontactsViewRow::phonenumbertype, Optional.empty(), Optional.empty(), (row, value) -> row.withPhonenumbertype(value), Name.pgType);
     };
 
     @Override
@@ -113,9 +113,9 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
 
   OptField</* max 10 chars */ String, VstorewithcontactsViewRow> suffix();
 
-  OptField<Phone, VstorewithcontactsViewRow> phonenumber();
+  Field<Phone, VstorewithcontactsViewRow> phonenumber();
 
-  OptField<Name, VstorewithcontactsViewRow> phonenumbertype();
+  Field<Name, VstorewithcontactsViewRow> phonenumbertype();
 
   OptField</* max 50 chars */ String, VstorewithcontactsViewRow> emailaddress();
 

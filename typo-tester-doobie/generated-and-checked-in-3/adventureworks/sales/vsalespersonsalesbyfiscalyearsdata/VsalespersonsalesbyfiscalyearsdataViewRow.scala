@@ -16,36 +16,36 @@ import io.circe.Encoder
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
   salespersonid: Option[BusinessentityId],
-  fullname: /* nullability unknown */ Option[String],
+  fullname: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
   jobtitle: /* max 50 chars */ String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: /* nullability unknown */ Option[BigDecimal],
-  fiscalyear: /* nullability unknown */ Option[BigDecimal]
+  fiscalyear: BigDecimal
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
-  given decoder: Decoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Decoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], /* nullability unknown */ Option[String], /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(using Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Name.decoder, Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeOption(using Decoder.decodeBigDecimal))
+  given decoder: Decoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Decoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], String, /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(using Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeString, Decoder.decodeString, Name.decoder, Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeBigDecimal)
 
-  given encoder: Encoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Encoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], /* nullability unknown */ Option[String], /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], /* nullability unknown */ Option[BigDecimal]]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(x => (x.salespersonid, x.fullname, x.jobtitle, x.salesterritory, x.salestotal, x.fiscalyear))(using Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Name.encoder, Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeOption(using Encoder.encodeBigDecimal))
+  given encoder: Encoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Encoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], String, /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(x => (x.salespersonid, x.fullname, x.jobtitle, x.salesterritory, x.salestotal, x.fiscalyear))(using Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeString, Encoder.encodeString, Name.encoder, Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeBigDecimal)
 
   given read: Read[VsalespersonsalesbyfiscalyearsdataViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VsalespersonsalesbyfiscalyearsdataViewRow(
         salespersonid = arr(0).asInstanceOf[Option[BusinessentityId]],
-            fullname = arr(1).asInstanceOf[/* nullability unknown */ Option[String]],
+            fullname = arr(1).asInstanceOf[String],
             jobtitle = arr(2).asInstanceOf[/* max 50 chars */ String],
             salesterritory = arr(3).asInstanceOf[Name],
             salestotal = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
-            fiscalyear = arr(5).asInstanceOf[/* nullability unknown */ Option[BigDecimal]]
+            fiscalyear = arr(5).asInstanceOf[BigDecimal]
       )
     }
   }

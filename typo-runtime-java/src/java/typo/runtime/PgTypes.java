@@ -138,8 +138,6 @@ public interface PgTypes {
     // Internal types
     PgType<PgNodeTree> pgNodeTree = ofPgObject("pg_node_tree", PgNodeTree::new, PgNodeTree::value, PgJson.text.bimap(PgNodeTree::new, PgNodeTree::value));
     PgType<PgNodeTree[]> pgNodeTreeArray = pgNodeTree.array(PgRead.pgObjectArray(PgNodeTree::new, PgNodeTree.class), PgNodeTree[]::new);
-    PgType<Unknown> unknown = PgType.of("unknown", PgRead.readString, PgWrite.pgObject("unknown"), PgText.textString, PgJson.text).bimap(Unknown::new, Unknown::value);
-    PgType<Unknown[]> unknownArray = unknown.array(PgRead.pgObjectArray(Unknown::new, Unknown.class), Unknown[]::new);
 
     // Factory methods
     static <E extends Enum<E>> PgType<E> ofEnum(String sqlType, Function<String, E> fromString) {

@@ -17,59 +17,59 @@ import typo.runtime.RowParsers;
 public record VjobcandidateemploymentViewRow(
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   JobcandidateId jobcandidateid,
-  @JsonProperty("Emp.StartDate") /* nullability unknown */ Optional<TypoLocalDate> empStartDate,
-  @JsonProperty("Emp.EndDate") /* nullability unknown */ Optional<TypoLocalDate> empEndDate,
-  @JsonProperty("Emp.OrgName") /* nullability unknown */ Optional</* max 100 chars */ String> empOrgName,
-  @JsonProperty("Emp.JobTitle") /* nullability unknown */ Optional</* max 100 chars */ String> empJobTitle,
-  @JsonProperty("Emp.Responsibility") /* nullability unknown */ Optional<String> empResponsibility,
-  @JsonProperty("Emp.FunctionCategory") /* nullability unknown */ Optional<String> empFunctionCategory,
-  @JsonProperty("Emp.IndustryCategory") /* nullability unknown */ Optional<String> empIndustryCategory,
-  @JsonProperty("Emp.Loc.CountryRegion") /* nullability unknown */ Optional<String> empLocCountryRegion,
-  @JsonProperty("Emp.Loc.State") /* nullability unknown */ Optional<String> empLocState,
-  @JsonProperty("Emp.Loc.City") /* nullability unknown */ Optional<String> empLocCity
+  @JsonProperty("Emp.StartDate") Optional<TypoLocalDate> empStartDate,
+  @JsonProperty("Emp.EndDate") Optional<TypoLocalDate> empEndDate,
+  @JsonProperty("Emp.OrgName") Optional</* max 100 chars */ String> empOrgName,
+  @JsonProperty("Emp.JobTitle") Optional</* max 100 chars */ String> empJobTitle,
+  @JsonProperty("Emp.Responsibility") Optional<String> empResponsibility,
+  @JsonProperty("Emp.FunctionCategory") Optional<String> empFunctionCategory,
+  @JsonProperty("Emp.IndustryCategory") Optional<String> empIndustryCategory,
+  @JsonProperty("Emp.Loc.CountryRegion") Optional<String> empLocCountryRegion,
+  @JsonProperty("Emp.Loc.State") Optional<String> empLocState,
+  @JsonProperty("Emp.Loc.City") Optional<String> empLocCity
 ) {
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   public VjobcandidateemploymentViewRow withJobcandidateid(JobcandidateId jobcandidateid) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpStartDate(/* nullability unknown */ Optional<TypoLocalDate> empStartDate) {
+  public VjobcandidateemploymentViewRow withEmpStartDate(Optional<TypoLocalDate> empStartDate) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpEndDate(/* nullability unknown */ Optional<TypoLocalDate> empEndDate) {
+  public VjobcandidateemploymentViewRow withEmpEndDate(Optional<TypoLocalDate> empEndDate) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpOrgName(/* nullability unknown */ Optional</* max 100 chars */ String> empOrgName) {
+  public VjobcandidateemploymentViewRow withEmpOrgName(Optional</* max 100 chars */ String> empOrgName) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpJobTitle(/* nullability unknown */ Optional</* max 100 chars */ String> empJobTitle) {
+  public VjobcandidateemploymentViewRow withEmpJobTitle(Optional</* max 100 chars */ String> empJobTitle) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpResponsibility(/* nullability unknown */ Optional<String> empResponsibility) {
+  public VjobcandidateemploymentViewRow withEmpResponsibility(Optional<String> empResponsibility) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpFunctionCategory(/* nullability unknown */ Optional<String> empFunctionCategory) {
+  public VjobcandidateemploymentViewRow withEmpFunctionCategory(Optional<String> empFunctionCategory) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpIndustryCategory(/* nullability unknown */ Optional<String> empIndustryCategory) {
+  public VjobcandidateemploymentViewRow withEmpIndustryCategory(Optional<String> empIndustryCategory) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpLocCountryRegion(/* nullability unknown */ Optional<String> empLocCountryRegion) {
+  public VjobcandidateemploymentViewRow withEmpLocCountryRegion(Optional<String> empLocCountryRegion) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpLocState(/* nullability unknown */ Optional<String> empLocState) {
+  public VjobcandidateemploymentViewRow withEmpLocState(Optional<String> empLocState) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 
-  public VjobcandidateemploymentViewRow withEmpLocCity(/* nullability unknown */ Optional<String> empLocCity) {
+  public VjobcandidateemploymentViewRow withEmpLocCity(Optional<String> empLocCity) {
     return new VjobcandidateemploymentViewRow(jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity);
   };
 

@@ -33,7 +33,7 @@ trait VjobcandidateViewFields extends FieldsExpr[VjobcandidateViewRow] {
 
   def nameSuffix: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
 
-  def skills: OptField[String, VjobcandidateViewRow]
+  def skills: Field[String, VjobcandidateViewRow]
 
   def addrType: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
 
@@ -45,9 +45,9 @@ trait VjobcandidateViewFields extends FieldsExpr[VjobcandidateViewRow] {
 
   def addrPostalCode: OptField[/* max 20 chars */ String, VjobcandidateViewRow]
 
-  def eMail: OptField[String, VjobcandidateViewRow]
+  def eMail: Field[String, VjobcandidateViewRow]
 
-  def webSite: OptField[String, VjobcandidateViewRow]
+  def webSite: Field[String, VjobcandidateViewRow]
 
   def modifieddate: Field[TypoLocalDateTime, VjobcandidateViewRow]
 
@@ -143,8 +143,8 @@ object VjobcandidateViewFields {
       )
     }
 
-    override def skills: OptField[String, VjobcandidateViewRow] = {
-      new OptField[String, VjobcandidateViewRow](
+    override def skills: Field[String, VjobcandidateViewRow] = {
+      new Field[String, VjobcandidateViewRow](
         _path,
         "Skills",
         _.skills,
@@ -215,8 +215,8 @@ object VjobcandidateViewFields {
       )
     }
 
-    override def eMail: OptField[String, VjobcandidateViewRow] = {
-      new OptField[String, VjobcandidateViewRow](
+    override def eMail: Field[String, VjobcandidateViewRow] = {
+      new Field[String, VjobcandidateViewRow](
         _path,
         "EMail",
         _.eMail,
@@ -227,8 +227,8 @@ object VjobcandidateViewFields {
       )
     }
 
-    override def webSite: OptField[String, VjobcandidateViewRow] = {
-      new OptField[String, VjobcandidateViewRow](
+    override def webSite: Field[String, VjobcandidateViewRow] = {
+      new Field[String, VjobcandidateViewRow](
         _path,
         "WebSite",
         _.webSite,

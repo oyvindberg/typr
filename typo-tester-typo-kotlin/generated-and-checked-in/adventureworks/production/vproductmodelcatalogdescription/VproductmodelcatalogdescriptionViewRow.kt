@@ -21,33 +21,33 @@ data class VproductmodelcatalogdescriptionViewRow(
   val productmodelid: ProductmodelId,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.name] */
   val name: Name,
-  @JsonProperty("Summary") val summary: /* nullability unknown */ Optional<String>,
-  val manufacturer: /* nullability unknown */ Optional<String>,
-  val copyright: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  val producturl: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val warrantyperiod: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val warrantydescription: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val noofyears: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val maintenancedescription: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val wheel: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val saddle: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val pedal: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val bikeframe: /* nullability unknown */ Optional<String>,
-  val crankset: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val pictureangle: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val picturesize: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val productphotoid: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val material: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val color: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val productline: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val style: /* nullability unknown */ Optional</* max 256 chars */ String>,
-  val riderexperience: /* nullability unknown */ Optional</* max 1024 chars */ String>,
+  @JsonProperty("Summary") val summary: String,
+  val manufacturer: Optional<String>,
+  val copyright: Optional</* max 30 chars */ String>,
+  val producturl: Optional</* max 256 chars */ String>,
+  val warrantyperiod: Optional</* max 256 chars */ String>,
+  val warrantydescription: Optional</* max 256 chars */ String>,
+  val noofyears: Optional</* max 256 chars */ String>,
+  val maintenancedescription: Optional</* max 256 chars */ String>,
+  val wheel: Optional</* max 256 chars */ String>,
+  val saddle: Optional</* max 256 chars */ String>,
+  val pedal: Optional</* max 256 chars */ String>,
+  val bikeframe: Optional<String>,
+  val crankset: Optional</* max 256 chars */ String>,
+  val pictureangle: Optional</* max 256 chars */ String>,
+  val picturesize: Optional</* max 256 chars */ String>,
+  val productphotoid: Optional</* max 256 chars */ String>,
+  val material: Optional</* max 256 chars */ String>,
+  val color: Optional</* max 256 chars */ String>,
+  val productline: Optional</* max 256 chars */ String>,
+  val style: Optional</* max 256 chars */ String>,
+  val riderexperience: Optional</* max 1024 chars */ String>,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.rowguid] */
   val rowguid: TypoUUID,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.modifieddate] */
   val modifieddate: TypoLocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<VproductmodelcatalogdescriptionViewRow> = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> VproductmodelcatalogdescriptionViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.name, row.summary, row.manufacturer, row.copyright, row.producturl, row.warrantyperiod, row.warrantydescription, row.noofyears, row.maintenancedescription, row.wheel, row.saddle, row.pedal, row.bikeframe, row.crankset, row.pictureangle, row.picturesize, row.productphotoid, row.material, row.color, row.productline, row.style, row.riderexperience, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<VproductmodelcatalogdescriptionViewRow> = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> VproductmodelcatalogdescriptionViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.name, row.summary, row.manufacturer, row.copyright, row.producturl, row.warrantyperiod, row.warrantydescription, row.noofyears, row.maintenancedescription, row.wheel, row.saddle, row.pedal, row.bikeframe, row.crankset, row.pictureangle, row.picturesize, row.productphotoid, row.material, row.color, row.productline, row.style, row.riderexperience, row.rowguid, row.modifieddate) })
   }
 }

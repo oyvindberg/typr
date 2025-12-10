@@ -39,9 +39,9 @@ interface VstorewithcontactsViewFields : FieldsExpr<VstorewithcontactsViewRow> {
 
   fun name(): Field<Name, VstorewithcontactsViewRow>
 
-  fun phonenumber(): OptField<Phone, VstorewithcontactsViewRow>
+  fun phonenumber(): Field<Phone, VstorewithcontactsViewRow>
 
-  fun phonenumbertype(): OptField<Name, VstorewithcontactsViewRow>
+  fun phonenumbertype(): Field<Name, VstorewithcontactsViewRow>
 
   override fun rowParser(): RowParser<VstorewithcontactsViewRow> = VstorewithcontactsViewRow._rowParser
 
@@ -67,9 +67,9 @@ interface VstorewithcontactsViewFields : FieldsExpr<VstorewithcontactsViewRow> {
 
       override fun suffix(): OptField</* max 10 chars */ String, VstorewithcontactsViewRow> = OptField</* max 10 chars */ String, VstorewithcontactsViewRow>(_path, "suffix", VstorewithcontactsViewRow::suffix, Optional.empty(), Optional.empty(), { row, value -> row.copy(suffix = value) }, PgTypes.text)
 
-      override fun phonenumber(): OptField<Phone, VstorewithcontactsViewRow> = OptField<Phone, VstorewithcontactsViewRow>(_path, "phonenumber", VstorewithcontactsViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
+      override fun phonenumber(): Field<Phone, VstorewithcontactsViewRow> = Field<Phone, VstorewithcontactsViewRow>(_path, "phonenumber", VstorewithcontactsViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
 
-      override fun phonenumbertype(): OptField<Name, VstorewithcontactsViewRow> = OptField<Name, VstorewithcontactsViewRow>(_path, "phonenumbertype", VstorewithcontactsViewRow::phonenumbertype, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
+      override fun phonenumbertype(): Field<Name, VstorewithcontactsViewRow> = Field<Name, VstorewithcontactsViewRow>(_path, "phonenumbertype", VstorewithcontactsViewRow::phonenumbertype, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
 
       override fun emailaddress(): OptField</* max 50 chars */ String, VstorewithcontactsViewRow> = OptField</* max 50 chars */ String, VstorewithcontactsViewRow>(_path, "emailaddress", VstorewithcontactsViewRow::emailaddress, Optional.empty(), Optional.empty(), { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
 

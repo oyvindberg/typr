@@ -21,19 +21,19 @@ case class VjobcandidateViewRow(
   jobcandidateid: JobcandidateId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
   businessentityid: Option[BusinessentityId],
-  namePrefix: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameFirst: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameMiddle: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameLast: /* nullability unknown */ Option[/* max 30 chars */ String],
-  nameSuffix: /* nullability unknown */ Option[/* max 30 chars */ String],
-  skills: /* nullability unknown */ Option[String],
-  addrType: /* nullability unknown */ Option[/* max 30 chars */ String],
-  addrLocCountryRegion: /* nullability unknown */ Option[/* max 100 chars */ String],
-  addrLocState: /* nullability unknown */ Option[/* max 100 chars */ String],
-  addrLocCity: /* nullability unknown */ Option[/* max 100 chars */ String],
-  addrPostalCode: /* nullability unknown */ Option[/* max 20 chars */ String],
-  eMail: /* nullability unknown */ Option[String],
-  webSite: /* nullability unknown */ Option[String],
+  namePrefix: Option[/* max 30 chars */ String],
+  nameFirst: Option[/* max 30 chars */ String],
+  nameMiddle: Option[/* max 30 chars */ String],
+  nameLast: Option[/* max 30 chars */ String],
+  nameSuffix: Option[/* max 30 chars */ String],
+  skills: String,
+  addrType: Option[/* max 30 chars */ String],
+  addrLocCountryRegion: Option[/* max 100 chars */ String],
+  addrLocState: Option[/* max 100 chars */ String],
+  addrLocCity: Option[/* max 100 chars */ String],
+  addrPostalCode: Option[/* max 20 chars */ String],
+  eMail: String,
+  webSite: String,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -51,14 +51,14 @@ object VjobcandidateViewRow {
             nameMiddle = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 4, rs)._2,
             nameLast = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
             nameSuffix = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 6, rs)._2,
-            skills = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 7, rs)._2,
+            skills = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 7, rs)._2,
             addrType = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
             addrLocCountryRegion = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 9, rs)._2,
             addrLocState = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 10, rs)._2,
             addrLocCity = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 11, rs)._2,
             addrPostalCode = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 12, rs)._2,
-            eMail = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 13, rs)._2,
-            webSite = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 14, rs)._2,
+            eMail = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 13, rs)._2,
+            webSite = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 14, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 15, rs)._2
           )
     }
@@ -73,14 +73,14 @@ object VjobcandidateViewRow {
       val nameMiddle = jsonObj.get("Name.Middle").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
       val nameLast = jsonObj.get("Name.Last").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
       val nameSuffix = jsonObj.get("Name.Suffix").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val skills = jsonObj.get("Skills").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val skills = jsonObj.get("Skills").toRight("Missing field 'Skills'").flatMap(_.as(using JsonDecoder.string))
       val addrType = jsonObj.get("Addr.Type").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
       val addrLocCountryRegion = jsonObj.get("Addr.Loc.CountryRegion").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
       val addrLocState = jsonObj.get("Addr.Loc.State").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
       val addrLocCity = jsonObj.get("Addr.Loc.City").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
       val addrPostalCode = jsonObj.get("Addr.PostalCode").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val eMail = jsonObj.get("EMail").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val webSite = jsonObj.get("WebSite").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val eMail = jsonObj.get("EMail").toRight("Missing field 'EMail'").flatMap(_.as(using JsonDecoder.string))
+      val webSite = jsonObj.get("WebSite").toRight("Missing field 'WebSite'").flatMap(_.as(using JsonDecoder.string))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (jobcandidateid.isRight && businessentityid.isRight && namePrefix.isRight && nameFirst.isRight && nameMiddle.isRight && nameLast.isRight && nameSuffix.isRight && skills.isRight && addrType.isRight && addrLocCountryRegion.isRight && addrLocState.isRight && addrLocCity.isRight && addrPostalCode.isRight && eMail.isRight && webSite.isRight && modifieddate.isRight)
         Right(VjobcandidateViewRow(jobcandidateid = jobcandidateid.toOption.get, businessentityid = businessentityid.toOption.get, namePrefix = namePrefix.toOption.get, nameFirst = nameFirst.toOption.get, nameMiddle = nameMiddle.toOption.get, nameLast = nameLast.toOption.get, nameSuffix = nameSuffix.toOption.get, skills = skills.toOption.get, addrType = addrType.toOption.get, addrLocCountryRegion = addrLocCountryRegion.toOption.get, addrLocState = addrLocState.toOption.get, addrLocCity = addrLocCity.toOption.get, addrPostalCode = addrPostalCode.toOption.get, eMail = eMail.toOption.get, webSite = webSite.toOption.get, modifieddate = modifieddate.toOption.get))
@@ -114,7 +114,7 @@ object VjobcandidateViewRow {
         JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.nameSuffix, indent, out)
         out.write(",")
         out.write(""""Skills":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.skills, indent, out)
+        JsonEncoder.string.unsafeEncode(a.skills, indent, out)
         out.write(",")
         out.write(""""Addr.Type":""")
         JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.addrType, indent, out)
@@ -132,10 +132,10 @@ object VjobcandidateViewRow {
         JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.addrPostalCode, indent, out)
         out.write(",")
         out.write(""""EMail":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.eMail, indent, out)
+        JsonEncoder.string.unsafeEncode(a.eMail, indent, out)
         out.write(",")
         out.write(""""WebSite":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.webSite, indent, out)
+        JsonEncoder.string.unsafeEncode(a.webSite, indent, out)
         out.write(",")
         out.write(""""modifieddate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)

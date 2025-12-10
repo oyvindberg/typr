@@ -38,9 +38,11 @@ Output JSON schema:
 
 import json
 import sys
+import time
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Any
 import re
+from enum import Enum
 
 import sqlglot
 from sqlglot import exp
@@ -91,6 +93,102 @@ class ParameterInfo:
     context: Optional[str]  # EQ, GT, IN, LIKE, BETWEEN, IS NULL, etc.
 
 
+class TokenType(Enum):
+    """Type of SQL token"""
+    STRING_LITERAL = "string_literal"
+    COMMENT = "comment"
+    CODE = "code"
+
+
+@dataclass
+class Token:
+    """A token in SQL text"""
+    token_type: TokenType
+    content: str
+
+
+def tokenize_sql(sql: str) -> list[Token]:
+    """
+    Split SQL into tokens: string literals, comments, and code.
+    This allows parameter extraction to only work on code parts.
+
+    Returns a list of tokens that can be joined to reconstruct the original SQL.
+    """
+    tokens = []
+    i = 0
+    n = len(sql)
+
+    while i < n:
+        # Check for line comment (-- to end of line)
+        if i < n - 1 and sql[i:i+2] == '--':
+            start = i
+            i += 2
+            while i < n and sql[i] != '\n':
+                i += 1
+            if i < n:  # Include the newline
+                i += 1
+            tokens.append(Token(TokenType.COMMENT, sql[start:i]))
+            continue
+
+        # Check for block comment (/* ... */)
+        if i < n - 1 and sql[i:i+2] == '/*':
+            start = i
+            i += 2
+            while i < n - 1:
+                if sql[i:i+2] == '*/':
+                    i += 2
+                    break
+                i += 1
+            else:
+                # Unterminated block comment - consume to end
+                i = n
+            tokens.append(Token(TokenType.COMMENT, sql[start:i]))
+            continue
+
+        # Check for string literal (single quotes with escaping)
+        if sql[i] == "'":
+            start = i
+            i += 1
+            while i < n:
+                if sql[i] == "'":
+                    # Check if it's escaped (doubled single quote)
+                    if i + 1 < n and sql[i + 1] == "'":
+                        # Escaped quote, skip both
+                        i += 2
+                    else:
+                        # End of string
+                        i += 1
+                        break
+                elif sql[i] == '\\' and i + 1 < n:
+                    # Backslash escape (some SQL dialects support this)
+                    i += 2
+                else:
+                    i += 1
+            tokens.append(Token(TokenType.STRING_LITERAL, sql[start:i]))
+            continue
+
+        # Otherwise, accumulate code until we hit a comment or string
+        start = i
+        while i < n and sql[i] not in ("'", "-", "/"):
+            i += 1
+
+        # Check if we stopped at a potential comment
+        if i < n and sql[i] in ("-", "/"):
+            # Peek ahead to see if it's actually a comment
+            if (sql[i] == "-" and i + 1 < n and sql[i + 1] == "-") or \
+               (sql[i] == "/" and i + 1 < n and sql[i + 1] == "*"):
+                # It's a comment, don't include this character
+                pass
+            else:
+                # Not a comment, include the character
+                i += 1
+
+        if i > start:
+            tokens.append(Token(TokenType.CODE, sql[start:i]))
+
+    return tokens
+
+
 @dataclass
 class TableRef:
     """A table reference in the query"""
@@ -116,13 +214,16 @@ def extract_parameters(sql: str) -> tuple[str, list[ParameterInfo]]:
     """
     Extract named parameters from typo-style SQL.
     Converts :name or :"name!" or :"name?" to ? placeholders.
+    Only processes parameters in code sections, not in strings or comments.
     Returns modified SQL and list of parameters.
     """
+    tokens = tokenize_sql(sql)
     params = []
     position = 0
 
     # Pattern for typo parameters: :name, :"name!", :"name?", :name:Type!
-    pattern = r':("?)([a-zA-Z_][a-zA-Z0-9_]*)((?::[a-zA-Z_][a-zA-Z0-9_.]*)?[!?]?)(\1)'
+    # Use negative lookbehind to NOT match PostgreSQL casts like ::text
+    pattern = r'(?<!:):("?)([a-zA-Z_][a-zA-Z0-9_]*)((?::[a-zA-Z_][a-zA-Z0-9_.]*)?[!?]?)(\1)'
 
     def replace_param(match):
         nonlocal position
@@ -142,7 +243,18 @@ def extract_parameters(sql: str) -> tuple[str, list[ParameterInfo]]:
         ))
         return '?'
 
-    modified_sql = re.sub(pattern, replace_param, sql)
+    # Process only CODE tokens, keep strings and comments unchanged
+    result_parts = []
+    for token in tokens:
+        if token.token_type == TokenType.CODE:
+            # Apply parameter replacement only to code
+            modified_content = re.sub(pattern, replace_param, token.content)
+            result_parts.append(modified_content)
+        else:
+            # Keep strings and comments unchanged
+            result_parts.append(token.content)
+
+    modified_sql = ''.join(result_parts)
     return modified_sql, params
 
 
@@ -174,6 +286,14 @@ def infer_parameter_types(annotated_ast, alias_to_table: dict) -> list[dict]:
 
     for node in placeholders:
         parent = node.parent
+        child = node
+
+        # If the immediate parent is a Paren (from parameter syntax like :"param"!),
+        # walk up to find the actual operator context
+        while parent and isinstance(parent, exp.Paren):
+            child = parent
+            parent = parent.parent
+
         info = {
             'type': None,
             'source_table': None,
@@ -185,7 +305,7 @@ def infer_parameter_types(annotated_ast, alias_to_table: dict) -> list[dict]:
             info['context'] = 'IS NULL'
 
         elif isinstance(parent, (exp.EQ, exp.NEQ, exp.GT, exp.GTE, exp.LT, exp.LTE)):
-            if parent.left == node:
+            if parent.left == child:
                 other = parent.right
             else:
                 other = parent.left
@@ -196,6 +316,49 @@ def infer_parameter_types(annotated_ast, alias_to_table: dict) -> list[dict]:
 
             if isinstance(other, exp.Column):
                 alias = other.table
+                # If no alias, try to extract from UPDATE statement context
+                if not alias:
+                    # Walk up to find the UPDATE node and extract the table name
+                    curr = parent
+                    while curr and not isinstance(curr, exp.Update):
+                        curr = curr.parent
+                    if isinstance(curr, exp.Update) and hasattr(curr, 'this'):
+                        update_table = curr.this
+                        if isinstance(update_table, exp.Table):
+                            # Build fully qualified table name
+                            if update_table.db:
+                                alias = f"{update_table.db}.{update_table.name}"
+                            else:
+                                alias = update_table.name
+                info['source_table'] = alias_to_table.get(alias, alias) if alias else None
+                info['source_column'] = other.name
+
+        elif isinstance(parent, exp.DPipe):
+            # String concatenation operator ||
+            # Look at the other side to infer the type
+            if parent.left == child:
+                other = parent.right
+            else:
+                other = parent.left
+
+            other_type = other.type if hasattr(other, 'type') else None
+            info['type'] = str(other_type) if other_type else None
+            info['context'] = 'DPipe'
+
+            if isinstance(other, exp.Column):
+                alias = other.table
+                # If no alias, try to extract from UPDATE statement context
+                if not alias:
+                    curr = parent
+                    while curr and not isinstance(curr, exp.Update):
+                        curr = curr.parent
+                    if isinstance(curr, exp.Update) and hasattr(curr, 'this'):
+                        update_table = curr.this
+                        if isinstance(update_table, exp.Table):
+                            if update_table.db:
+                                alias = f"{update_table.db}.{update_table.name}"
+                            else:
+                                alias = update_table.name
                 info['source_table'] = alias_to_table.get(alias, alias) if alias else None
                 info['source_column'] = other.name
 
@@ -302,54 +465,201 @@ def trace_column_lineage(sql: str, column_name: str, schema_dict: dict, dialect:
 
         walk_lineage(node, set())
 
-    except Exception:
-        pass
+    except Exception as e:
+        # Log but continue - lineage is optional enhancement
+        print(f"Warning: lineage failed for column '{column_name}': {e}", file=sys.stderr)
 
     return origins
 
 
-def get_direct_column_source(sql: str, column_name: str, schema_dict: dict, dialect: str) -> tuple[Optional[str], Optional[str], bool]:
+def get_direct_column_source(qualified_ast: exp.Expression, column_name: str, schema_dict: dict, dialect: str) -> tuple[Optional[str], Optional[str], bool]:
     """
     Get the direct source table and column for a result column.
     Returns (source_table, source_column, is_expression)
+
+    Args:
+        qualified_ast: The qualified AST (from qualify())
+        column_name: Column name to trace
+        schema_dict: Schema dictionary
+        dialect: SQL dialect
     """
     try:
-        node = lineage(column_name, sql, schema=schema_dict, dialect=dialect)
+        # Use the qualified AST instead of raw SQL string
+        node = lineage(column_name, qualified_ast, schema=schema_dict, dialect=dialect)
 
         if node.downstream:
             for downstream in node.downstream:
                 source = downstream.source
 
                 if isinstance(source, exp.Table):
-                    table_name = source.name
+                    # Build fully qualified table name
+                    if source.db:
+                        table_name = f"{source.db}.{source.name}"
+                    else:
+                        table_name = source.name
                     parts = downstream.name.split('.')
                     col_name = parts[-1] if parts else downstream.name
-                    return table_name, col_name, False
+
+                    # Determine if this is a computed expression vs a direct column reference
+                    # by examining node.expression (the SELECT expression), not downstream.expression
+                    is_expr = True  # Default to expression
+                    if isinstance(node.expression, exp.Alias):
+                        # If it's Alias(this=Column(...)), it's a direct column reference
+                        # If it's Alias(this=Cast(...)) or Alias(this=Anonymous(...)), etc., it's an expression
+                        is_expr = not isinstance(node.expression.this, exp.Column)
+                    elif isinstance(node.expression, exp.Column):
+                        # Simple Column without Alias is also a direct reference
+                        is_expr = False
+
+                    return table_name, col_name, is_expr
 
                 if isinstance(source, exp.Select):
+                    # When selecting from a subquery, need to trace through to find the ultimate source
+                    # Check if this column in the outer SELECT is a simple column reference or an expression
+                    # by examining node.expression (the outer SELECT's expression for this column)
+                    is_expr = True  # Default to expression
+                    if isinstance(node.expression, exp.Alias):
+                        # If it's Alias(this=Column(...)), it's selecting a column from the subquery
+                        # If it's Alias(this=Sum(...)) or other expression, it's computed
+                        is_expr = not isinstance(node.expression.this, exp.Column)
+                    elif isinstance(node.expression, exp.Column):
+                        # Simple Column without Alias is also a direct reference
+                        is_expr = False
+
+                    if is_expr:
+                        # This is an aggregate or computed expression, no typeflow
+                        return None, None, True
+
+                    # It's a direct column reference - continue with lineage traversal
+                    # The downstream node might have more depth to explore
                     if isinstance(downstream.expression, exp.Alias):
                         inner = downstream.expression.this
                         if isinstance(inner, exp.Column):
-                            for inner_col in source.find_all(exp.Column):
-                                if inner_col.name == inner.name and inner_col.table:
-                                    inner_table = inner_col.table
-                                    if inner_table in schema_dict:
-                                        return inner_table, inner_col.name, False
-                        else:
-                            return None, None, True
+                            # Search for deeper sources in the lineage graph
+                            # Walk the downstream nodes to find the actual table
+                            def find_table_source(lineage_node, visited=None):
+                                if visited is None:
+                                    visited = set()
+                                node_id = id(lineage_node)
+                                if node_id in visited:
+                                    return None, None
+                                visited.add(node_id)
+
+                                if lineage_node.downstream:
+                                    for ds in lineage_node.downstream:
+                                        if isinstance(ds.source, exp.Table):
+                                            # Found a table!
+                                            table_name = ds.source.name
+                                            if ds.source.db:
+                                                table_name = f"{ds.source.db}.{table_name}"
+                                            parts = ds.name.split('.')
+                                            col_name = parts[-1] if parts else ds.name
+                                            if table_name in schema_dict:
+                                                return table_name, col_name
+                                        elif isinstance(ds.source, exp.Select):
+                                            # Recurse deeper
+                                            result = find_table_source(ds, visited)
+                                            if result[0]:
+                                                return result
+                                return None, None
+
+                            table_result = find_table_source(downstream)
+                            if table_result[0]:
+                                return table_result[0], table_result[1], False
 
         return None, None, False
-    except Exception:
+    except Exception as e:
+        # Log but continue - source tracking is optional enhancement
+        print(f"Warning: get_direct_column_source failed for '{column_name}': {e}", file=sys.stderr)
         return None, None, False
 
 
-def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
+# Track which types we've already warned about to avoid duplicate warnings
+_warned_types = set()
+
+def build_sqlglot_schema(schema: dict, dialect: str) -> tuple[MappingSchema, dict]:
+    """
+    Build sqlglot MappingSchema and dict from input schema.
+    This is expensive, so should be done once and reused.
+    """
+    sqlglot_schema = MappingSchema(dialect=dialect)
+    sqlglot_schema_dict = {}
+
+    for table_name, columns in schema.items():
+        table_cols = {}
+        for col_name, col_info in columns.items():
+            if isinstance(col_info, dict):
+                col_type = col_info.get("type", "VARCHAR")
+                try:
+                    dtype = exp.DataType.build(col_type, dialect=dialect)
+                    table_cols[col_name] = dtype
+                except Exception as e:
+                    # Try spatial types, otherwise use string
+                    spatial_types = {
+                        "point": exp.DataType.Type.POINT,
+                        "linestring": exp.DataType.Type.LINESTRING,
+                        "polygon": exp.DataType.Type.POLYGON,
+                        "geometry": exp.DataType.Type.GEOMETRY,
+                    }
+                    lower_type = col_type.lower()
+                    if lower_type in spatial_types:
+                        table_cols[col_name] = exp.DataType(this=spatial_types[lower_type])
+                    else:
+                        # Only warn once per unique type to reduce verbosity
+                        if col_type not in _warned_types:
+                            _warned_types.add(col_type)
+                            print(f"Warning: couldn't parse type '{col_type}': {e}", file=sys.stderr)
+                        table_cols[col_name] = col_type
+            else:
+                table_cols[col_name] = col_info
+
+        # Quote table name if it contains special characters (like hyphens)
+        # sqlglot expects quoted identifiers for names with special chars
+        quoted_table_name = table_name
+        if '.' in table_name:
+            # Split schema.table and quote each part if needed
+            parts = table_name.split('.', 1)
+            quoted_parts = []
+            for part in parts:
+                if re.search(r'[^a-zA-Z0-9_]', part):
+                    quoted_parts.append(f'"{part}"')
+                else:
+                    quoted_parts.append(part)
+            quoted_table_name = '.'.join(quoted_parts)
+        elif re.search(r'[^a-zA-Z0-9_]', table_name):
+            quoted_table_name = f'"{table_name}"'
+
+        try:
+            sqlglot_schema.add_table(quoted_table_name, table_cols)
+        except Exception as e:
+            print(f"Warning: couldn't add table '{table_name}' to schema: {e}", file=sys.stderr)
+
+        # Store with original name for lookups
+        sqlglot_schema_dict[table_name] = {
+            k: str(v) if isinstance(v, exp.DataType) else v
+            for k, v in table_cols.items()
+        }
+
+    return sqlglot_schema, sqlglot_schema_dict
+
+
+def analyze_sql(sql: str, sqlglot_schema: MappingSchema, sqlglot_schema_dict: dict, dialect: str, path: str = "") -> SqlFileResult:
     """Analyze a single SQL query."""
+    start_time = time.time()
+
+    # Print which file we're analyzing if it takes time
+    if path:
+        print(f"Analyzing {path}...", file=sys.stderr)
 
     # Extract parameters first
+    param_start = time.time()
     clean_sql, parameters = extract_parameters(sql)
+    param_time = time.time() - param_start
+    if param_time > 0.1:
+        print(f"  extract_parameters: {param_time*1000:.0f}ms", file=sys.stderr)
 
     # Parse the SQL
+    parse_start = time.time()
     try:
         parsed = sqlglot.parse_one(clean_sql, dialect=dialect)
     except Exception as e:
@@ -359,6 +669,9 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
             error=f"Parse error: {str(e)}",
             parameters=[asdict(p) for p in parameters]
         )
+    parse_time = time.time() - parse_start
+    if parse_time > 0.1:
+        print(f"  parse: {parse_time*1000:.0f}ms", file=sys.stderr)
 
     # Determine query type
     if isinstance(parsed, exp.Select):
@@ -372,56 +685,31 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
     else:
         query_type = type(parsed).__name__
 
-    # Build sqlglot schema
-    sqlglot_schema = MappingSchema(dialect=dialect)
-    sqlglot_schema_dict = {}
-
-    for table_name, columns in schema.items():
-        table_cols = {}
-        for col_name, col_info in columns.items():
-            if isinstance(col_info, dict):
-                col_type = col_info.get("type", "VARCHAR")
-                try:
-                    dtype = exp.DataType.build(col_type, dialect=dialect)
-                    table_cols[col_name] = dtype
-                except Exception:
-                    # Handle types sqlglot can't parse
-                    spatial_types = {
-                        "point": exp.DataType.Type.POINT,
-                        "linestring": exp.DataType.Type.LINESTRING,
-                        "polygon": exp.DataType.Type.POLYGON,
-                        "geometry": exp.DataType.Type.GEOMETRY,
-                    }
-                    lower_type = col_type.lower()
-                    if lower_type in spatial_types:
-                        table_cols[col_name] = exp.DataType(this=spatial_types[lower_type])
-                    else:
-                        table_cols[col_name] = col_type
-            else:
-                table_cols[col_name] = col_info
-
-        try:
-            sqlglot_schema.add_table(table_name, table_cols)
-        except Exception:
-            pass  # Skip tables that can't be added
-
-        sqlglot_schema_dict[table_name] = {
-            k: str(v) if isinstance(v, exp.DataType) else v
-            for k, v in table_cols.items()
-        }
-
-    # Try to qualify and annotate
+    # Qualify and annotate - these may fail on complex SQL
+    qualify_start = time.time()
     try:
         qualified = qualify(parsed, schema=sqlglot_schema, dialect=dialect)
-    except Exception:
+    except Exception as e:
+        # Log but continue - PostgreSQL views get schema from DB anyway
+        print(f"Warning: qualify failed: {e}", file=sys.stderr)
         qualified = parsed
+    qualify_time = time.time() - qualify_start
+    if qualify_time > 0.1:
+        print(f"  qualify: {qualify_time*1000:.0f}ms", file=sys.stderr)
 
+    annotate_start = time.time()
     try:
         annotated = annotate_types(qualified, schema=sqlglot_schema, dialect=dialect)
-    except Exception:
+    except Exception as e:
+        # Log but continue
+        print(f"Warning: annotate_types failed: {e}", file=sys.stderr)
         annotated = qualified
+    annotate_time = time.time() - annotate_start
+    if annotate_time > 0.1:
+        print(f"  annotate_types: {annotate_time*1000:.0f}ms", file=sys.stderr)
 
     # Extract table references
+    tables_start = time.time()
     tables = []
     tables_by_alias: dict[str, TableRef] = {}
     nullable_aliases: set[str] = set()
@@ -468,7 +756,66 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
             alias_to_table[t.alias] = t.name
         alias_to_table[t.name] = t.name
 
+    tables_time = time.time() - tables_start
+    if tables_time > 0.1:
+        print(f"  extract_tables: {tables_time*1000:.0f}ms", file=sys.stderr)
+
+    # Check if we're selecting from a table-generating function with column definitions
+    # (e.g., crosstab(...) AS alias(col1 type1, col2 type2, ...))
+    table_alias_columns = {}
+    if isinstance(parsed, exp.Select):
+        from_clause = parsed.find(exp.From)
+        if from_clause and isinstance(from_clause.this, exp.Table):
+            table = from_clause.this
+            if table.args.get('alias'):
+                alias_node = table.args['alias']
+                if hasattr(alias_node, 'columns') and alias_node.columns:
+                    # Extract column type definitions from TableAlias
+                    for col_def in alias_node.columns:
+                        col_name = str(col_def.this).strip('"')  # Remove quotes
+                        col_type = None
+                        if col_def.kind:
+                            # Convert sqlglot DataType to PostgreSQL type string
+                            dtype = col_def.kind
+                            if dtype.this == exp.DataType.Type.INT:
+                                col_type = "integer"
+                            elif dtype.this == exp.DataType.Type.BIGINT:
+                                col_type = "bigint"
+                            elif dtype.this == exp.DataType.Type.TEXT:
+                                col_type = "text"
+                            elif dtype.this == exp.DataType.Type.VARCHAR:
+                                col_type = "varchar"
+                            elif dtype.this == exp.DataType.Type.DECIMAL:
+                                # Include precision and scale if present
+                                if dtype.expressions:
+                                    params = [str(e.this) for e in dtype.expressions]
+                                    col_type = f"numeric({','.join(params)})"
+                                else:
+                                    col_type = "numeric"
+                            elif dtype.this == exp.DataType.Type.NUMERIC:
+                                # Include precision and scale if present
+                                if dtype.expressions:
+                                    params = [str(e.this) for e in dtype.expressions]
+                                    col_type = f"numeric({','.join(params)})"
+                                else:
+                                    col_type = "numeric"
+                            else:
+                                # For other types, use the string representation
+                                col_type = str(dtype.this).lower()
+                        table_alias_columns[col_name] = col_type
+
+    # Build reverse index for fast schema lookups (table name -> full key in schema dict)
+    # This is much faster than iterating all 395 tables for each column
+    table_name_to_schema_key = {}
+    for schema_key in sqlglot_schema_dict.keys():
+        # schema_key is like "schema.tablename" or just "tablename"
+        table_part = schema_key.split('.')[-1]  # Get just the table name
+        if table_part not in table_name_to_schema_key:
+            table_name_to_schema_key[table_part] = []
+        table_name_to_schema_key[table_part].append(schema_key)
+
     # Extract columns
+    columns_start = time.time()
     columns = []
     if isinstance(parsed, exp.Select):
         annotated_select = annotated.find(exp.Select)
@@ -492,10 +839,15 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
             if hasattr(select_col, 'type') and select_col.type:
                 inferred_type = str(select_col.type)
 
-            # Get direct source
+            # Get direct source using the qualified/annotated AST
+            direct_source_start = time.time()
             source_table, source_col, is_expr = get_direct_column_source(
-                clean_sql, col_name, sqlglot_schema_dict, dialect
+                annotated, col_name, sqlglot_schema_dict, dialect
             )
+            direct_source_time = time.time() - direct_source_start
+            if direct_source_time > 0.05:
+                print(f"      get_direct_column_source for {col_name}: {direct_source_time*1000:.0f}ms", file=sys.stderr)
+
 
             # Check nullable from join
             nullable_from_join = False
@@ -510,17 +862,24 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
             source_primary_key = False
             nullable_in_schema = False
 
-            if source_table and source_col:
-                # Try to find in schema (with various key formats)
-                for schema_table, cols in schema.items():
-                    if schema_table.endswith(f".{source_table}") or schema_table == source_table:
-                        if source_col in cols:
-                            col_schema = cols[source_col]
-                            if isinstance(col_schema, dict):
-                                source_type = col_schema.get("type")
-                                nullable_in_schema = col_schema.get("nullable", False)
-                                source_primary_key = col_schema.get("primary_key", False)
-                            break
+            # First check if we have type info from table alias column definitions
+            if col_name in table_alias_columns:
+                source_type = table_alias_columns[col_name]
+                # For table-generating functions, we don't have FK/PK info
+                source_primary_key = False
+                nullable_in_schema = False
+            elif source_table and source_col:
+                # Use reverse index for fast lookup (O(1) instead of O(n))
+                schema_keys = table_name_to_schema_key.get(source_table, [])
+                for schema_key in schema_keys:
+                    cols = sqlglot_schema_dict.get(schema_key, {})
+                    if source_col in cols:
+                        col_schema = cols[source_col]
+                        if isinstance(col_schema, dict):
+                            source_type = col_schema.get("type")
+                            nullable_in_schema = col_schema.get("nullable", False)
+                            source_primary_key = col_schema.get("primary_key", False)
+                        break
 
             # Fallback from qualified column
             if not source_table and isinstance(inner, exp.Column) and inner.table:
@@ -532,8 +891,16 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
                 if inner.table in nullable_aliases:
                     nullable_from_join = True
 
-            # Get full lineage
-            origins = trace_column_lineage(clean_sql, col_name, sqlglot_schema_dict, dialect)
+            # Get full lineage - DISABLED for performance (origins not used by typo)
+            # lineage_start = time.time()
+            # origins = trace_column_lineage(clean_sql, col_name, sqlglot_schema_dict, dialect)
+            # lineage_time = time.time() - lineage_start
+            # if lineage_time > 0.05:
+            #     print(f"    trace_lineage for {col_name}: {lineage_time*1000:.0f}ms", file=sys.stderr)
+            origins = []  # Not used by typo, but required by JSON schema
+
+            if "vemployeedepartment" in sql.lower():
+                print(f"  Column {col_name}: source_table={source_table}, source_col={source_col}", file=sys.stderr)
 
             columns.append(ColumnLineage(
                 name=col_name,
@@ -549,7 +916,13 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
                 origins=origins
             ))
 
+    columns_time = time.time() - columns_start
+    if columns_time > 0.1:
+        file_info = f" ({path})" if path else ""
+        print(f"  extract_columns{file_info}: {columns_time*1000:.0f}ms", file=sys.stderr)
+
     # Infer parameter types
+    param_types_start = time.time()
     if parameters:
         param_type_info = infer_parameter_types(annotated, alias_to_table)
         for i, param in enumerate(parameters):
@@ -559,6 +932,22 @@ def analyze_sql(sql: str, schema: dict, dialect: str) -> SqlFileResult:
                 param.source_table = info.get('source_table')
                 param.source_column = info.get('source_column')
                 param.context = info.get('context')
+
+        param_types_time = time.time() - param_types_start
+        if param_types_time > 0.1:
+            print(f"  infer_parameter_types: {param_types_time*1000:.0f}ms", file=sys.stderr)
+
+    total_time = time.time() - start_time
+    if total_time > 0.5:
+        file_info = f" ({path})" if path else ""
+        print(f"  TOTAL analyze_sql{file_info}: {total_time*1000:.0f}ms", file=sys.stderr)
+
+    # Debug: print source tables for vemployeedepartment
+    if "vemployeedepartment" in sql.lower():
+        print(f"\nDEBUG vemployeedepartment columns:", file=sys.stderr)
+        for col in columns:
+            if hasattr(col, 'name') and hasattr(col, 'source_table'):
+                print(f"  {col.name}: source_table={col.source_table}", file=sys.stderr)
 
     return SqlFileResult(
         path="",
@@ -590,6 +979,13 @@ def main():
     schema = input_data.get("schema", {})
     files = input_data.get("files", [])
 
+    # Build sqlglot schema ONCE upfront (expensive operation)
+    schema_start = time.time()
+    sqlglot_schema, sqlglot_schema_dict = build_sqlglot_schema(schema, dialect)
+    schema_time = time.time() - schema_start
+    if schema_time > 0.1:
+        print(f"Schema build time: {schema_time*1000:.0f}ms for {len(schema)} tables", file=sys.stderr)
+
     results = []
 
     for file_info in files:
@@ -618,7 +1014,7 @@ def main():
             sql = content
 
         try:
-            result = analyze_sql(sql, schema, dialect)
+            result = analyze_sql(sql, sqlglot_schema, sqlglot_schema_dict, dialect, path)
             result.path = path
             results.append(dataclass_to_dict(result))
         except Exception as e:

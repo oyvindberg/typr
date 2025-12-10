@@ -23,12 +23,12 @@ public record VproductmodelinstructionsViewRow(
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#name()} */
   Name name,
   /* nullability unknown */ Optional<String> instructions,
-  @JsonProperty("LocationID") /* nullability unknown */ Optional<Integer> locationID,
-  @JsonProperty("SetupHours") /* nullability unknown */ Optional<BigDecimal> setupHours,
-  @JsonProperty("MachineHours") /* nullability unknown */ Optional<BigDecimal> machineHours,
-  @JsonProperty("LaborHours") /* nullability unknown */ Optional<BigDecimal> laborHours,
-  @JsonProperty("LotSize") /* nullability unknown */ Optional<Integer> lotSize,
-  @JsonProperty("Step") /* nullability unknown */ Optional</* max 1024 chars */ String> step,
+  @JsonProperty("LocationID") Integer locationID,
+  @JsonProperty("SetupHours") BigDecimal setupHours,
+  @JsonProperty("MachineHours") BigDecimal machineHours,
+  @JsonProperty("LaborHours") BigDecimal laborHours,
+  @JsonProperty("LotSize") Integer lotSize,
+  @JsonProperty("Step") /* max 1024 chars */ String step,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#rowguid()} */
   TypoUUID rowguid,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#modifieddate()} */
@@ -48,27 +48,27 @@ public record VproductmodelinstructionsViewRow(
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
-  public VproductmodelinstructionsViewRow withLocationID(/* nullability unknown */ Optional<Integer> locationID) {
+  public VproductmodelinstructionsViewRow withLocationID(Integer locationID) {
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
-  public VproductmodelinstructionsViewRow withSetupHours(/* nullability unknown */ Optional<BigDecimal> setupHours) {
+  public VproductmodelinstructionsViewRow withSetupHours(BigDecimal setupHours) {
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
-  public VproductmodelinstructionsViewRow withMachineHours(/* nullability unknown */ Optional<BigDecimal> machineHours) {
+  public VproductmodelinstructionsViewRow withMachineHours(BigDecimal machineHours) {
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
-  public VproductmodelinstructionsViewRow withLaborHours(/* nullability unknown */ Optional<BigDecimal> laborHours) {
+  public VproductmodelinstructionsViewRow withLaborHours(BigDecimal laborHours) {
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
-  public VproductmodelinstructionsViewRow withLotSize(/* nullability unknown */ Optional<Integer> lotSize) {
+  public VproductmodelinstructionsViewRow withLotSize(Integer lotSize) {
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
-  public VproductmodelinstructionsViewRow withStep(/* nullability unknown */ Optional</* max 1024 chars */ String> step) {
+  public VproductmodelinstructionsViewRow withStep(/* max 1024 chars */ String step) {
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
@@ -82,5 +82,5 @@ public record VproductmodelinstructionsViewRow(
     return new VproductmodelinstructionsViewRow(productmodelid, name, instructions, locationID, setupHours, machineHours, laborHours, lotSize, step, rowguid, modifieddate);
   };
 
-  static RowParser<VproductmodelinstructionsViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.numeric.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, VproductmodelinstructionsViewRow::new, row -> new Object[]{row.productmodelid(), row.name(), row.instructions(), row.locationID(), row.setupHours(), row.machineHours(), row.laborHours(), row.lotSize(), row.step(), row.rowguid(), row.modifieddate()});;
+  static RowParser<VproductmodelinstructionsViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.int4, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, VproductmodelinstructionsViewRow::new, row -> new Object[]{row.productmodelid(), row.name(), row.instructions(), row.locationID(), row.setupHours(), row.machineHours(), row.laborHours(), row.lotSize(), row.step(), row.rowguid(), row.modifieddate()});;
 }

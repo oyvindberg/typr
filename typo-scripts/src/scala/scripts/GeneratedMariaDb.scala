@@ -4,6 +4,7 @@ import bleep.{FileWatching, cli}
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typo.*
 import typo.internal.codegen.*
+import typo.internal.external.{ExternalTools, ExternalToolsConfig}
 import typo.internal.sqlfiles.SqlFileReader
 import typo.internal.{FileSync, generate}
 
@@ -34,7 +35,8 @@ object GeneratedMariaDb {
         val selector = Selector.All
         val typoLogger = TypoLogger.Console
 
-        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.SingleSchema("typo")), Duration.Inf)
+        val externalTools = ExternalTools.init(typoLogger, ExternalToolsConfig.default)
+        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.SingleSchema("typo"), externalTools), Duration.Inf)
 
         val variants: Seq[(Lang, DbLibName, JsonLibName, String, String)] = List(
           (LangJava, DbLibName.Typo, JsonLibName.Jackson, "typo-tester-mariadb-java", ""),
@@ -43,7 +45,7 @@ object GeneratedMariaDb {
         )
 
         def go(): Unit = {
-          val newSqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds), Duration.Inf)
+          val newSqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds, externalTools), Duration.Inf)
 
           variants.foreach { case (lang, dbLib, jsonLib, projectPath, suffix) =>
             val options = Options(

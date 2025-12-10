@@ -4,6 +4,7 @@ package mariadb
 
 import _root_.anorm.*
 import _root_.typo.internal.analysis.*
+import _root_.typo.internal.external.ExternalTools
 import _root_.typo.internal.sqlfiles.SqlFile
 import _root_.typo.internal.sqlglot.*
 
@@ -49,7 +50,8 @@ object MariaSqlFileMetadata {
   def apply(
       logger: TypoLogger,
       scriptsPath: Path,
-      ds: TypoDataSource
+      ds: TypoDataSource,
+      externalTools: ExternalTools
   )(implicit ec: ExecutionContext): Future[List[SqlFile]] = {
     // Step 1: Read table schema from database
     val schemaFuture = ds.run { implicit c =>
@@ -71,7 +73,7 @@ object MariaSqlFileMetadata {
         }
 
         // Step 3: Run sqlglot analysis on all files
-        val sqlglotResults = runSqlglotAnalysis(logger, schema, parsedFiles)
+        val sqlglotResults = runSqlglotAnalysis(logger, externalTools, schema, parsedFiles)
 
         // Step 4: Build SqlFile objects from sqlglot results
         Future.successful(parsedFiles.flatMap { case (path, decomposed) =>
@@ -113,15 +115,11 @@ object MariaSqlFileMetadata {
   /** Run sqlglot analysis on all SQL files */
   private def runSqlglotAnalysis(
       logger: TypoLogger,
+      externalTools: ExternalTools,
       schema: Map[String, Map[String, SqlglotColumnSchema]],
       parsedFiles: List[(Path, DecomposedSql)]
   ): Map[String, SqlglotFileResult] = {
-    val config = SqlglotAnalyzer.defaultConfig() match {
-      case Some(c) => c
-      case None =>
-        logger.warn("Could not initialize sqlglot analyzer (Python not found or script resource missing)")
-        return Map.empty
-    }
+    val config = SqlglotAnalyzer.configFromExternalTools(externalTools)
 
     // Build input for sqlglot - render SQL with :param_name syntax
     val fileInputs = parsedFiles.map { case (path, decomposed) =>

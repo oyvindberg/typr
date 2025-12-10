@@ -15,11 +15,11 @@ import typo.dsl.Structure.Relation
 
 trait VsalespersonsalesbyfiscalyearsdataViewFields {
   def salespersonid: OptField[BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow]
-  def fullname: OptField[String, VsalespersonsalesbyfiscalyearsdataViewRow]
+  def fullname: Field[String, VsalespersonsalesbyfiscalyearsdataViewRow]
   def jobtitle: Field[/* max 50 chars */ String, VsalespersonsalesbyfiscalyearsdataViewRow]
   def salesterritory: Field[Name, VsalespersonsalesbyfiscalyearsdataViewRow]
   def salestotal: OptField[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
-  def fiscalyear: OptField[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
+  def fiscalyear: Field[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
 }
 
 object VsalespersonsalesbyfiscalyearsdataViewFields {
@@ -31,11 +31,11 @@ object VsalespersonsalesbyfiscalyearsdataViewFields {
 
     override lazy val fields: VsalespersonsalesbyfiscalyearsdataViewFields = new VsalespersonsalesbyfiscalyearsdataViewFields {
       override def salespersonid = OptField[BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "salespersonid", None, None, x => x.salespersonid, (row, value) => row.copy(salespersonid = value))
-      override def fullname = OptField[String, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "fullname", None, None, x => x.fullname, (row, value) => row.copy(fullname = value))
+      override def fullname = Field[String, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "fullname", None, None, x => x.fullname, (row, value) => row.copy(fullname = value))
       override def jobtitle = Field[/* max 50 chars */ String, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "jobtitle", None, None, x => x.jobtitle, (row, value) => row.copy(jobtitle = value))
       override def salesterritory = Field[Name, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "salesterritory", None, None, x => x.salesterritory, (row, value) => row.copy(salesterritory = value))
       override def salestotal = OptField[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "salestotal", None, None, x => x.salestotal, (row, value) => row.copy(salestotal = value))
-      override def fiscalyear = OptField[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "fiscalyear", None, None, x => x.fiscalyear, (row, value) => row.copy(fiscalyear = value))
+      override def fiscalyear = Field[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "fiscalyear", None, None, x => x.fiscalyear, (row, value) => row.copy(fiscalyear = value))
     }
 
     override lazy val columns: List[FieldLike[?, VsalespersonsalesbyfiscalyearsdataViewRow]] =

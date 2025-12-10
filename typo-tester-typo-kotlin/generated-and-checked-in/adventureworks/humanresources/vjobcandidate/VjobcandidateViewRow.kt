@@ -20,23 +20,23 @@ data class VjobcandidateViewRow(
   val jobcandidateid: JobcandidateId,
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid] */
   val businessentityid: Optional<BusinessentityId>,
-  @JsonProperty("Name.Prefix") val namePrefix: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("Name.First") val nameFirst: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("Name.Middle") val nameMiddle: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("Name.Last") val nameLast: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("Name.Suffix") val nameSuffix: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("Skills") val skills: /* nullability unknown */ Optional<String>,
-  @JsonProperty("Addr.Type") val addrType: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("Addr.Loc.CountryRegion") val addrLocCountryRegion: /* nullability unknown */ Optional</* max 100 chars */ String>,
-  @JsonProperty("Addr.Loc.State") val addrLocState: /* nullability unknown */ Optional</* max 100 chars */ String>,
-  @JsonProperty("Addr.Loc.City") val addrLocCity: /* nullability unknown */ Optional</* max 100 chars */ String>,
-  @JsonProperty("Addr.PostalCode") val addrPostalCode: /* nullability unknown */ Optional</* max 20 chars */ String>,
-  @JsonProperty("EMail") val eMail: /* nullability unknown */ Optional<String>,
-  @JsonProperty("WebSite") val webSite: /* nullability unknown */ Optional<String>,
+  @JsonProperty("Name.Prefix") val namePrefix: Optional</* max 30 chars */ String>,
+  @JsonProperty("Name.First") val nameFirst: Optional</* max 30 chars */ String>,
+  @JsonProperty("Name.Middle") val nameMiddle: Optional</* max 30 chars */ String>,
+  @JsonProperty("Name.Last") val nameLast: Optional</* max 30 chars */ String>,
+  @JsonProperty("Name.Suffix") val nameSuffix: Optional</* max 30 chars */ String>,
+  @JsonProperty("Skills") val skills: String,
+  @JsonProperty("Addr.Type") val addrType: Optional</* max 30 chars */ String>,
+  @JsonProperty("Addr.Loc.CountryRegion") val addrLocCountryRegion: Optional</* max 100 chars */ String>,
+  @JsonProperty("Addr.Loc.State") val addrLocState: Optional</* max 100 chars */ String>,
+  @JsonProperty("Addr.Loc.City") val addrLocCity: Optional</* max 100 chars */ String>,
+  @JsonProperty("Addr.PostalCode") val addrPostalCode: Optional</* max 20 chars */ String>,
+  @JsonProperty("EMail") val eMail: String,
+  @JsonProperty("WebSite") val webSite: String,
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate] */
   val modifieddate: TypoLocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<VjobcandidateViewRow> = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> VjobcandidateViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.businessentityid, row.namePrefix, row.nameFirst, row.nameMiddle, row.nameLast, row.nameSuffix, row.skills, row.addrType, row.addrLocCountryRegion, row.addrLocState, row.addrLocCity, row.addrPostalCode, row.eMail, row.webSite, row.modifieddate) })
+    val _rowParser: RowParser<VjobcandidateViewRow> = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text, PgTypes.text, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> VjobcandidateViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.businessentityid, row.namePrefix, row.nameFirst, row.nameMiddle, row.nameLast, row.nameSuffix, row.skills, row.addrType, row.addrLocCountryRegion, row.addrLocState, row.addrLocCity, row.addrPostalCode, row.eMail, row.webSite, row.modifieddate) })
   }
 }

@@ -18,16 +18,16 @@ import zio.json.internal.Write
 case class VjobcandidateemploymentViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  empStartDate: /* nullability unknown */ Option[TypoLocalDate],
-  empEndDate: /* nullability unknown */ Option[TypoLocalDate],
-  empOrgName: /* nullability unknown */ Option[/* max 100 chars */ String],
-  empJobTitle: /* nullability unknown */ Option[/* max 100 chars */ String],
-  empResponsibility: /* nullability unknown */ Option[String],
-  empFunctionCategory: /* nullability unknown */ Option[String],
-  empIndustryCategory: /* nullability unknown */ Option[String],
-  empLocCountryRegion: /* nullability unknown */ Option[String],
-  empLocState: /* nullability unknown */ Option[String],
-  empLocCity: /* nullability unknown */ Option[String]
+  empStartDate: Option[TypoLocalDate],
+  empEndDate: Option[TypoLocalDate],
+  empOrgName: Option[/* max 100 chars */ String],
+  empJobTitle: Option[/* max 100 chars */ String],
+  empResponsibility: Option[String],
+  empFunctionCategory: Option[String],
+  empIndustryCategory: Option[String],
+  empLocCountryRegion: Option[String],
+  empLocState: Option[String],
+  empLocCity: Option[String]
 )
 
 object VjobcandidateemploymentViewRow {

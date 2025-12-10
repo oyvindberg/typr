@@ -17,24 +17,24 @@ import io.circe.Encoder
 case class VpersondemographicsViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  totalpurchaseytd: /* nullability unknown */ Option[TypoMoney],
-  datefirstpurchase: /* nullability unknown */ Option[TypoLocalDate],
-  birthdate: /* nullability unknown */ Option[TypoLocalDate],
-  maritalstatus: /* nullability unknown */ Option[/* max 1 chars */ String],
-  yearlyincome: /* nullability unknown */ Option[/* max 30 chars */ String],
-  gender: /* nullability unknown */ Option[/* max 1 chars */ String],
-  totalchildren: /* nullability unknown */ Option[Int],
-  numberchildrenathome: /* nullability unknown */ Option[Int],
-  education: /* nullability unknown */ Option[/* max 30 chars */ String],
-  occupation: /* nullability unknown */ Option[/* max 30 chars */ String],
-  homeownerflag: /* nullability unknown */ Option[Boolean],
-  numbercarsowned: /* nullability unknown */ Option[Int]
+  totalpurchaseytd: Option[TypoMoney],
+  datefirstpurchase: Option[TypoLocalDate],
+  birthdate: Option[TypoLocalDate],
+  maritalstatus: Option[/* max 1 chars */ String],
+  yearlyincome: Option[/* max 30 chars */ String],
+  gender: Option[/* max 1 chars */ String],
+  totalchildren: Option[Int],
+  numberchildrenathome: Option[Int],
+  education: Option[/* max 30 chars */ String],
+  occupation: Option[/* max 30 chars */ String],
+  homeownerflag: Option[Boolean],
+  numbercarsowned: Option[Int]
 )
 
 object VpersondemographicsViewRow {
-  implicit lazy val decoder: Decoder[VpersondemographicsViewRow] = Decoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[Boolean], /* nullability unknown */ Option[Int]]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(VpersondemographicsViewRow.apply)(BusinessentityId.decoder, Decoder.decodeOption(TypoMoney.decoder), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeInt), Decoder.decodeOption(Decoder.decodeInt), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeBoolean), Decoder.decodeOption(Decoder.decodeInt))
+  implicit lazy val decoder: Decoder[VpersondemographicsViewRow] = Decoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, Option[TypoMoney], Option[TypoLocalDate], Option[TypoLocalDate], Option[/* max 1 chars */ String], Option[/* max 30 chars */ String], Option[/* max 1 chars */ String], Option[Int], Option[Int], Option[/* max 30 chars */ String], Option[/* max 30 chars */ String], Option[Boolean], Option[Int]]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(VpersondemographicsViewRow.apply)(BusinessentityId.decoder, Decoder.decodeOption(TypoMoney.decoder), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeInt), Decoder.decodeOption(Decoder.decodeInt), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeBoolean), Decoder.decodeOption(Decoder.decodeInt))
 
-  implicit lazy val encoder: Encoder[VpersondemographicsViewRow] = Encoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[Boolean], /* nullability unknown */ Option[Int]]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(x => (x.businessentityid, x.totalpurchaseytd, x.datefirstpurchase, x.birthdate, x.maritalstatus, x.yearlyincome, x.gender, x.totalchildren, x.numberchildrenathome, x.education, x.occupation, x.homeownerflag, x.numbercarsowned))(BusinessentityId.encoder, Encoder.encodeOption(TypoMoney.encoder), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeInt), Encoder.encodeOption(Encoder.encodeInt), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeBoolean), Encoder.encodeOption(Encoder.encodeInt))
+  implicit lazy val encoder: Encoder[VpersondemographicsViewRow] = Encoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, Option[TypoMoney], Option[TypoLocalDate], Option[TypoLocalDate], Option[/* max 1 chars */ String], Option[/* max 30 chars */ String], Option[/* max 1 chars */ String], Option[Int], Option[Int], Option[/* max 30 chars */ String], Option[/* max 30 chars */ String], Option[Boolean], Option[Int]]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(x => (x.businessentityid, x.totalpurchaseytd, x.datefirstpurchase, x.birthdate, x.maritalstatus, x.yearlyincome, x.gender, x.totalchildren, x.numberchildrenathome, x.education, x.occupation, x.homeownerflag, x.numbercarsowned))(BusinessentityId.encoder, Encoder.encodeOption(TypoMoney.encoder), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeInt), Encoder.encodeOption(Encoder.encodeInt), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeBoolean), Encoder.encodeOption(Encoder.encodeInt))
 
   implicit lazy val read: Read[VpersondemographicsViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -54,18 +54,18 @@ object VpersondemographicsViewRow {
     ))(scala.reflect.ClassTag.Any).map { arr =>
       VpersondemographicsViewRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
-            totalpurchaseytd = arr(1).asInstanceOf[/* nullability unknown */ Option[TypoMoney]],
-            datefirstpurchase = arr(2).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-            birthdate = arr(3).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-            maritalstatus = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 1 chars */ String]],
-            yearlyincome = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            gender = arr(6).asInstanceOf[/* nullability unknown */ Option[/* max 1 chars */ String]],
-            totalchildren = arr(7).asInstanceOf[/* nullability unknown */ Option[Int]],
-            numberchildrenathome = arr(8).asInstanceOf[/* nullability unknown */ Option[Int]],
-            education = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            occupation = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            homeownerflag = arr(11).asInstanceOf[/* nullability unknown */ Option[Boolean]],
-            numbercarsowned = arr(12).asInstanceOf[/* nullability unknown */ Option[Int]]
+            totalpurchaseytd = arr(1).asInstanceOf[Option[TypoMoney]],
+            datefirstpurchase = arr(2).asInstanceOf[Option[TypoLocalDate]],
+            birthdate = arr(3).asInstanceOf[Option[TypoLocalDate]],
+            maritalstatus = arr(4).asInstanceOf[Option[/* max 1 chars */ String]],
+            yearlyincome = arr(5).asInstanceOf[Option[/* max 30 chars */ String]],
+            gender = arr(6).asInstanceOf[Option[/* max 1 chars */ String]],
+            totalchildren = arr(7).asInstanceOf[Option[Int]],
+            numberchildrenathome = arr(8).asInstanceOf[Option[Int]],
+            education = arr(9).asInstanceOf[Option[/* max 30 chars */ String]],
+            occupation = arr(10).asInstanceOf[Option[/* max 30 chars */ String]],
+            homeownerflag = arr(11).asInstanceOf[Option[Boolean]],
+            numbercarsowned = arr(12).asInstanceOf[Option[Int]]
       )
     }
   }

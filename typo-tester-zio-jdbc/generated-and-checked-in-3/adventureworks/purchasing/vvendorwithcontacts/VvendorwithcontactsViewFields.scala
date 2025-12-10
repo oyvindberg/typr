@@ -24,8 +24,8 @@ trait VvendorwithcontactsViewFields {
   def middlename: OptField[Name, VvendorwithcontactsViewRow]
   def lastname: Field[Name, VvendorwithcontactsViewRow]
   def suffix: OptField[/* max 10 chars */ String, VvendorwithcontactsViewRow]
-  def phonenumber: OptField[Phone, VvendorwithcontactsViewRow]
-  def phonenumbertype: OptField[Name, VvendorwithcontactsViewRow]
+  def phonenumber: Field[Phone, VvendorwithcontactsViewRow]
+  def phonenumbertype: Field[Name, VvendorwithcontactsViewRow]
   def emailaddress: OptField[/* max 50 chars */ String, VvendorwithcontactsViewRow]
   def emailpromotion: Field[Int, VvendorwithcontactsViewRow]
 }
@@ -46,8 +46,8 @@ object VvendorwithcontactsViewFields {
       override def middlename = OptField[Name, VvendorwithcontactsViewRow](_path, "middlename", None, None, x => x.middlename, (row, value) => row.copy(middlename = value))
       override def lastname = Field[Name, VvendorwithcontactsViewRow](_path, "lastname", None, None, x => x.lastname, (row, value) => row.copy(lastname = value))
       override def suffix = OptField[/* max 10 chars */ String, VvendorwithcontactsViewRow](_path, "suffix", None, None, x => x.suffix, (row, value) => row.copy(suffix = value))
-      override def phonenumber = OptField[Phone, VvendorwithcontactsViewRow](_path, "phonenumber", None, None, x => x.phonenumber, (row, value) => row.copy(phonenumber = value))
-      override def phonenumbertype = OptField[Name, VvendorwithcontactsViewRow](_path, "phonenumbertype", None, None, x => x.phonenumbertype, (row, value) => row.copy(phonenumbertype = value))
+      override def phonenumber = Field[Phone, VvendorwithcontactsViewRow](_path, "phonenumber", None, None, x => x.phonenumber, (row, value) => row.copy(phonenumber = value))
+      override def phonenumbertype = Field[Name, VvendorwithcontactsViewRow](_path, "phonenumbertype", None, None, x => x.phonenumbertype, (row, value) => row.copy(phonenumbertype = value))
       override def emailaddress = OptField[/* max 50 chars */ String, VvendorwithcontactsViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
       override def emailpromotion = Field[Int, VvendorwithcontactsViewRow](_path, "emailpromotion", None, None, x => x.emailpromotion, (row, value) => row.copy(emailpromotion = value))
     }
