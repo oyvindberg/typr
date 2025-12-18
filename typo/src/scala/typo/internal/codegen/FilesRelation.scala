@@ -464,7 +464,14 @@ case class FilesRelation(
     })
 
     /* fields: lazy override val (Scala) / @Override public Type fields() (Java) */
-    val fieldsValue = jvm.Value(Nil, jvm.Ident("fields"), fieldsName, Some(jvm.NewWithBody(extendsClass = None, implementsInterface = Some(fieldsName), fieldImplMethods).code), isLazy = true, isOverride = true)
+    val fieldsValue = jvm.Value(
+      Nil,
+      jvm.Ident("fields"),
+      fieldsName,
+      Some(jvm.NewWithBody(extendsClass = None, implementsInterface = Some(fieldsName), fieldImplMethods).code),
+      isLazy = true,
+      isOverride = true
+    )
 
     // columns: lazy override val (Scala) / @Override public Type columns() (Java)
     val columnsValue = jvm.Value(Nil, jvm.Ident("columns"), columnsList, Some(columnsExpr), isLazy = true, isOverride = true)
